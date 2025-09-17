@@ -1,5 +1,6 @@
 import axios from "axios";
 import BASE_URL from "../../config/config";
+import { toast } from "react-toastify";
 
 export const FETCH_BUSINESS_REQUEST = "FETCH_BUSINESS_REQUEST";
 export const FETCH_BUSINESS_SUCCESS = "FETCH_BUSINESS_SUCCESS";
@@ -130,6 +131,7 @@ export const createBusiness = (businessData) => async (dispatch) => {
     if (response.data.status) {
       dispatch({ type: CREATE_BUSINESS_SUCCESS, payload: response.data.data || {} });
      dispatch(fetchBusinessDetails());
+     toast.success(response.data.message || "Business created successfully!");
       return response.data;
     } else {
       dispatch({ type: BUSINESS_ERROR, payload: response.data.message });
@@ -141,6 +143,7 @@ export const createBusiness = (businessData) => async (dispatch) => {
       type: BUSINESS_ERROR,
       payload: error.response?.data?.message || error.message,
     });
+    toast.error(error.response?.data?.message || "Error creating business");
     throw error;
   }
 };
@@ -157,6 +160,7 @@ export const updateBusiness = (businessData) => async (dispatch) => {
     if (response.data.status) {
       dispatch({ type: UPDATE_BUSINESS_SUCCESS, payload: response.data.data || {} });
      dispatch(fetchBusinessDetails());
+     toast.success(response.data.message || "Business updated successfully!");
       return response.data;
     } else {
       dispatch({ type: BUSINESS_ERROR, payload: response.data.message });
@@ -164,6 +168,7 @@ export const updateBusiness = (businessData) => async (dispatch) => {
     }
   } catch (error) {
     dispatch({ type: BUSINESS_ERROR, payload: error.response?.data?.message || error.message });
+    toast.error(error.response?.data?.message || "Error creating business");
     throw error;
   }
 };
@@ -171,9 +176,10 @@ export const updateBusiness = (businessData) => async (dispatch) => {
 // Delete business
 export const deleteBusiness = (id) => async (dispatch) => {
   try {
-    await axios.delete(`${BASE_URL}/businessDetails/delete/${id}`, getAuthHeaders());
+   const response =  await axios.delete(`${BASE_URL}/businessDetails/delete/${id}`, getAuthHeaders());
     dispatch({ type: DELETE_BUSINESS_SUCCESS, payload: id });
      dispatch(fetchBusinessDetails());
+     toast.success(response?.data?.message || "Business deleted successfully!");
   } catch (error) {
     dispatch({ type: BUSINESS_ERROR, payload: error.response?.data?.message || error.message });
     throw error;

@@ -59,7 +59,6 @@ export default function businessReducer(state = initialState, action) {
       return {
         ...state,
         businessDetails: state.businessDetails.filter((biz) => biz.id !== action.payload),
-        successMessage: "Business deleted successfully!",
       };
 
     case BUSINESS_ERROR:

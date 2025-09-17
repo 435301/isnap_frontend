@@ -227,12 +227,10 @@ const CreateSeller = () => {
       data.append("serviceRows", JSON.stringify(formData.serviceRows));
       data.append("catalogRows", JSON.stringify(formData.catalogRows));
       data.append("keyAccountRows", JSON.stringify(formData.keyAccountRows));
-
       await dispatch(createBusiness(data));
-      toast.success("Business saved successfully!");
       setErrors({});
+      setActiveTab("Marketplace Business");
     } catch (error) {
-      toast.error(error.response?.data?.message || "Something went wrong");
     }
   };
 
