@@ -1,7 +1,6 @@
 import axios from "axios";
 import BASE_URL from "../../config/config";
 
-// Action Types
 export const FETCH_BUSINESS_REQUEST = "FETCH_BUSINESS_REQUEST";
 export const FETCH_BUSINESS_SUCCESS = "FETCH_BUSINESS_SUCCESS";
 export const FETCH_BUSINESS_FAILURE = "FETCH_BUSINESS_FAILURE";
@@ -11,7 +10,6 @@ export const CREATE_BUSINESS_SUCCESS = "CREATE_BUSINESS_SUCCESS";
 export const BUSINESS_ERROR = "BUSINESS_ERROR";
 export const CLEAR_BUSINESS_SUCCESS_MESSAGE = "CLEAR_BUSINESS_SUCCESS_MESSAGE";
 
-// Auth Headers
 const getAuthHeaders = (isFormData = false) => {
   const token = localStorage.getItem("authToken");
   if (!token) return {};
@@ -25,7 +23,7 @@ const getAuthHeaders = (isFormData = false) => {
 };
 
 // Fetch businesses list
-export const fetchBusinessDetails = (page = 1, limit = 10, search = "", showStatus = "") => {
+export const fetchBusinessDetails = (page , limit , search = "", showStatus = "") => {
   return async (dispatch) => {
     dispatch({ type: FETCH_BUSINESS_REQUEST });
     try {
@@ -36,8 +34,8 @@ export const fetchBusinessDetails = (page = 1, limit = 10, search = "", showStat
       );
 
       if (response.data.status) {
-        const { businessDetails = [], totalPages = 1, currentPage = 1 } = response.data.data || {};
-
+        const {
+          businessDetails = [], totalPages = 1,currentPage = 1,total = 0, limit = 10,} = response.data.data || {};
         const mappedBusinesses = businessDetails.map((biz) => ({
           id: biz.id,
           businessName: biz.businessName,
@@ -57,7 +55,7 @@ export const fetchBusinessDetails = (page = 1, limit = 10, search = "", showStat
 
         dispatch({
           type: FETCH_BUSINESS_SUCCESS,
-          payload: { businesses: mappedBusinesses, currentPage, totalPages },
+          payload: { businesses: mappedBusinesses, currentPage, totalPages, limit},
         });
       } else {
         dispatch({
@@ -79,8 +77,6 @@ export const fetchBusinessDetailsById = (id) => async (dispatch) => {
   dispatch({ type: FETCH_BUSINESS_REQUEST });
   try {
     const response = await axios.get(`${BASE_URL}/businessDetails/${id}`, getAuthHeaders());
-    console.log("API Response for fetchBusinessDetailsById:", response.data); // Debug
-
     if (response.data.status) {
       const biz = response.data.data || {};
       const mappedBusiness = {
@@ -133,11 +129,13 @@ export const createBusiness = (businessData) => async (dispatch) => {
 
     if (response.data.status) {
       dispatch({ type: CREATE_BUSINESS_SUCCESS, payload: response.data.data || {} });
+     dispatch(fetchBusinessDetails());
       return response.data;
     } else {
       dispatch({ type: BUSINESS_ERROR, payload: response.data.message });
       throw new Error(response.data.message);
     }
+
   } catch (error) {
     dispatch({
       type: BUSINESS_ERROR,
@@ -158,6 +156,7 @@ export const updateBusiness = (businessData) => async (dispatch) => {
 
     if (response.data.status) {
       dispatch({ type: UPDATE_BUSINESS_SUCCESS, payload: response.data.data || {} });
+     dispatch(fetchBusinessDetails());
       return response.data;
     } else {
       dispatch({ type: BUSINESS_ERROR, payload: response.data.message });
@@ -174,6 +173,7 @@ export const deleteBusiness = (id) => async (dispatch) => {
   try {
     await axios.delete(`${BASE_URL}/businessDetails/delete/${id}`, getAuthHeaders());
     dispatch({ type: DELETE_BUSINESS_SUCCESS, payload: id });
+     dispatch(fetchBusinessDetails());
   } catch (error) {
     dispatch({ type: BUSINESS_ERROR, payload: error.response?.data?.message || error.message });
     throw error;

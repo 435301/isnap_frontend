@@ -16,6 +16,8 @@ const initialState = {
   successMessage: null,
   currentPage: 1,
   totalPages: 1,
+  total: 0,
+  limit: 10,
 };
 
 export default function businessReducer(state = initialState, action) {
@@ -30,6 +32,8 @@ export default function businessReducer(state = initialState, action) {
         businessDetails: action.payload.businesses,
         currentPage: action.payload.currentPage,
         totalPages: action.payload.totalPages,
+        total: action.payload.total,
+         limit: action.payload.limit,
       };
 
     case FETCH_BUSINESS_FAILURE:

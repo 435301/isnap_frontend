@@ -15,6 +15,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
+import Pagination from "../../common/pagination";
 
 const ManageSellers = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -22,8 +23,6 @@ const ManageSellers = () => {
   const [statusFilter, setStatusFilter] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedBusiness, setSelectedBusiness] = useState(null);
@@ -34,6 +33,8 @@ const ManageSellers = () => {
     loading = false,
     successMessage = null,
     totalPages = 1,
+     limit = 10,
+     currentPage = 1,
   } = useSelector((state) => state.business || {});
 
   console.log('businessName', businessDetails)
@@ -49,11 +50,11 @@ const ManageSellers = () => {
   }, []);
   useEffect(() => {
     const numericStatus = statusFilter === "" ? "" : parseInt(statusFilter);
-    dispatch(fetchBusinessDetails(currentPage, itemsPerPage, searchTerm, numericStatus));
+    dispatch(fetchBusinessDetails(currentPage, limit, searchTerm, numericStatus));
   }, [dispatch, currentPage, searchTerm, statusFilter]);
 
   useEffect(() => {
-    dispatch(fetchBusinessDetails(currentPage, itemsPerPage, searchTerm, statusFilter));
+    dispatch(fetchBusinessDetails(currentPage, limit, searchTerm, statusFilter));
   }, [dispatch, currentPage, searchTerm, statusFilter]);
 
   useEffect(() => {
@@ -63,13 +64,18 @@ const ManageSellers = () => {
     }
   }, [successMessage, dispatch]);
 
+    const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      dispatch(fetchBusinessDetails(page, limit, searchTerm, statusFilter));
+    }
+  };
+
   const handleToggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   const handleRefresh = () => {
     setSearchTerm("");
     setStatusFilter("");
-    setCurrentPage(1);
-    dispatch(fetchBusinessDetails(1, itemsPerPage, ""));
+    dispatch(fetchBusinessDetails(1, limit, ""));
   };
 
   const confirmDelete = async () => {
@@ -77,7 +83,7 @@ const ManageSellers = () => {
       await dispatch(deleteBusiness(deleteId));
       setShowDeleteModal(false);
       setDeleteId(null);
-      dispatch(fetchBusinessDetails(currentPage, itemsPerPage, searchTerm, statusFilter));
+      dispatch(fetchBusinessDetails(currentPage, limit, searchTerm, statusFilter));
     } catch {
       toast.error("Failed to delete seller.");
     }
@@ -93,7 +99,7 @@ const ManageSellers = () => {
       await dispatch(updateBusiness(data));
       toast.success("Seller updated successfully!");
       setShowEditModal(false);
-      dispatch(fetchBusinessDetails(currentPage, itemsPerPage, searchTerm, statusFilter));
+      dispatch(fetchBusinessDetails(currentPage, limit, searchTerm, statusFilter));
     } catch (err) {
       toast.error("Failed to update seller.");
     }
@@ -155,7 +161,6 @@ const ManageSellers = () => {
                 <div className="col-md-2 d-flex">
                   <button
                     className="btn btn-success text-white me-3"
-                    onClick={() => setCurrentPage(1)}
                   >
                     <i className="bi bi-search"></i>
                   </button>
@@ -192,7 +197,7 @@ const ManageSellers = () => {
                       {businessDetails?.map((seller, index) => (
 
                         <tr key={seller?.id || index}>
-                          <td>{(currentPage - 1) * itemsPerPage + index + 1}</td>
+                          <td>{(currentPage - 1) * limit + index + 1}</td>
                           <td>{seller?.businessName || "-"}</td>
                           <td>{seller?.sellerName || "-"}</td>
                           <td>{seller?.regdEmail || "-"}</td>
@@ -232,40 +237,11 @@ const ManageSellers = () => {
                   </table>
                 )}
               </div>
-
-              {/* Pagination */}
-              <div className="d-flex justify-content-end align-items-center mt-3">
-                <nav>
-                  <ul className="pagination custom-pagination mb-0">
-                    <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
-                      <button
-                        className="page-link"
-                        onClick={() => setCurrentPage(currentPage - 1)}
-                      >
-                        &lt;
-                      </button>
-                    </li>
-                    {Array.from({ length: totalPages || 1 }, (_, i) => i + 1).map((page) => (
-                      <li
-                        key={page}
-                        className={`page-item ${currentPage === page ? "active" : ""}`}
-                      >
-                        <button className="page-link" onClick={() => setCurrentPage(page)}>
-                          {page}
-                        </button>
-                      </li>
-                    ))}
-                    <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
-                      <button
-                        className="page-link"
-                        onClick={() => setCurrentPage(currentPage + 1)}
-                      >
-                        &gt;
-                      </button>
-                    </li>
-                  </ul>
-                </nav>
-              </div>
+               <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+              />
             </div>
           </div>
         </div>
