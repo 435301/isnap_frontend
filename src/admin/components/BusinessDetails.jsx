@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchStates } from "../../redux/actions/stateActions";
 import { useNavigate } from "react-router-dom";
 
-const BusinessDetails = ({ formData, setFormData, errors, handleChange, handleSubmit }) => {
+const BusinessDetails = ({ formData, setFormData, errors, handleChange, handleSubmit,handleMobileChange,handleSpocMobileChange }) => {
   const dispatch = useDispatch();
   const { states = [] } = useSelector((state) => state.state || {});
   const navigate = useNavigate();
@@ -18,7 +18,7 @@ const BusinessDetails = ({ formData, setFormData, errors, handleChange, handleSu
         {/* Lead */}
         <div className="col-md-4 mb-3">
           <label className="form-label">
-            Lead <span className="text-danger">*</span>
+            Lead
           </label>
           <select
             className="form-select"
@@ -30,7 +30,7 @@ const BusinessDetails = ({ formData, setFormData, errors, handleChange, handleSu
             <option value="1">Praveen Saaho</option>
             <option value="2">Akhi</option>
           </select>
-          {errors.lead && <div className="text-danger small">{errors.lead}</div>}
+
         </div>
 
         {/* Business Name */}
@@ -76,12 +76,7 @@ const BusinessDetails = ({ formData, setFormData, errors, handleChange, handleSu
             name="regdMobileNumber"
             placeholder="Enter Registered Mobile"
             value={formData.regdMobileNumber}
-            onChange={(e) => {
-              let value = e.target.value.replace(/\D/g, "");
-              if (value.startsWith("0")) value = value.slice(1);
-              if (value.length > 10) value = value.slice(0, 10);
-              setFormData((prev) => ({ ...prev, regdMobileNumber: value }));
-            }}
+            onChange={handleMobileChange}
           />
           {errors.regdMobileNumber && <div className="text-danger small">{errors.regdMobileNumber}</div>}
         </div>
@@ -129,12 +124,7 @@ const BusinessDetails = ({ formData, setFormData, errors, handleChange, handleSu
             name="spocMobileNumber"
             placeholder="Enter SPOC Mobile"
             value={formData.spocMobileNumber}
-            onChange={(e) => {
-              let value = e.target.value.replace(/\D/g, "");
-              if (value.startsWith("0")) value = value.slice(1);
-              if (value.length > 10) value = value.slice(0, 10);
-              setFormData((prev) => ({ ...prev, spocMobileNumber: value }));
-            }}
+            onChange={handleSpocMobileChange}
           />
           {errors.spocMobileNumber && <div className="text-danger small">{errors.spocMobileNumber}</div>}
         </div>
@@ -176,15 +166,16 @@ const BusinessDetails = ({ formData, setFormData, errors, handleChange, handleSu
 
         {/* GST Number */}
         <div className="col-md-4 mb-3">
-          <label className="form-label">GST Number</label>
+          <label className="form-label">GST Number<span className="text-danger"> *</span></label>
           <input
             type="text"
             className="form-control"
             name="gstNumber"
-            placeholder="Enter GST Number (optional)"
+            placeholder="Enter GST Number"
             value={formData.gstNumber}
             onChange={handleChange}
           />
+           {errors.gstNumber && <div className="text-danger small">{errors.gstNumber}</div>}
         </div>
         {/* Referred By */}
         <div className="col-md-4 mb-3">

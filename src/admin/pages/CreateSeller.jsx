@@ -64,8 +64,53 @@ const CreateSeller = () => {
       setFormData((prev) => ({ ...prev, [name]: files[0] }));
     } else {
       setFormData((prev) => ({ ...prev, [name]: value }));
-    }
+    };
+    setErrors((prevErrors) => {
+      const newErrors = { ...prevErrors };
+      delete newErrors[name];
+      return newErrors;
+    });
   };
+
+  const handleMobileChange = (e) => {
+    let value = e.target.value.replace(/\D/g, "");
+    if (value.startsWith("0")) value = value.slice(1);
+    if (value.length > 10) value = value.slice(0, 10);
+
+    setFormData((prev) => ({ ...prev, regdMobileNumber: value }));
+    setErrors((prev) => {
+      const newErrors = { ...prev };
+
+      if (value.length === 0) {
+        newErrors.regdMobileNumber = "Valid Regd Mobile number is required";
+      } else if (value.length !== 10) {
+        newErrors.regdMobileNumber = "Regd Mobile number must be 10 digits";
+      } else {
+        delete newErrors.regdMobileNumber;
+      }
+      return newErrors;
+    });
+  };
+
+  const handleSpocMobileChange = (e) => {
+    let value = e.target.value.replace(/\D/g, "");
+    if (value.startsWith("0")) value = value.slice(1);
+    if (value.length > 10) value = value.slice(0, 10);
+    setFormData((prev) => ({ ...prev, spocMobileNumber: value }));
+    setErrors((prev) => {
+      const newErrors = { ...prev };
+
+      if (value.length === 0) {
+        newErrors.spocMobileNumber = "Valid SPOC Mobile number is required";
+      } else if (value.length !== 10) {
+        newErrors.spocMobileNumber = "SPOC Mobile number must be 10 digits";
+      } else {
+        delete newErrors.spocMobileNumber;
+      }
+      return newErrors;
+    });
+  };
+
 
   // Row handlers
   const handleServiceRowChange = (index, e) => {
@@ -73,6 +118,11 @@ const CreateSeller = () => {
     const updatedRows = [...formData.serviceRows];
     updatedRows[index][name] = value;
     setFormData((prev) => ({ ...prev, serviceRows: updatedRows }));
+    setErrors((prevErrors) => {
+      const newErrors = { ...prevErrors };
+      if (newErrors[name]) delete newErrors[name];
+      return newErrors;
+    });
   };
   const handleCatalogRowChange = (index, e) => {
     const { name, value } = e.target;
@@ -141,7 +191,6 @@ const CreateSeller = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = {};
-    if (!formData.lead) newErrors.lead = "Lead is required";
     if (!formData.businessName) newErrors.businessName = "Business Name is required";
     if (!formData.sellerName) newErrors.sellerName = "Seller Name is required";
     if (!formData.regdMobileNumber || formData.regdMobileNumber.length !== 10)
@@ -153,13 +202,15 @@ const CreateSeller = () => {
     if (!formData.spocMobileNumber || formData.spocMobileNumber.length !== 10)
       newErrors.spocMobileNumber = "Valid SPOC mobile number is required";
     if (!formData.status) newErrors.status = "Status is required";
-
+    if (!formData.gstNumber) newErrors.gstNumber = "GST Number is required";
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
 
     try {
       const data = new FormData();
-      data.append("leadId", parseInt(formData.lead));
+      if (formData.lead) {
+        data.append("leadId", parseInt(formData.lead));
+      }
       data.append("businessName", formData.businessName);
       data.append("sellerName", formData.sellerName);
       data.append("regdMobile", formData.regdMobileNumber);
@@ -228,6 +279,8 @@ const CreateSeller = () => {
                 setFormData={setFormData}
                 errors={errors}
                 handleChange={handleChange}
+                handleMobileChange={handleMobileChange}
+                handleSpocMobileChange={handleSpocMobileChange}
                 handleSubmit={handleSubmit}
               />
             )}

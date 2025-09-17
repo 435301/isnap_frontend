@@ -23,7 +23,7 @@ const getAuthHeaders = (isFormData = false) => {
 };
 
 // Fetch businesses list
-export const fetchBusinessDetails = (page , limit , search = "", showStatus = "") => {
+export const fetchBusinessDetails = (page=1 , limit , search = "", showStatus = "") => {
   return async (dispatch) => {
     dispatch({ type: FETCH_BUSINESS_REQUEST });
     try {
