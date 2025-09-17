@@ -122,7 +122,7 @@ const ManageSellers = () => {
         <Navbar onToggleSidebar={handleToggleSidebar} />
         <div className="container-fluid px-4 pt-3">
           {/* Header */}
-          <div className="row mb-4">
+          <div className="row mb-2">
             <div className="bg-white p-3 rounded shadow-sm card-header">
               <div className="row g-2 align-items-center">
                 <div className="col-lg-6">
@@ -138,7 +138,7 @@ const ManageSellers = () => {
           </div>
 
           {/* Search & Filter */}
-          <div className="row mb-4">
+          <div className="row mb-2">
             <div className="bg-white p-3 rounded shadow-sm card-header">
               <div className="row g-2 align-items-center">
                 <div className="col-md-4">
