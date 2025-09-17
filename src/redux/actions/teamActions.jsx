@@ -1,0 +1,143 @@
+import axios from "axios";
+import BASE_URL from "../../config/config";
+
+// Fetch teams
+export const fetchTeams = () => async (dispatch, getState) => {
+  try {
+    dispatch({ type: "FETCH_TEAMS_REQUEST" });
+
+    const { auth } = getState();
+    const token = auth?.token || localStorage.getItem("token");
+
+    const response = await axios.get(`${BASE_URL}/users`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    console.log("Fetch Teams Response:", response.data);
+
+    // ✅ Correctly use users array from response
+    const teamsArray = response.data.users || []; // <--- important
+
+    dispatch({
+      type: "FETCH_TEAMS_SUCCESS",
+      payload: teamsArray,
+    });
+  } catch (error) {
+    dispatch({
+      type: "FETCH_TEAMS_FAILURE",
+      payload: error.response?.data?.msg || error.message,
+    });
+  }
+};
+
+export const createTeam = (team) => async (dispatch, getState) => {
+  try {
+    const { auth } = getState();
+    const token = auth?.token || localStorage.getItem("token");
+
+    const formData = new FormData();
+    Object.entries(team).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        formData.append(key, value);
+      }
+    });
+
+    const response = await axios.post(`${BASE_URL}/users/create`, formData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    console.log("Create response:", response.data);
+
+    dispatch({ type: "SET_SUCCESS_MESSAGE", payload: "Team member created!" });
+    // Optionally refresh list
+    // dispatch(fetchTeams());
+  } catch (error) {
+    console.error("Create error:", error.response?.data || error.message);
+    dispatch({
+      type: "SET_ERROR_MESSAGE",
+      payload: error.response?.data?.msg || "Create failed",
+    });
+    throw error;
+  }
+};
+// Update team
+export const updateTeam = (team) => async (dispatch, getState) => {
+  try {
+    const { auth } = getState();
+    const token = auth?.token || localStorage.getItem("token");
+
+    const { id, photo, idProof, ...rest } = team;
+
+    // Prepare FormData
+    const formData = new FormData();
+
+    // Append normal fields
+    Object.entries(rest).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        formData.append(key, value);
+      }
+    });
+
+    // Append files if they are new uploads
+    if (photo && photo instanceof File) {
+      formData.append("photo", photo);
+    }
+    if (idProof && idProof instanceof File) {
+      formData.append("idProof", idProof);
+    }
+
+    const response = await axios.put(
+      `${BASE_URL}/users/update/${id}`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    console.log("Update response:", response.data);
+
+    dispatch(fetchTeams());
+    dispatch({
+      type: "SET_SUCCESS_MESSAGE",
+      payload: "Team updated successfully!",
+    });
+  } catch (error) {
+    console.error("Update error:", error.response?.data || error.message);
+    dispatch({
+      type: "SET_ERROR_MESSAGE",
+      payload: error.response?.data?.message || "Update failed",
+    });
+    throw error;
+  }
+};
+
+
+// Delete team
+export const deleteTeam = (id) => async (dispatch, getState) => {
+  try {
+    const { auth } = getState();
+    const token = auth?.token || localStorage.getItem("token");
+
+    await axios.delete(`${BASE_URL}/users/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    dispatch(fetchTeams());
+    dispatch({ type: "SET_SUCCESS_MESSAGE", payload: "Team deleted successfully!" });
+  } catch (error) {
+    throw error;
+  }
+};
+
+// Success messages
+export const setSuccessMessage = (message) => ({
+  type: "SET_SUCCESS_MESSAGE",
+  payload: message,
+});
+export const clearSuccessMessage = () => ({ type: "CLEAR_SUCCESS_MESSAGE" });

@@ -1,24 +1,151 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/js/bootstrap.bundle.min";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { AdminRoute, SellerRoute, TeamRoute } from "./routes/RoleRoutes";
+
+// Admin Pages
+import AdminDashboard from "./admin/pages/Dashboard";
+import AddMarketplaceType from "./admin/pages/AddMarketplaceType.jsx";
+import CreateBillingCycle from "./admin/pages/CreateBillingCycle";
+import ManageServices from "./admin/pages/ManageServices";
+import AddService from "./admin/pages/AddService";
+import LastestUpdates from "./admin/pages/LastestUpdates";
+import ViewLead from "./admin/pages/ViewLead";
+import AddState from "./admin/pages/AddState";
+import ManageState from "./admin/pages/ManageState";
+import ManageSellers from "./admin/pages/ManageSellers";
+import CreateSeller from "./admin/pages/CreateSeller";
+import ManageTeams from "./admin/pages/ManageTeams";
+import AddTeam from "./admin/pages/AddTeam";
+import ManageRoles from "./admin/pages/ManageRoles";
+import Agreement from "./admin/pages/Agreement";
+import ChangePassword from "./admin/pages/ChangePassword";
+import Login from "./admin/pages/Login";
+import ManageLeads from "./admin/pages/ManageLeads";
+import CreateLead from "./admin/pages/CreateLead";
+import ManageUpdates from "./admin/pages/ManageUpdates";
+import Notifications from "./admin/pages/Notifications";
+import RejectedTasks from "./admin/pages/RejectedTasks";
+import ViewSummary from "./admin/pages/ViewSummary";
+import AddRole from "./admin/pages/AddRole";
+import RoleAccess from "./admin/pages/RoleAccess";
+import ViewSeller from "./admin/pages/ViewSeller"; // <-- add this
+
+import MarketplaceType from "./admin/pages/MarketplaceType";
+import ManageServicesType from "./admin/pages/ManageServicesType";
+import ManageDepartments from "./admin/pages/ManageDepartments";
+import AddServicesType from "./admin/pages/AddServicesType";
+import AddDepartment from "./admin/pages/AddDepartment";
+import ManageBilling from "./admin/pages/ManageBilling";
+import ManageProductListing from "./admin/pages/ManageProductListing";
+import AddProductListing from "./admin/pages/AddProductListing";
+import ManageComissionPricing from "./admin/pages/ManageComissionPricing";
+import CommissionPricing from "./admin/pages/CommissionPricing";
+import EditSeller from "./admin/pages/EditSeller";
+
+// Team Pages
+import TeamDashboard from "./Team/pages/Dashboard";
+import TeamManageLeads from "./Team/pages/ManageLeads";
+import TeamTasks from "./Team/pages/TeamTasks";
+import TeamLastestUpdates from "./Team/pages/TeamLastestUpdates";
+import TaskSummary from "./Team/pages/TaskSummary";
+import TeamNotifications from "./Team/pages/TeamNotifications";
+import ChangePasswordTeam from "./Team/pages/ChangePasswordTeam";
+
+// Seller Pages
+import SellerDashboard from "./Seller/pages/Dashboard";
+import AddProducts from "./Seller/pages/AddProducts";
+import ManageProducts from "./Seller/pages/ManageProducts";
+import BusinessInformationForm from "./Seller/pages/BusinessInformationForm";
+import TaskStatus from "./Seller/pages/TaskStatus";
+import MouAgreement from "./Seller/pages/MouAgreement";
+import MouA2 from "./Seller/pages/MouA2";
+import MouA3 from "./Seller/pages/MouA3";
+import TaskSummarySellar from "./Seller/pages/TaskSummarySellar";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Routes>
+        {/* Public Routes */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/" element={<Navigate to="/login" />} />
+
+        {/* Admin Routes */}
+        <Route path="/dashboard" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+        <Route path="/add-market-type" element={<AdminRoute><AddMarketplaceType /></AdminRoute>} />
+        <Route path="/view-lead" element={<AdminRoute><ViewLead /></AdminRoute>} />
+        <Route
+          path="/view-seller/:id"
+          element={
+            <AdminRoute>
+              <ViewSeller />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/edit-seller/:id"
+          element={
+            <AdminRoute>
+              <EditSeller />
+            </AdminRoute>
+          }
+        />
+        <Route path="/latest-updates" element={<AdminRoute><LastestUpdates /></AdminRoute>} />
+        <Route path="/role-access" element={<AdminRoute><RoleAccess /></AdminRoute>} />
+        <Route path="/manage-billing" element={<AdminRoute><ManageBilling /></AdminRoute>} />
+        <Route path="/manage-services-type" element={<AdminRoute><ManageServicesType /></AdminRoute>} />
+        <Route path="/manage-services" element={<AdminRoute><ManageServices /></AdminRoute>} />
+        <Route path="/market-place-type" element={<AdminRoute><MarketplaceType /></AdminRoute>} />
+        <Route path="/manage-departments" element={<AdminRoute><ManageDepartments /></AdminRoute>} />
+        <Route path="/add-service" element={<AdminRoute><AddService /></AdminRoute>} />
+        <Route path="/create-department" element={<AdminRoute><AddDepartment /></AdminRoute>} />
+        <Route path="/create-billing" element={<AdminRoute><CreateBillingCycle /></AdminRoute>} />
+        <Route path="/manage-product-listing" element={<AdminRoute><ManageProductListing /></AdminRoute>} />
+        <Route path="/add-product-listing" element={<AdminRoute><AddProductListing /></AdminRoute>} />
+        <Route path="/manage-commission" element={<AdminRoute><ManageComissionPricing /></AdminRoute>} />
+        <Route path="/create-commission" m element={<AdminRoute><CommissionPricing /></AdminRoute>} />
+
+        <Route path="/add-service-type" element={<AdminRoute><AddServicesType /></AdminRoute>} />
+        <Route path="/add-state" element={<AdminRoute><AddState /></AdminRoute>} />
+        <Route path="/add-role" element={<AdminRoute><AddRole /></AdminRoute>} />
+        <Route path="/manage-state" element={<AdminRoute><ManageState /></AdminRoute>} />
+        <Route path="/manage-sellers" element={<AdminRoute><ManageSellers /></AdminRoute>} />
+        <Route path="/create-seller" element={<AdminRoute><CreateSeller /></AdminRoute>} />
+        <Route path="/add-team" element={<AdminRoute><AddTeam /></AdminRoute>} />
+        <Route path="/manage-team" element={<AdminRoute><ManageTeams /></AdminRoute>} />
+        <Route path="/manage-roles" element={<AdminRoute><ManageRoles /></AdminRoute>} />
+        <Route path="/agreement" element={<AdminRoute><Agreement /></AdminRoute>} />
+        <Route path="/change-password" element={<AdminRoute><ChangePassword /></AdminRoute>} />
+        <Route path="/manage-leads" element={<AdminRoute><ManageLeads /></AdminRoute>} />
+        <Route path="/create-lead" element={<AdminRoute><CreateLead /></AdminRoute>} />
+        <Route path="/manage-updates" element={<AdminRoute><ManageUpdates /></AdminRoute>} />
+        <Route path="/view-notifications" element={<AdminRoute><Notifications /></AdminRoute>} />
+        <Route path="/rejected-tasks" element={<AdminRoute><RejectedTasks /></AdminRoute>} />
+        <Route path="/view-summary" element={<AdminRoute><ViewSummary /></AdminRoute>} />
+
+        {/* Team Routes */}
+        <Route path="/team/dashboard" element={<TeamRoute><TeamDashboard /></TeamRoute>} />
+        <Route path="/team/latest-updates" element={<TeamRoute><TeamLastestUpdates /></TeamRoute>} />
+        <Route path="/team/manage-leads" element={<TeamRoute><TeamManageLeads /></TeamRoute>} />
+        <Route path="/team/team-tasks" element={<TeamRoute><TeamTasks /></TeamRoute>} />
+        <Route path="/team/task-summary" element={<TeamRoute><TaskSummary /></TeamRoute>} />
+        <Route path="/team/team-notification" element={<TeamRoute><TeamNotifications /></TeamRoute>} />
+        <Route path="/team/change-password" element={<TeamRoute><ChangePasswordTeam /></TeamRoute>} />
+
+        {/* Seller Routes */}
+        <Route path="/seller/dashboard" element={<SellerRoute><SellerDashboard /></SellerRoute>} />
+        <Route path="/seller/add-products" element={<SellerRoute><AddProducts /></SellerRoute>} />
+        <Route path="/seller/mou-1" element={<SellerRoute><MouAgreement /></SellerRoute>} />
+        <Route path="/seller/mou-2" element={<SellerRoute><MouA2 /></SellerRoute>} />
+        <Route path="/seller/mou-3" element={<SellerRoute><MouA3 /></SellerRoute>} />
+        <Route path="/seller/manage-products" element={<SellerRoute><ManageProducts /></SellerRoute>} />
+        <Route path="/seller/business-information" element={<SellerRoute><BusinessInformationForm /></SellerRoute>} />
+        <Route path="/seller/task" element={<SellerRoute><TaskStatus /></SellerRoute>} />
+        <Route path="/seller/task-summary" element={<SellerRoute><TaskSummarySellar /></SellerRoute>} />
+      </Routes>
+    </Router>
   );
 }
 
