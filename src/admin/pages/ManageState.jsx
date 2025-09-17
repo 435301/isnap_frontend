@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import {
   fetchStates,
   deleteState,
   updateState,
-  clearStateSuccessMessage,
 } from "../../redux/actions/stateActions";
-import EditStateModal from "../components/Modal/EditStateModal";
+import EditStateModalBootstrap from "../components/Modal/EditStateModalBootstrap";
 import ViewStateModal from "../components/Modal/ViewStateModal";
 import DeleteConfirmationModal from "../components/Modal/DeleteConfirmationModal";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -26,35 +25,40 @@ const ManageState = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
   const [selectedState, setSelectedState] = useState(null);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
   const dispatch = useDispatch();
-  const {
-    states = [],
-    loading = false,
-    error = null,
-    successMessage = null,
-  } = useSelector((state) => state.state || {});
+  const location = useLocation();
+  const { states = [], loading = false, error = null } = useSelector(
+    (state) => state.state || {}
+  );
 
+  // Fetch states on mount
   useEffect(() => {
     dispatch(fetchStates());
   }, [dispatch]);
 
+  // Handle responsive sidebar
   useEffect(() => {
-    if (successMessage) {
-      toast.success(successMessage);
-      dispatch(clearStateSuccessMessage());
-    }
-  }, [successMessage, dispatch]);
-
-  useEffect(() => {
-    const handleResize = () => setIsSidebarOpen(window.innerWidth >= 992);
+    const handleResize = () => {
+      const width = window.innerWidth;
+      setWindowWidth(width);
+      setIsSidebarOpen(width >= 992);
+    };
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // Show toast if redirected from AddState
+  useEffect(() => {
+    if (location.state?.successMessage) {
+      toast.success(location.state.successMessage, { toastId: "add-state-success" });
+      window.history.replaceState({}, document.title); // Clear location state
+    }
+  }, [location.state]);
+
   const handleToggleSidebar = () => setIsSidebarOpen((prev) => !prev);
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
   const handleRefresh = () => {
     setSearchTerm("");
@@ -63,11 +67,14 @@ const ManageState = () => {
   };
 
   const confirmDelete = async () => {
+    if (!deleteId) return;
     try {
       await dispatch(deleteState(deleteId));
-    } catch {
-      toast.error("Failed to delete state.");
-    } finally {
+      setShowDeleteModal(false);
+      setDeleteId(null);
+      toast.success("State deleted successfully!", { toastId: "delete-success" });
+    } catch (err) {
+      toast.error(err?.message || "Failed to delete state.", { toastId: "delete-error" });
       setShowDeleteModal(false);
       setDeleteId(null);
     }
@@ -79,34 +86,24 @@ const ManageState = () => {
       await dispatch(updateState(updatedState));
       setShowEditModal(false);
       setSelectedState(null);
-    } catch {
-      toast.error("Failed to update state.");
+      toast.success("State updated successfully!", { toastId: "update-success" });
+    } catch (err) {
+      toast.error(err?.message || "Failed to update state.", { toastId: "update-error" });
     }
   };
-  // useEffect(() => {
-  //   if (successMessage) {
-  //     toast.success(successMessage); // ✅ show toast
-  //     dispatch(clearStateSuccessMessage()); // ✅ clear message after showing
-  //   }
-  // }, );
 
   // Filter states by name and status
-  const filteredStates = states.filter((state) => {
-    const stateName = state.stateName || "";
-    const matchesName = stateName
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
+  const filteredStates = states.filter((st) => {
+    const stateName = st.stateName?.toLowerCase() || "";
+    const matchesName = stateName.includes(searchTerm.toLowerCase());
 
-    const matchesStatus =
-      statusFilter === ""
-        ? true
-        : statusFilter === "active"
-          ? state.stateStatus === 1
-          : state.stateStatus === 0;
+    // Handle status filter: "" = All, active = true/1, inactive = false/0
+    let matchesStatus = true;
+    if (statusFilter === "active") matchesStatus = st.stateStatus === 1 || st.stateStatus === true;
+    if (statusFilter === "inactive") matchesStatus = st.stateStatus === 0 || st.stateStatus === false;
 
     return matchesName && matchesStatus;
   });
-
 
   return (
     <div className="container-fluid position-relative bg-white d-flex p-0">
@@ -120,8 +117,8 @@ const ManageState = () => {
                 ? 259
                 : 95
               : isSidebarOpen
-                ? 220
-                : 0,
+              ? 220
+              : 0,
           transition: "margin-left 0.3s ease",
         }}
       >
@@ -129,7 +126,7 @@ const ManageState = () => {
 
         <div className="container-fluid px-4 pt-3">
           {/* Header */}
-          <div className="row mb-4">
+          <div className="row mb-2">
             <div className="bg-white p-3 rounded shadow-sm card-header">
               <div className="row g-2 align-items-center">
                 <div className="col-lg-6">
@@ -145,13 +142,13 @@ const ManageState = () => {
           </div>
 
           {/* Filter */}
-          <div className="row mb-4">
+          <div className="row mb-2">
             <div className="bg-white p-3 rounded shadow-sm card-header">
               <div className="row g-2 align-items-center">
                 <div className="col-md-4">
                   <input
                     type="text"
-                    className="form-control border-0 bg-light"
+                    className="form-control border-0"
                     placeholder="Search by State Name"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
@@ -163,11 +160,10 @@ const ManageState = () => {
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value)}
                   >
-                    <option value="">Select Status</option>
+                    <option value="">All</option>
                     <option value="active">Active</option>
-                    <option value="inactive">Inactive</option> {/* 🔥 fixed value */}
+                    <option value="inactive">Inactive</option>
                   </select>
-
                 </div>
                 <div className="col-md-2 d-flex">
                   <button
@@ -211,12 +207,13 @@ const ManageState = () => {
                           <td>{st.stateName}</td>
                           <td>
                             <span
-                              className={`badge ${st.stateStatus
-                                ? "bg-success-light text-success"
-                                : "bg-danger-light text-danger"
-                                }`}
+                              className={`badge ${
+                                st.stateStatus
+                                  ? "bg-success-light text-success"
+                                  : "bg-danger-light text-danger"
+                              }`}
                             >
-                              {st.stateStatus ? "Active" : "In Active"}
+                              {st.stateStatus ? "Active" : "Inactive"}
                             </span>
                           </td>
                           <td>
@@ -258,9 +255,9 @@ const ManageState = () => {
               </div>
 
               {/* Modals */}
-              <EditStateModal
-                showEditModal={showEditModal}
-                setShowEditModal={setShowEditModal}
+              <EditStateModalBootstrap
+                show={showEditModal}
+                handleClose={() => setShowEditModal(false)}
                 selectedState={selectedState}
                 handleSaveChanges={handleSaveChanges}
               />

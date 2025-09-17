@@ -69,14 +69,14 @@ const handleSubmit = async (e) => {
         <Form onSubmit={handleSubmit}>
           {/* Marketplace select */}
           <Form.Group className="mb-3">
-            <Form.Label>Marketplace <span className="text-danger">*</span></Form.Label>
+            <Form.Label>Marketplace Type<span className="text-danger">*</span></Form.Label>
             <Form.Select
               name="marketPlaceId"
               value={formData.marketPlaceId}
               onChange={handleChange}
               isInvalid={!!errors.marketPlaceId}
             >
-              <option value="">-- Select Marketplace --</option>
+              <option value="">-- Select Marketplace Type--</option>
               {marketTypes && marketTypes.map(mt => (
                 <option key={mt.id} value={mt.id}>{mt.marketPlaceType}</option>
               ))}
@@ -86,7 +86,7 @@ const handleSubmit = async (e) => {
 
           {/* Service Type input */}
           <Form.Group className="mb-3">
-            <Form.Label>Marketplace Name <span className="text-danger">*</span></Form.Label>
+            <Form.Label>Marketplace  <span className="text-danger">*</span></Form.Label>
             <Form.Control
               type="text"
               name="serviceTypeName"

@@ -4,6 +4,10 @@ import React from "react";
 const ViewStateModal = ({ showViewModal, setShowViewModal, selectedState }) => {
   if (!showViewModal || !selectedState) return null;
 
+  const handleClose = () => {
+    setShowViewModal(false);
+  };
+
   return (
     <div
       className="modal fade show d-block"
@@ -11,14 +15,14 @@ const ViewStateModal = ({ showViewModal, setShowViewModal, selectedState }) => {
       role="dialog"
       style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
     >
-      <div className="modal-dialog" role="document">
+      <div className="modal-dialog modal-md modal-dialog-centered" role="document">
         <div className="modal-content">
           <div className="modal-header">
             <h5 className="modal-title">View State</h5>
             <button
               type="button"
               className="btn-close"
-              onClick={() => setShowViewModal(false)}
+              onClick={handleClose}
             ></button>
           </div>
           <div className="modal-body">
@@ -32,6 +36,11 @@ const ViewStateModal = ({ showViewModal, setShowViewModal, selectedState }) => {
               <strong>Status:</strong>{" "}
               {selectedState.stateStatus ? "Active" : "Inactive"}
             </p>
+          </div>
+          <div className="modal-footer">
+            <button className="btn btn-light" onClick={handleClose}>
+              Close
+            </button>
           </div>
         </div>
       </div>

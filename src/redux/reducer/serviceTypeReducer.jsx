@@ -36,19 +36,19 @@ const serviceTypeReducer = (state = initialState, action) => {
       return {
         ...state,
         serviceTypes: [action.payload, ...state.serviceTypes],
-        successMessage: "Service Type created successfully",
+        successMessage: "Marketplaces created successfully",
       };
     case UPDATE_SERVICE_TYPE_SUCCESS:
       return {
         ...state,
         serviceTypes: state.serviceTypes.map(s => s.id === action.payload.id ? action.payload : s),
-        successMessage: "Service Type updated successfully",
+        successMessage: "Marketplaces updated successfully",
       };
     case DELETE_SERVICE_TYPE_SUCCESS:
       return {
         ...state,
         serviceTypes: state.serviceTypes.filter(s => s.id !== action.payload),
-        successMessage: "Service Type deleted successfully",
+        successMessage: "Marketplaces deleted successfully",
       };
     case SERVICE_TYPE_ERROR:
       return { ...state, error: action.payload };

@@ -6,13 +6,15 @@ import { useDispatch } from "react-redux";
 import { createDepartment } from "../../redux/actions/departmentActions";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const AddDepartment = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const [formData, setFormData] = useState({
-    name: "",   // ✅ API expects "name"
+    name: "",   // API expects "name"
     status: 1,  // 1 = Active, 0 = Inactive
   });
 
@@ -65,23 +67,17 @@ const AddDepartment = () => {
   };
 
   // Submit
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  if (!validate()) return;
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!validate()) return;
 
-  try {
-    await dispatch(createDepartment(formData));
-   
-    navigate("/manage-departments");
-  } catch (error) {
-    // Set server error in state instead of alert
-    setErrors((prev) => ({
-      ...prev,
-      server: error.response?.data?.message || error.message || "Something went wrong",
-    }));
-  }
-};
-
+    try {
+      await dispatch(createDepartment(formData));
+      navigate("/manage-departments");
+    } catch (error) {
+      toast.error(error.response?.data?.message || error.message || "Something went wrong");
+    }
+  };
 
   return (
     <div className="container-fluid position-relative bg-white d-flex p-0">
@@ -122,8 +118,6 @@ const handleSubmit = async (e) => {
           <div className="row">
             <div className="bg-white p-3 rounded shadow-sm card-header mb-4">
               <form onSubmit={handleSubmit}>
-                {errors.server && <div className="alert alert-danger">{errors.server}</div>}
-
                 <div className="row g-3">
                   {/* Department Name */}
                   <div className="col-md-3">
@@ -181,6 +175,7 @@ const handleSubmit = async (e) => {
           </div>
         </div>
       </div>
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
     </div>
   );
 };

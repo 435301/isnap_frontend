@@ -80,7 +80,7 @@ const ManageUpdates = () => {
                   <div className="input-group">
                     <input
                       type="text"
-                      className="form-control border-0 bg-light"
+                      className="form-control border-0"
                       placeholder="Search"
                     />
                   </div>

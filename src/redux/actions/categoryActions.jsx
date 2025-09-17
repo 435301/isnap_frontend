@@ -1,5 +1,6 @@
 import axios from "axios";
 import BASE_URL from "../../config/config";
+import { toast } from "react-toastify";
 
 // Action Types
 export const FETCH_CATEGORIES_REQUEST = "FETCH_CATEGORIES_REQUEST";
@@ -9,7 +10,7 @@ export const UPDATE_CATEGORY_SUCCESS = "UPDATE_CATEGORY_SUCCESS";
 export const DELETE_CATEGORY_SUCCESS = "DELETE_CATEGORY_SUCCESS";
 export const CATEGORY_ERROR = "CATEGORY_ERROR";
 export const CLEAR_CATEGORY_SUCCESS_MESSAGE = "CLEAR_CATEGORY_SUCCESS_MESSAGE";
-export const CREATE_CATEGORY_SUCCESS = "CREATE_CATEGORY_SUCCESS"; // ✅ new
+export const CREATE_CATEGORY_SUCCESS = "CREATE_CATEGORY_SUCCESS";
 
 // Auth Headers
 const getAuthHeaders = () => {
@@ -52,16 +53,17 @@ export const fetchCategories = (page = 1, limit = 10, search = "", showStatus = 
           type: FETCH_CATEGORIES_FAILURE,
           payload: response.data.message || "Failed to fetch categories",
         });
+        toast.error(response.data.message || "Failed to fetch categories");
       }
     } catch (error) {
       dispatch({
         type: FETCH_CATEGORIES_FAILURE,
         payload: error.response?.data?.message || error.message,
       });
+      toast.error(error.response?.data?.message || error.message);
     }
   };
 };
-
 
 // Create category
 export const createCategory = (categoryData) => async (dispatch) => {
@@ -72,14 +74,18 @@ export const createCategory = (categoryData) => async (dispatch) => {
       status: categoryData.serviceStatus ? 1 : 0,
     };
 
-    const response = await axios.post(`${BASE_URL}/serviceCategory/create`, payload, getAuthHeaders());
+    const response = await axios.post(
+      `${BASE_URL}/serviceCategory/create`,
+      payload,
+      getAuthHeaders()
+    );
 
     if (response.data.status) {
       dispatch({
         type: CREATE_CATEGORY_SUCCESS,
         payload: {
           data: response.data.data,
-          message: "Service category created successfully!", // ✅ success message
+          message: "Service category created successfully!",
         },
       });
       return response.data.data;
@@ -88,10 +94,14 @@ export const createCategory = (categoryData) => async (dispatch) => {
       throw new Error(response.data.message);
     }
   } catch (error) {
-    dispatch({ type: CATEGORY_ERROR, payload: error.response?.data?.message || error.message });
+    dispatch({
+      type: CATEGORY_ERROR,
+      payload: error.response?.data?.message || error.message,
+    });
     throw error;
   }
 };
+
 
 // Update category
 export const updateCategory = (categoryData) => async (dispatch) => {
@@ -107,7 +117,6 @@ export const updateCategory = (categoryData) => async (dispatch) => {
     );
 
     if (response.data.status) {
-      // ✅ Success
       const mappedCategory = {
         id: categoryData.id,
         categoryName: response.data.data?.serviceCategoryName || categoryData.categoryName,
@@ -118,19 +127,19 @@ export const updateCategory = (categoryData) => async (dispatch) => {
       dispatch({ type: UPDATE_CATEGORY_SUCCESS, payload: mappedCategory });
       return mappedCategory;
     } else {
-      // ❌ Backend error (like "Service Category Name already exists")
       dispatch({
         type: CATEGORY_ERROR,
         payload: response.data.message || "Failed to update category",
       });
+      toast.error(response.data.message || "Failed to update category");
       return Promise.reject({ message: response.data.message || "Failed to update category" });
     }
   } catch (error) {
-    // ❌ Network or unexpected error
     dispatch({
       type: CATEGORY_ERROR,
       payload: error.response?.data?.message || error.message,
     });
+    toast.error(error.response?.data?.message || error.message);
     return Promise.reject({
       message: error.response?.data?.message || error.message,
     });
@@ -142,11 +151,13 @@ export const deleteCategory = (id) => async (dispatch) => {
   try {
     await axios.delete(`${BASE_URL}/serviceCategory/delete/${id}`, getAuthHeaders());
     dispatch({ type: DELETE_CATEGORY_SUCCESS, payload: id });
+  
   } catch (error) {
     dispatch({
       type: CATEGORY_ERROR,
       payload: error.response?.data?.message || error.message,
     });
+    toast.error(error.response?.data?.message || error.message);
     throw error;
   }
 };

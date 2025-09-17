@@ -6,6 +6,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { createCommission } from "../../redux/actions/commissionActions";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const CommissionPricing = () => {
   const dispatch = useDispatch();
@@ -22,6 +24,7 @@ const CommissionPricing = () => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [loading, setLoading] = useState(false);
 
+  // Handle sidebar toggle on window resize
   useEffect(() => {
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
@@ -47,50 +50,44 @@ const CommissionPricing = () => {
     if (!formData.status.trim()) newErrors.status = "Status is required";
     return newErrors;
   };
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  const validationErrors = validate();
-  setErrors(validationErrors);
 
-  if (Object.keys(validationErrors).length === 0) {
-    setLoading(true);
-    try {
-      const payload = {
-        commissionTitle: formData.title,
-        percentage: formData.percentage,
-        status: formData.status === "Active" ? 1 : 0,
-      };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const validationErrors = validate();
+    setErrors(validationErrors);
 
-      console.log("Submitting payload:", payload); // Log payload
+    if (Object.keys(validationErrors).length === 0) {
+      setLoading(true);
+      try {
+        const payload = {
+          commissionTitle: formData.title,
+          percentage: formData.percentage,
+          status: formData.status === "Active" ? 1 : 0,
+        };
 
-      const res = await dispatch(createCommission(payload));
-      console.log("Dispatch result (res):", res); // Log full res
+        const res = await dispatch(createCommission(payload));
 
-      if (res?.id) {
-        console.log("Redirecting with success"); // Confirm this logs
-        navigate("/manage-commission", {
-          state: { successMessage: "Commission created successfully ✅" },
-        });
-      } else {
-        console.log("res has no id, setting API error"); // Confirm this logs
-        setErrors({ api: "Failed to create commission" });
+        if (res?.id) {
+          toast.success("Commission created successfully ✅");
+          navigate("/manage-commission");
+        } else {
+          toast.error(res?.message || "Commission already exists ❌");
+        }
+      } catch (err) {
+        toast.error(err.response?.data?.message || err.message || "Failed to create commission ❌");
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      console.error("Caught error:", err); // Log full error
-      setErrors({ api: err.message || "Failed to create commission" });
-    } finally {
-      setLoading(false);
     }
-  }
-};
+  };
+
   return (
     <div className="container-fluid position-relative bg-white d-flex p-0">
       <Sidebar isOpen={isSidebarOpen} />
       <div
         className="content flex-grow-1"
         style={{
-          marginLeft:
-            windowWidth >= 992 ? (isSidebarOpen ? 259 : 95) : isSidebarOpen ? 220 : 0,
+          marginLeft: windowWidth >= 992 ? (isSidebarOpen ? 259 : 95) : isSidebarOpen ? 220 : 0,
           transition: "margin-left 0.3s ease",
         }}
       >
@@ -114,8 +111,9 @@ const handleSubmit = async (e) => {
 
           <div className="row">
             <div className="bg-white p-3 rounded shadow-sm card-header mb-4">
-              {errors.api && <div className="alert alert-danger">{errors.api}</div>}
               <form onSubmit={handleSubmit}>
+                {errors.api && <div className="alert alert-danger">{errors.api}</div>}
+
                 <div className="row g-3">
                   <div className="col-md-4">
                     <label className="form-label">
@@ -175,7 +173,7 @@ const handleSubmit = async (e) => {
                     >
                       {loading ? "Submitting..." : "Submit"}
                     </button>
-                   <button
+                    <button
                       type="button"
                       className="btn btn-outline-secondary px-4"
                       onClick={() => navigate("/manage-commission")}
@@ -189,6 +187,19 @@ const handleSubmit = async (e) => {
           </div>
         </div>
       </div>
+
+      {/* Toast Container */}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </div>
   );
 };

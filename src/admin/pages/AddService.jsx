@@ -6,6 +6,8 @@ import Navbar from "../components/Navbar";
 import { createCategory, fetchCategories } from "../../redux/actions/categoryActions";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "bootstrap-icons/font/bootstrap-icons.css";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const AddService = () => {
   const dispatch = useDispatch();
@@ -54,11 +56,12 @@ const AddService = () => {
     }
 
     try {
-      await dispatch(createCategory(formData)); // redux will handle success message
+      await dispatch(createCategory(formData)); // will throw error if exists
       dispatch(fetchCategories()); // refresh list
-      navigate("/manage-services"); // redirect
+      toast.success("Service category created successfully!"); // success toast
+      navigate("/manage-services");
     } catch (error) {
-      setErrors({ server: error.response?.data?.message || error.message || "Failed to create category" });
+      toast.error(error.response?.data?.message || error.message || "Failed to create category"); // error toast
     }
   };
 
@@ -76,7 +79,7 @@ const AddService = () => {
                 </div>
                 <div className="col-lg-6 text-end">
                   <Link to="/manage-services" className="btn btn-new-lead">
-                    Manage Services
+                    Manage Service Categories
                   </Link>
                 </div>
               </div>
@@ -86,8 +89,6 @@ const AddService = () => {
           <div className="row">
             <div className="bg-white p-3 rounded shadow-sm card-header mb-4">
               <form onSubmit={handleSubmit}>
-                {errors.server && <div className="alert alert-danger">{errors.server}</div>}
-
                 <div className="row g-3">
                   <div className="col-md-4">
                     <label className="form-label">
@@ -157,6 +158,8 @@ const AddService = () => {
           </div>
         </div>
       </div>
+
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
     </div>
   );
 };

@@ -77,7 +77,7 @@ const EditCommissionOffcanvas = ({
       placement="end"
     >
       <Offcanvas.Header closeButton>
-        <Offcanvas.Title>Edit Commission</Offcanvas.Title>
+        <Offcanvas.Title>Edit Commission Pricing</Offcanvas.Title>
       </Offcanvas.Header>
       <Offcanvas.Body>
         {serverError && (

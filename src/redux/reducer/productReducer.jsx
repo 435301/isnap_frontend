@@ -39,7 +39,7 @@ const productReducer = (state = initialState, action) => {
         case CREATE_PRODUCT_SUCCESS:
             return {
                 ...state,
-                successMessage: "Product created successfully",
+                successMessage: "Products Listing created successfully",
                 products: [...state.products, action.payload],
             };
 
@@ -49,13 +49,13 @@ const productReducer = (state = initialState, action) => {
                 products: state.products.map((prod) =>
                     prod.id === action.payload.id ? { ...prod, ...action.payload } : prod
                 ),
-                successMessage: "Product updated successfully",
+                successMessage: "Products Listing updated successfully",
             };
 
         case DELETE_PRODUCT_SUCCESS:
             return {
                 ...state,
-                successMessage: "Product deleted successfully",
+                successMessage: "Products Listing deleted successfully",
                 products: state.products.filter((prod) => prod.id !== action.payload),
             };
 

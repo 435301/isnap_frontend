@@ -63,7 +63,12 @@ export const createMarketType = (marketTypeData) => async (dispatch) => {
       status: marketTypeData.marketTypeStatus === "Active" ? 1 : 0,
     };
 
-    const response = await axios.post(`${BASE_URL}/marketPlace/create`, payload, getAuthHeaders());
+    const response = await axios.post(
+      `${BASE_URL}/marketPlace/create`,
+      payload,
+      getAuthHeaders()
+    );
+
     const { status, data, message } = response.data;
 
     if (status || message === "Market Place Type created successfully") {
@@ -76,12 +81,14 @@ export const createMarketType = (marketTypeData) => async (dispatch) => {
       return mappedMarketType;
     } else {
       dispatch({ type: MARKET_TYPE_ERROR, payload: message || "Failed to create market type" });
+      // ⚠️ Throw an Error with backend message
       throw new Error(message || "Failed to create market type");
     }
   } catch (error) {
     const msg = error.response?.data?.message || error.message;
     dispatch({ type: MARKET_TYPE_ERROR, payload: msg });
-    throw error;
+    // ⚠️ Throw error so component can catch it
+    throw new Error(msg);
   }
 };
 
