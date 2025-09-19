@@ -6,6 +6,9 @@ import {
   updateBusinessLaunch,
   deleteBusinessLaunch,
 } from "../../redux/actions/businessLaunchActions";
+import { fetchServiceTypes } from "../../redux/actions/serviceTypeActions";
+import { fetchBillingCycles } from "../../redux/actions/billingActions";
+import DeleteConfirmationModal from "./Modal/DeleteConfirmationModal";
 
 const BusinessLaunchSection = ({ businessId = 5, expandedSections, toggleSection }) => {
   const dispatch = useDispatch();
@@ -13,6 +16,9 @@ const BusinessLaunchSection = ({ businessId = 5, expandedSections, toggleSection
   const { launches = [], loading, error } = useSelector(
     (state) => state.businessLaunches || {}
   );
+  console.log('launches', launches)
+  const serviceType = useSelector((state) => state.serviceType.serviceTypes || []);
+  const billing = useSelector((state) => state.billing.billingCycles || []);
 
   const [formData, setFormData] = useState({
     serviceType: "",
@@ -20,20 +26,33 @@ const BusinessLaunchSection = ({ businessId = 5, expandedSections, toggleSection
     offerPrice: "",
     billingCycle: "",
     taskDays: "",
-    id: null, // used for editing
+    id: 0,
   });
-
+  const [businessLaunchTodelete, setBusinessLaunchToDelete] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [errors, setErrors] = useState({});
 
-  // Fetch data on mount
-  useEffect(() => {
-    if (businessId) dispatch(fetchBusinessLaunchList(businessId));
-  }, [dispatch, businessId]);
 
-  // Handle form input change
+  useEffect(() => {
+    dispatch(fetchServiceTypes());
+    dispatch(fetchBillingCycles());
+  }, [dispatch])
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (name === "serviceType") {
+      const selectedService = serviceType.find((type) => type.id === parseInt(value));
+      setFormData((prev) => ({
+        ...prev,
+        serviceType: value,
+        actualPrice: selectedService ? selectedService.price : "",
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
   };
 
   // Simple validation
@@ -43,60 +62,63 @@ const BusinessLaunchSection = ({ businessId = 5, expandedSections, toggleSection
     return newErrors;
   };
 
-  // Handle form submit (add or update)
-  const handleSubmit = async (e) => {
+  const handleSubmitBusinessLaunch = async (e) => {
+    console.log('saved')
     e.preventDefault();
-    const validationErrors = validate();
-    setErrors(validationErrors);
-    if (Object.keys(validationErrors).length > 0) return;
+    const newErrors = validate();
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) return;
 
-    const payload = new FormData();
-    payload.append("businessId", businessId);
-    payload.append("serviceType", formData.serviceType);
-    payload.append("actualPrice", formData.actualPrice);
-    payload.append("offerPrice", formData.offerPrice);
-    payload.append("billingCycle", formData.billingCycle);
-    payload.append("taskDays", formData.taskDays);
-    if (formData.id) payload.append("id", formData.id);
+    const payload = {
+      id: formData.id ? Number(formData.id) : 0,
+      businessId,
+      serviceTypeId: Number(formData.serviceType),
+      actualPrice: Number(formData.actualPrice),
+      offerPrice: Number(formData.offerPrice),
+      billCycleId: Number(formData.billingCycle),
+      taskCompletionDays: Number(formData.taskDays),
+      status: 1,
+    };
+
 
     try {
-      if (formData.id) {
-        await dispatch(updateBusinessLaunch(payload));
-      } else {
-        await dispatch(createBusinessLaunch(payload));
-      }
-      // Reset form
+      await dispatch(createBusinessLaunch(payload));
       setFormData({
         serviceType: "",
         actualPrice: "",
         offerPrice: "",
         billingCycle: "",
         taskDays: "",
-        id: null,
+        id: 0,
       });
     } catch (err) {
-      console.error(err);
+      console.error("API error:", err);
     }
   };
-
   // Edit row
   const handleEdit = (row) => {
     setFormData({
-      serviceType: row.serviceType,
+      serviceType: row.serviceTypeId,
       actualPrice: row.actualPrice,
       offerPrice: row.offerPrice,
-      billingCycle: row.billingCycle,
-      taskDays: row.taskDays,
+      billingCycle: row.billCycleId,
+      taskDays: row.taskCompletionDays,
       id: row.id,
     });
     if (!expandedSections.businessLaunch) toggleSection("businessLaunch");
   };
 
   // Delete row
-  const handleDelete = (id) => {
-    if (window.confirm("Are you sure you want to delete this record?")) {
-      dispatch(deleteBusinessLaunch(id));
-    }
+  const handleDeleteClick = (id) => {
+    setBusinessLaunchToDelete(id);
+    setShowDeleteModal(true);
+  };
+
+  const handleDelete = async () => {
+    await dispatch(deleteBusinessLaunch(businessLaunchTodelete));
+    setShowDeleteModal(false);
+    setBusinessLaunchToDelete(null);
+
   };
 
   return (
@@ -104,9 +126,8 @@ const BusinessLaunchSection = ({ businessId = 5, expandedSections, toggleSection
       <div className="accordion-item">
         <h2 className="accordion-header">
           <button
-            className={`accordion-button ${
-              !expandedSections.businessLaunch ? "collapsed" : ""
-            }`}
+            className={`accordion-button ${!expandedSections.businessLaunch ? "collapsed" : ""
+              }`}
             type="button"
             onClick={() => toggleSection("businessLaunch")}
             aria-expanded={expandedSections.businessLaunch}
@@ -116,13 +137,12 @@ const BusinessLaunchSection = ({ businessId = 5, expandedSections, toggleSection
         </h2>
 
         <div
-          className={`accordion-collapse collapse ${
-            expandedSections.businessLaunch ? "show" : ""
-          }`}
+          className={`accordion-collapse collapse ${expandedSections.businessLaunch ? "show" : ""
+            }`}
         >
           <div className="accordion-body">
             {/* FORM */}
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmitBusinessLaunch}>
               <div className="row g-3 mb-3">
                 <div className="col-md-4">
                   <label className="form-label">
@@ -135,8 +155,11 @@ const BusinessLaunchSection = ({ businessId = 5, expandedSections, toggleSection
                     onChange={handleChange}
                   >
                     <option value="">Select Marketplace</option>
-                    <option value="Amazon">Amazon</option>
-                    <option value="Flipkart">Flipkart</option>
+                    {serviceType.map((type) => (
+                      <option key={type.id} value={type.id}>
+                        {type.serviceType}
+                      </option>
+                    ))}
                   </select>
                   {errors.serviceType && (
                     <div className="text-danger small">{errors.serviceType}</div>
@@ -144,7 +167,7 @@ const BusinessLaunchSection = ({ businessId = 5, expandedSections, toggleSection
                 </div>
 
                 <div className="col-md-2">
-                  <label className="form-label">Actual Price</label>
+                  <label className="form-label">Actual Price<span className="text-danger"> *</span></label>
                   <input
                     type="number"
                     className="form-control"
@@ -176,8 +199,11 @@ const BusinessLaunchSection = ({ businessId = 5, expandedSections, toggleSection
                     onChange={handleChange}
                   >
                     <option value="">Select Billing Cycle</option>
-                    <option value="Monthly">Monthly</option>
-                    <option value="Quarterly">Quarterly</option>
+                    {billing.map((cycle) => (
+                      <option key={cycle.id} value={cycle.id}>
+                        {cycle.title}
+                      </option>
+                    ))}
                   </select>
                 </div>
 
@@ -211,7 +237,7 @@ const BusinessLaunchSection = ({ businessId = 5, expandedSections, toggleSection
                 >
                   Reset
                 </button>
-                <button type="submit" className="btn btn-success">
+                <button type="button" className="btn btn-success" onClick={handleSubmitBusinessLaunch}>
                   {formData.id ? "Update" : "Save"}
                 </button>
               </div>
@@ -246,21 +272,23 @@ const BusinessLaunchSection = ({ businessId = 5, expandedSections, toggleSection
                     launches.map((row, index) => (
                       <tr key={row.id}>
                         <td>{index + 1}</td>
-                        <td>{row.serviceType}</td>
+                        <td>{row.serviceTypeName}</td>
                         <td>{row.actualPrice}</td>
                         <td>{row.offerPrice}</td>
-                        <td>{row.billingCycle}</td>
-                        <td>{row.taskDays}</td>
+                        <td>{row.billCycleTitle}</td>
+                        <td>{row.taskCompletionDays}</td>
                         <td>
                           <button
+                            type="button"
                             className="btn btn-sm btn-outline-primary me-2"
                             onClick={() => handleEdit(row)}
                           >
                             <i className="bi bi-pencil"></i>
                           </button>
                           <button
+                            type="button"
                             className="btn btn-sm btn-outline-danger"
-                            onClick={() => handleDelete(row.id)}
+                            onClick={()=>handleDeleteClick(row.id)}
                           >
                             <i className="bi bi-trash"></i>
                           </button>
@@ -275,6 +303,7 @@ const BusinessLaunchSection = ({ businessId = 5, expandedSections, toggleSection
                 </tbody>
               </table>
             </div>
+            <DeleteConfirmationModal show={showDeleteModal} handleClose={() => setShowDeleteModal(false)} handleConfirm={handleDelete} />
           </div>
         </div>
       </div>

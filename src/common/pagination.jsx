@@ -2,7 +2,7 @@
 import React from "react";
 
 const Pagination = ({ currentPage, totalPages, onPageChange }) => {
-  // if (totalPages <= 1) return null;
+  if (totalPages <= 1) return null;
 
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages && page !== currentPage) {

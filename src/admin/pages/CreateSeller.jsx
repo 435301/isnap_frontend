@@ -293,7 +293,6 @@ const CreateSeller = () => {
                 handleRemoveServiceRow={handleRemoveServiceRow}
                 handleRemoveCatalogRow={handleRemoveCatalogRow}
                 handleRemoveKeyAccountRow={handleRemoveKeyAccountRow}
-                handleSubmit={handleSubmit}
                 expandedSections={expandedSections}
                 toggleSection={toggleSection}
               />
