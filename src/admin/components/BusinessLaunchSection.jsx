@@ -10,7 +10,8 @@ import { fetchServiceTypes } from "../../redux/actions/serviceTypeActions";
 import { fetchBillingCycles } from "../../redux/actions/billingActions";
 import DeleteConfirmationModal from "./Modal/DeleteConfirmationModal";
 
-const BusinessLaunchSection = ({ businessId = 5, expandedSections, toggleSection }) => {
+const BusinessLaunchSection = ({ businessId , expandedSections, toggleSection }) => {
+  console.log('businessIdbusinesslaunch', businessId);
   const dispatch = useDispatch();
 
   const { launches = [], loading, error } = useSelector(

@@ -71,9 +71,9 @@ export const createBusinessLaunch = (payload) => async (dispatch) => {
      if (res.data.status) {
       dispatch({
         type: "CREATE_BUSINESS_LAUNCH_SUCCESS",
-        payload: res.data.data, // saved record
+        payload: res?.data?.data, // saved record
       });
-    toast.success(res.data.message || "Business launch created successfully");
+    toast.success(res?.data?.message || "Business launch created successfully");
       return res.data.data; // return for immediate use
     }
   } catch (error) {

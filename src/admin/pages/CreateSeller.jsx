@@ -48,6 +48,9 @@ const CreateSeller = () => {
     catalogListing: false,
     keyAccountManagement: false,
   });
+  const [businessId, setBusinessId] = useState(null);
+  console.log('businessIdcreateseller', businessId);
+
 
   // Toggle accordion sections
   const toggleSection = (section) => {
@@ -227,9 +230,14 @@ const CreateSeller = () => {
       data.append("serviceRows", JSON.stringify(formData.serviceRows));
       data.append("catalogRows", JSON.stringify(formData.catalogRows));
       data.append("keyAccountRows", JSON.stringify(formData.keyAccountRows));
-      await dispatch(createBusiness(data));
+     const res = await dispatch(createBusiness(data));
+     console.log('response', res);
+       if (res?.data?.id) {
+      setBusinessId(res.data?.id);      
       setErrors({});
       setActiveTab("Marketplace Business");
+    }
+     
     } catch (error) {
     }
   };
@@ -295,6 +303,7 @@ const CreateSeller = () => {
                 handleRemoveKeyAccountRow={handleRemoveKeyAccountRow}
                 expandedSections={expandedSections}
                 toggleSection={toggleSection}
+                 businessId={businessId} 
               />
             )}
             {activeTab === "Digital Marketing" && (

@@ -12,22 +12,23 @@ import commissionReducer from "./commissionReducer";
 import billingReducer from "./billingReducer";
 import businessReducer from "./businessReducer";
 import { businessLaunchReducer } from "./businessLaunchReducer";
+import { catalogListingReducer } from "./catalogListingReducer";
 
 const rootReducer = combineReducers({
   auth: authReducer,
   teams: teamsReducer,
   roles: rolesReducer,
-  product: productReducer, // <-- make sure this key is "product"
+  product: productReducer,
   billing: billingReducer,
-  business: businessReducer, // must match state.business
-
+  business: businessReducer,
   state: stateReducer,
   category: categoryReducer,
   marketType: marketTypeReducer,
   serviceType: serviceTypeReducer,
   department: departmentReducer,
   commission: commissionReducer,
-    businessLaunches: businessLaunchReducer, // MUST MATCH useSelector in component
+  businessLaunches: businessLaunchReducer,
+  catalogListing: catalogListingReducer,
 
 });
 

@@ -7,6 +7,7 @@ const BusinessDetails = ({ formData, setFormData, errors, handleChange, handleSu
   const dispatch = useDispatch();
   const { states = [] } = useSelector((state) => state.state || {});
   const navigate = useNavigate();
+  
 
   useEffect(() => {
     if (states.length === 0) dispatch(fetchStates());
