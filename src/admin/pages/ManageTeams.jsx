@@ -142,7 +142,7 @@ const ManageTeams = () => {
                 <div className="col-md-4">
                   <input
                     type="text"
-                    className="form-control border-0 bg-light"
+                    className="form-control border-0"
                     placeholder="Search by Name"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}

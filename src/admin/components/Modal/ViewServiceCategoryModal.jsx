@@ -7,7 +7,7 @@ const ViewServiceCategoryModal = ({ show, handleClose, services }) => {
   return (
     <Modal show={show} onHide={handleClose} centered>
       <Modal.Header closeButton>
-        <Modal.Title>View  Service</Modal.Title>
+        <Modal.Title>View  Service Category</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <p><strong>Service Category Name:</strong> {services.categoryName}</p>

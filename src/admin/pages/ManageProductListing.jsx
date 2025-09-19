@@ -127,7 +127,7 @@ const ManageProducts = () => {
 
                 <div className="container-fluid px-4 pt-3">
                     {/* Header */}
-                    <div className="row mb-4">
+                    <div className="row mb-2">
                         <div className="bg-white p-3 rounded shadow-sm card-header">
                             <div className="row g-2 align-items-center">
                                 <div className="col-lg-6">
@@ -143,7 +143,7 @@ const ManageProducts = () => {
                     </div>
 
                     {/* Filter/Search */}
-                    <div className="row mb-4">
+                    <div className="row mb-2">
                         <div className="bg-white p-3 rounded shadow-sm card-header">
                             <div className="row g-2 align-items-center">
                                 <div className="col-md-3">
@@ -158,13 +158,8 @@ const ManageProducts = () => {
                                     </select>
                                 </div>
                                 <div className="col-md-2 d-flex">
-                                    <button
-                                        className="btn btn-success text-white me-3"
-                                        onClick={() => setCurrentPage(1)}
-                                    >
-                                        <i className="bi bi-search"></i>
-                                    </button>
-                                    <button className="btn btn-light border-1" onClick={handleRefresh}>
+                                 
+                                    <button className="btn btn-success border-1" onClick={handleRefresh}>
                                         <i className="bi bi-arrow-clockwise"></i>
                                     </button>
                                 </div>

@@ -12,7 +12,7 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 const BillingCycle = () => {
   const [formData, setFormData] = useState({
     billCycleTitle: "",
-    status: "",
+    status: "1",
   });
   const [errors, setErrors] = useState({});
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -45,28 +45,28 @@ const BillingCycle = () => {
     return newErrors;
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  const validationErrors = validate();
-  setErrors(validationErrors);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const validationErrors = validate();
+    setErrors(validationErrors);
 
-  if (Object.keys(validationErrors).length === 0) {
-    try {
-      const result = await dispatch(createBillingCycle(formData));
-      if (result && result.status) {
-        navigate("/manage-billing", {
-          state: { successMessage: "Billing cycle created successfully" },
-        });
-      } else if (result && !result.status && result.message) {
-        // Show server message in toast if status is false
-        toast.error(result.message);
+    if (Object.keys(validationErrors).length === 0) {
+      try {
+        const result = await dispatch(createBillingCycle(formData));
+        if (result && result.status) {
+          navigate("/manage-billing", {
+            state: { successMessage: "Billing cycle created successfully" },
+          });
+        } else if (result && !result.status && result.message) {
+          // Show server message in toast if status is false
+          toast.error(result.message);
+        }
+      } catch (err) {
+        // Fallback for unexpected errors
+        toast.error(err.response?.data?.message || err.message || "Failed to create billing cycle");
       }
-    } catch (err) {
-      // Fallback for unexpected errors
-      toast.error(err.response?.data?.message || err.message || "Failed to create billing cycle");
     }
-  }
-};
+  };
 
   return (
     <div className="container-fluid position-relative bg-white d-flex p-0">
@@ -121,20 +121,26 @@ const handleSubmit = async (e) => {
                     </label>
                     <select
                       name="status"
-                      value={formData.status}
+                      value={formData.status} // formData.status is already 1 by default
                       onChange={handleChange}
                       className={`form-select ${errors.status ? "is-invalid" : ""}`}
                     >
-                      <option value="">Select Status</option>
-                      <option value="1">Active</option>
-                      <option value="0">Inactive</option>
+                      <option value={1}>Active</option>
+                      <option value={0}>Inactive</option>
                     </select>
                     {errors.status && <div className="invalid-feedback">{errors.status}</div>}
+
                   </div>
 
                   <div className="col-md-12 d-flex justify-content-end mt-4">
                     <button type="submit" className="btn btn-success me-2 px-4">Submit</button>
-                    <Link to="/manage-billing" className="btn btn-outline-secondary px-4">Cancel</Link>
+                    <button
+                      type="button"
+                      className="btn btn-outline-secondary px-4"
+                      onClick={() => navigate("/manage-billing")}
+                    >
+                      Cancel
+                    </button>
                   </div>
                 </div>
               </form>

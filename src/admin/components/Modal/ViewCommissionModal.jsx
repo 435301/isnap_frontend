@@ -7,7 +7,7 @@ const ViewCommissionModal = ({ show, handleClose, commission }) => {
   return (
     <Modal show={show} onHide={handleClose} size="md" centered>
       <Modal.Header closeButton>
-        <Modal.Title>View Commission</Modal.Title>
+        <Modal.Title>View Commission Pricing</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <p>

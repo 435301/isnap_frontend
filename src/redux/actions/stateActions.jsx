@@ -103,7 +103,6 @@ export const createState = (data) => async (dispatch) => {
 };
 
 
-// ✅ Update State
 export const updateState = (stateData) => async (dispatch) => {
   try {
     const { id, stateName, stateStatus } = stateData;
@@ -115,7 +114,7 @@ export const updateState = (stateData) => async (dispatch) => {
     );
 
     if (response.data.status) {
-      dispatch({ type: UPDATE_STATE_SUCCESS, payload: stateData }); // reducer handles toast msg
+      dispatch({ type: UPDATE_STATE_SUCCESS, payload: stateData });
       return response.data;
     } else {
       return Promise.reject({
@@ -123,7 +122,8 @@ export const updateState = (stateData) => async (dispatch) => {
       });
     }
   } catch (error) {
-    dispatch({ type: STATE_ERROR, payload: error.response?.data?.message || error.message });
+    const msg = error.response?.data?.message || error.message;
+    dispatch({ type: STATE_ERROR, payload: msg });
     return Promise.reject(error);
   }
 };

@@ -7,11 +7,11 @@ const ViewMarketTypeModal = ({ show, handleClose, marketType }) => {
   return (
     <Modal show={show} onHide={handleClose} centered>
       <Modal.Header closeButton>
-        <Modal.Title>View Market Type</Modal.Title>
+        <Modal.Title>View Marketplace Type</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <p>
-          <strong>Market Type Name:</strong> {marketType.marketTypeName}
+          <strong>Marketplace Type :</strong> {marketType.marketTypeName}
         </p>
         <p>
           <strong>Status:</strong>{" "}

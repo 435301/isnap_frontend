@@ -87,7 +87,7 @@ const ManageServicesType = () => {
                         <div className="bg-white p-3 rounded shadow-sm card-header d-flex justify-content-between align-items-center">
                             <h5 className="form-title m-0">Manage Marketplaces</h5>
                             <Link to="/add-service-type" className="btn btn-new-lead">
-                                <i className="bi bi-plus-circle me-1"></i> Add Marketplaces
+                                <i className="bi bi-plus-circle me-1"></i> Add Marketplace
                             </Link>
                         </div>
                     </div>
@@ -99,7 +99,7 @@ const ManageServicesType = () => {
                                 <div className="col-md-4">
                                     <input
                                         type="text"
-                                        className="form-control border-0 bg-light"
+                                        className="form-control border-0"
                                         placeholder="Search by Marketplace"
                                         value={searchTerm}
                                         onChange={e => setSearchTerm(e.target.value)}

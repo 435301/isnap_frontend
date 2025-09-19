@@ -88,7 +88,7 @@ const RejectedTasks = () => {
                                 <div className="col-md-4">
                                     <input
                                         type="text"
-                                        className="form-control border-0 bg-light"
+                                        className="form-control border-0"
                                         placeholder="Search"
                                     />
                                 </div>

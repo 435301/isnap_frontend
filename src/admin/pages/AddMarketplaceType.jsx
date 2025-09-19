@@ -6,6 +6,8 @@ import Navbar from "../components/Navbar";
 import { createMarketType } from "../../redux/actions/marketTypeActions";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "bootstrap-icons/font/bootstrap-icons.css";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const AddMarketType = () => {
   const dispatch = useDispatch();
@@ -37,29 +39,29 @@ const AddMarketType = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
     setErrors((prev) => ({ ...prev, [name]: "" }));
   };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const validationErrors = {};
+    if (!formData.marketTypePlaceName.trim())
+      validationErrors.marketTypePlaceName = "Marketplace Type Name is required.";
+    if (!formData.marketTypeStatus)
+      validationErrors.marketTypeStatus = "Status is required.";
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setBackendError(""); // clear old errors
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
 
-  const validationErrors = {};
-  if (!formData.marketTypePlaceName.trim())
-    validationErrors.marketTypePlaceName = "Marketplace Type Name is required.";
-  if (!formData.marketTypeStatus)
-    validationErrors.marketTypeStatus = "Status is required.";
+    try {
+      await dispatch(createMarketType(formData));
+      toast.success("Marketplace Type added successfully!");
+      navigate("/market-place-type");
+    } catch (err) {
+      // ✅ show backend error as toast
+      toast.error(err.message); // This will show "Market Place Type already exists"
+    }
+  };
 
-  if (Object.keys(validationErrors).length > 0) {
-    setErrors(validationErrors);
-    return;
-  }
-
-  try {
-    await dispatch(createMarketType(formData));
-    navigate("/market-place-type");
-  } catch (err) {
-    setBackendError(err.message); // ✅ show only here
-  }
-};
 
   return (
     <div className="container-fluid position-relative bg-white d-flex p-0">
@@ -86,8 +88,8 @@ const handleSubmit = async (e) => {
             <div className="bg-white p-3 rounded shadow-sm card-header mb-4">
               {/* ✅ Show backend error on Add page */}
               {error && (
-                <div className="alert alert-danger mb-3">
-                  {error}
+                <div className="">
+                
                 </div>
               )}
 
@@ -95,7 +97,7 @@ const handleSubmit = async (e) => {
                 <div className="row g-3">
                   <div className="col-md-4">
                     <label className="form-label">
-                      Marketplace Type Name <span className="text-danger">*</span>
+                      Marketplace Type  <span className="text-danger">*</span>
                     </label>
                     <input
                       type="text"
@@ -103,7 +105,7 @@ const handleSubmit = async (e) => {
                       value={formData.marketTypePlaceName}
                       onChange={handleChange}
                       className={`form-control ${errors.marketTypePlaceName ? "is-invalid" : ""}`}
-                      placeholder="Enter Market Type Name"
+                      placeholder="Enter Marketplace Type "
                     />
                     {errors.marketTypePlaceName && (
                       <div className="invalid-feedback">{errors.marketTypePlaceName}</div>
@@ -146,6 +148,8 @@ const handleSubmit = async (e) => {
             </div>
           </div>
         </div>
+        <ToastContainer position="top-right" autoClose={1500} hideProgressBar />
+
       </div>
     </div>
   );

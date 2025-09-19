@@ -34,9 +34,7 @@ useEffect(() => {
     toast.success(successMessage);
     dispatch(clearMarketTypeSuccessMessage());
   }
-  if (error) {
-    toast.error(error); // ✅ will show "Market Place Type already exists"
-  }
+ 
 }, [successMessage, error, dispatch]);
 
 
@@ -88,7 +86,7 @@ const handleSaveChanges = async (updatedMarketType) => {
                 <div className="col-md-4">
                   <input
                     type="text"
-                    className="form-control border-0 bg-light"
+                    className="form-control border-0"
                     placeholder="Search by Marketplace  Type"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}

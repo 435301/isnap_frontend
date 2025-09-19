@@ -118,7 +118,7 @@ const ManageDepartments = () => {
 
         <div className="container-fluid px-4 pt-3">
           {/* Header */}
-          <div className="row mb-4">
+          <div className="row mb-2">
             <div className="bg-white p-3 rounded shadow-sm card-header">
               <div className="row g-2 align-items-center">
                 <div className="col-lg-6">
@@ -134,13 +134,13 @@ const ManageDepartments = () => {
           </div>
 
           {/* Filter */}
-          <div className="row mb-4">
+          <div className="row mb-2">
             <div className="bg-white p-3 rounded shadow-sm card-header">
               <div className="row g-2 align-items-center">
                 <div className="col-md-4">
                   <input
                     type="text"
-                    className="form-control border-0 bg-light"
+                    className="form-control border-0"
                     placeholder="Search by Department Name"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}

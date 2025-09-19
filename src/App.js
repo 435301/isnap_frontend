@@ -3,6 +3,10 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { AdminRoute, SellerRoute, TeamRoute } from "./routes/RoleRoutes";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import '@fortawesome/fontawesome-free/css/all.min.css';
+import '@fortawesome/fontawesome-free/js/all.min.js';
 
 // Admin Pages
 import AdminDashboard from "./admin/pages/Dashboard";
@@ -145,6 +149,8 @@ function App() {
         <Route path="/seller/task" element={<SellerRoute><TaskStatus /></SellerRoute>} />
         <Route path="/seller/task-summary" element={<SellerRoute><TaskSummarySellar /></SellerRoute>} />
       </Routes>
+            <ToastContainer position="top-right" autoClose={3000} />
+
     </Router>
   );
 }

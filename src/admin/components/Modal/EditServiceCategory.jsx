@@ -37,11 +37,10 @@ const EditServiceCategory = ({
     }
 
     // Category Code
-  // Category Code
-if (categoryCode && !/^[a-zA-Z0-9]+$/.test(categoryCode)) {
-  newErrors.categoryCode =
-    "Category Code must contain only letters and numbers (no spaces or special characters)";
-}
+    if (categoryCode && !/^[a-zA-Z0-9-]+$/.test(categoryCode)) {
+      newErrors.categoryCode =
+        "Category Code must contain only letters, numbers, or hyphens (no spaces or other special characters)";
+    }
 
 
     // Status
@@ -93,9 +92,8 @@ if (categoryCode && !/^[a-zA-Z0-9]+$/.test(categoryCode)) {
                 <label className="form-label">Category Name</label>
                 <input
                   type="text"
-                  className={`form-control ${
-                    errors.categoryName ? "is-invalid" : ""
-                  }`}
+                  className={`form-control ${errors.categoryName ? "is-invalid" : ""
+                    }`}
                   value={categoryName}
                   onChange={(e) => setCategoryName(e.target.value)}
                   placeholder="Enter category name"
@@ -110,9 +108,8 @@ if (categoryCode && !/^[a-zA-Z0-9]+$/.test(categoryCode)) {
                 <label className="form-label">Category Code</label>
                 <input
                   type="text"
-                  className={`form-control ${
-                    errors.categoryCode ? "is-invalid" : ""
-                  }`}
+                  className={`form-control ${errors.categoryCode ? "is-invalid" : ""
+                    }`}
                   value={categoryCode}
                   onChange={(e) => setCategoryCode(e.target.value)}
                   placeholder="Enter category code"

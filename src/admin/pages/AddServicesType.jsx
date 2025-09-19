@@ -5,10 +5,10 @@ import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import { createServiceType } from "../../redux/actions/serviceTypeActions";
 import { fetchMarketTypes } from "../../redux/actions/marketTypeActions";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "bootstrap-icons/font/bootstrap-icons.css";
-
-// ... your imports
 
 const AddServiceType = () => {
   const dispatch = useDispatch();
@@ -51,7 +51,7 @@ const AddServiceType = () => {
     const validationErrors = {};
 
     if (!formData.marketPlaceId) validationErrors.marketPlaceId = "Marketplace is required";
-    if (!formData.serviceTypeName.trim()) validationErrors.serviceTypeName = "Service type name is required";
+    if (!formData.serviceTypeName.trim()) validationErrors.serviceTypeName = "Marketplace type  is required";
     if (!formData.price || Number(formData.price) <= 0) validationErrors.price = "Price must be a positive number";
     if (formData.status !== 1 && formData.status !== 0) validationErrors.status = "Status is required";
 
@@ -64,9 +64,11 @@ const AddServiceType = () => {
       await dispatch(createServiceType(formData));
       setFormData({ marketPlaceId: "", serviceTypeName: "", price: "", status: 1 });
       setErrors({});
+      toast.success("Marketplace added successfully!");
       navigate("/manage-services-type");
     } catch (error) {
-      setErrors({ server: error.message }); // only shows here
+      // Use toast for server-side error
+      toast.error(error.response?.data?.message || "Market Place already exists");
     }
   };
 
@@ -94,7 +96,6 @@ const AddServiceType = () => {
           <div className="row">
             <div className="bg-white p-3 rounded shadow-sm card-header mb-4">
               <form onSubmit={handleSubmit}>
-                {errors.server && <div className="alert alert-danger">{errors.server}</div>}
                 <div className="row g-3">
                   {/* Marketplace */}
                   <div className="col-md-4">
@@ -120,7 +121,7 @@ const AddServiceType = () => {
                   {/* Service Type */}
                   <div className="col-md-4">
                     <label className="form-label">
-                     Marketplace <span className="text-danger">*</span>
+                      Marketplace <span className="text-danger">*</span>
                     </label>
                     <input
                       type="text"
@@ -185,11 +186,11 @@ const AddServiceType = () => {
             </div>
           </div>
         </div>
+        {/* Toast container */}
+        <ToastContainer position="top-right" autoClose={3000} />
       </div>
     </div>
   );
 };
 
 export default AddServiceType;
-
-

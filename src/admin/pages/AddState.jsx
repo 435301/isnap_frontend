@@ -43,31 +43,27 @@ const AddState = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    const payload = {
-      stateName: formData.stateName.trim(),
-      stateStatus: formData.stateStatus === "Active",
-    };
-
-    try {
-      const res = await dispatch(createState(payload));
-      // ✅ Show success toast
-      toast.success(res.message || "State created successfully");
-
-      // Redirect after showing toast
-      setTimeout(() => {
-        dispatch(clearStateSuccessMessage());
-        navigate("/manage-state");
-      }, 1000);
-    } catch (err) {
-      // Show API error message
-      const msg = err?.message || "Something went wrong";
-      toast.error(msg);
-    }
+  const payload = {
+    stateName: formData.stateName.trim(),
+    stateStatus: formData.stateStatus === "Active",
   };
 
+  try {
+    const res = await dispatch(createState(payload));
+    // Do not show toast here; let ManageState handle it
+    setTimeout(() => {
+      dispatch(clearStateSuccessMessage());
+      navigate("/manage-state", { state: { successMessage: res.message || "State created successfully" } });
+    }, 1000);
+  } catch (err) {
+    // Show API error message
+    const msg = err?.message || "Something went wrong";
+    toast.error(msg);
+  }
+};
   return (
     <div className="container-fluid position-relative bg-white d-flex p-0">
       <Sidebar isOpen={isSidebarOpen} />

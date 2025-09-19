@@ -91,9 +91,15 @@ const ManageBilling = () => {
   };
 
   // Filter billing cycles on frontend (optional)
-  const filteredBillingCycles = statusFilter
-    ? billingCycles.filter((billing) => String(billing.status) === statusFilter)
-    : billingCycles;
+const filteredBillingCycles = billingCycles.filter((billing) => {
+  const matchesSearch = billing.title
+    .toLowerCase()
+    .includes(searchTerm.toLowerCase());
+  const matchesStatus =
+    statusFilter === "" || String(billing.status) === statusFilter;
+  return matchesSearch && matchesStatus;
+});
+
 
   return (
     <div className="container-fluid position-relative bg-white d-flex p-0">
@@ -109,7 +115,7 @@ const ManageBilling = () => {
 
         <div className="container-fluid px-4 pt-3">
           {/* Header */}
-          <div className="row mb-4">
+          <div className="row mb-2">
             <div className="bg-white p-3 rounded shadow-sm card-header">
               <div className="row g-2 align-items-center">
                 <div className="col-lg-6">
@@ -125,13 +131,13 @@ const ManageBilling = () => {
           </div>
 
           {/* Filters */}
-          <div className="row mb-4">
+          <div className="row mb-2">
             <div className="bg-white p-3 rounded shadow-sm card-header">
               <div className="row g-2 align-items-center">
                 <div className="col-md-4">
                   <input
                     type="text"
-                    className="form-control border-0 bg-light"
+                    className="form-control border-0"
                     placeholder="Search by Title"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
@@ -178,11 +184,7 @@ const ManageBilling = () => {
           <div className="row">
             <div className="bg-white p-3 rounded shadow-sm card-header">
               <div className="table-responsive">
-                {error && (
-                  <div className="alert alert-danger" role="alert">
-                    {error}
-                  </div>
-                )}
+              
                 {loading ? (
                   <p>Loading billing cycles...</p>
                 ) : (

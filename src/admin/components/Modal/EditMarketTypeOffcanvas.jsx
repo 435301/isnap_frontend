@@ -36,14 +36,14 @@ const EditMarketTypeOffcanvas = ({ show, handleClose, marketType, onSave }) => {
       scroll={false}
     >
       <Offcanvas.Header closeButton>
-        <Offcanvas.Title>Edit Market Type</Offcanvas.Title>
+        <Offcanvas.Title>Edit Marketplace 	 Type</Offcanvas.Title>
       </Offcanvas.Header>
 
       <Offcanvas.Body>
         <Form>
           {/* Market Type Name */}
           <Form.Group className="mb-3">
-            <Form.Label>Market Type Name</Form.Label>
+            <Form.Label>Marketplace Type </Form.Label>
             <Form.Control
               type="text"
               value={formData.marketTypeName}

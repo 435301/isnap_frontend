@@ -77,7 +77,7 @@ const ManageServicesCategory = () => {
 
   const handleRefresh = () => {
     setSearchTerm("");
-    setStatusFilter(""); // empty string for all
+    setStatusFilter("");
     setCurrentPage(1);
     dispatch(fetchCategories(1, itemsPerPage, "", "")); // ensure "" is passed
   };
@@ -99,18 +99,17 @@ const ManageServicesCategory = () => {
     }
   };
 
-const handleSaveChanges = async (updatedCategory) => {
-  if (!updatedCategory) return;
-  try {
-    await dispatch(updateCategory(updatedCategory));
-    setShowEditModal(false);
-    setSelectedCategory(null);
-    dispatch(fetchCategories(currentPage, itemsPerPage, searchTerm, statusFilter));
-  } catch (err) {
-    toast.error(err.message); // ✅ Now shows: "Service Category Name already exists"
-  }
-};
-
+  const handleSaveChanges = async (updatedCategory) => {
+    if (!updatedCategory) return;
+    try {
+      await dispatch(updateCategory(updatedCategory));
+      setShowEditModal(false);
+      setSelectedCategory(null);
+      dispatch(fetchCategories(currentPage, itemsPerPage, searchTerm, statusFilter));
+    } catch (err) {
+      toast.error(err.message); // 
+    }
+  };
 
   return (
     <div className="container-fluid position-relative bg-white d-flex p-0">
@@ -133,11 +132,11 @@ const handleSaveChanges = async (updatedCategory) => {
 
         <div className="container-fluid px-4 pt-3">
           {/* Header */}
-          <div className="row mb-4">
+          <div className="row mb-2">
             <div className="bg-white p-3 rounded shadow-sm card-header">
               <div className="row g-2 align-items-center">
                 <div className="col-lg-6">
-                  <h5 className="form-title m-0">Manage Services Category</h5>
+                  <h5 className="form-title m-0">Manage Service Categories</h5>
                 </div>
                 <div className="col-lg-6 text-end">
                   <Link to="/add-service" className="btn btn-new-lead">
@@ -149,13 +148,13 @@ const handleSaveChanges = async (updatedCategory) => {
           </div>
 
           {/* Filter */}
-          <div className="row mb-4">
+          <div className="row mb-2">
             <div className="bg-white p-3 rounded shadow-sm card-header">
               <div className="row g-2 align-items-center">
                 <div className="col-md-4">
                   <input
                     type="text"
-                    className="form-control border-0 bg-light"
+                    className="form-control border-0"
                     placeholder="Search by Category Name"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
@@ -195,7 +194,7 @@ const handleSaveChanges = async (updatedCategory) => {
               <div className="table-responsive">
                 {loading ? (
                   <p>Loading categories...</p>
-               
+
                 ) : categories.length === 0 ? (
                   <p>No categories found.</p>
                 ) : (
