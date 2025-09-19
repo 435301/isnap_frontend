@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchServiceTypes } from "../../redux/actions/serviceTypeActions";
 import { fetchBillingCycles } from "../../redux/actions/billingActions";
-import { createCatalogListing, deleteCatalogListing, fetchCatalogListing } from "../../redux/actions/catalogListingAction";
+import { createCatalogListing, deleteCatalogListing, fetchCatalogListing, fetchPerSkuPrice, fetchTotalPrice } from "../../redux/actions/catalogListingAction";
 import DeleteConfirmationModal from "./Modal/DeleteConfirmationModal";
 
 const CatalogListingSection = ({ businessId, expandedSections, toggleSection }) => {
@@ -30,25 +30,37 @@ const CatalogListingSection = ({ businessId, expandedSections, toggleSection }) 
   const [toDelete, setToDelete] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  // Load dropdowns + listings
+const { perSkuPriceData,totalPriceData  } = useSelector((state) => state.catalogListing);
+
   useEffect(() => {
     dispatch(fetchServiceTypes());
     dispatch(fetchBillingCycles());
-    // if (businessId) {
-    //   dispatch(fetchCatalogListing(businessId));
-    // }
   }, [dispatch]);
 
-  // Auto-calc total price
   useEffect(() => {
-    const { skuCount, offerPrice } = formData;
-    if (skuCount && offerPrice) {
-      setFormData((prev) => ({
-        ...prev,
-        totalPrice: Number(skuCount) * Number(offerPrice),
-      }));
-    }
-  }, [formData.skuCount, formData.offerPrice]);
+  if (formData.skuCount) {
+    dispatch(fetchPerSkuPrice(Number(formData.skuCount)));
+  }
+   if (formData.skuCount && formData.offerPrice) {
+    dispatch(fetchTotalPrice(Number(formData.skuCount), Number(formData.offerPrice)));
+  }
+}, [formData.skuCount,formData.offerPrice, dispatch]);
+
+useEffect(() => {
+  if (perSkuPriceData?.perSkuPrice) {
+    setFormData((prev) => ({
+      ...prev,
+      perSkuPrice: perSkuPriceData.perSkuPrice,
+    }));
+  };
+    if (totalPriceData?.totalPrice) {
+    setFormData((prev) => ({
+      ...prev,
+      totalPrice: totalPriceData.totalPrice,
+    }));
+  }
+}, [perSkuPriceData, totalPriceData]);
+
 
   // Handle input change
   const handleChange = (e) => {
@@ -168,7 +180,7 @@ const CatalogListingSection = ({ businessId, expandedSections, toggleSection }) 
                 </div>
 
                 <div className="col-md-2">
-                  <label className="form-label">No. of SKU's</label>
+                  <label className="form-label">No. of SKU's<span className="text-danger">*</span></label>
                   <input
                     type="number"
                     className="form-control"
@@ -180,18 +192,19 @@ const CatalogListingSection = ({ businessId, expandedSections, toggleSection }) 
                 </div>
 
                 <div className="col-md-2">
-                  <label className="form-label">Per SKU Price</label>
+                  <label className="form-label">Per SKU Price<span className="text-danger">*</span></label>
                   <input
                     type="number"
                     className="form-control"
                     name="perSkuPrice"
                     value={formData.perSkuPrice}
                     onChange={handleChange}
+                    disabled
                   />
                 </div>
 
                 <div className="col-md-2">
-                  <label className="form-label">Offer Price</label>
+                  <label className="form-label">Offer Price<span className="text-danger">*</span></label>
                   <input
                     type="number"
                     className="form-control"
@@ -202,7 +215,7 @@ const CatalogListingSection = ({ businessId, expandedSections, toggleSection }) 
                 </div>
 
                 <div className="col-md-2">
-                  <label className="form-label">Total Price</label>
+                  <label className="form-label">Total Price<span className="text-danger">*</span></label>
                   <input
                     type="number"
                     className="form-control"
@@ -214,7 +227,7 @@ const CatalogListingSection = ({ businessId, expandedSections, toggleSection }) 
                 </div>
 
                 <div className="col-md-2">
-                  <label className="form-label">Billing Cycle</label>
+                  <label className="form-label">Billing Cycle<span className="text-danger">*</span></label>
                   <select
                     className="form-select"
                     name="billingCycle"
@@ -231,7 +244,7 @@ const CatalogListingSection = ({ businessId, expandedSections, toggleSection }) 
                 </div>
 
                 <div className="col-md-2">
-                  <label className="form-label">Task Days</label>
+                  <label className="form-label">Task Days<span className="text-danger">*</span></label>
                   <input
                     type="number"
                     className="form-control"

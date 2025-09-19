@@ -13,6 +13,12 @@ export const DELETE_CATALOG_LISTING_SUCCESS = "DELETE_CATALOG_LISTING_SUCCESS";
 export const DELETE_CATALOG_LISTING_FAILURE = "DELETE_CATALOG_LISTING_FAILURE";
 export const CATALOG_LISTING_ERROR = "CATALOG_LISTING_ERROR";
 export const CLEAR_CATALOG_LISTING_SUCCESS_MESSAGE = "CLEAR_CATALOG_LISTING_SUCCESS_MESSAGE";
+export const FETCH_PER_SKU_PRICE_REQUEST = "FETCH_PER_SKU_PRICE_REQUEST";
+export const FETCH_PER_SKU_PRICE_SUCCESS = "FETCH_PER_SKU_PRICE_SUCCESS";
+export const FETCH_PER_SKU_PRICE_FAILURE = "FETCH_PER_SKU_PRICE_FAILURE";
+export const FETCH_TOTAL_PRICE_REQUEST = "FETCH_TOTAL_PRICE_REQUEST";
+export const FETCH_TOTAL_PRICE_SUCCESS = "FETCH_TOTAL_PRICE_SUCCESS";
+export const FETCH_TOTAL_PRICE_FAILURE = "FETCH_TOTAL_PRICE_FAILURE"
 
 // Auth Headers
 const getAuthHeaders = (isFormData = false) => {
@@ -90,6 +96,55 @@ export const deleteCatalogListing = (id) => async (dispatch) => {
     dispatch({ type: DELETE_CATALOG_LISTING_FAILURE, payload: err.message });
     toast.error(err?.response?.data?.message || "Failed to delete catalog listing");
     throw err;
+  }
+};
+
+export const fetchPerSkuPrice = (noOfSkus) => async (dispatch) => {
+  dispatch({ type: FETCH_PER_SKU_PRICE_REQUEST });
+
+  try {
+    const res = await axios.post( `${BASE_URL}/catalogListing/getPerSkuPrice`,
+      { noOfSkus },
+      getAuthHeaders(false)
+    );
+
+    if (res.data.status) {
+      dispatch({type: FETCH_PER_SKU_PRICE_SUCCESS, payload: res.data.data, });
+    } else {
+      dispatch({ type: FETCH_PER_SKU_PRICE_FAILURE, payload: res.data.message,
+      });
+      toast.error(res.data.message || "Failed to fetch per SKU price");
+    }
+  } catch (error) {
+    dispatch({
+      type: FETCH_PER_SKU_PRICE_FAILURE,
+      payload: error.response?.data?.message || error.message,
+    });
+    toast.error(error.response?.data?.message || "Error fetching per SKU price");
+  }
+};
+
+export const fetchTotalPrice = (noOfSkus, offerPrice) => async (dispatch) => {
+  dispatch({ type: FETCH_TOTAL_PRICE_REQUEST });
+
+  try {
+    const res = await axios.post( `${BASE_URL}/catalogListing/getTotalPrice`,
+      { noOfSkus ,offerPrice},
+      getAuthHeaders(false)
+    );
+    if (res.data.status) {
+      dispatch({type: FETCH_TOTAL_PRICE_SUCCESS, payload: res.data.data, });
+    } else {
+      dispatch({ type: FETCH_PER_SKU_PRICE_FAILURE, payload: res.data.message,
+      });
+      toast.error(res.data.message || "Failed to fetch total price");
+    }
+  } catch (error) {
+    dispatch({
+      type: FETCH_TOTAL_PRICE_FAILURE,
+      payload: error.response?.data?.message || error.message,
+    });
+    toast.error(error.response?.data?.message || "Error fetching total price");
   }
 };
 

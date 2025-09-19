@@ -176,11 +176,12 @@ const BusinessLaunchSection = ({ businessId , expandedSections, toggleSection })
                     placeholder="567"
                     value={formData.actualPrice}
                     onChange={handleChange}
+                    disabled
                   />
                 </div>
 
                 <div className="col-md-2">
-                  <label className="form-label">Offer Price</label>
+                  <label className="form-label">Offer Price<span className="text-danger">*</span></label>
                   <input
                     type="number"
                     className="form-control"
@@ -192,7 +193,7 @@ const BusinessLaunchSection = ({ businessId , expandedSections, toggleSection })
                 </div>
 
                 <div className="col-md-2">
-                  <label className="form-label">Billing Cycle</label>
+                  <label className="form-label">Billing Cycle<span className="text-danger">*</span></label>
                   <select
                     className="form-select"
                     name="billingCycle"
@@ -209,7 +210,7 @@ const BusinessLaunchSection = ({ businessId , expandedSections, toggleSection })
                 </div>
 
                 <div className="col-md-2">
-                  <label className="form-label">Task Days</label>
+                  <label className="form-label">Task Days<span className="text-danger">*</span></label>
                   <input
                     type="number"
                     className="form-control"

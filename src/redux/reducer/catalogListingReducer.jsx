@@ -7,7 +7,13 @@ import {
     DELETE_CATALOG_LISTING_SUCCESS,
     CATALOG_LISTING_ERROR,
     CLEAR_CATALOG_LISTING_SUCCESS_MESSAGE,
-    UPDATE_CATALOG_LISTING_FAILURE
+    UPDATE_CATALOG_LISTING_FAILURE,
+    FETCH_PER_SKU_PRICE_REQUEST,
+    FETCH_PER_SKU_PRICE_SUCCESS,
+    FETCH_PER_SKU_PRICE_FAILURE,
+    FETCH_TOTAL_PRICE_REQUEST,
+    FETCH_TOTAL_PRICE_SUCCESS,
+    FETCH_TOTAL_PRICE_FAILURE
 } from "../actions/catalogListingAction";
 
 const initialState = {
@@ -15,6 +21,8 @@ const initialState = {
     loading: false,
     error: null,
     total: 0,
+    perSkuPriceData: null,
+    totalPriceData: null,
 };
 
 export const catalogListingReducer = (state = initialState, action) => {
@@ -65,6 +73,26 @@ export const catalogListingReducer = (state = initialState, action) => {
                 ...state,
                 catalogListing: state.catalogListing.filter((l) => l.id !== action.payload),
             };
+        case FETCH_PER_SKU_PRICE_REQUEST:
+            return { ...state, loading: true, error: null };
+        case FETCH_PER_SKU_PRICE_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                perSkuPriceData: action.payload, // { perSkuPrice, matchedRange }
+            };
+        case FETCH_PER_SKU_PRICE_FAILURE:
+            return { ...state, loading: false, error: action.payload };
+             case FETCH_TOTAL_PRICE_REQUEST:
+            return { ...state, loading: true, error: null };
+        case FETCH_TOTAL_PRICE_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                totalPriceData: action.payload, 
+            };
+        case FETCH_TOTAL_PRICE_FAILURE:
+            return { ...state, loading: false, error: action.payload };
         case CATALOG_LISTING_ERROR:
             return { ...state, error: action.payload };
         case CLEAR_CATALOG_LISTING_SUCCESS_MESSAGE:
