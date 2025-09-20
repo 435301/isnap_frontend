@@ -13,6 +13,7 @@ import billingReducer from "./billingReducer";
 import businessReducer from "./businessReducer";
 import { businessLaunchReducer } from "./businessLaunchReducer";
 import { catalogListingReducer } from "./catalogListingReducer";
+import keyAccountSubscriptionReducer from "./keyAccountSubscriptionReducer";
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -29,7 +30,7 @@ const rootReducer = combineReducers({
   commission: commissionReducer,
   businessLaunches: businessLaunchReducer,
   catalogListing: catalogListingReducer,
-
+  subscriptions: keyAccountSubscriptionReducer,
 });
 
 
