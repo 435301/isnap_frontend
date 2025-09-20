@@ -28,17 +28,11 @@ const getAuthHeaders = (isFormData = false) => {
   };
 };
 
-export const fetchBusinessLaunches = (businessId, page = 1, search = "", showStatus = "") => {
+export const fetchBusinessLaunches = (businessId) => {
   return async (dispatch) => {
     dispatch({ type: FETCH_BUSINESS_LAUNCH_REQUEST });
-
     try {
-      const response = await axios.post(`${BASE_URL}/businessLaunch/list/${businessId}`, {
-        page,
-        search,
-        showStatus,
-      });
-
+      const response = await axios.get(`${BASE_URL}/businessLaunch/list/${businessId}`,getAuthHeaders());
       if (response.data.status) {
         dispatch({
           type: FETCH_BUSINESS_LAUNCH_SUCCESS,

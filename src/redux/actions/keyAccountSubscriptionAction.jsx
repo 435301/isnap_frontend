@@ -19,6 +19,10 @@ export const FETCH_KEY_ACCOUNT_COMMISSION_REQUEST = "FETCH_KEY_ACCOUNT_COMMISSIO
 export const FETCH_KEY_ACCOUNT_COMMISSION_SUCCESS = "FETCH_KEY_ACCOUNT_COMMISSION_SUCCESS";
 export const FETCH_KEY_ACCOUNT_COMMISSION_FAILURE = "FETCH_KEY_ACCOUNT_COMMISSION_FAILURE";
 
+export const FETCH_KEYACCOUNT_SUBSCRIPTION_REQUEST = "FETCH_KEYACCOUNT_SUBSCRIPTION_REQUEST";
+export const FETCH_KEYACCOUNT_SUBSCRIPTION_SUCCESS = "FETCH_KEYACCOUNT_SUBSCRIPTION_SUCCESS";
+export const FETCH_KEYACCOUNT_SUBSCRIPTION_FAILURE = "FETCH_KEYACCOUNT_SUBSCRIPTION_FAILURE";
+
 
 export const createSubscription = (subscriptionData) => async (dispatch) => {
   dispatch({ type: CREATE_SUBSCRIPTION_REQUEST });
@@ -134,4 +138,29 @@ export const fetchKeyAccountCommission = (businessId, serviceTypeId) => async (d
       payload: error.message || "Something went wrong",
     });
   }
+};
+
+export const fetchKeyAccountSubscription = (businessId) => {
+  return async (dispatch) => {
+    dispatch({ type: FETCH_KEYACCOUNT_SUBSCRIPTION_REQUEST });
+    try {
+      const response = await axios.get(`${BASE_URL}/keyAccountSubscription/list/${businessId}`,getAuthHeaders());
+      if (response.data.status) {
+        dispatch({
+          type: FETCH_KEYACCOUNT_SUBSCRIPTION_SUCCESS,
+          payload: response.data.data, 
+        });
+      } else {
+        dispatch({
+          type: FETCH_KEYACCOUNT_SUBSCRIPTION_FAILURE,
+          payload: response.data.message,
+        });
+      }
+    } catch (error) {
+      dispatch({
+        type: FETCH_KEYACCOUNT_SUBSCRIPTION_FAILURE,
+        payload: error.message,
+      });
+    }
+  };
 };

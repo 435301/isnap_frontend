@@ -31,11 +31,6 @@ export const businessLaunchReducer = (state = initialState, action) => {
       };
     case FETCH_BUSINESS_LAUNCH_FAILURE:
       return { ...state, loading: false, error: action.payload };
-    // case CREATE_BUSINESS_LAUNCH_SUCCESS:
-    //   return {
-    //     ...state,
-    //     launches: [...state.launches, action.payload],
-    //   };
      case CREATE_BUSINESS_LAUNCH_SUCCESS:
       const existingIndex = state.launches.findIndex(
         (l) => l.id === action.payload.id
@@ -65,6 +60,8 @@ export const businessLaunchReducer = (state = initialState, action) => {
       return { ...state, error: action.payload };
     case CLEAR_BUSINESS_LAUNCH_SUCCESS_MESSAGE:
       return { ...state, successMessage: null };
+      case "CLEAR_BUSINESS_LAUNCHES":
+  return { ...state, launches: [] };
     default:
       return state;
   }

@@ -33,7 +33,7 @@ export const catalogListingReducer = (state = initialState, action) => {
             return {
                 ...state,
                 loading: false,
-                catalogListing: action.payload.catalogListing || [],
+                catalogListing: action.payload.CatalogListings || [],
                 total: action.payload.total || 0,
                 error: null,
             };
@@ -83,13 +83,13 @@ export const catalogListingReducer = (state = initialState, action) => {
             };
         case FETCH_PER_SKU_PRICE_FAILURE:
             return { ...state, loading: false, error: action.payload };
-             case FETCH_TOTAL_PRICE_REQUEST:
+        case FETCH_TOTAL_PRICE_REQUEST:
             return { ...state, loading: true, error: null };
         case FETCH_TOTAL_PRICE_SUCCESS:
             return {
                 ...state,
                 loading: false,
-                totalPriceData: action.payload, 
+                totalPriceData: action.payload,
             };
         case FETCH_TOTAL_PRICE_FAILURE:
             return { ...state, loading: false, error: action.payload };
@@ -97,6 +97,9 @@ export const catalogListingReducer = (state = initialState, action) => {
             return { ...state, error: action.payload };
         case CLEAR_CATALOG_LISTING_SUCCESS_MESSAGE:
             return { ...state, successMessage: null };
+        case "CLEAR_CATALOG_LISTING":
+            return { ...state, catalogListing: [] };
+
         default:
             return state;
     }

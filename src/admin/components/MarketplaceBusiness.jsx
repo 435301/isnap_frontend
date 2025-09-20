@@ -16,11 +16,12 @@ const MarketplaceBusiness = ({
   handleSubmit,
   expandedSections,
   toggleSection,
-  businessId
+  businessId,
+  businessIdEdit
 }) => {
   console.log('businessIdmarketplace', businessId);
   return (
-    
+
     <form onSubmit={handleSubmit}>
       <BusinessLaunchSection
         formData={formData}
@@ -29,7 +30,8 @@ const MarketplaceBusiness = ({
         handleRemoveServiceRow={handleRemoveServiceRow}
         expandedSections={expandedSections}
         toggleSection={toggleSection}
-          businessId={businessId}
+        businessId={businessId}
+        businessIdEdit={businessIdEdit}
       />
       <CatalogListingSection
         formData={formData}
@@ -38,9 +40,10 @@ const MarketplaceBusiness = ({
         handleRemoveCatalogRow={handleRemoveCatalogRow}
         expandedSections={expandedSections}
         toggleSection={toggleSection}
-          businessId={businessId}
+        businessId={businessId}
+        businessIdEdit={businessIdEdit}
       />
-      
+
       <KeyAccountManagementSection
         formData={formData}
         setFormData={setFormData}
@@ -49,11 +52,12 @@ const MarketplaceBusiness = ({
         handleRemoveKeyAccountRow={handleRemoveKeyAccountRow}
         expandedSections={expandedSections}
         toggleSection={toggleSection}
-          businessId={businessId}
+        businessId={businessId}
+        businessIdEdit={businessIdEdit}
       />
       <div className="col-md-12 d-flex justify-content-end mt-5 mb-4">
         <button type="button" className="btn btn-outline-secondary px-5 me-2">Cancel</button>
-        <button type="submit" className="btn btn-success px-5">Save</button>
+        <button type="button" className="btn btn-success px-5">Next</button>
       </div>
     </form>
   );

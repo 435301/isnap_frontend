@@ -11,6 +11,9 @@ import {
     FETCH_KEY_ACCOUNT_COMMISSION_REQUEST,
     FETCH_KEY_ACCOUNT_COMMISSION_SUCCESS,
     FETCH_KEY_ACCOUNT_COMMISSION_FAILURE,
+    FETCH_KEYACCOUNT_SUBSCRIPTION_REQUEST,
+    FETCH_KEYACCOUNT_SUBSCRIPTION_SUCCESS,
+    FETCH_KEYACCOUNT_SUBSCRIPTION_FAILURE
 } from "../actions/keyAccountSubscriptionAction";
 
 const initialState = {
@@ -28,6 +31,7 @@ const keyAccountSubscriptionReducer = (state = initialState, action) => {
         case DELETE_SUBSCRIPTION_REQUEST:
         case CREATE_KEYACCOUNT_COMMISSION_REQUEST:
         case FETCH_KEY_ACCOUNT_COMMISSION_REQUEST:
+        case FETCH_KEYACCOUNT_SUBSCRIPTION_REQUEST:
             return { ...state, loading: true, error: null };
 
         case CREATE_SUBSCRIPTION_SUCCESS: {
@@ -76,11 +80,22 @@ const keyAccountSubscriptionReducer = (state = initialState, action) => {
                 total: action.payload.total || 0,
                 error: null,
             };
+        case FETCH_KEYACCOUNT_SUBSCRIPTION_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                subscriptions: action.payload.keyAccountSubscriptions || [],
+                total: action.payload.total || 0,
+                error: null,
+            }
         case CREATE_SUBSCRIPTION_FAILURE:
         case DELETE_SUBSCRIPTION_FAILURE:
         case CREATE_KEYACCOUNT_COMMISSION_FAILURE:
         case FETCH_KEY_ACCOUNT_COMMISSION_FAILURE:
+        case FETCH_KEYACCOUNT_SUBSCRIPTION_FAILURE:
             return { ...state, loading: false, error: action.payload };
+        case "CLEAR_KEYACCOUNT_SUBSCRIPTIONS":
+            return { ...state, subscriptions: [], commissions: [], total: 0, security: null };
 
         default:
             return state;

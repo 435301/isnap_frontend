@@ -5,8 +5,9 @@ import { fetchBillingCycles } from "../../redux/actions/billingActions";
 import { createCatalogListing, deleteCatalogListing, fetchCatalogListing, fetchPerSkuPrice, fetchTotalPrice } from "../../redux/actions/catalogListingAction";
 import DeleteConfirmationModal from "./Modal/DeleteConfirmationModal";
 
-const CatalogListingSection = ({ businessId, expandedSections, toggleSection }) => {
+const CatalogListingSection = ({ businessId, expandedSections, toggleSection, businessIdEdit }) => {
   console.log('businessIdcatalog123', businessId);
+  console.log('businessIdcatalog123Edit', businessIdEdit);
   const dispatch = useDispatch();
 
   const { catalogListing = [], loading, error } = useSelector(
@@ -37,6 +38,36 @@ const CatalogListingSection = ({ businessId, expandedSections, toggleSection }) 
     dispatch(fetchBillingCycles());
   }, [dispatch]);
 
+    useEffect(() => {
+    if (businessId && !businessIdEdit) {
+      setFormData({
+        serviceType: "",
+        actualPrice: "",
+        offerPrice: "",
+        billingCycle: "",
+        taskDays: "",
+        id: 0,
+      });
+    }
+  }, [businessId, businessIdEdit]);
+
+    useEffect(() => {
+    if (businessIdEdit) {
+       dispatch(fetchCatalogListing(businessIdEdit));
+    }
+    else {
+    dispatch({ type: "CLEAR_CATALOG_LISTING" });
+    setFormData({
+      serviceType: "",
+      actualPrice: "",
+      offerPrice: "",
+      billingCycle: "",
+      taskDays: "",
+      id: 0,
+    });
+  }
+  }, [businessIdEdit, dispatch]);
+
   useEffect(() => {
     if (formData.skuCount) {
       dispatch(fetchPerSkuPrice(Number(formData.skuCount)));
@@ -51,6 +82,8 @@ const CatalogListingSection = ({ businessId, expandedSections, toggleSection }) 
       setFormData((prev) => ({
         ...prev,
         perSkuPrice: perSkuPriceData.perSkuPrice,
+        // offerPrice: perSkuPriceData.perSkuPrice,
+        offerPrice: prev.offerPrice || perSkuPriceData.perSkuPrice,
       }));
     };
     if (totalPriceData?.totalPrice) {
@@ -93,7 +126,7 @@ const CatalogListingSection = ({ businessId, expandedSections, toggleSection }) 
 
     const payload = {
       id: formData.id ? Number(formData.id) : 0,
-      businessId,
+        businessId: businessIdEdit ? businessIdEdit : businessId,
       serviceTypeId: Number(formData.serviceType),
       noOfSkus: Number(formData.skuCount),
       perSkuPrice: Number(formData.perSkuPrice),

@@ -34,10 +34,9 @@ const getAuthHeaders = (isFormData = false) => {
   };
 };
 
-export const fetchCatalogListing = (businessId, page = 1, search = "", showStatus = "") => {
+export const fetchCatalogListing = (businessId) => {
   return async (dispatch) => {
     dispatch({ type: FETCH_CATALOG_LISTING_REQUEST });
-
     try {
       const response = await axios.get(`${BASE_URL}/catalogListing/list/${businessId}`, getAuthHeaders());
 console.log('responsecatalog', response);

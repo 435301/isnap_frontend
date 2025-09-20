@@ -1,18 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchServiceTypes } from '../../redux/actions/serviceTypeActions';
-import { createKeyAccountCommission, createSubscription, deleteSubscription, fetchKeyAccountCommission } from '../../redux/actions/keyAccountSubscriptionAction';
+import { createKeyAccountCommission, createSubscription, deleteSubscription, fetchKeyAccountCommission, fetchKeyAccountSubscription } from '../../redux/actions/keyAccountSubscriptionAction';
 import DeleteConfirmationModal from './Modal/DeleteConfirmationModal';
 import { fetchCommissions } from '../../redux/actions/commissionActions';
+import { fetchBusinessLaunches } from '../../redux/actions/businessLaunchActions';
 
 const KeyAccountManagementSection = ({
   handleKeyAccountRowChange,
   handleRemoveKeyAccountRow,
   expandedSections,
   toggleSection,
-  businessId
+  businessId,
+  businessIdEdit
 }) => {
   console.log('businessIdkeyaccount', businessId);
+  console.log('businessIdkeyaccountEdit', businessIdEdit);
   const dispatch = useDispatch();
 
   const { subscriptions = [], loading, error } = useSelector(
@@ -50,8 +53,33 @@ const KeyAccountManagementSection = ({
 
   useEffect(() => {
     dispatch(fetchServiceTypes());
-    // dispatch(fetchCommissions());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (businessIdEdit) {
+      dispatch(fetchKeyAccountSubscription(businessIdEdit));
+      dispatch(fetchKeyAccountCommission(businessIdEdit, formData.serviceType || 0));
+    }
+    else {
+      setFormData({
+        serviceType: "",
+        actualPrice: "",
+        offerPrice: "",
+        id: 0,
+        keyAccountRows: [
+          {
+            securityDeposit: "",
+            commissionTiers: [
+              { actualCommission: "", offerCommission: "" },
+              { actualCommission: "", offerCommission: "" },
+              { actualCommission: "", offerCommission: "" },
+              { actualCommission: "", offerCommission: "" },
+            ],
+          },
+        ],
+      });
+    }
+  }, [businessIdEdit, dispatch]);
 
   useEffect(() => {
     if (commissions.length > 0 || security) {
@@ -72,6 +100,7 @@ const KeyAccountManagementSection = ({
       }));
     }
   }, [commissions, security]);
+
 
   const handleCommissionChange = (index, e) => {
     const { name, value } = e.target;
@@ -98,6 +127,7 @@ const KeyAccountManagementSection = ({
         ...prev,
         serviceType: value,
         actualPrice: selectedService ? selectedService.price : "",
+        offerPrice: selectedService ? selectedService.price : "",
         keyAccountRows: [
           {
             securityDeposit: "",
@@ -132,7 +162,7 @@ const KeyAccountManagementSection = ({
 
     const payload = {
       id: formData.id ? Number(formData.id) : 0,
-      businessId,
+      businessId: businessIdEdit ? businessIdEdit : businessId,
       serviceTypeId: Number(formData.serviceType),
       offerPrice: Number(formData.offerPrice),
       actualPrice: Number(formData.actualPrice),
@@ -168,12 +198,12 @@ const KeyAccountManagementSection = ({
     e.preventDefault();
 
     const payload = {
-      businessId,
+      businessId: businessIdEdit ? businessIdEdit : businessId,
       serviceTypeId: Number(formData.serviceType),
       securityDeposit: Number(formData.keyAccountRows[0]?.securityDeposit || 0),
       commissions: formData.keyAccountRows[0]?.commissionTiers.map((tier, index) => ({
         id: tier.id || 0, // update if >0, create if 0
-        commissionId: tier.commissionId ,
+        commissionId: tier.commissionId,
         actualPercentage: Number(tier.actualCommission || 0),
         offerPercentage: Number(tier.offerCommission || 0),
         status: 1,
@@ -181,10 +211,11 @@ const KeyAccountManagementSection = ({
     };
 
     try {
-      await dispatch(createKeyAccountCommission(payload));
+      const res = await dispatch(createKeyAccountCommission(payload));
+      console.log('res', res.data.commissions.serviceTypeId);
       // await dispatch(fetchKeyAccountCommission(businessId, formData.serviceType));
       // Reset after success
-        setFormData((prev) => ({
+      setFormData((prev) => ({
         ...prev,
         keyAccountRows: [
           {
@@ -199,18 +230,6 @@ const KeyAccountManagementSection = ({
           },
         ],
       }));
-      // setFormData({
-      //   serviceType: "",
-      //   actualPrice: "",
-      //   offerPrice: "",
-      //   id: 0,
-      //   keyAccountRows: [
-      //     {
-      //       securityDeposit: "",
-      //       commissionTiers: [],
-      //     },
-      //   ],
-      // });
     } catch (err) {
       console.error("Commission API error:", err);
     }
@@ -305,7 +324,7 @@ const KeyAccountManagementSection = ({
                     Commission
                   </div>
                 </div>
-                {activeKeyAccountSection === 'Subscription' &&  (
+                {activeKeyAccountSection === 'Subscription' && (
                   <div className="row g-3">
                     <div className="col-md-3">
                       <label className="form-label">Actual Price<span className='text-danger'> *</span></label>
@@ -330,7 +349,7 @@ const KeyAccountManagementSection = ({
                     </div>
                   </div>
                 )}
-                {activeKeyAccountSection === 'Commission' &&  (
+                {activeKeyAccountSection === 'Commission' && (
                   <div className="row g-3">
                     <div className="col-md-7">
                       <table className="table table-borderless ms-3">

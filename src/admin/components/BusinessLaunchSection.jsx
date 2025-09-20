@@ -5,13 +5,15 @@ import {
   createBusinessLaunch,
   updateBusinessLaunch,
   deleteBusinessLaunch,
+  fetchBusinessLaunches,
 } from "../../redux/actions/businessLaunchActions";
 import { fetchServiceTypes } from "../../redux/actions/serviceTypeActions";
 import { fetchBillingCycles } from "../../redux/actions/billingActions";
 import DeleteConfirmationModal from "./Modal/DeleteConfirmationModal";
 
-const BusinessLaunchSection = ({ businessId, expandedSections, toggleSection }) => {
+const BusinessLaunchSection = ({ businessId, expandedSections, toggleSection, businessIdEdit }) => {
   console.log('businessIdbusinesslaunch', businessId);
+  console.log('businessIdbusinesslaunchEdit', businessIdEdit);
   const dispatch = useDispatch();
 
   const { launches = [], loading, error } = useSelector(
@@ -37,7 +39,29 @@ const BusinessLaunchSection = ({ businessId, expandedSections, toggleSection }) 
   useEffect(() => {
     dispatch(fetchServiceTypes());
     dispatch(fetchBillingCycles());
-  }, [dispatch])
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (businessIdEdit) {
+      dispatch(fetchBusinessLaunches(businessIdEdit));
+    } else {
+      dispatch({ type: "CLEAR_BUSINESS_LAUNCHES" });
+      setFormData({
+        serviceType: "",
+        actualPrice: "",
+        offerPrice: "",
+        billingCycle: "",
+        taskDays: "",
+        id: 0,
+      });
+    }
+  }, [businessIdEdit, dispatch]);
+
+  // useEffect(() => {
+  //   if (businessIdEdit) {
+  //     dispatch(fetchBusinessLaunches(businessIdEdit));
+  //   }
+  // }, [businessIdEdit, dispatch]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -51,6 +75,7 @@ const BusinessLaunchSection = ({ businessId, expandedSections, toggleSection }) 
         ...prev,
         serviceType: value,
         actualPrice: selectedService ? selectedService.price : "",
+        offerPrice: selectedService ? selectedService.price : "",
       }));
     } else {
       setFormData((prev) => ({
@@ -65,7 +90,7 @@ const BusinessLaunchSection = ({ businessId, expandedSections, toggleSection }) 
     const newErrors = {};
     if (!formData.serviceType) newErrors.serviceType = "Service Type is required";
     if (!formData.offerPrice) newErrors.offerPrice = "Offer Price is required";
-    if(formData.offerPrice && formData.actualPrice && Number(formData.offerPrice) > Number(formData.actualPrice)) newErrors.offerPrice = "Offer Price should be than Actual Price";
+    if (formData.offerPrice && formData.actualPrice && Number(formData.offerPrice) > Number(formData.actualPrice)) newErrors.offerPrice = "Offer Price should be than Actual Price";
     if (!formData.billingCycle) newErrors.billingCycle = "Billing Cycle is required";
     if (!formData.taskDays) newErrors.taskDays = "Task Days is required";
     return newErrors;
@@ -79,7 +104,7 @@ const BusinessLaunchSection = ({ businessId, expandedSections, toggleSection }) 
 
     const payload = {
       id: formData.id ? Number(formData.id) : 0,
-      businessId,
+      businessId: businessIdEdit ? businessIdEdit : businessId,
       serviceTypeId: Number(formData.serviceType),
       actualPrice: Number(formData.actualPrice),
       offerPrice: Number(formData.offerPrice),

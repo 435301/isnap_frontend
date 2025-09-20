@@ -15,7 +15,7 @@ const EditSeller = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { id } = useParams();
-
+    console.log('editing business id:', id);
     const { businessDetails } = useSelector((state) => state.business || {});
 
     const [formData, setFormData] = useState({
@@ -123,7 +123,6 @@ const EditSeller = () => {
         e.preventDefault();
 
         const newErrors = {};
-        if (!formData.lead) newErrors.lead = "Lead is required";
         if (!formData.businessName) newErrors.businessName = "Business Name is required";
         if (!formData.sellerName) newErrors.sellerName = "Seller Name is required";
         if (!formData.regdMobileNumber || formData.regdMobileNumber.length !== 10)
@@ -159,10 +158,8 @@ const EditSeller = () => {
             data.append("serviceRows", JSON.stringify(formData.serviceRows));
             data.append("catalogRows", JSON.stringify(formData.catalogRows));
             data.append("keyAccountRows", JSON.stringify(formData.keyAccountRows));
-
-            await dispatch(updateBusiness(data));
-            toast.success("Business updated successfully!");
-            navigate("/manage-sellers");
+               await dispatch(updateBusiness(data));
+            // navigate("/manage-sellers");
         } catch (error) {
             toast.error(error.response?.data?.message || "Something went wrong");
         }
@@ -217,13 +214,14 @@ const EditSeller = () => {
                                 handleSubmit={handleSubmit}
                                 expandedSections={expandedSections}
                                 toggleSection={toggleSection}
+                                businessIdEdit={id} 
                             />
                         )}
                         {activeTab === "Digital Marketing" && (
-                            <DigitalMarketing formData={formData} setFormData={setFormData} />
+                            <DigitalMarketing formData={formData} setFormData={setFormData} businessId={id}  />
                         )}
                         {activeTab === "Photography" && (
-                            <Photography formData={formData} setFormData={setFormData} />
+                            <Photography formData={formData} setFormData={setFormData} businessId={id}  />
                         )}
                     </div>
                 </div>

@@ -17,7 +17,7 @@ const BusinessDetailsEdit = ({ formData, setFormData, errors, handleChange, hand
                 {/* Lead */}
                 <div className="col-md-4 mb-3">
                     <label className="form-label">
-                        Lead <span className="text-danger">*</span>
+                        Lead
                     </label>
                     <select
                         className="form-select"
@@ -199,7 +199,7 @@ const BusinessDetailsEdit = ({ formData, setFormData, errors, handleChange, hand
                     />
                 </div>
 
-                {/* Address */}
+                {/* Address */} 
                 <div className="col-md-4 mb-3">
                     <label className="form-label">Address</label>
                     <input
