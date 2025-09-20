@@ -30,7 +30,7 @@ const CatalogListingSection = ({ businessId, expandedSections, toggleSection }) 
   const [toDelete, setToDelete] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-const { perSkuPriceData,totalPriceData  } = useSelector((state) => state.catalogListing);
+  const { perSkuPriceData, totalPriceData } = useSelector((state) => state.catalogListing);
 
   useEffect(() => {
     dispatch(fetchServiceTypes());
@@ -38,33 +38,37 @@ const { perSkuPriceData,totalPriceData  } = useSelector((state) => state.catalog
   }, [dispatch]);
 
   useEffect(() => {
-  if (formData.skuCount) {
-    dispatch(fetchPerSkuPrice(Number(formData.skuCount)));
-  }
-   if (formData.skuCount && formData.offerPrice) {
-    dispatch(fetchTotalPrice(Number(formData.skuCount), Number(formData.offerPrice)));
-  }
-}, [formData.skuCount,formData.offerPrice, dispatch]);
+    if (formData.skuCount) {
+      dispatch(fetchPerSkuPrice(Number(formData.skuCount)));
+    }
+    if (formData.skuCount && formData.offerPrice) {
+      dispatch(fetchTotalPrice(Number(formData.skuCount), Number(formData.offerPrice)));
+    }
+  }, [formData.skuCount, formData.offerPrice, dispatch]);
 
-useEffect(() => {
-  if (perSkuPriceData?.perSkuPrice) {
-    setFormData((prev) => ({
-      ...prev,
-      perSkuPrice: perSkuPriceData.perSkuPrice,
-    }));
-  };
+  useEffect(() => {
+    if (perSkuPriceData?.perSkuPrice) {
+      setFormData((prev) => ({
+        ...prev,
+        perSkuPrice: perSkuPriceData.perSkuPrice,
+      }));
+    };
     if (totalPriceData?.totalPrice) {
-    setFormData((prev) => ({
-      ...prev,
-      totalPrice: totalPriceData.totalPrice,
-    }));
-  }
-}, [perSkuPriceData, totalPriceData]);
+      setFormData((prev) => ({
+        ...prev,
+        totalPrice: totalPriceData.totalPrice,
+      }));
+    }
+  }, [perSkuPriceData, totalPriceData]);
 
 
   // Handle input change
   const handleChange = (e) => {
     const { name, value } = e.target;
+    setErrors((prev) => ({
+      ...prev,
+      [name]: "",
+    }));
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -73,6 +77,10 @@ useEffect(() => {
     const newErrors = {};
     if (!formData.serviceType) newErrors.serviceType = "Service Type is required";
     if (!formData.skuCount) newErrors.skuCount = "SKU count is required";
+    if (!formData.offerPrice) newErrors.offerPrice = "Offer Price is required";
+    if (formData.offerPrice && formData.perSkuPrice && Number(formData.offerPrice) > Number(formData.perSkuPrice)) newErrors.offerPrice = "Offer Price should be less than Per SKU Price";
+    if (!formData.billingCycle) newErrors.billingCycle = "Billing Cycle is required";
+    if (!formData.taskDays) newErrors.taskDays = "Task Days is required";
     return newErrors;
   };
 
@@ -212,6 +220,7 @@ useEffect(() => {
                     value={formData.offerPrice}
                     onChange={handleChange}
                   />
+                  {errors.offerPrice && <div className="text-danger small">{errors.offerPrice}</div>}
                 </div>
 
                 <div className="col-md-2">
@@ -241,6 +250,7 @@ useEffect(() => {
                       </option>
                     ))}
                   </select>
+                  {errors.billingCycle && <div className="text-danger small">{errors.billingCycle}</div>}
                 </div>
 
                 <div className="col-md-2">
@@ -252,6 +262,7 @@ useEffect(() => {
                     value={formData.taskDays}
                     onChange={handleChange}
                   />
+                  {errors.taskDays && <div className="text-danger small">{errors.taskDays}</div>}
                 </div>
               </div>
 

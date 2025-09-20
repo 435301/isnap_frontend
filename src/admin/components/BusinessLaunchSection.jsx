@@ -10,7 +10,7 @@ import { fetchServiceTypes } from "../../redux/actions/serviceTypeActions";
 import { fetchBillingCycles } from "../../redux/actions/billingActions";
 import DeleteConfirmationModal from "./Modal/DeleteConfirmationModal";
 
-const BusinessLaunchSection = ({ businessId , expandedSections, toggleSection }) => {
+const BusinessLaunchSection = ({ businessId, expandedSections, toggleSection }) => {
   console.log('businessIdbusinesslaunch', businessId);
   const dispatch = useDispatch();
 
@@ -41,6 +41,10 @@ const BusinessLaunchSection = ({ businessId , expandedSections, toggleSection })
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    setErrors((prev) => ({
+      ...prev,
+      [name]: "",
+    }));
     if (name === "serviceType") {
       const selectedService = serviceType.find((type) => type.id === parseInt(value));
       setFormData((prev) => ({
@@ -60,11 +64,14 @@ const BusinessLaunchSection = ({ businessId , expandedSections, toggleSection })
   const validate = () => {
     const newErrors = {};
     if (!formData.serviceType) newErrors.serviceType = "Service Type is required";
+    if (!formData.offerPrice) newErrors.offerPrice = "Offer Price is required";
+    if(formData.offerPrice && formData.actualPrice && Number(formData.offerPrice) > Number(formData.actualPrice)) newErrors.offerPrice = "Offer Price should be than Actual Price";
+    if (!formData.billingCycle) newErrors.billingCycle = "Billing Cycle is required";
+    if (!formData.taskDays) newErrors.taskDays = "Task Days is required";
     return newErrors;
   };
 
   const handleSubmitBusinessLaunch = async (e) => {
-    console.log('saved')
     e.preventDefault();
     const newErrors = validate();
     setErrors(newErrors);
@@ -190,6 +197,9 @@ const BusinessLaunchSection = ({ businessId , expandedSections, toggleSection })
                     value={formData.offerPrice}
                     onChange={handleChange}
                   />
+                  {errors.offerPrice && (
+                    <div className="text-danger small">{errors.offerPrice}</div>
+                  )}
                 </div>
 
                 <div className="col-md-2">
@@ -207,6 +217,9 @@ const BusinessLaunchSection = ({ businessId , expandedSections, toggleSection })
                       </option>
                     ))}
                   </select>
+                  {errors.billingCycle && (
+                    <div className="text-danger small">{errors.billingCycle}</div>
+                  )}
                 </div>
 
                 <div className="col-md-2">
@@ -219,6 +232,9 @@ const BusinessLaunchSection = ({ businessId , expandedSections, toggleSection })
                     value={formData.taskDays}
                     onChange={handleChange}
                   />
+                  {errors.taskDays && (
+                    <div className="text-danger small">{errors.taskDays}</div>
+                  )}
                 </div>
               </div>
 
@@ -290,7 +306,7 @@ const BusinessLaunchSection = ({ businessId , expandedSections, toggleSection })
                           <button
                             type="button"
                             className="btn btn-sm btn-outline-danger"
-                            onClick={()=>handleDeleteClick(row.id)}
+                            onClick={() => handleDeleteClick(row.id)}
                           >
                             <i className="bi bi-trash"></i>
                           </button>

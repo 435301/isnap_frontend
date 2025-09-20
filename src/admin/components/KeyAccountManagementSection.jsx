@@ -120,7 +120,6 @@ const KeyAccountManagementSection = ({
   const validate = () => {
     const newErrors = {};
     if (!formData.serviceType) newErrors.serviceType = "Service Type is required";
-    if (!formData.actualPrice) newErrors.actualPrice = "Actual Price is required";
     if (!formData.offerPrice) newErrors.offerPrice = "Offer Price is required";
     return newErrors;
   };
@@ -309,7 +308,7 @@ const KeyAccountManagementSection = ({
                 {activeKeyAccountSection === 'Subscription' &&  (
                   <div className="row g-3">
                     <div className="col-md-3">
-                      <label className="form-label">Actual Price</label>
+                      <label className="form-label">Actual Price<span className='text-danger'> *</span></label>
                       <input
                         type="number"
                         className="form-control"
@@ -320,7 +319,7 @@ const KeyAccountManagementSection = ({
                       />
                     </div>
                     <div className="col-md-3">
-                      <label className="form-label">Offer Price</label>
+                      <label className="form-label">Offer Price<span className='text-danger'> *</span></label>
                       <input
                         type="number"
                         className="form-control"
@@ -370,7 +369,7 @@ const KeyAccountManagementSection = ({
                       </table>
                     </div>
                     <div className="col-md-12">
-                      <label className="form-label">Security Deposit</label>
+                      <label className="form-label">Security Deposit<span className='text-danger'> *</span></label>
                       <input
                         type="number"
                         className="form-control w-25"
