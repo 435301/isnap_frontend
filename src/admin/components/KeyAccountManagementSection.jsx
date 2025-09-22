@@ -5,7 +5,7 @@ import { createKeyAccountCommission, createSubscription, deleteSubscription, fet
 import DeleteConfirmationModal from './Modal/DeleteConfirmationModal';
 import { fetchCommissions } from '../../redux/actions/commissionActions';
 import { fetchBusinessLaunches } from '../../redux/actions/businessLaunchActions';
- 
+
 const KeyAccountManagementSection = ({
   handleKeyAccountRowChange,
   handleRemoveKeyAccountRow,
@@ -17,15 +17,15 @@ const KeyAccountManagementSection = ({
   console.log('businessIdkeyaccount', businessId);
   console.log('businessIdkeyaccountEdit', businessIdEdit);
   const dispatch = useDispatch();
- 
+
   const { subscriptions = [], loading, error } = useSelector(
     (state) => state.subscriptions || {}
   );
- 
+
   const { commissions = [], security } = useSelector(
     (state) => state.subscriptions || {}
   );
- 
+
   console.log('commission', commissions);
   console.log('subscriptions', subscriptions);
   const serviceType = useSelector((state) => state.serviceType.serviceTypes || []);
@@ -50,11 +50,11 @@ const KeyAccountManagementSection = ({
   const [toDelete, setToDelete] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [activeKeyAccountSection, setActiveKeyAccountSection] = useState('Subscription');
- 
+
   useEffect(() => {
     dispatch(fetchServiceTypes());
   }, [dispatch]);
- 
+
   useEffect(() => {
     if (businessIdEdit) {
       dispatch(fetchKeyAccountSubscription(businessIdEdit));
@@ -80,7 +80,7 @@ const KeyAccountManagementSection = ({
       });
     }
   }, [businessIdEdit, dispatch]);
- 
+
   useEffect(() => {
     if (commissions.length > 0 || security) {
       setFormData((prev) => ({
@@ -100,8 +100,8 @@ const KeyAccountManagementSection = ({
       }));
     }
   }, [commissions, security]);
- 
- 
+
+
   const handleCommissionChange = (index, e) => {
     const { name, value } = e.target;
     const updatedRows = [...formData.keyAccountRows];
@@ -118,7 +118,7 @@ const KeyAccountManagementSection = ({
     updatedRows[0] = { ...updatedRows[0], commissionTiers };
     setFormData((prev) => ({ ...prev, keyAccountRows: updatedRows }));
   };
- 
+
   const handleChange = async (e) => {
     const { name, value } = e.target;
     if (name === "serviceType") {
@@ -146,20 +146,20 @@ const KeyAccountManagementSection = ({
       }));
     }
   };
- 
+
   const validate = () => {
     const newErrors = {};
     if (!formData.serviceType) newErrors.serviceType = "Service Type is required";
     if (!formData.offerPrice) newErrors.offerPrice = "Offer Price is required";
     return newErrors;
   };
- 
+
   const handleSubmitSubscription = async (e) => {
     e.preventDefault();
     const newErrors = validate();
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
- 
+
     const payload = {
       id: formData.id ? Number(formData.id) : 0,
       businessId: businessIdEdit ? businessIdEdit : businessId,
@@ -168,7 +168,7 @@ const KeyAccountManagementSection = ({
       actualPrice: Number(formData.actualPrice),
       status: 1,
     };
- 
+
     try {
       await dispatch(createSubscription(payload));
       setFormData({
@@ -192,11 +192,11 @@ const KeyAccountManagementSection = ({
       console.error("API error:", err);
     }
   };
- 
- 
+
+
   const handleSubmitCommission = async (e) => {
     e.preventDefault();
- 
+
     const payload = {
       businessId: businessIdEdit ? businessIdEdit : businessId,
       serviceTypeId: Number(formData.serviceType),
@@ -209,7 +209,7 @@ const KeyAccountManagementSection = ({
         status: 1,
       })),
     };
- 
+
     try {
       const res = await dispatch(createKeyAccountCommission(payload));
       console.log('res', res.data.commissions.serviceTypeId);
@@ -235,7 +235,7 @@ const KeyAccountManagementSection = ({
       console.error("Commission API error:", err);
     }
   };
- 
+
   const handleSecurityDepositChange = (e) => {
     const { value } = e.target;
     const updatedRows = [...formData.keyAccountRows];
@@ -245,8 +245,8 @@ const KeyAccountManagementSection = ({
     };
     setFormData((prev) => ({ ...prev, keyAccountRows: updatedRows }));
   };
- 
- 
+
+
   // Edit row
   const handleEdit = (row) => {
     setFormData({
@@ -286,13 +286,13 @@ const KeyAccountManagementSection = ({
     setToDelete(id);
     setShowDeleteModal(true);
   };
- 
+
   const handleDelete = async () => {
     await dispatch(deleteSubscription(toDelete));
     setShowDeleteModal(false);
     setToDelete(null);
   };
- 
+
   return (
     <div className="accordion mb-3">
       <div className="accordion-item">
@@ -592,5 +592,5 @@ const KeyAccountManagementSection = ({
     </div>
   );
 };
- 
+
 export default KeyAccountManagementSection;
