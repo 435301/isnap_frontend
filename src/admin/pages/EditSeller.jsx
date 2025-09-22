@@ -141,7 +141,9 @@ const EditSeller = () => {
         try {
             const data = new FormData();
             data.append("id", id);
-            data.append("leadId", parseInt(formData.lead));
+            if (formData.lead) {
+                data.append("leadId", parseInt(formData.lead));
+            }
             data.append("businessName", formData.businessName);
             data.append("sellerName", formData.sellerName);
             data.append("regdMobile", formData.regdMobileNumber);
@@ -158,7 +160,7 @@ const EditSeller = () => {
             data.append("serviceRows", JSON.stringify(formData.serviceRows));
             data.append("catalogRows", JSON.stringify(formData.catalogRows));
             data.append("keyAccountRows", JSON.stringify(formData.keyAccountRows));
-               await dispatch(updateBusiness(data));
+            await dispatch(updateBusiness(data));
             // navigate("/manage-sellers");
         } catch (error) {
             toast.error(error.response?.data?.message || "Something went wrong");
@@ -214,14 +216,14 @@ const EditSeller = () => {
                                 handleSubmit={handleSubmit}
                                 expandedSections={expandedSections}
                                 toggleSection={toggleSection}
-                                businessIdEdit={id} 
+                                businessIdEdit={id}
                             />
                         )}
                         {activeTab === "Digital Marketing" && (
-                            <DigitalMarketing formData={formData} setFormData={setFormData} businessId={id}  />
+                            <DigitalMarketing formData={formData} setFormData={setFormData} businessId={id} />
                         )}
                         {activeTab === "Photography" && (
-                            <Photography formData={formData} setFormData={setFormData} businessId={id}  />
+                            <Photography formData={formData} setFormData={setFormData} businessId={id} />
                         )}
                     </div>
                 </div>

@@ -232,13 +232,9 @@ const BusinessDetailsEdit = ({ formData, setFormData, errors, handleChange, hand
                         </div>
                     )}
 
-
-
-
-
                     <input
                         type="file"
-                        className="form-control"
+                        clasName="form-control"
                         name="businessLogo"
                         onChange={(e) => {
                             const file = e.target.files[0];

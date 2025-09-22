@@ -343,8 +343,6 @@ const CatalogListingSection = ({ businessId, expandedSections, toggleSection, bu
                 <tbody>
                   {loading ? (
                     <tr><td colSpan="9">Loading...</td></tr>
-                  ) : error ? (
-                    <tr><td colSpan="9" className="text-danger">{error}</td></tr>
                   ) : catalogListing.length > 0 ? (
                     catalogListing.map((row, index) => (
                       <tr key={row.id}>

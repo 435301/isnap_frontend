@@ -257,7 +257,7 @@ const KeyAccountManagementSection = ({
     });
     if (!expandedSections.subscriptions) toggleSection("subscriptions");
   };
- 
+
   const handleEditCommission = (row) => {
     const filtered = commissions.filter(c => c.serviceTypeId === row.serviceTypeId);
     setFormData((prev) => ({
@@ -279,8 +279,8 @@ const KeyAccountManagementSection = ({
     setActiveKeyAccountSection("Commission");
     if (!expandedSections.keyAccountManagement) toggleSection("keyAccountManagement");
   };
- 
- 
+
+
   // Delete row
   const handleDeleteClick = (id) => {
     setToDelete(id);
@@ -499,12 +499,12 @@ const KeyAccountManagementSection = ({
                     </tbody>
                   </table>
                 </>
- 
+
               ) : (
                 ""
               )}
             </div>
- 
+
             <div className="table-responsive mb-3">
               {activeKeyAccountSection === "Commission" ? (
                 <>
