@@ -10,9 +10,9 @@ const Sidebar = ({ isOpen }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  // Check if the path is active
+  // Active link check
   const isLinkActive = (path) => {
-    if (path instanceof Array) {
+    if (Array.isArray(path)) {
       return path.includes(location.pathname) ? "active" : "";
     }
     return location.pathname === path ? "active" : "";
@@ -20,37 +20,26 @@ const Sidebar = ({ isOpen }) => {
 
   const [activeDropdown, setActiveDropdown] = useState(null);
 
-  // Open dropdown if current path is inside it
+  // Dropdown route groups
   useEffect(() => {
     const dropdownRoutes = {
       "master-data": [
-        "/manage-services",
-        "/market-place-type",
-        "/manage-billing",
-        "/manage-activities",
-        "/manage-state",
-        "/add-category",
-        "/add-market-place",
-        "/add-activities",
-        "/add-service",
-        "/add-state",
-        "/add-market-type",
-        "/create-department",
-        "/create-billing",
-        "/manage-departments",
-        "/add-department",
-        "/add-product-listing",
-        "/manage-commission",
-        "/create-commission",
-        "/manage-billing",
-        "/manage-product-listing"
-      ],
-      sellers: ["/manage-sellers", "/create-seller", "/view-seller"],
 
+        "/market-place-type",
+        "/manage-services-type",
+        "/manage-product-listing",
+        "/manage-commission",
+        "/manage-departments",
+        "/manage-billing",
+        "/manage-state",
+      ],
+      serviceTypes: ["/manage-service-types",  "/manage-services", "/create-service-type", "/add-service","/create-service-activities", "/manage-service-activities"],
+      sellers: ["/manage-sellers", "/create-seller", "/view-seller"],
       team: ["/manage-team", "/add-team", "/manage-roles", "/add-role", "/latest-updates", "/manage-updates"],
       tasks: ["/manage-task", "/create-task", "/rejected-tasks"],
       leads: ["/manage-leads", "/create-lead", "/view-lead"],
       notifications: ["/view-notifications", "/notification-settings"],
+      products: ["/add-product", "/manage-products"],
     };
 
     let currentDropdown = null;
@@ -100,18 +89,30 @@ const Sidebar = ({ isOpen }) => {
               {isOpen && <span>Master Data</span>}
             </a>
             <div className={`dropdown-menu bg-transparent border-0 ${isDropdownActive("master-data") ? "show" : ""}`}>
-              <Link to="/manage-services" className={`dropdown-item ${isLinkActive("/manage-services")}`}>Service Categories</Link>
               <Link to="/market-place-type" className={`dropdown-item ${isLinkActive("/market-place-type")}`}>Marketplace Types</Link>
               <Link to="/manage-services-type" className={`dropdown-item ${isLinkActive("/manage-services-type")}`}>Marketplaces</Link>
-              <Link to="/manage-product-listing" className={`dropdown-item ${isLinkActive("/manage-product-listing")}`}>Product Listing </Link>
-              <Link to="/manage-commission" className={`dropdown-item ${isLinkActive("/manage-commission")}`}>Comission Pricing</Link>
-
-              <Link to="/manage-departments" className={`dropdown-item ${isLinkActive("/manage-departments")}`}>
-                Departments
-              </Link>
+              <Link to="/manage-product-listing" className={`dropdown-item ${isLinkActive("/manage-product-listing")}`}>Product Listing</Link>
+              <Link to="/manage-commission" className={`dropdown-item ${isLinkActive("/manage-commission")}`}>Commission Pricing</Link>
+              <Link to="/manage-departments" className={`dropdown-item ${isLinkActive("/manage-departments")}`}>Departments</Link>
               <Link to="/manage-billing" className={`dropdown-item ${isLinkActive("/manage-billing")}`}>Billing Cycle</Link>
               <Link to="/manage-state" className={`dropdown-item ${isLinkActive("/manage-state")}`}>States</Link>
+            </div>
+          </div>
 
+          {/* Service Types */}
+          <div className={`nav-item dropdown ${isDropdownActive("serviceTypes") ? "show" : ""}`}>
+            <a
+              href="#!"
+              className={`nav-link dropdown-toggle ${isDropdownActive("serviceTypes") ? "active" : ""}`}
+              onClick={() => handleDropdownToggle("serviceTypes")}
+            >
+              <i className="bi bi-gear-fill me-2"></i>
+              {isOpen && <span>Service Types</span>}
+            </a>
+            <div className={`dropdown-menu bg-transparent border-0 ${isDropdownActive("serviceTypes") ? "show" : ""}`}>
+              <Link to="/manage-services" className={`dropdown-item ${isLinkActive("/manage-services")}`}>Service Categories</Link>
+              <Link to="/manage-service-types" className={`dropdown-item ${isLinkActive("/manage-service-types")}`}>Service Types</Link>
+              <Link to="/manage-service-activities" className={`dropdown-item ${isLinkActive("/manage-service-activities")}`}>Service Activities</Link>
             </div>
           </div>
 
@@ -144,6 +145,7 @@ const Sidebar = ({ isOpen }) => {
             <div className={`dropdown-menu bg-transparent border-0 ${isDropdownActive("sellers") ? "show" : ""}`}>
               <Link to="/manage-sellers" className={`dropdown-item ${isLinkActive("/manage-sellers")}`}>Manage Sellers</Link>
               <Link to="/create-seller" className={`dropdown-item ${isLinkActive("/create-seller")}`}>Create Seller</Link>
+              <Link to="/view-seller" className={`dropdown-item ${isLinkActive("/view-seller")}`}>View Seller</Link>
             </div>
           </div>
 
@@ -161,6 +163,7 @@ const Sidebar = ({ isOpen }) => {
               <Link to="/manage-team" className={`dropdown-item ${isLinkActive("/manage-team")}`}>Teams</Link>
               <Link to="/manage-roles" className={`dropdown-item ${isLinkActive("/manage-roles")}`}>Roles</Link>
               <Link to="/latest-updates" className={`dropdown-item ${isLinkActive("/latest-updates")}`}>Latest Updates</Link>
+              <Link to="/manage-updates" className={`dropdown-item ${isLinkActive("/manage-updates")}`}>Manage Updates</Link>
             </div>
           </div>
 
@@ -191,9 +194,9 @@ const Sidebar = ({ isOpen }) => {
               <i className="bi bi-box-seam me-2"></i>
               {isOpen && <span>Products</span>}
             </a>
-            <div className={`dropdown-menu bg-transparent border-0 `}>
-              <Link to="" className={`dropdown-item`}>Add Product</Link>
-              <Link to="" className={`dropdown-item `}>Manage Products</Link>
+            <div className={`dropdown-menu bg-transparent border-0 ${isDropdownActive("products") ? "show" : ""}`}>
+              <Link to="/add-product" className={`dropdown-item ${isLinkActive("/add-product")}`}>Add Product</Link>
+              <Link to="/manage-products" className={`dropdown-item ${isLinkActive("/manage-products")}`}>Manage Products</Link>
             </div>
           </div>
 
@@ -222,7 +225,7 @@ const Sidebar = ({ isOpen }) => {
           {/* Logout */}
           <button
             onClick={handleLogout}
-            className={`nav-item nav-link text-danger`}
+            className="nav-item nav-link text-danger"
             style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}
           >
             <i className="bi bi-box-arrow-right me-2"></i>

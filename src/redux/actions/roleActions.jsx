@@ -13,9 +13,7 @@ export const fetchRoles = () => async (dispatch, getState) => {
       headers: { Authorization: `Bearer ${token}` },
     });
 
-    const rolesArray = Array.isArray(response.data.data)
-      ? response.data.data
-      : [];
+    const rolesArray = Array.isArray(response.data.data) ? response.data.data : [];
 
     dispatch({
       type: "FETCH_ROLES_SUCCESS",
@@ -51,8 +49,19 @@ export const createRole = (role) => async (dispatch, getState) => {
     dispatch({ type: "SET_SUCCESS_MESSAGE", payload: "Role created successfully!" });
     dispatch(fetchRoles());
     return response.data;
+
   } catch (error) {
-    throw error.response?.data || error;
+    // Backend validation errors (array of {msg})
+    if (error.response?.data?.errors && Array.isArray(error.response.data.errors)) {
+      const firstErrorMsg = error.response.data.errors[0].msg;
+      dispatch({ type: "SET_ERROR_MESSAGE", payload: firstErrorMsg });
+      return Promise.reject(firstErrorMsg);
+    }
+
+    // Other backend messages
+    const errMsg = error.response?.data?.msg || error.message || "Something went wrong";
+    dispatch({ type: "SET_ERROR_MESSAGE", payload: errMsg });
+    return Promise.reject(errMsg);
   }
 };
 
@@ -61,7 +70,6 @@ export const updateRole = (role) => async (dispatch, getState) => {
   try {
     const { auth } = getState();
     const token = auth?.token || localStorage.getItem("token");
-
     const response = await axios.put(
       `${BASE_URL}/roles/update/${role.id}`,
       {
@@ -73,7 +81,6 @@ export const updateRole = (role) => async (dispatch, getState) => {
         headers: { Authorization: `Bearer ${token}` },
       }
     );
-
     dispatch({ type: "UPDATE_ROLE_SUCCESS", payload: response.data });
     dispatch({ type: "SET_SUCCESS_MESSAGE", payload: "Role updated successfully!" });
     dispatch(fetchRoles());
@@ -87,13 +94,19 @@ export const deleteRole = (id) => async (dispatch, getState) => {
   try {
     const { auth } = getState();
     const token = auth?.token || localStorage.getItem("token");
+    if (!id) throw new Error("No role id provided");
 
-    await axios.delete(`${BASE_URL}/roles/delete/${id}`, {
+    const url = `${BASE_URL}/roles/delete/${id}`;
+    const res = await axios.delete(url, {
       headers: { Authorization: `Bearer ${token}` },
     });
 
     dispatch({ type: "DELETE_ROLE_SUCCESS", payload: id });
-    dispatch({ type: "SET_SUCCESS_MESSAGE", payload: "Role deleted successfully!" });
+    dispatch({
+      type: "SET_SUCCESS_MESSAGE",
+      payload: res.data?.message || "Role deleted successfully!",
+    });
+
     dispatch(fetchRoles());
   } catch (error) {
     throw error.response?.data || error;

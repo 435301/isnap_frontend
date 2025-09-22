@@ -61,11 +61,9 @@ const RoleAccess = () => {
             <Sidebar isOpen={isSidebarOpen} />
             <div className="content flex-grow-1">
                 <Navbar onToggleSidebar={handleToggleSidebar} />
-
                 <div className="container-fluid px-4 pt-3">
                     <div className="bg-white p-3 rounded shadow-sm">
                         <h5 className="mb-3">Role Access Management</h5>
-
                         <div className="row">
                             {/* Role */}
                             <div className="mb-3 col-4">
@@ -74,7 +72,7 @@ const RoleAccess = () => {
                                     className="form-select ms-2"
                                     value={role} // current selected role
                                     onChange={(e) => setRole(e.target.value)} // update state on change
-                                >
+>
                                     <option value="">Select Role</option>
                                     <option value="Admin">Admin</option>
                                     <option value="Manager">Manager</option>
@@ -86,8 +84,6 @@ const RoleAccess = () => {
                         </div>
                         {/* Permissions */}
                         <div className="permissions">
-                        
-
                             {/* Master Data */}
                             <div className="form-check mt-2">
                                 <input
@@ -187,7 +183,7 @@ const RoleAccess = () => {
                                     </div>
                                 </div>
                             </div>
-  <div className="form-check mt-2">
+                            <div className="form-check mt-2">
                                 <input
                                     type="checkbox"
                                     className="form-check-input"
@@ -207,7 +203,7 @@ const RoleAccess = () => {
                                     id="masterData"
                                 />
                                 <label htmlFor="masterData" className=" text-dark form-check-label ">
-                                  Team
+                                    Team
                                 </label>
 
                                 <div className="ms-4 mt-1">

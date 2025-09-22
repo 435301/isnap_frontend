@@ -161,6 +161,7 @@ const ManageCommissionPricing = () => {
                     value={statusFilter}
                     onChange={handleStatusChange}
                   >
+                    <option value="">Select Status</option>
                     <option value="">All</option>
                     <option value="1">Active</option>
                     <option value="0">Inactive</option>
@@ -216,11 +217,10 @@ const ManageCommissionPricing = () => {
                           <td>{commission.percentage}%</td>
                           <td>
                             <span
-                              className={`badge ${
-                                commission.status === 1
+                              className={`badge ${commission.status === 1
                                   ? "bg-success-light text-success"
                                   : "bg-danger-light text-danger"
-                              }`}
+                                }`}
                             >
                               {commission.status === 1 ? "Active" : "Inactive"}
                             </span>

@@ -117,8 +117,8 @@ const ManageState = () => {
                 ? 259
                 : 95
               : isSidebarOpen
-              ? 220
-              : 0,
+                ? 220
+                : 0,
           transition: "margin-left 0.3s ease",
         }}
       >
@@ -207,11 +207,10 @@ const ManageState = () => {
                           <td>{st.stateName}</td>
                           <td>
                             <span
-                              className={`badge ${
-                                st.stateStatus
-                                  ? "bg-success-light text-success"
-                                  : "bg-danger-light text-danger"
-                              }`}
+                              className={`badge ${st.stateStatus
+                                ? "bg-success-light text-success"
+                                : "bg-danger-light text-danger"
+                                }`}
                             >
                               {st.stateStatus ? "Active" : "Inactive"}
                             </span>

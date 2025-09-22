@@ -91,14 +91,14 @@ const ManageBilling = () => {
   };
 
   // Filter billing cycles on frontend (optional)
-const filteredBillingCycles = billingCycles.filter((billing) => {
-  const matchesSearch = billing.title
-    .toLowerCase()
-    .includes(searchTerm.toLowerCase());
-  const matchesStatus =
-    statusFilter === "" || String(billing.status) === statusFilter;
-  return matchesSearch && matchesStatus;
-});
+  const filteredBillingCycles = billingCycles.filter((billing) => {
+    const matchesSearch = billing.title
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+    const matchesStatus =
+      statusFilter === "" || String(billing.status) === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
 
 
   return (
@@ -151,7 +151,7 @@ const filteredBillingCycles = billingCycles.filter((billing) => {
                       setStatusFilter(e.target.value);
                       setCurrentPage(1);
                     }}
-                  >
+                  >  <option value="">Select Status</option>
                     <option value="">All</option>
                     <option value="1">Active</option>
                     <option value="0">Inactive</option>
@@ -184,7 +184,7 @@ const filteredBillingCycles = billingCycles.filter((billing) => {
           <div className="row">
             <div className="bg-white p-3 rounded shadow-sm card-header">
               <div className="table-responsive">
-              
+
                 {loading ? (
                   <p>Loading billing cycles...</p>
                 ) : (
@@ -211,11 +211,10 @@ const filteredBillingCycles = billingCycles.filter((billing) => {
                             <td>{billing?.title || "-"}</td>
                             <td>
                               <span
-                                className={`badge ${
-                                  billing?.status
-                                    ? "bg-success-light text-success"
-                                    : "bg-danger-light text-danger"
-                                }`}
+                                className={`badge ${billing?.status
+                                  ? "bg-success-light text-success"
+                                  : "bg-danger-light text-danger"
+                                  }`}
                               >
                                 {billing?.status ? "Active" : "Inactive"}
                               </span>

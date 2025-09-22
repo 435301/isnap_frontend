@@ -35,6 +35,10 @@ import ViewSummary from "./admin/pages/ViewSummary";
 import AddRole from "./admin/pages/AddRole";
 import RoleAccess from "./admin/pages/RoleAccess";
 import ViewSeller from "./admin/pages/ViewSeller"; // <-- add this
+import CreateServicesTypes from "./admin/pages/CreateServicesTypes";
+import ManageServiceTypes from "./admin/pages/ManageServiceTypes";
+import CreateServicesActivities from "./admin/pages/CreateServicesActivities";
+import ManageServiceActivities from "./admin/pages/ManageServiceActivities";
 
 import MarketplaceType from "./admin/pages/MarketplaceType";
 import ManageServicesType from "./admin/pages/ManageServicesType";
@@ -128,6 +132,12 @@ function App() {
         <Route path="/view-notifications" element={<AdminRoute><Notifications /></AdminRoute>} />
         <Route path="/rejected-tasks" element={<AdminRoute><RejectedTasks /></AdminRoute>} />
         <Route path="/view-summary" element={<AdminRoute><ViewSummary /></AdminRoute>} />
+        {/* Serices Types */}
+        <Route path="/create-service-activities" element={<AdminRoute><CreateServicesActivities /></AdminRoute>} />
+        <Route path="/manage-service-types" element={<AdminRoute><ManageServiceTypes /></AdminRoute>} />
+        <Route path="/create-service-type" element={<AdminRoute><CreateServicesTypes /></AdminRoute>} />
+        <Route path="/manage-service-activities" element={<AdminRoute><ManageServiceActivities /></AdminRoute>} />
+
 
         {/* Team Routes */}
         <Route path="/team/dashboard" element={<TeamRoute><TeamDashboard /></TeamRoute>} />
@@ -149,7 +159,7 @@ function App() {
         <Route path="/seller/task" element={<SellerRoute><TaskStatus /></SellerRoute>} />
         <Route path="/seller/task-summary" element={<SellerRoute><TaskSummarySellar /></SellerRoute>} />
       </Routes>
-            <ToastContainer position="top-right" autoClose={3000} />
+      <ToastContainer position="top-right" autoClose={3000} />
 
     </Router>
   );

@@ -30,7 +30,13 @@ const CreateSeller = () => {
     spocMobileNumber: "",
     businessLogo: null,
     status: "",
+    gender: "", // Added for Model Photography
     serviceRows: [
+      { serviceType: "", actualPrice: "", offerPrice: "", billingCycle: "", taskDays: "" },
+      { serviceType: "", actualPrice: "", offerPrice: "", billingCycle: "", taskDays: "" },
+      { serviceType: "", actualPrice: "", offerPrice: "", billingCycle: "", taskDays: "" },
+      { serviceType: "", actualPrice: "", offerPrice: "", billingCycle: "", taskDays: "" },
+      { serviceType: "", actualPrice: "", offerPrice: "", billingCycle: "", taskDays: "" },
       { serviceType: "", actualPrice: "", offerPrice: "", billingCycle: "", taskDays: "" },
     ],
     catalogRows: [
@@ -47,6 +53,12 @@ const CreateSeller = () => {
     businessLaunch: true,
     catalogListing: false,
     keyAccountManagement: false,
+    photographyProduct: false,
+    photographyLifestyle: false,
+    photographyModel: false,
+    photographyAplus: false,
+    photographyStore: false,
+    photographySocial: false,
   });
 
   // Toggle accordion sections
@@ -64,7 +76,7 @@ const CreateSeller = () => {
       setFormData((prev) => ({ ...prev, [name]: files[0] }));
     } else {
       setFormData((prev) => ({ ...prev, [name]: value }));
-    };
+    }
     setErrors((prevErrors) => {
       const newErrors = { ...prevErrors };
       delete newErrors[name];
@@ -80,7 +92,6 @@ const CreateSeller = () => {
     setFormData((prev) => ({ ...prev, regdMobileNumber: value }));
     setErrors((prev) => {
       const newErrors = { ...prev };
-
       if (value.length === 0) {
         newErrors.regdMobileNumber = "Valid Regd Mobile number is required";
       } else if (value.length !== 10) {
@@ -99,7 +110,6 @@ const CreateSeller = () => {
     setFormData((prev) => ({ ...prev, spocMobileNumber: value }));
     setErrors((prev) => {
       const newErrors = { ...prev };
-
       if (value.length === 0) {
         newErrors.spocMobileNumber = "Valid SPOC Mobile number is required";
       } else if (value.length !== 10) {
@@ -111,25 +121,30 @@ const CreateSeller = () => {
     });
   };
 
-
   // Row handlers
   const handleServiceRowChange = (index, e) => {
     const { name, value } = e.target;
     const updatedRows = [...formData.serviceRows];
-    updatedRows[index][name] = value;
+    // Ensure the row exists
+    while (updatedRows.length <= index) {
+      updatedRows.push({ serviceType: "", actualPrice: "", offerPrice: "", billingCycle: "", taskDays: "" });
+    }
+    updatedRows[index] = { ...updatedRows[index], [name]: value };
     setFormData((prev) => ({ ...prev, serviceRows: updatedRows }));
     setErrors((prevErrors) => {
       const newErrors = { ...prevErrors };
-      if (newErrors[name]) delete newErrors[name];
+      if (newErrors[`serviceType${index}`]) delete newErrors[`serviceType${index}`];
       return newErrors;
     });
   };
+
   const handleCatalogRowChange = (index, e) => {
     const { name, value } = e.target;
     const updatedRows = [...formData.catalogRows];
     updatedRows[index][name] = value;
     setFormData((prev) => ({ ...prev, catalogRows: updatedRows }));
   };
+
   const handleKeyAccountRowChange = (index, e) => {
     const { name, value } = e.target;
     const updatedRows = [...formData.keyAccountRows];
@@ -144,6 +159,7 @@ const CreateSeller = () => {
       setFormData((prev) => ({ ...prev, serviceRows: updatedRows }));
     }
   };
+
   const handleRemoveCatalogRow = (index) => {
     const updatedRows = [...formData.catalogRows];
     if (updatedRows.length > 1) {
@@ -151,6 +167,7 @@ const CreateSeller = () => {
       setFormData((prev) => ({ ...prev, catalogRows: updatedRows }));
     }
   };
+
   const handleRemoveKeyAccountRow = (index) => {
     const updatedRows = [...formData.keyAccountRows];
     if (updatedRows.length > 1) {
@@ -164,12 +181,13 @@ const CreateSeller = () => {
     setFormData((prev) => ({
       ...prev,
       ...businessData,
+      gender: businessData.gender || "",
       serviceRows: businessData.businessLaunches?.map((launch) => ({
-        serviceType: launch.serviceTypeName,
-        actualPrice: launch.actualPrice,
-        offerPrice: launch.offerPrice,
-        billingCycle: launch.billCycleTitle,
-        taskDays: launch.taskCompletionDays,
+        serviceType: launch.serviceTypeName || "",
+        actualPrice: launch.actualPrice || "",
+        offerPrice: launch.offerPrice || "",
+        billingCycle: launch.billCycleTitle || "",
+        taskDays: launch.taskCompletionDays || "",
       })) || prev.serviceRows,
       catalogRows: businessData.catalogRows || prev.catalogRows,
       keyAccountRows: businessData.keyAccountRows || prev.keyAccountRows,
@@ -203,14 +221,22 @@ const CreateSeller = () => {
       newErrors.spocMobileNumber = "Valid SPOC mobile number is required";
     if (!formData.status) newErrors.status = "Status is required";
     if (!formData.gstNumber) newErrors.gstNumber = "GST Number is required";
+    if (activeTab === "Photography") {
+      formData.serviceRows.forEach((row, index) => {
+        if (!row.serviceType) {
+          newErrors[`serviceType${index}`] = "Service Type is required";
+        }
+      });
+      if (!formData.gender) {
+        newErrors.gender = "Gender is required for Model Photography";
+      }
+    }
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
 
     try {
       const data = new FormData();
-      if (formData.lead) {
-        data.append("leadId", parseInt(formData.lead));
-      }
+      if (formData.lead) data.append("leadId", parseInt(formData.lead));
       data.append("businessName", formData.businessName);
       data.append("sellerName", formData.sellerName);
       data.append("regdMobile", formData.regdMobileNumber);
@@ -227,10 +253,13 @@ const CreateSeller = () => {
       data.append("serviceRows", JSON.stringify(formData.serviceRows));
       data.append("catalogRows", JSON.stringify(formData.catalogRows));
       data.append("keyAccountRows", JSON.stringify(formData.keyAccountRows));
+      if (formData.gender) data.append("gender", formData.gender);
       await dispatch(createBusiness(data));
       setErrors({});
       setActiveTab("Marketplace Business");
+      toast.success("Business saved successfully");
     } catch (error) {
+      toast.error("Failed to save business details");
     }
   };
 
@@ -247,7 +276,9 @@ const CreateSeller = () => {
                   <h5 className="form-title m-0">{id ? "Edit Seller" : "Create Seller"}</h5>
                 </div>
                 <div className="col-lg-10 d-flex justify-content-end text-end">
-                  <Link to="/manage-sellers" className="btn btn-new-lead">Manage Sellers</Link>
+                  <Link to="/manage-sellers" className="btn btn-new-lead">
+                    Manage Sellers
+                  </Link>
                 </div>
               </div>
             </div>
@@ -255,18 +286,16 @@ const CreateSeller = () => {
 
           <div className="bg-white rounded shadow-sm mb-3">
             <ul className="nav nav-tabs">
-              {["Business Details", "Marketplace Business", "Digital Marketing", "Photography"].map(
-                (tab) => (
-                  <li className="nav-item" key={tab}>
-                    <button
-                      className={`nav-link ${activeTab === tab ? "active" : ""}`}
-                      onClick={() => setActiveTab(tab)}
-                    >
-                      {tab}
-                    </button>
-                  </li>
-                )
-              )}
+              {["Business Details", "Marketplace Business", "Digital Marketing", "Photography"].map((tab) => (
+                <li className="nav-item" key={tab}>
+                  <button
+                    className={`nav-link ${activeTab === tab ? "active" : ""}`}
+                    onClick={() => setActiveTab(tab)}
+                  >
+                    {tab}
+                  </button>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -302,7 +331,17 @@ const CreateSeller = () => {
               <DigitalMarketing formData={formData} setFormData={setFormData} />
             )}
             {activeTab === "Photography" && (
-              <Photography formData={formData} setFormData={setFormData} />
+              <Photography
+                formData={formData}
+                setFormData={setFormData}
+                errors={errors}
+                setErrors={setErrors} // Added setErrors prop
+                expandedSections={expandedSections}
+                toggleSection={toggleSection}
+                handleServiceRowChange={handleServiceRowChange}
+                handleRemoveServiceRow={handleRemoveServiceRow}
+                handleSubmit={handleSubmit}
+              />
             )}
           </div>
         </div>

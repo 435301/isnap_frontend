@@ -30,18 +30,11 @@ const ManageRoles = () => {
 
   const dispatch = useDispatch();
   const { roles = [], loading = false, error = null, successMessage = null } =
-    useSelector((state) => {
-      console.log("Redux State (roles):", state.roles);
-      return state.roles || {};
-    });
+    useSelector((state) => state.roles || {});
 
   useEffect(() => {
     dispatch(fetchRoles());
   }, [dispatch]);
-
-  useEffect(() => {
-    console.log("Roles in state:", roles);
-  }, [roles]);
 
   useEffect(() => {
     if (successMessage) {
@@ -66,13 +59,15 @@ const ManageRoles = () => {
   };
 
   const confirmDelete = async () => {
+    if (!deleteId) return;
     try {
       await dispatch(deleteRole(deleteId));
-    } catch (err) {
-      toast.error("Failed to delete role. Please try again.");
-    } finally {
       setShowDeleteModal(false);
       setDeleteId(null);
+    } catch (err) {
+      toast.error(
+        typeof err === "string" ? err : "Failed to delete role. Please try again."
+      );
     }
   };
 
@@ -88,21 +83,21 @@ const ManageRoles = () => {
   };
 
   const filteredRoles = roles.filter((role) => {
-    const roleName = role.name || "";
-    const matchesName = roleName.toLowerCase().includes(searchTerm.toLowerCase());
+    const roleName = role.roleTitle || role.name || "";
+    const matchesName = roleName
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
     const matchesStatus =
       statusFilter === ""
         ? true
         : statusFilter === "active"
-          ? role.status === true || role.status === "active"
-          : role.status === false || role.status === "inactive";
+        ? role.status === true || role.status === "active"
+        : role.status === false || role.status === "inactive";
     return matchesName && matchesStatus;
   });
 
-  console.log("Filtered Roles:", filteredRoles); // Moved outside filter
-
   return (
-     <div className="container-fluid position-relative bg-white d-flex p-0">
+    <div className="container-fluid position-relative bg-white d-flex p-0">
       <Sidebar isOpen={isSidebarOpen} />
       <div
         className="content flex-grow-1"
@@ -197,62 +192,67 @@ const ManageRoles = () => {
                       <tr>
                         <th>S.no</th>
                         <th>Role Name</th>
-                        {/* <th>Task</th> */}
                         <th>Status</th>
                         <th>Action</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {filteredRoles.map((role, index) => (
-                        <tr key={role.id}>
-                          <td>{index + 1}</td>
-                          <td>{role.roleTitle}</td>
-                          {/* <td>{role.task || "-"}</td> */}
-                          <td>
-                            <span
-                              className={`badge ${role.status === true || role.status === "active"
-                                  ? "bg-success-light text-success"
-                                  : "bg-danger-light text-danger"
+                      {filteredRoles.map((role, index) => {
+                        const roleId = role.id ?? role._id; // support both id and _id
+                        return (
+                          <tr key={roleId}>
+                            <td>{index + 1}</td>
+                            <td>{role.roleTitle}</td>
+                            <td>
+                              <span
+                                className={`badge ${
+                                  role.status === true ||
+                                  role.status === "active"
+                                    ? "bg-success-light text-success"
+                                    : "bg-danger-light text-danger"
                                 }`}
-                            >
-                              {role.status === true || role.status === "active"
-                                ? "Active"
-                                : "Inactive"}
-                            </span>
-                          </td>
-                          <td>
-                            <div className="d-flex gap-2">
-                              <button
-                                className="btn btn-icon btn-view"
-                                onClick={() => {
-                                  setSelectedRole(role);
-                                  setShowViewModal(true);
-                                }}
                               >
-                                <i className="bi bi-eye"></i>
-                              </button>
-                              <button
-                                className="btn btn-icon btn-edit"
-                                onClick={() => {
-                                  setSelectedRole(role);
-                                  setShowEditModal(true);
-                                }}
-                              >
-                                <i className="bi bi-pencil-square"></i>
-                              </button>
-                              <button
-                                className="btn btn-icon btn-delete"
-                                onClick={() => {
-                                  setDeleteId(role.id);
-                                  setShowDeleteModal(true);
-                                }}
-                              >
-                                <i className="bi bi-trash"></i>
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
+                                {role.status === true ||
+                                role.status === "active"
+                                  ? "Active"
+                                  : "Inactive"}
+                              </span>
+                            </td>
+                            <td>
+                              <div className="d-flex gap-2">
+                                <button
+                                  className="btn btn-icon btn-view"
+                                  onClick={() => {
+                                    setSelectedRole(role);
+                                    setShowViewModal(true);
+                                  }}
+                                >
+                                  <i className="bi bi-eye"></i>
+                                </button>
+                                <button
+                                  className="btn btn-icon btn-edit"
+                                  onClick={() => {
+                                    setSelectedRole(role);
+                                    setShowEditModal(true);
+                                  }}
+                                >
+                                  <i className="bi bi-pencil-square"></i>
+                                </button>
+                                <button
+                                  className="btn btn-icon btn-delete"
+                                  onClick={() => {
+                                    console.log("Delete roleId:", roleId);
+                                    setDeleteId(roleId);
+                                    setShowDeleteModal(true);
+                                  }}
+                                >
+                                  <i className="bi bi-trash"></i>
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 )}
@@ -274,13 +274,11 @@ const ManageRoles = () => {
           </div>
         </div>
       </div>
-
       <DeleteConfirmationModal
         show={showDeleteModal}
         handleClose={() => setShowDeleteModal(false)}
         handleConfirm={confirmDelete}
       />
-
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
     </div>
   );

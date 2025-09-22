@@ -77,16 +77,12 @@ const TaskSummary = () => {
         className="content flex-grow-1"
         style={{
           marginLeft: windowWidth >= 992 ? (isSidebarOpen ? 259 : 95) : isSidebarOpen ? 220 : 0,
-          transition: 'margin-left 0.3s ease',
-        }}
-      >
+          transition: 'margin-left 0.3s ease',}}>
         <Navbar onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
-
         <div className="container-fluid px-4 pt-4">
           <div className="bg-white p-3 rounded shadow-sm card-header mb-3 d-flex justify-content-between align-items-center">
             <h5 className="m-0 fw-semibold">Task Details</h5>
           </div>
-
           {/* Task Summary Card */}
           <div className="bg-white p-2 px-3 rounded shadow-sm mb-4 border">
             <div className='border-bottom '><h5 className='section-heading'>Task Summary</h5></div>
@@ -142,8 +138,6 @@ const TaskSummary = () => {
               </div>
             </div>
           </div>
-
-    
         </div>
       </div>
     </div>

@@ -13,7 +13,7 @@ const updates = [
 const LeadsUpdates = () => (
   <div className="card shadow-sm">
     <div className="card-body p-2 pill">
-      
+
       {/* Header */}
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h5 className="card-title mb-0">Lead Updates</h5>
@@ -32,7 +32,7 @@ const LeadsUpdates = () => (
         </div>
         <div className="d-flex align-items-center gap-2 bg-white border rounded p-2 me-1">
           <span className="badge rounded-pill bg-warning text-dark">06</span>
-<span className="small">In Progress <br /> Leads</span>
+          <span className="small">In Progress <br /> Leads</span>
         </div>
         <div className="d-flex align-items-center gap-2 bg-white border rounded p-2">
           <span className="badge rounded-pill bg-success">12</span>
@@ -44,11 +44,11 @@ const LeadsUpdates = () => (
       <ul className="list-group list-group-flush">
         {updates.map((u, i) => (
           <li className="list-group-item d-flex align-items-start gap-3 border-0 px-0" key={i}>
-            <img 
-              src={u.img} 
-              className="rounded-circle" 
-              alt={u.name} 
-              style={{ width: "40px", height: "40px", objectFit: "cover" }} 
+            <img
+              src={u.img}
+              className="rounded-circle"
+              alt={u.name}
+              style={{ width: "40px", height: "40px", objectFit: "cover" }}
             />
             <div>
               <div className="fw-semibold">

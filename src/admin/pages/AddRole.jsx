@@ -1,12 +1,14 @@
-// src/admin/pages/AddRole.jsx
+// src/pages/roles/AddRole.js
 import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
-import { createRole } from "../../redux/actions/roleActions"; // ✅ only import createRole
+import { createRole } from "../../redux/actions/roleActions"; 
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "bootstrap-icons/font/bootstrap-icons.css";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const AddRole = () => {
   const dispatch = useDispatch();
@@ -43,6 +45,7 @@ const AddRole = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     const validationErrors = {};
     if (!formData.roleTitle.trim()) validationErrors.roleTitle = "Role title is required";
 
@@ -52,18 +55,19 @@ const AddRole = () => {
     }
 
     try {
-      await dispatch(createRole(formData)); // ✅ call Redux action
+      await dispatch(createRole(formData));
       setFormData({ roleTitle: "", task: "", status: true });
       setErrors({});
-      navigate("/manage-roles"); // ✅ navigate without alert
+      toast.success("Role created successfully!");
+      navigate("/manage-roles");
     } catch (error) {
-      setErrors({ server: error.response?.data?.error || "Role title must contain only alphabets and spaces." });
+      // Error is now a string from action
+      toast.error(error);
     }
-
   };
 
   return (
-  <div className="container-fluid position-relative bg-white d-flex p-0">
+    <div className="container-fluid position-relative bg-white d-flex p-0">
       <Sidebar isOpen={isSidebarOpen} />
       <div
         className="content flex-grow-1"
@@ -99,7 +103,6 @@ const AddRole = () => {
           <div className="row">
             <div className="bg-white p-3 rounded shadow-sm card-header mb-4">
               <form onSubmit={handleSubmit}>
-                {errors.server && <div className="alert alert-danger">{errors.server}</div>}
                 <div className="row g-3">
                   <div className="col-md-4">
                     <label className="form-label">
@@ -113,20 +116,10 @@ const AddRole = () => {
                       className={`form-control ${errors.roleTitle ? "is-invalid" : ""}`}
                       placeholder="Role Title"
                     />
-                    {errors.roleTitle && <div className="invalid-feedback">{errors.roleTitle}</div>}
+                    {errors.roleTitle && (
+                      <div className="invalid-feedback">{errors.roleTitle}</div>
+                    )}
                   </div>
-
-                  {/* <div className="col-md-4">
-                    <label className="form-label">Task</label>
-                    <input
-                      type="text"
-                      name="task"
-                      value={formData.task}
-                      onChange={handleChange}
-                      className="form-control"
-                      placeholder="Task"
-                    />
-                  </div> */}
 
                   <div className="col-md-4">
                     <label className="form-label">
@@ -161,6 +154,7 @@ const AddRole = () => {
           </div>
         </div>
       </div>
+      <ToastContainer position="top-right" autoClose={3000} />
     </div>
   );
 };

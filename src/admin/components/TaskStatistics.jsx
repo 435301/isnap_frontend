@@ -4,7 +4,6 @@ import Chart from "chart.js/auto";
 const PieChartBox = ({ title, labels, data, colors }) => {
   const chartRef = useRef(null);
   const chartInstanceRef = useRef(null);
-
   useEffect(() => {
     if (chartInstanceRef.current) chartInstanceRef.current.destroy();
 

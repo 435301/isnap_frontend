@@ -1,21 +1,23 @@
 import React from "react";
 import { Modal, Button } from "react-bootstrap";
 
-const ViewMarketTypeModal = ({ show, handleClose, marketType }) => {
-  if (!marketType) return null; // ⛔ No data, don't render
+const ViewRoleModal = ({ showViewModal, setShowViewModal, selectedRole }) => {
+  if (!selectedRole) return null;
+
+  const handleClose = () => setShowViewModal(false);
 
   return (
-    <Modal show={show} onHide={handleClose} centered>
+    <Modal show={showViewModal} onHide={handleClose} centered>
       <Modal.Header closeButton>
-        <Modal.Title>View Market Type</Modal.Title>
+        <Modal.Title>View Role</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <p>
-          <strong>Market Type Name:</strong> {marketType.marketTypeName}
+          <strong>Role Name:</strong> {selectedRole.roleTitle}
         </p>
         <p>
           <strong>Status:</strong>{" "}
-          {marketType.status ? (
+          {selectedRole.status === true || selectedRole.status === "active" ? (
             <span className="badge bg-success">Active</span>
           ) : (
             <span className="badge bg-danger">Inactive</span>
@@ -31,4 +33,4 @@ const ViewMarketTypeModal = ({ show, handleClose, marketType }) => {
   );
 };
 
-export default ViewMarketTypeModal;
+export default ViewRoleModal;

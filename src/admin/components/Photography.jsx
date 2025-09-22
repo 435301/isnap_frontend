@@ -1,15 +1,42 @@
-import React from 'react';
+import React from "react";
 
 const Photography = ({
   formData,
-  setFormData, // Add setFormData to props
+  setFormData,
   errors,
+  setErrors, // Added to props
   expandedSections,
   toggleSection,
   handleServiceRowChange,
   handleRemoveServiceRow,
   handleSubmit,
 }) => {
+  const getServiceRow = (index) => {
+    return (
+      formData.serviceRows[index] || {
+        serviceType: "",
+        actualPrice: "",
+        offerPrice: "",
+        billingCycle: "",
+        taskDays: "",
+      }
+    );
+  };
+
+  const resetSection = (index) => {
+    const updatedRows = [...formData.serviceRows];
+    while (updatedRows.length <= index) {
+      updatedRows.push({ serviceType: "", actualPrice: "", offerPrice: "", billingCycle: "", taskDays: "" });
+    }
+    updatedRows[index] = { serviceType: "", actualPrice: "", offerPrice: "", billingCycle: "", taskDays: "" };
+    setFormData((prev) => ({ ...prev, serviceRows: updatedRows }));
+    setErrors((prevErrors) => {
+      const newErrors = { ...prevErrors };
+      delete newErrors[`serviceType${index}`];
+      return newErrors;
+    });
+  };
+
   return (
     <div className="tab-content">
       <form onSubmit={handleSubmit}>
@@ -18,26 +45,28 @@ const Photography = ({
           <div className="accordion-item">
             <h2 className="accordion-header">
               <button
-                className={`accordion-button ${!expandedSections.photographyProduct ? 'collapsed' : ''}`}
+                className={`accordion-button ${!expandedSections.photographyProduct ? "collapsed" : ""}`}
                 type="button"
-                onClick={() => toggleSection('photographyProduct')}
+                onClick={() => toggleSection("photographyProduct")}
                 aria-expanded={expandedSections.photographyProduct}
               >
                 Product Photography
               </button>
             </h2>
             <div
-              className={`accordion-collapse collapse ${expandedSections.photographyProduct ? 'show' : ''}`}
+              className={`accordion-collapse collapse ${expandedSections.photographyProduct ? "show" : ""}`}
               aria-labelledby="photographyProduct"
             >
               <div className="accordion-body">
                 <div className="row g-3 mb-3 align-items-center">
                   <div className="col-md-4">
-                    <label className="form-label">Service Type <span className="text-danger">*</span></label>
+                    <label className="form-label">
+                      Service Type <span className="text-danger">*</span>
+                    </label>
                     <select
                       className="form-select"
                       name="serviceType"
-                      value={formData.serviceRows[0]?.serviceType || ''}
+                      value={getServiceRow(0).serviceType}
                       onChange={(e) => handleServiceRowChange(0, e)}
                     >
                       <option value="">Select Service Type</option>
@@ -45,10 +74,14 @@ const Photography = ({
                       <option value="Lifestyle & Creative Photography">Lifestyle & Creative Photography</option>
                       <option value="Model Photography">Model Photography</option>
                       <option value="A+ Content Photography">A+ Content Photography</option>
-                      <option value="Store, Showroom & Manufacturing Unit Shoots">Store, Showroom & Manufacturing Unit Shoots</option>
+                      <option value="Store, Showroom & Manufacturing Unit Shoots">
+                        Store, Showroom & Manufacturing Unit Shoots
+                      </option>
                       <option value="Social Media Ready Content">Social Media Ready Content</option>
                     </select>
-                    {errors.serviceType && <div className="text-danger small">{errors.serviceType}</div>}
+                    {errors[`serviceType${0}`] && (
+                      <div className="text-danger small">{errors[`serviceType${0}`]}</div>
+                    )}
                   </div>
                   <div className="col-md-2">
                     <label className="form-label">Actual Price</label>
@@ -57,7 +90,7 @@ const Photography = ({
                       placeholder="567"
                       className="form-control"
                       name="actualPrice"
-                      value={formData.serviceRows[0]?.actualPrice || ''}
+                      value={getServiceRow(0).actualPrice}
                       onChange={(e) => handleServiceRowChange(0, e)}
                     />
                   </div>
@@ -68,7 +101,7 @@ const Photography = ({
                       placeholder="467"
                       className="form-control"
                       name="offerPrice"
-                      value={formData.serviceRows[0]?.offerPrice || ''}
+                      value={getServiceRow(0).offerPrice}
                       onChange={(e) => handleServiceRowChange(0, e)}
                     />
                   </div>
@@ -77,7 +110,7 @@ const Photography = ({
                     <select
                       className="form-select"
                       name="billingCycle"
-                      value={formData.serviceRows[0]?.billingCycle || ''}
+                      value={getServiceRow(0).billingCycle}
                       onChange={(e) => handleServiceRowChange(0, e)}
                     >
                       <option value="">Select Billing Cycle</option>
@@ -92,7 +125,7 @@ const Photography = ({
                       className="form-control"
                       placeholder="No. of days"
                       name="taskDays"
-                      value={formData.serviceRows[0]?.taskDays || ''}
+                      value={getServiceRow(0).taskDays}
                       onChange={(e) => handleServiceRowChange(0, e)}
                     />
                   </div>
@@ -141,8 +174,16 @@ const Photography = ({
                   </table>
                 </div>
                 <div className="col-md-12 d-flex justify-content-end mt-3">
-                  <button type="button" className="btn btn-outline-secondary px-5 me-2">Reset</button>
-                  <button type="submit" className="btn btn-success px-5">Save</button>
+                  <button
+                    type="button"
+                    className="btn btn-outline-secondary px-5 me-2"
+                    onClick={() => resetSection(0)}
+                  >
+                    Reset
+                  </button>
+                  <button type="submit" className="btn btn-success px-5">
+                    Save
+                  </button>
                 </div>
               </div>
             </div>
@@ -154,26 +195,28 @@ const Photography = ({
           <div className="accordion-item">
             <h2 className="accordion-header">
               <button
-                className={`accordion-button ${!expandedSections.photographyLifestyle ? 'collapsed' : ''}`}
+                className={`accordion-button ${!expandedSections.photographyLifestyle ? "collapsed" : ""}`}
                 type="button"
-                onClick={() => toggleSection('photographyLifestyle')}
+                onClick={() => toggleSection("photographyLifestyle")}
                 aria-expanded={expandedSections.photographyLifestyle}
               >
                 Lifestyle & Creative Photography
               </button>
             </h2>
             <div
-              className={`accordion-collapse collapse ${expandedSections.photographyLifestyle ? 'show' : ''}`}
+              className={`accordion-collapse collapse ${expandedSections.photographyLifestyle ? "show" : ""}`}
               aria-labelledby="photographyLifestyle"
             >
               <div className="accordion-body">
                 <div className="row g-3 mb-3 align-items-center">
                   <div className="col-md-4">
-                    <label className="form-label">Service Type <span className="text-danger">*</span></label>
+                    <label className="form-label">
+                      Service Type <span className="text-danger">*</span>
+                    </label>
                     <select
                       className="form-select"
                       name="serviceType"
-                      value={formData.serviceRows[1]?.serviceType || ''}
+                      value={getServiceRow(1).serviceType}
                       onChange={(e) => handleServiceRowChange(1, e)}
                     >
                       <option value="">Select Service Type</option>
@@ -181,10 +224,14 @@ const Photography = ({
                       <option value="Lifestyle & Creative Photography">Lifestyle & Creative Photography</option>
                       <option value="Model Photography">Model Photography</option>
                       <option value="A+ Content Photography">A+ Content Photography</option>
-                      <option value="Store, Showroom & Manufacturing Unit Shoots">Store, Showroom & Manufacturing Unit Shoots</option>
+                      <option value="Store, Showroom & Manufacturing Unit Shoots">
+                        Store, Showroom & Manufacturing Unit Shoots
+                      </option>
                       <option value="Social Media Ready Content">Social Media Ready Content</option>
                     </select>
-                    {errors.serviceType && <div className="text-danger small">{errors.serviceType}</div>}
+                    {errors[`serviceType${1}`] && (
+                      <div className="text-danger small">{errors[`serviceType${1}`]}</div>
+                    )}
                   </div>
                   <div className="col-md-2">
                     <label className="form-label">Actual Price</label>
@@ -193,7 +240,7 @@ const Photography = ({
                       placeholder="567"
                       className="form-control"
                       name="actualPrice"
-                      value={formData.serviceRows[1]?.actualPrice || ''}
+                      value={getServiceRow(1).actualPrice}
                       onChange={(e) => handleServiceRowChange(1, e)}
                     />
                   </div>
@@ -204,7 +251,7 @@ const Photography = ({
                       placeholder="467"
                       className="form-control"
                       name="offerPrice"
-                      value={formData.serviceRows[1]?.offerPrice || ''}
+                      value={getServiceRow(1).offerPrice}
                       onChange={(e) => handleServiceRowChange(1, e)}
                     />
                   </div>
@@ -213,7 +260,7 @@ const Photography = ({
                     <select
                       className="form-select"
                       name="billingCycle"
-                      value={formData.serviceRows[1]?.billingCycle || ''}
+                      value={getServiceRow(1).billingCycle}
                       onChange={(e) => handleServiceRowChange(1, e)}
                     >
                       <option value="">Select Billing Cycle</option>
@@ -228,7 +275,7 @@ const Photography = ({
                       className="form-control"
                       placeholder="No. of days"
                       name="taskDays"
-                      value={formData.serviceRows[1]?.taskDays || ''}
+                      value={getServiceRow(1).taskDays}
                       onChange={(e) => handleServiceRowChange(1, e)}
                     />
                   </div>
@@ -277,8 +324,16 @@ const Photography = ({
                   </table>
                 </div>
                 <div className="col-md-12 d-flex justify-content-end mt-3">
-                  <button type="button" className="btn btn-outline-secondary px-5 me-2">Reset</button>
-                  <button type="submit" className="btn btn-success px-5">Save</button>
+                  <button
+                    type="button"
+                    className="btn btn-outline-secondary px-5 me-2"
+                    onClick={() => resetSection(1)}
+                  >
+                    Reset
+                  </button>
+                  <button type="submit" className="btn btn-success px-5">
+                    Save
+                  </button>
                 </div>
               </div>
             </div>
@@ -290,29 +345,29 @@ const Photography = ({
           <div className="accordion-item">
             <h2 className="accordion-header">
               <button
-                className={`accordion-button ${!expandedSections.photographyModel ? 'collapsed' : ''}`}
+                className={`accordion-button ${!expandedSections.photographyModel ? "collapsed" : ""}`}
                 type="button"
-                onClick={() => toggleSection('photographyModel')}
+                onClick={() => toggleSection("photographyModel")}
                 aria-expanded={expandedSections.photographyModel}
               >
                 Model Photography
               </button>
             </h2>
             <div
-              className={`accordion-collapse collapse ${expandedSections.photographyModel ? 'show' : ''}`}
+              className={`accordion-collapse collapse ${expandedSections.photographyModel ? "show" : ""}`}
               aria-labelledby="photographyModel"
             >
               <div className="accordion-body">
                 <div className="row g-3 mb-3 align-items-center">
                   <div className="col-md-3">
-                    <label className="form-label">Gender <span className="text-danger">*</span></label>
+                    <label className="form-label">
+                      Gender <span className="text-danger">*</span>
+                    </label>
                     <select
                       className="form-select"
                       name="gender"
-                      value={formData.gender || ''}
-                      onChange={(e) =>
-                        setFormData((prev) => ({ ...prev, gender: e.target.value }))
-                      }
+                      value={formData.gender || ""}
+                      onChange={(e) => setFormData((prev) => ({ ...prev, gender: e.target.value }))}
                     >
                       <option value="">Select Gender</option>
                       <option value="Male">Male</option>
@@ -324,11 +379,13 @@ const Photography = ({
                 </div>
                 <div className="row g-3 mb-3 align-items-center">
                   <div className="col-md-4">
-                    <label className="form-label">Service Type <span className="text-danger">*</span></label>
+                    <label className="form-label">
+                      Service Type <span className="text-danger">*</span>
+                    </label>
                     <select
                       className="form-select"
                       name="serviceType"
-                      value={formData.serviceRows[2]?.serviceType || ''}
+                      value={getServiceRow(2).serviceType}
                       onChange={(e) => handleServiceRowChange(2, e)}
                     >
                       <option value="">Select Service Type</option>
@@ -336,10 +393,14 @@ const Photography = ({
                       <option value="Lifestyle & Creative Photography">Lifestyle & Creative Photography</option>
                       <option value="Model Photography">Model Photography</option>
                       <option value="A+ Content Photography">A+ Content Photography</option>
-                      <option value="Store, Showroom & Manufacturing Unit Shoots">Store, Showroom & Manufacturing Unit Shoots</option>
+                      <option value="Store, Showroom & Manufacturing Unit Shoots">
+                        Store, Showroom & Manufacturing Unit Shoots
+                      </option>
                       <option value="Social Media Ready Content">Social Media Ready Content</option>
                     </select>
-                    {errors.serviceType && <div className="text-danger small">{errors.serviceType}</div>}
+                    {errors[`serviceType${2}`] && (
+                      <div className="text-danger small">{errors[`serviceType${2}`]}</div>
+                    )}
                   </div>
                   <div className="col-md-2">
                     <label className="form-label">Actual Price</label>
@@ -348,7 +409,7 @@ const Photography = ({
                       className="form-control"
                       placeholder="567"
                       name="actualPrice"
-                      value={formData.serviceRows[2]?.actualPrice || ''}
+                      value={getServiceRow(2).actualPrice}
                       onChange={(e) => handleServiceRowChange(2, e)}
                     />
                   </div>
@@ -359,7 +420,7 @@ const Photography = ({
                       placeholder="467"
                       className="form-control"
                       name="offerPrice"
-                      value={formData.serviceRows[2]?.offerPrice || ''}
+                      value={getServiceRow(2).offerPrice}
                       onChange={(e) => handleServiceRowChange(2, e)}
                     />
                   </div>
@@ -368,7 +429,7 @@ const Photography = ({
                     <select
                       className="form-select"
                       name="billingCycle"
-                      value={formData.serviceRows[2]?.billingCycle || ''}
+                      value={getServiceRow(2).billingCycle}
                       onChange={(e) => handleServiceRowChange(2, e)}
                     >
                       <option value="">Select Billing Cycle</option>
@@ -383,7 +444,7 @@ const Photography = ({
                       className="form-control"
                       placeholder="No. of days"
                       name="taskDays"
-                      value={formData.serviceRows[2]?.taskDays || ''}
+                      value={getServiceRow(2).taskDays}
                       onChange={(e) => handleServiceRowChange(2, e)}
                     />
                   </div>
@@ -432,8 +493,24 @@ const Photography = ({
                   </table>
                 </div>
                 <div className="col-md-12 d-flex justify-content-end mt-3">
-                  <button type="button" className="btn btn-outline-secondary px-5 me-2">Reset</button>
-                  <button type="submit" className="btn btn-success px-5">Save</button>
+                  <button
+                    type="button"
+                    className="btn btn-outline-secondary px-5 me-2"
+                    onClick={() => {
+                      resetSection(2);
+                      setFormData((prev) => ({ ...prev, gender: "" }));
+                      setErrors((prevErrors) => {
+                        const newErrors = { ...prevErrors };
+                        delete newErrors.gender;
+                        return newErrors;
+                      });
+                    }}
+                  >
+                    Reset
+                  </button>
+                  <button type="submit" className="btn btn-success px-5">
+                    Save
+                  </button>
                 </div>
               </div>
             </div>
@@ -445,26 +522,28 @@ const Photography = ({
           <div className="accordion-item">
             <h2 className="accordion-header">
               <button
-                className={`accordion-button ${!expandedSections.photographyAplus ? 'collapsed' : ''}`}
+                className={`accordion-button ${!expandedSections.photographyAplus ? "collapsed" : ""}`}
                 type="button"
-                onClick={() => toggleSection('photographyAplus')}
+                onClick={() => toggleSection("photographyAplus")}
                 aria-expanded={expandedSections.photographyAplus}
               >
                 A+ Content Photography
               </button>
             </h2>
             <div
-              className={`accordion-collapse collapse ${expandedSections.photographyAplus ? 'show' : ''}`}
+              className={`accordion-collapse collapse ${expandedSections.photographyAplus ? "show" : ""}`}
               aria-labelledby="photographyAplus"
             >
               <div className="accordion-body">
                 <div className="row g-3 mb-3 align-items-center">
                   <div className="col-md-4">
-                    <label className="form-label">Service Type <span className="text-danger">*</span></label>
+                    <label className="form-label">
+                      Service Type <span className="text-danger">*</span>
+                    </label>
                     <select
                       className="form-select"
                       name="serviceType"
-                      value={formData.serviceRows[3]?.serviceType || ''}
+                      value={getServiceRow(3).serviceType}
                       onChange={(e) => handleServiceRowChange(3, e)}
                     >
                       <option value="">Select Service Type</option>
@@ -472,10 +551,14 @@ const Photography = ({
                       <option value="Lifestyle & Creative Photography">Lifestyle & Creative Photography</option>
                       <option value="Model Photography">Model Photography</option>
                       <option value="A+ Content Photography">A+ Content Photography</option>
-                      <option value="Store, Showroom & Manufacturing Unit Shoots">Store, Showroom & Manufacturing Unit Shoots</option>
+                      <option value="Store, Showroom & Manufacturing Unit Shoots">
+                        Store, Showroom & Manufacturing Unit Shoots
+                      </option>
                       <option value="Social Media Ready Content">Social Media Ready Content</option>
                     </select>
-                    {errors.serviceType && <div className="text-danger small">{errors.serviceType}</div>}
+                    {errors[`serviceType${3}`] && (
+                      <div className="text-danger small">{errors[`serviceType${3}`]}</div>
+                    )}
                   </div>
                   <div className="col-md-2">
                     <label className="form-label">Actual Price</label>
@@ -484,7 +567,7 @@ const Photography = ({
                       className="form-control"
                       placeholder="567"
                       name="actualPrice"
-                      value={formData.serviceRows[3]?.actualPrice || ''}
+                      value={getServiceRow(3).actualPrice}
                       onChange={(e) => handleServiceRowChange(3, e)}
                     />
                   </div>
@@ -495,7 +578,7 @@ const Photography = ({
                       placeholder="467"
                       className="form-control"
                       name="offerPrice"
-                      value={formData.serviceRows[3]?.offerPrice || ''}
+                      value={getServiceRow(3).offerPrice}
                       onChange={(e) => handleServiceRowChange(3, e)}
                     />
                   </div>
@@ -504,7 +587,7 @@ const Photography = ({
                     <select
                       className="form-select"
                       name="billingCycle"
-                      value={formData.serviceRows[3]?.billingCycle || ''}
+                      value={getServiceRow(3).billingCycle}
                       onChange={(e) => handleServiceRowChange(3, e)}
                     >
                       <option value="">Select Billing Cycle</option>
@@ -519,7 +602,7 @@ const Photography = ({
                       className="form-control"
                       placeholder="No. of days"
                       name="taskDays"
-                      value={formData.serviceRows[3]?.taskDays || ''}
+                      value={getServiceRow(3).taskDays}
                       onChange={(e) => handleServiceRowChange(3, e)}
                     />
                   </div>
@@ -568,8 +651,16 @@ const Photography = ({
                   </table>
                 </div>
                 <div className="col-md-12 d-flex justify-content-end mt-3">
-                  <button type="button" className="btn btn-outline-secondary px-5 me-2">Reset</button>
-                  <button type="submit" className="btn btn-success px-5">Save</button>
+                  <button
+                    type="button"
+                    className="btn btn-outline-secondary px-5 me-2"
+                    onClick={() => resetSection(3)}
+                  >
+                    Reset
+                  </button>
+                  <button type="submit" className="btn btn-success px-5">
+                    Save
+                  </button>
                 </div>
               </div>
             </div>
@@ -581,26 +672,28 @@ const Photography = ({
           <div className="accordion-item">
             <h2 className="accordion-header">
               <button
-                className={`accordion-button ${!expandedSections.photographyStore ? 'collapsed' : ''}`}
+                className={`accordion-button ${!expandedSections.photographyStore ? "collapsed" : ""}`}
                 type="button"
-                onClick={() => toggleSection('photographyStore')}
+                onClick={() => toggleSection("photographyStore")}
                 aria-expanded={expandedSections.photographyStore}
               >
                 Store, Showroom & Manufacturing Unit Shoots
               </button>
             </h2>
             <div
-              className={`accordion-collapse collapse ${expandedSections.photographyStore ? 'show' : ''}`}
+              className={`accordion-collapse collapse ${expandedSections.photographyStore ? "show" : ""}`}
               aria-labelledby="photographyStore"
             >
               <div className="accordion-body">
                 <div className="row g-3 mb-3 align-items-center">
                   <div className="col-md-4">
-                    <label className="form-label">Service Type <span className="text-danger">*</span></label>
+                    <label className="form-label">
+                      Service Type <span className="text-danger">*</span>
+                    </label>
                     <select
                       className="form-select"
                       name="serviceType"
-                      value={formData.serviceRows[4]?.serviceType || ''}
+                      value={getServiceRow(4).serviceType}
                       onChange={(e) => handleServiceRowChange(4, e)}
                     >
                       <option value="">Select Service Type</option>
@@ -608,10 +701,14 @@ const Photography = ({
                       <option value="Lifestyle & Creative Photography">Lifestyle & Creative Photography</option>
                       <option value="Model Photography">Model Photography</option>
                       <option value="A+ Content Photography">A+ Content Photography</option>
-                      <option value="Store, Showroom & Manufacturing Unit Shoots">Store, Showroom & Manufacturing Unit Shoots</option>
+                      <option value="Store, Showroom & Manufacturing Unit Shoots">
+                        Store, Showroom & Manufacturing Unit Shoots
+                      </option>
                       <option value="Social Media Ready Content">Social Media Ready Content</option>
                     </select>
-                    {errors.serviceType && <div className="text-danger small">{errors.serviceType}</div>}
+                    {errors[`serviceType${4}`] && (
+                      <div className="text-danger small">{errors[`serviceType${4}`]}</div>
+                    )}
                   </div>
                   <div className="col-md-2">
                     <label className="form-label">Actual Price</label>
@@ -620,7 +717,7 @@ const Photography = ({
                       className="form-control"
                       placeholder="567"
                       name="actualPrice"
-                      value={formData.serviceRows[4]?.actualPrice || ''}
+                      value={getServiceRow(4).actualPrice}
                       onChange={(e) => handleServiceRowChange(4, e)}
                     />
                   </div>
@@ -631,7 +728,7 @@ const Photography = ({
                       placeholder="467"
                       className="form-control"
                       name="offerPrice"
-                      value={formData.serviceRows[4]?.offerPrice || ''}
+                      value={getServiceRow(4).offerPrice}
                       onChange={(e) => handleServiceRowChange(4, e)}
                     />
                   </div>
@@ -640,7 +737,7 @@ const Photography = ({
                     <select
                       className="form-select"
                       name="billingCycle"
-                      value={formData.serviceRows[4]?.billingCycle || ''}
+                      value={getServiceRow(4).billingCycle}
                       onChange={(e) => handleServiceRowChange(4, e)}
                     >
                       <option value="">Select Billing Cycle</option>
@@ -655,26 +752,40 @@ const Photography = ({
                       className="form-control"
                       placeholder="No. of days"
                       name="taskDays"
-                      value={formData.serviceRows[4]?.taskDays || ''}
+                      value={getServiceRow(4).taskDays}
                       onChange={(e) => handleServiceRowChange(4, e)}
                     />
                   </div>
                 </div>
                 <div className="text-end mb-3">
                   <a href="#" className="text-danger" data-bs-toggle="modal" data-bs-target="#trashModal">
-                    <i className="bi bi-trash"></i> Trash (2)
+                    <i className="bi bi-trash"></i> Trash ({formData.serviceRows.length})
                   </a>
                 </div>
-                <div className="modal fade" id="trashModal" tabIndex="-1" aria-labelledby="trashModalLabel" aria-hidden="true">
+                <div
+                  className="modal fade"
+                  id="trashModal"
+                  tabIndex="-1"
+                  aria-labelledby="trashModalLabel"
+                  aria-hidden="true"
+                >
                   <div className="modal-dialog modal-lg modal-dialog-centered">
                     <div className="modal-content">
                       <div className="modal-header bg-danger">
-                        <h5 className="modal-title" id="trashModalLabel">Trash (2)</h5>
-                        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <h5 className="modal-title" id="trashModalLabel">
+                          Trash ({formData.serviceRows.length})
+                        </h5>
+                        <button
+                          type="button"
+                          className="btn-close"
+                          data-bs-dismiss="modal"
+                          aria-label="Close"
+                        ></button>
                       </div>
                       <div className="modal-body">
                         <h5 className="mb-3">
-                          <span className="text-success">Photography</span> (Store, Showroom & Manufacturing Unit Shoots)
+                          <span className="text-success">Photography</span> (Store, Showroom &
+                          Manufacturing Unit Shoots)
                         </h5>
                         <div className="table-responsive mb-3">
                           <table className="table table-bordered">
@@ -767,8 +878,16 @@ const Photography = ({
                   </table>
                 </div>
                 <div className="col-md-12 d-flex justify-content-end mt-3">
-                  <button type="button" className="btn btn-outline-secondary px-5 me-2">Reset</button>
-                  <button type="submit" className="btn btn-success px-5">Save</button>
+                  <button
+                    type="button"
+                    className="btn btn-outline-secondary px-5 me-2"
+                    onClick={() => resetSection(4)}
+                  >
+                    Reset
+                  </button>
+                  <button type="submit" className="btn btn-success px-5">
+                    Save
+                  </button>
                 </div>
               </div>
             </div>
@@ -780,26 +899,28 @@ const Photography = ({
           <div className="accordion-item">
             <h2 className="accordion-header">
               <button
-                className={`accordion-button ${!expandedSections.photographySocial ? 'collapsed' : ''}`}
+                className={`accordion-button ${!expandedSections.photographySocial ? "collapsed" : ""}`}
                 type="button"
-                onClick={() => toggleSection('photographySocial')}
+                onClick={() => toggleSection("photographySocial")}
                 aria-expanded={expandedSections.photographySocial}
               >
                 Social Media Ready Content
               </button>
             </h2>
             <div
-              className={`accordion-collapse collapse ${expandedSections.photographySocial ? 'show' : ''}`}
+              className={`accordion-collapse collapse ${expandedSections.photographySocial ? "show" : ""}`}
               aria-labelledby="photographySocial"
             >
               <div className="accordion-body">
                 <div className="row g-3 mb-3 align-items-center">
                   <div className="col-md-4">
-                    <label className="form-label">Service Type <span className="text-danger">*</span></label>
+                    <label className="form-label">
+                      Service Type <span className="text-danger">*</span>
+                    </label>
                     <select
                       className="form-select"
                       name="serviceType"
-                      value={formData.serviceRows[5]?.serviceType || ''}
+                      value={getServiceRow(5).serviceType}
                       onChange={(e) => handleServiceRowChange(5, e)}
                     >
                       <option value="">Select Service Type</option>
@@ -807,10 +928,14 @@ const Photography = ({
                       <option value="Lifestyle & Creative Photography">Lifestyle & Creative Photography</option>
                       <option value="Model Photography">Model Photography</option>
                       <option value="A+ Content Photography">A+ Content Photography</option>
-                      <option value="Store, Showroom & Manufacturing Unit Shoots">Store, Showroom & Manufacturing Unit Shoots</option>
+                      <option value="Store, Showroom & Manufacturing Unit Shoots">
+                        Store, Showroom & Manufacturing Unit Shoots
+                      </option>
                       <option value="Social Media Ready Content">Social Media Ready Content</option>
                     </select>
-                    {errors.serviceType && <div className="text-danger small">{errors.serviceType}</div>}
+                    {errors[`serviceType${5}`] && (
+                      <div className="text-danger small">{errors[`serviceType${5}`]}</div>
+                    )}
                   </div>
                   <div className="col-md-2">
                     <label className="form-label">Actual Price</label>
@@ -819,7 +944,7 @@ const Photography = ({
                       className="form-control"
                       placeholder="567"
                       name="actualPrice"
-                      value={formData.serviceRows[5]?.actualPrice || ''}
+                      value={getServiceRow(5).actualPrice}
                       onChange={(e) => handleServiceRowChange(5, e)}
                     />
                   </div>
@@ -830,7 +955,7 @@ const Photography = ({
                       placeholder="467"
                       className="form-control"
                       name="offerPrice"
-                      value={formData.serviceRows[5]?.offerPrice || ''}
+                      value={getServiceRow(5).offerPrice}
                       onChange={(e) => handleServiceRowChange(5, e)}
                     />
                   </div>
@@ -839,7 +964,7 @@ const Photography = ({
                     <select
                       className="form-select"
                       name="billingCycle"
-                      value={formData.serviceRows[5]?.billingCycle || ''}
+                      value={getServiceRow(5).billingCycle}
                       onChange={(e) => handleServiceRowChange(5, e)}
                     >
                       <option value="">Select Billing Cycle</option>
@@ -854,7 +979,7 @@ const Photography = ({
                       className="form-control"
                       placeholder="No. of days"
                       name="taskDays"
-                      value={formData.serviceRows[5]?.taskDays || ''}
+                      value={getServiceRow(5).taskDays}
                       onChange={(e) => handleServiceRowChange(5, e)}
                     />
                   </div>
@@ -903,17 +1028,46 @@ const Photography = ({
                   </table>
                 </div>
                 <div className="col-md-12 d-flex justify-content-end mt-3">
-                  <button type="button" className="btn btn-outline-secondary px-5 me-2">Reset</button>
-                  <button type="submit" className="btn btn-success px-5">Save</button>
-                </div> 
+                  <button
+                    type="button"
+                    className="btn btn-outline-secondary px-5 me-2"
+                    onClick={() => resetSection(5)}
+                  >
+                    Reset
+                  </button>
+                  <button type="submit" className="btn btn-success px-5">
+                    Save
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
         <div className="col-md-12 d-flex justify-content-end mt-5 mb-4">
-          <button type="button" className="btn btn-outline-secondary px-5 me-2">Cancel</button>
-          <button type="submit" className="btn btn-success px-5">Save</button>
+          <button
+            type="button"
+            className="btn btn-outline-secondary px-5 me-2"
+            onClick={() => {
+              setFormData((prev) => ({
+                ...prev,
+                serviceRows: Array(6).fill({
+                  serviceType: "",
+                  actualPrice: "",
+                  offerPrice: "",
+                  billingCycle: "",
+                  taskDays: "",
+                }),
+                gender: "",
+              }));
+              setErrors({});
+            }}
+          >
+            Cancel
+          </button>
+          <button type="submit" className="btn btn-success px-5">
+            Save
+          </button>
         </div>
       </form>
     </div>
