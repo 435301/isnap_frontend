@@ -305,12 +305,6 @@ const BusinessLaunchSection = ({ businessId, expandedSections, toggleSection, bu
                     <tr>
                       <td colSpan="7">Loading...</td>
                     </tr>
-                  ) : error ? (
-                    <tr>
-                      <td colSpan="7" className="text-danger">
-                        {error}
-                      </td>
-                    </tr>
                   ) : launches.length > 0 ? (
                     launches.map((row, index) => (
                       <tr key={row.id}>

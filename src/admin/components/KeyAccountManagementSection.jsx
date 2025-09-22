@@ -213,23 +213,24 @@ const KeyAccountManagementSection = ({
     try {
       const res = await dispatch(createKeyAccountCommission(payload));
       console.log('res', res.data.commissions.serviceTypeId);
-      // await dispatch(fetchKeyAccountCommission(businessId, formData.serviceType));
-      // Reset after success
-      setFormData((prev) => ({
-        ...prev,
+      setFormData({
+        serviceType: "",
+        actualPrice: "",
+        offerPrice: "",
+        id: 0,
         keyAccountRows: [
           {
-            securityDeposit: security?.securityDeposit || "",
-            commissionTiers: commissions.map((c) => ({
-              id: c.id,
-              commissionId: c.commissionId,
-              commissionTitle: c.commissionTitle,
-              actualCommission: c.actualPercentage,
-              offerCommission: c.offerPercentage,
-            })),
+            securityDeposit: "",
+            commissionTiers: [
+              { actualCommission: "", offerCommission: "" },
+              { actualCommission: "", offerCommission: "" },
+              { actualCommission: "", offerCommission: "" },
+              { actualCommission: "", offerCommission: "" },
+            ],
           },
         ],
-      }));
+      });
+      await dispatch(fetchKeyAccountCommission(businessIdEdit || businessId, formData.serviceType));
     } catch (err) {
       console.error("Commission API error:", err);
     }
@@ -256,6 +257,29 @@ const KeyAccountManagementSection = ({
     });
     if (!expandedSections.subscriptions) toggleSection("subscriptions");
   };
+
+  const handleEditCommission = (row) => {
+    const filtered = commissions.filter(c => c.serviceTypeId === row.serviceTypeId);
+    setFormData((prev) => ({
+      ...prev,
+      serviceType: row.serviceTypeId,
+      keyAccountRows: [
+        {
+          securityDeposit: security?.securityDeposit || "",
+          commissionTiers: filtered.map((c) => ({
+            id: c.id,
+            commissionId: c.commissionId,
+            commissionTitle: c.commissionTitle,
+            actualCommission: c.actualPercentage,
+            offerCommission: c.offerPercentage,
+          })),
+        },
+      ],
+    }));
+    setActiveKeyAccountSection("Commission");
+    if (!expandedSections.keyAccountManagement) toggleSection("keyAccountManagement");
+  };
+
 
   // Delete row
   const handleDeleteClick = (id) => {
@@ -444,8 +468,6 @@ const KeyAccountManagementSection = ({
                     <tbody>
                       {loading ? (
                         <tr><td colSpan="5">Loading...</td></tr>
-                      ) : error ? (
-                        <tr><td colSpan="5" className="text-danger">{error}</td></tr>
                       ) : subscriptions.length > 0 ? (
                         subscriptions.map((row, index) => (
                           <tr key={row.id}>
@@ -472,12 +494,89 @@ const KeyAccountManagementSection = ({
                           </tr>
                         ))
                       ) : (
-                        <tr><td colSpan="5">No data available</td></tr>
+                        <tr><td colSpan="9">No data available</td></tr>
                       )}
                     </tbody>
                   </table>
                 </>
 
+              ) : (
+                ""
+              )}
+            </div>
+
+            <div className="table-responsive mb-3">
+              {activeKeyAccountSection === "Commission" ? (
+                <>
+                  <table className="table table-bordered align-middle">
+                    <thead className="table-light">
+                      <tr>
+                        <th>S.no</th>
+                        <th>Service Type</th>
+                        <th>Security Deposit</th>
+                        <th>Commission Tiers</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {commissions.length > 0 ? (
+                        Object.values(
+                          commissions.reduce((acc, c) => {
+                            if (!acc[c.serviceTypeId]) {
+                              acc[c.serviceTypeId] = {
+                                serviceTypeId: c.serviceTypeId,
+                                serviceTypeName: c.serviceTypeName,
+                                commissions: [],
+                              };
+                            }
+                            acc[c.serviceTypeId].commissions.push(c);
+                            return acc;
+                          }, {})
+                        ).map((group, index) => (
+                          <tr key={group.serviceTypeId}>
+                            <td>{index + 1}</td>
+                            <td><strong>{group.serviceTypeName}</strong></td>
+                            <td>
+                              <span className="badge text-dark">
+                                ₹{security?.securityDeposit || 0}
+                              </span>
+                            </td>
+                            <td>
+                              <ul className="list-unstyled mb-0">
+                                {group.commissions.map((c, i) => (
+                                  <li key={i} className="mb-1">
+                                    <div>
+                                      <span className="fw-semibold">{c.commissionTitle}</span>{" "}
+                                      <span className="badge bg-secondary">
+                                        Actual: {c.actualPercentage}%
+                                      </span>{" "}
+                                      <span className="badge bg-success">
+                                        Offer: {c.offerPercentage}%
+                                      </span>
+                                    </div>
+                                  </li>
+                                ))}
+                              </ul>
+                            </td>
+                            <td>
+                              <button
+                                type="button"
+                                className="btn btn-sm btn-outline-primary"
+                                onClick={() => handleEditCommission(group)}
+                              >
+                                <i className="bi bi-pencil"></i> Edit
+                              </button>
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan="5">No commissions available</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </>
               ) : (
                 ""
               )}

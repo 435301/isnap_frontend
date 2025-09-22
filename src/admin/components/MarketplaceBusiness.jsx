@@ -2,6 +2,7 @@ import React from 'react';
 import BusinessLaunchSection from './BusinessLaunchSection';
 import CatalogListingSection from './CatalogListingSection';
 import KeyAccountManagementSection from './KeyAccountManagementSection';
+import { useNavigate } from 'react-router-dom';
 
 const MarketplaceBusiness = ({
   formData,
@@ -19,6 +20,7 @@ const MarketplaceBusiness = ({
   businessId,
   businessIdEdit
 }) => {
+  const navigate = useNavigate();
   console.log('businessIdmarketplace', businessId);
   return (
 
@@ -57,7 +59,7 @@ const MarketplaceBusiness = ({
       />
       <div className="col-md-12 d-flex justify-content-end mt-5 mb-4">
         <button type="button" className="btn btn-outline-secondary px-5 me-2">Cancel</button>
-        <button type="button" className="btn btn-success px-5">Next</button>
+        <button type="button"  onClick={() => navigate("/manage-sellers")} className="btn btn-success px-5">Next</button>
       </div>
     </form>
   );
