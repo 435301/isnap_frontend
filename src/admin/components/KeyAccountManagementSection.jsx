@@ -1,16 +1,107 @@
-import React, { useState } from 'react';
-
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchServiceTypes } from '../../redux/actions/serviceTypeActions';
+import { createKeyAccountCommission, createSubscription, deleteSubscription, fetchKeyAccountCommission, fetchKeyAccountSubscription } from '../../redux/actions/keyAccountSubscriptionAction';
+import DeleteConfirmationModal from './Modal/DeleteConfirmationModal';
+import { fetchCommissions } from '../../redux/actions/commissionActions';
+import { fetchBusinessLaunches } from '../../redux/actions/businessLaunchActions';
+ 
 const KeyAccountManagementSection = ({
-  formData,
-  setFormData,
-  errors,
   handleKeyAccountRowChange,
   handleRemoveKeyAccountRow,
   expandedSections,
   toggleSection,
+  businessId,
+  businessIdEdit
 }) => {
+  console.log('businessIdkeyaccount', businessId);
+  console.log('businessIdkeyaccountEdit', businessIdEdit);
+  const dispatch = useDispatch();
+ 
+  const { subscriptions = [], loading, error } = useSelector(
+    (state) => state.subscriptions || {}
+  );
+ 
+  const { commissions = [], security } = useSelector(
+    (state) => state.subscriptions || {}
+  );
+ 
+  console.log('commission', commissions);
+  console.log('subscriptions', subscriptions);
+  const serviceType = useSelector((state) => state.serviceType.serviceTypes || []);
+  const [formData, setFormData] = useState({
+    serviceType: "",
+    actualPrice: "",
+    offerPrice: "",
+    id: 0,
+    keyAccountRows: [
+      {
+        securityDeposit: "",
+        commissionTiers: [
+          { actualCommission: "", offerCommission: "" },
+          { actualCommission: "", offerCommission: "" },
+          { actualCommission: "", offerCommission: "" },
+          { actualCommission: "", offerCommission: "" },
+        ],
+      },
+    ],
+  });
+  const [errors, setErrors] = useState({});
+  const [toDelete, setToDelete] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [activeKeyAccountSection, setActiveKeyAccountSection] = useState('Subscription');
-
+ 
+  useEffect(() => {
+    dispatch(fetchServiceTypes());
+  }, [dispatch]);
+ 
+  useEffect(() => {
+    if (businessIdEdit) {
+      dispatch(fetchKeyAccountSubscription(businessIdEdit));
+      dispatch(fetchKeyAccountCommission(businessIdEdit, formData.serviceType || 0));
+    }
+    else {
+      setFormData({
+        serviceType: "",
+        actualPrice: "",
+        offerPrice: "",
+        id: 0,
+        keyAccountRows: [
+          {
+            securityDeposit: "",
+            commissionTiers: [
+              { actualCommission: "", offerCommission: "" },
+              { actualCommission: "", offerCommission: "" },
+              { actualCommission: "", offerCommission: "" },
+              { actualCommission: "", offerCommission: "" },
+            ],
+          },
+        ],
+      });
+    }
+  }, [businessIdEdit, dispatch]);
+ 
+  useEffect(() => {
+    if (commissions.length > 0 || security) {
+      setFormData((prev) => ({
+        ...prev,
+        keyAccountRows: [
+          {
+            securityDeposit: security?.securityDeposit || "",
+            commissionTiers: commissions.map((c) => ({
+              id: c.id || 0,
+              commissionId: c.commissionId,
+              commissionTitle: c.commissionTitle,
+              actualCommission: c.actualPercentage || "",
+              offerCommission: c.offerPercentage || "",
+            })),
+          },
+        ],
+      }));
+    }
+  }, [commissions, security]);
+ 
+ 
   const handleCommissionChange = (index, e) => {
     const { name, value } = e.target;
     const updatedRows = [...formData.keyAccountRows];
@@ -27,7 +118,181 @@ const KeyAccountManagementSection = ({
     updatedRows[0] = { ...updatedRows[0], commissionTiers };
     setFormData((prev) => ({ ...prev, keyAccountRows: updatedRows }));
   };
-
+ 
+  const handleChange = async (e) => {
+    const { name, value } = e.target;
+    if (name === "serviceType") {
+      const selectedService = serviceType.find((type) => type.id === parseInt(value));
+      setFormData((prev) => ({
+        ...prev,
+        serviceType: value,
+        actualPrice: selectedService ? selectedService.price : "",
+        offerPrice: selectedService ? selectedService.price : "",
+        keyAccountRows: [
+          {
+            securityDeposit: "",
+            commissionTiers: [],
+          },
+        ],
+      }));
+      if (value) {
+        // Fetch commissions + security for this businessId + serviceType
+        await dispatch(fetchKeyAccountCommission(businessId, value));
+      }
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
+  };
+ 
+  const validate = () => {
+    const newErrors = {};
+    if (!formData.serviceType) newErrors.serviceType = "Service Type is required";
+    if (!formData.offerPrice) newErrors.offerPrice = "Offer Price is required";
+    return newErrors;
+  };
+ 
+  const handleSubmitSubscription = async (e) => {
+    e.preventDefault();
+    const newErrors = validate();
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) return;
+ 
+    const payload = {
+      id: formData.id ? Number(formData.id) : 0,
+      businessId: businessIdEdit ? businessIdEdit : businessId,
+      serviceTypeId: Number(formData.serviceType),
+      offerPrice: Number(formData.offerPrice),
+      actualPrice: Number(formData.actualPrice),
+      status: 1,
+    };
+ 
+    try {
+      await dispatch(createSubscription(payload));
+      setFormData({
+        serviceType: "",
+        offerPrice: "",
+        actualPrice: "",
+        id: 0,
+        keyAccountRows: [
+          {
+            securityDeposit: "",
+            commissionTiers: [
+              { actualCommission: "", offerCommission: "" },
+              { actualCommission: "", offerCommission: "" },
+              { actualCommission: "", offerCommission: "" },
+              { actualCommission: "", offerCommission: "" },
+            ],
+          },
+        ],
+      });
+    } catch (err) {
+      console.error("API error:", err);
+    }
+  };
+ 
+ 
+  const handleSubmitCommission = async (e) => {
+    e.preventDefault();
+ 
+    const payload = {
+      businessId: businessIdEdit ? businessIdEdit : businessId,
+      serviceTypeId: Number(formData.serviceType),
+      securityDeposit: Number(formData.keyAccountRows[0]?.securityDeposit || 0),
+      commissions: formData.keyAccountRows[0]?.commissionTiers.map((tier, index) => ({
+        id: tier.id || 0, // update if >0, create if 0
+        commissionId: tier.commissionId,
+        actualPercentage: Number(tier.actualCommission || 0),
+        offerPercentage: Number(tier.offerCommission || 0),
+        status: 1,
+      })),
+    };
+ 
+    try {
+      const res = await dispatch(createKeyAccountCommission(payload));
+      console.log('res', res.data.commissions.serviceTypeId);
+      setFormData({
+        serviceType: "",
+        actualPrice: "",
+        offerPrice: "",
+        id: 0,
+        keyAccountRows: [
+          {
+            securityDeposit: "",
+            commissionTiers: [
+              { actualCommission: "", offerCommission: "" },
+              { actualCommission: "", offerCommission: "" },
+              { actualCommission: "", offerCommission: "" },
+              { actualCommission: "", offerCommission: "" },
+            ],
+          },
+        ],
+      });
+      await dispatch(fetchKeyAccountCommission(businessIdEdit || businessId, formData.serviceType));
+    } catch (err) {
+      console.error("Commission API error:", err);
+    }
+  };
+ 
+  const handleSecurityDepositChange = (e) => {
+    const { value } = e.target;
+    const updatedRows = [...formData.keyAccountRows];
+    updatedRows[0] = {
+      ...updatedRows[0],
+      securityDeposit: value
+    };
+    setFormData((prev) => ({ ...prev, keyAccountRows: updatedRows }));
+  };
+ 
+ 
+  // Edit row
+  const handleEdit = (row) => {
+    setFormData({
+      serviceType: row.serviceTypeId,
+      offerPrice: row.offerPrice,
+      actualPrice: row.actualPrice,
+      id: row.id,
+    });
+    if (!expandedSections.subscriptions) toggleSection("subscriptions");
+  };
+ 
+  const handleEditCommission = (row) => {
+    const filtered = commissions.filter(c => c.serviceTypeId === row.serviceTypeId);
+    setFormData((prev) => ({
+      ...prev,
+      serviceType: row.serviceTypeId,
+      keyAccountRows: [
+        {
+          securityDeposit: security?.securityDeposit || "",
+          commissionTiers: filtered.map((c) => ({
+            id: c.id,
+            commissionId: c.commissionId,
+            commissionTitle: c.commissionTitle,
+            actualCommission: c.actualPercentage,
+            offerCommission: c.offerPercentage,
+          })),
+        },
+      ],
+    }));
+    setActiveKeyAccountSection("Commission");
+    if (!expandedSections.keyAccountManagement) toggleSection("keyAccountManagement");
+  };
+ 
+ 
+  // Delete row
+  const handleDeleteClick = (id) => {
+    setToDelete(id);
+    setShowDeleteModal(true);
+  };
+ 
+  const handleDelete = async () => {
+    await dispatch(deleteSubscription(toDelete));
+    setShowDeleteModal(false);
+    setToDelete(null);
+  };
+ 
   return (
     <div className="accordion mb-3">
       <div className="accordion-item">
@@ -52,12 +317,15 @@ const KeyAccountManagementSection = ({
                 <select
                   className="form-select"
                   name="serviceType"
-                  value={formData.keyAccountRows[0]?.serviceType || ''}
-                  onChange={(e) => handleKeyAccountRowChange(0, e)}
+                  value={formData.serviceType}
+                  onChange={handleChange}
                 >
                   <option value="">Select Marketplace</option>
-                  <option value="Amazon">Amazon</option>
-                  <option value="Flipkart">Flipkart</option>
+                  {serviceType.map((type) => (
+                    <option key={type.id} value={type.id}>
+                      {type.serviceType}
+                    </option>
+                  ))}
                 </select>
                 {errors.serviceType && <div className="text-danger small">{errors.serviceType}</div>}
               </div>
@@ -83,25 +351,24 @@ const KeyAccountManagementSection = ({
                 {activeKeyAccountSection === 'Subscription' && (
                   <div className="row g-3">
                     <div className="col-md-3">
-                      <label className="form-label">Actual Price</label>
+                      <label className="form-label">Actual Price<span className='text-danger'> *</span></label>
                       <input
                         type="number"
-                        placeholder="567"
                         className="form-control"
                         name="actualPrice"
-                        value={formData.keyAccountRows[0]?.actualPrice || ''}
-                        onChange={(e) => handleKeyAccountRowChange(0, e)}
+                        value={formData.actualPrice}
+                        onChange={handleChange}
+                        disabled
                       />
                     </div>
                     <div className="col-md-3">
-                      <label className="form-label">Offer Price</label>
+                      <label className="form-label">Offer Price<span className='text-danger'> *</span></label>
                       <input
                         type="number"
-                        placeholder="467"
                         className="form-control"
                         name="offerPrice"
-                        value={formData.keyAccountRows[0]?.offerPrice || ''}
-                        onChange={(e) => handleKeyAccountRowChange(0, e)}
+                        value={formData.offerPrice}
+                        onChange={handleChange}
                       />
                     </div>
                   </div>
@@ -118,23 +385,15 @@ const KeyAccountManagementSection = ({
                           </tr>
                         </thead>
                         <tbody>
-                          {[
-                            { amount: 'Below 10 Lakhs', actual: 10, offer: 9 },
-                            { amount: '10 Lakhs to 50 Lakhs', actual: 20, offer: 18 },
-                            { amount: '50 Lakhs to 300 Lakhs', actual: 30, offer: 28 },
-                            { amount: 'Above 300 Lakhs', actual: 40, offer: 35 },
-                          ].map((row, index) => (
+                          {formData.keyAccountRows[0]?.commissionTiers?.map((row, index) => (
                             <tr key={index}>
-                              <td>{row.amount}</td>
+                              <td>{row?.commissionTitle}</td>
                               <td className="text-center">
                                 <input
                                   className="form-control w-50 mx-auto text-center"
                                   type="number"
                                   name="actualCommission"
-                                  value={
-                                    formData.keyAccountRows[0]?.commissionTiers?.[index]?.actualCommission ||
-                                    row.actual
-                                  }
+                                  value={row.actualCommission}
                                   onChange={(e) => handleCommissionChange(index, e)}
                                 />
                               </td>
@@ -143,10 +402,7 @@ const KeyAccountManagementSection = ({
                                   className="form-control w-50 mx-auto text-center"
                                   type="number"
                                   name="offerCommission"
-                                  value={
-                                    formData.keyAccountRows[0]?.commissionTiers?.[index]?.offerCommission ||
-                                    row.offer
-                                  }
+                                  value={row.offerCommission}
                                   onChange={(e) => handleCommissionChange(index, e)}
                                 />
                               </td>
@@ -156,14 +412,14 @@ const KeyAccountManagementSection = ({
                       </table>
                     </div>
                     <div className="col-md-12">
-                      <label className="form-label">Security Deposit</label>
+                      <label className="form-label">Security Deposit<span className='text-danger'> *</span></label>
                       <input
                         type="number"
                         className="form-control w-25"
                         placeholder="Amount"
                         name="securityDeposit"
                         value={formData.keyAccountRows[0]?.securityDeposit || ''}
-                        onChange={(e) => handleKeyAccountRowChange(0, e)}
+                        onChange={handleSecurityDepositChange}
                       />
                     </div>
                   </div>
@@ -172,67 +428,169 @@ const KeyAccountManagementSection = ({
             </div>
             <div className="row g-3 mb-3">
               <div className="col-md-12 d-flex justify-content-end mt-5 mb-4">
-                <button type="button" className="btn btn-outline-secondary px-5 me-2">Reset</button>
-                <button type="submit" className="btn btn-success px-5">Save</button>
+                <button type="button" className="btn btn-outline-secondary px-5 me-2" onClick={() => setFormData({
+                  serviceType: "", actualPrice: "", offerPrice: "", id: 0, keyAccountRows: [
+                    {
+                      securityDeposit: "",
+                      commissionTiers: [
+                        { actualCommission: "", offerCommission: "" },
+                        { actualCommission: "", offerCommission: "" },
+                        { actualCommission: "", offerCommission: "" },
+                        { actualCommission: "", offerCommission: "" },
+                      ],
+                    },
+                  ],
+                })}>Reset</button>
+                {activeKeyAccountSection === "Subscription" ? (
+                  <button type="button" className="btn btn-success px-5" onClick={handleSubmitSubscription}>
+                    Save
+                  </button>
+                ) : (
+                  <button type="button" className="btn btn-success px-5" onClick={handleSubmitCommission}>
+                    Save
+                  </button>
+                )}
               </div>
             </div>
             <div className="table-responsive mb-3">
-              <table className="table table-bordered">
-                <thead className="thead-light">
-                  <tr>
-                    <th>S.no</th>
-                    <th>Service Type</th>
-                    <th>Subscription (Actual Price)</th>
-                    <th>Subscription (Offer Price)</th>
-                    <th>Security Deposit</th>
-                    <th>Commission</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {formData.keyAccountRows.length > 0 ? (
-                    formData.keyAccountRows.map((row, index) => (
-                      <tr key={index}>
-                        <td>{index + 1}</td>
-                        <td>{row.serviceType}</td>
-                        <td>{row.actualPrice}</td>
-                        <td>{row.offerPrice}</td>
-                        <td>{row.securityDeposit || 'N/A'}</td>
-                        <td>
-                          {row.commissionTiers
-                            ?.map(
-                              (tier) =>
-                                `${tier.amount || 'N/A'}: ${tier.actualCommission}% / ${tier.offerCommission}%`,
-                            )
-                            .join(', ')}
-                        </td>
-                        <td>
-                          <button className="btn btn-sm btn-outline-primary me-2">
-                            <i className="bi bi-pencil"></i>
-                          </button>
-                          <button
-                            className="btn btn-sm btn-outline-danger"
-                            onClick={() => handleRemoveKeyAccountRow(index)}
-                            disabled={formData.keyAccountRows.length === 1}
-                          >
-                            <i className="bi bi-trash"></i>
-                          </button>
-                        </td>
+              {activeKeyAccountSection === "Subscription" ? (
+                <>
+                  <table className="table table-bordered">
+                    <thead className="thead-light">
+                      <tr>
+                        <th>S.no</th>
+                        <th>Service Type</th>
+                        <th>Subscription (Actual Price)</th>
+                        <th>Subscription (Offer Price)</th>
+                        <th>Action</th>
                       </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan="7" className="text-center">No data available</td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
+                    </thead>
+                    <tbody>
+                      {loading ? (
+                        <tr><td colSpan="5">Loading...</td></tr>
+                      ) : subscriptions.length > 0 ? (
+                        subscriptions.map((row, index) => (
+                          <tr key={row.id}>
+                            <td>{index + 1}</td>
+                            <td>{row.serviceTypeName}</td>
+                            <td>{row.actualPrice}</td>
+                            <td>{row.offerPrice}</td>
+                            <td>
+                              <button
+                                type="button"
+                                className="btn btn-sm btn-outline-primary me-2"
+                                onClick={() => handleEdit(row)}
+                              >
+                                <i className="bi bi-pencil"></i>
+                              </button>
+                              <button
+                                type="button"
+                                className="btn btn-sm btn-outline-danger"
+                                onClick={() => handleDeleteClick(row.id)}
+                              >
+                                <i className="bi bi-trash"></i>
+                              </button>
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr><td colSpan="9">No data available</td></tr>
+                      )}
+                    </tbody>
+                  </table>
+                </>
+ 
+              ) : (
+                ""
+              )}
             </div>
+ 
+            <div className="table-responsive mb-3">
+              {activeKeyAccountSection === "Commission" ? (
+                <>
+                  <table className="table table-bordered align-middle">
+                    <thead className="table-light">
+                      <tr>
+                        <th>S.no</th>
+                        <th>Service Type</th>
+                        <th>Security Deposit</th>
+                        <th>Commission Tiers</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {commissions.length > 0 ? (
+                        Object.values(
+                          commissions.reduce((acc, c) => {
+                            if (!acc[c.serviceTypeId]) {
+                              acc[c.serviceTypeId] = {
+                                serviceTypeId: c.serviceTypeId,
+                                serviceTypeName: c.serviceTypeName,
+                                commissions: [],
+                              };
+                            }
+                            acc[c.serviceTypeId].commissions.push(c);
+                            return acc;
+                          }, {})
+                        ).map((group, index) => (
+                          <tr key={group.serviceTypeId}>
+                            <td>{index + 1}</td>
+                            <td><strong>{group.serviceTypeName}</strong></td>
+                            <td>
+                              <span className="badge text-dark">
+                                ₹{security?.securityDeposit || 0}
+                              </span>
+                            </td>
+                            <td>
+                              <ul className="list-unstyled mb-0">
+                                {group.commissions.map((c, i) => (
+                                  <li key={i} className="mb-1">
+                                    <div>
+                                      <span className="fw-semibold">{c.commissionTitle}</span>{" "}
+                                      <span className="badge bg-secondary">
+                                        Actual: {c.actualPercentage}%
+                                      </span>{" "}
+                                      <span className="badge bg-success">
+                                        Offer: {c.offerPercentage}%
+                                      </span>
+                                    </div>
+                                  </li>
+                                ))}
+                              </ul>
+                            </td>
+                            <td>
+                              <button
+                                type="button"
+                                className="btn btn-sm btn-outline-primary"
+                                onClick={() => handleEditCommission(group)}
+                              >
+                                <i className="bi bi-pencil"></i> Edit
+                              </button>
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan="5">No commissions available</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </>
+              ) : (
+                ""
+              )}
+            </div>
+            <DeleteConfirmationModal
+              show={showDeleteModal}
+              handleClose={() => setShowDeleteModal(false)}
+              handleConfirm={handleDelete}
+            />
           </div>
         </div>
       </div>
     </div>
   );
 };
-
+ 
 export default KeyAccountManagementSection;
