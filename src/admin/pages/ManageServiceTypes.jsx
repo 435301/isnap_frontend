@@ -4,14 +4,12 @@ import Navbar from '../components/Navbar';
 import { Link } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchSubServices } from '../../redux/actions/subServiceActions';
 
 const ManageServiceActivities = () => {
-    const updates = [
-        { id: 1, ServicesCategory: 'Marketplace Business', ServicesTypes: 'Business Launch', Status: 'Active' },
-        { id: 2, ServicesCategory: 'Digital Marketing Services', ServicesTypes: '-', Status: 'In Active ' },
-        { id: 3, ServicesCategory: 'Photography Services', ServicesTypes: 'Product Photography', Status: 'Active' },
-
-    ];
+    const dispatch = useDispatch();
+    const { subServices, loading, error } = useSelector((state) => state.subServices);
 
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -30,6 +28,10 @@ const ManageServiceActivities = () => {
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, []);
+
+    useEffect(() => {
+        dispatch(fetchSubServices({ page: 1, search: "", serviceCategoryId: "", showStatus: "" }));
+    }, [dispatch]);
 
     const handleToggleSidebar = () => {
         setIsSidebarOpen(!isSidebarOpen);
@@ -119,38 +121,52 @@ const ManageServiceActivities = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {updates.map((update, index) => (
-                                            <tr key={update.id}>
-                                                <td>{index + 1}</td>
-                                                <td>{update.ServicesCategory}</td>
-                                                <td>{update.ServicesTypes}</td>
-                                                <td>
-                                                    <span
-                                                        className={`badge px-3 py-2 ${update.Status.trim().toLowerCase() === "active"
-                                                            ? "bg-success-light text-success"
-                                                            : "bg-danger-light text-danger"
-                                                            }`}
-                                                    >
-                                                        {update.Status.trim().toLowerCase() === "active" ? "Active" : "Inactive"}
-                                                    </span>
-                                                </td>
-                                                <td>
-                                                    <div className="d-flex gap-2 align-items-center">
-                                                        <button className="btn btn-icon btn-view">
-                                                            <i className="bi bi-eye"></i>
-                                                        </button>
-                                                        <button className="btn btn-icon btn-edit">
-                                                            <i className="bi bi-pencil-square"></i>
-                                                        </button>
-                                                        <button className="btn btn-icon btn-delete">
-                                                            <i className="bi bi-trash"></i>
-                                                        </button>
-
-                                                    </div>
-                                                </td>
+                                        {loading ? (
+                                            <tr>
+                                                <td colSpan="5" className="text-center">Loading...</td>
                                             </tr>
-                                        ))}
+                                        ) : error ? (
+                                            <tr>
+                                                <td colSpan="5" className="text-center text-danger">{error}</td>
+                                            </tr>
+                                        ) : subServices.length > 0 ? (
+                                            subServices.map((service, index) => (
+                                                <tr key={service.id}>
+                                                    <td>{index + 1}</td>
+                                                    <td>{service.serviceCategoryName}</td>
+                                                    <td>{service.subServiceName}</td>
+                                                    <td>
+                                                        <span
+                                                            className={`badge px-3 py-2 ${service.status === 1
+                                                                ? "bg-success-light text-success"
+                                                                : "bg-danger-light text-danger"
+                                                                }`}
+                                                        >
+                                                            {service.status === 1 ? "Active" : "Inactive"}
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <div className="d-flex gap-2 align-items-center">
+                                                            <button className="btn btn-icon btn-view">
+                                                                <i className="bi bi-eye"></i>
+                                                            </button>
+                                                            <button className="btn btn-icon btn-edit">
+                                                                <i className="bi bi-pencil-square"></i>
+                                                            </button>
+                                                            <button className="btn btn-icon btn-delete">
+                                                                <i className="bi bi-trash"></i>
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            ))
+                                        ) : (
+                                            <tr>
+                                                <td colSpan="5" className="text-center">No services found</td>
+                                            </tr>
+                                        )}
                                     </tbody>
+
                                 </table>
                             </div>
                         </div>

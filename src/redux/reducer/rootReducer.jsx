@@ -14,6 +14,7 @@ import businessReducer from "./businessReducer";
 import { businessLaunchReducer } from "./businessLaunchReducer";
 import { catalogListingReducer } from "./catalogListingReducer";
 import keyAccountSubscriptionReducer from "./keyAccountSubscriptionReducer";
+import { subServiceReducer } from "./subServiceReducer";
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -31,6 +32,7 @@ const rootReducer = combineReducers({
   businessLaunches: businessLaunchReducer,
   catalogListing: catalogListingReducer,
   subscriptions: keyAccountSubscriptionReducer,
+  subServices: subServiceReducer,
 });
 
 
