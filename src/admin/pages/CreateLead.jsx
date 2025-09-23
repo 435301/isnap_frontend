@@ -13,8 +13,10 @@ const CreateLead = () => {
     email: '',
     leadSource: '',
     followUpDate: '',
+    followUpTime: '',
     leadDetails: '',
     team: '',
+    status: '',
   });
 
   const [errors, setErrors] = useState({});
@@ -33,15 +35,20 @@ const CreateLead = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const handleToggleSidebar = () => {
-    setIsSidebarOpen((prev) => !prev);
-  };
+  const handleToggleSidebar = () => setIsSidebarOpen(prev => !prev);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
+
+    setFormData(prev => ({
       ...prev,
       [name]: value,
+    }));
+
+    // Remove error for the field dynamically
+    setErrors(prevErrors => ({
+      ...prevErrors,
+      [name]: '',
     }));
   };
 
@@ -59,19 +66,17 @@ const CreateLead = () => {
     if (!formData.customerName.trim()) newErrors.customerName = 'Customer name is required';
     if (!formData.leadDetails.trim()) newErrors.leadDetails = 'Lead details are required';
     if (!formData.team.trim()) newErrors.team = 'Team is required';
-
-    if (formData.email && !emailPattern.test(formData.email)) {
-      newErrors.email = 'Invalid email format';
-    }
+    if (!formData.email.trim()) newErrors.email = 'Email is required';
+    else if (!emailPattern.test(formData.email)) newErrors.email = 'Invalid email format';
 
     return newErrors;
   };
-
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const validationErrors = validate();
     setErrors(validationErrors);
+
     if (Object.keys(validationErrors).length === 0) {
       console.log('Lead Submitted:', formData);
       // Submit to backend
@@ -113,11 +118,11 @@ const CreateLead = () => {
             </div>
           </div>
 
-          {/* Lead Form */}
           <div className="row">
             <div className="bg-white p-3 rounded shadow-sm card-header mb-4">
               <form onSubmit={handleSubmit}>
                 <div className="row g-3">
+                  {/* Customer Mobile */}
                   <div className="col-md-4">
                     <label className="form-label">Customer Mobile Number <span className="text-danger">*</span></label>
                     <input
@@ -125,31 +130,27 @@ const CreateLead = () => {
                       name="customerMobile"
                       value={formData.customerMobile}
                       onChange={handleChange}
-                      className="form-control"
+                      className={`form-control ${errors.customerMobile ? 'is-invalid' : ''}`}
                       placeholder="Customer Mobile Number"
                     />
-                    {errors.customerMobile && <div className="text-danger small">{errors.customerMobile}</div>}
+                    {errors.customerMobile && <div className="invalid-feedback">{errors.customerMobile}</div>}
                   </div>
 
+                  {/* Customer Name */}
                   <div className="col-md-4">
-                    <label htmlFor="customerName" className="form-label">
-                      Customer Name <span className="text-danger">*</span>
-                    </label>
+                    <label className="form-label">Customer Name <span className="text-danger">*</span></label>
                     <input
                       type="text"
-                      id="customerName"
                       name="customerName"
                       value={formData.customerName}
                       onChange={handleChange}
                       className={`form-control ${errors.customerName ? 'is-invalid' : ''}`}
                       placeholder="Enter customer name"
                     />
-                    {errors.customerName && (
-                      <div className="invalid-feedback">{errors.customerName}</div>
-                    )}
+                    {errors.customerName && <div className="invalid-feedback">{errors.customerName}</div>}
                   </div>
 
-
+                  {/* Business Type */}
                   <div className="col-md-4">
                     <label className="form-label">Business Type</label>
                     <select
@@ -158,45 +159,40 @@ const CreateLead = () => {
                       onChange={handleChange}
                       className="form-select"
                     >
-                      <option value="">Business Type</option>
+                      <option value="">Select Business Type</option>
                       <option value="Retail">Retail</option>
                       <option value="Wholesale">Wholesale</option>
                     </select>
                   </div>
 
+                  {/* Email */}
                   <div className="col-md-4">
-                    <label htmlFor="email" className="form-label">
-                      Email ID <span className="text-danger">*</span>
-                    </label>
+                    <label className="form-label">Email ID <span className="text-danger">*</span></label>
                     <input
                       type="email"
-                      id="email"
                       name="email"
                       value={formData.email}
                       onChange={handleChange}
                       className={`form-control ${errors.email ? 'is-invalid' : ''}`}
                       placeholder="Enter email address"
                     />
-                    {errors.email && (
-                      <div className="invalid-feedback">{errors.email}</div>
-                    )}
+                    {errors.email && <div className="invalid-feedback">{errors.email}</div>}
                   </div>
 
-
+                  {/* Lead Source */}
                   <div className="col-md-4">
                     <label className="form-label">Lead Source</label>
                     <input
                       type="text"
-                      id="leadSource"
                       name="leadSource"
                       value={formData.leadSource}
                       onChange={handleChange}
                       className="form-control"
                       placeholder="Lead Source (e.g., Social Media)"
                     />
-
                   </div>
 
+                  {/* Follow-up Date & Time */}
                   <div className="col-md-4">
                     <label className="form-label">Follow up date & time</label>
                     <div className="d-flex gap-2">
@@ -217,37 +213,39 @@ const CreateLead = () => {
                     </div>
                   </div>
 
-
-
-
+                  {/* Team */}
                   <div className="col-md-4">
-                    <label className="form-label">Team Member<span className="text-danger">*</span></label>
+                    <label className="form-label">Team Member <span className="text-danger">*</span></label>
                     <select
                       name="team"
                       value={formData.team}
                       onChange={handleChange}
-                      className="form-select"
+                      className={`form-select ${errors.team ? 'is-invalid' : ''}`}
                     >
                       <option value="">Select Team Member</option>
                       <option value="Sales">Sales</option>
                       <option value="Support">Support</option>
                     </select>
-                    {errors.team && <div className="text-danger small">{errors.team}</div>}
+                    {errors.team && <div className="invalid-feedback">{errors.team}</div>}
                   </div>
+
+                  {/* Status */}
                   <div className="col-md-4">
-                    <label className="form-label">Status<span className="text-danger">*</span></label>
+                    <label className="form-label">Status</label>
                     <select
-                      name="team"
-                      value={formData.team}
+                      name="status"
+                      value={formData.status}
                       onChange={handleChange}
                       className="form-select"
                     >
-                      <option value="">Status</option>
-                      <option value="Sales">Sales</option>
-                      <option value="Support">Support</option>
+                      <option value="">Select Status</option>
+                      <option value="New">New</option>
+                      <option value="In Progress">In Progress</option>
+                      <option value="Closed">Closed</option>
                     </select>
-                    {errors.team && <div className="text-danger small">{errors.team}</div>}
                   </div>
+
+                  {/* Lead Details */}
                   <div className="col-md-12">
                     <label className="form-label">Lead Details <span className="text-danger">*</span></label>
                     <input
@@ -255,11 +253,13 @@ const CreateLead = () => {
                       name="leadDetails"
                       value={formData.leadDetails}
                       onChange={handleChange}
-                      className="form-control"
+                      className={`form-control ${errors.leadDetails ? 'is-invalid' : ''}`}
                       placeholder="Lead Details"
                     />
-                    {errors.leadDetails && <div className="text-danger small">{errors.leadDetails}</div>}
+                    {errors.leadDetails && <div className="invalid-feedback">{errors.leadDetails}</div>}
                   </div>
+
+                  {/* Buttons */}
                   <div className="col-md-12 d-flex justify-content-end mt-4">
                     <button type="submit" className="btn btn-success me-2 px-4">
                       Submit
@@ -272,7 +272,6 @@ const CreateLead = () => {
               </form>
             </div>
           </div>
-
         </div>
       </div>
     </div>

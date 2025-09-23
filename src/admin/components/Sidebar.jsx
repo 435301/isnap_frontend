@@ -24,6 +24,7 @@ const Sidebar = ({ isOpen }) => {
   useEffect(() => {
     const dropdownRoutes = {
       "master-data": [
+        "/manage-digital-marketing-price",
 
         "/market-place-type",
         "/manage-services-type",
@@ -33,7 +34,7 @@ const Sidebar = ({ isOpen }) => {
         "/manage-billing",
         "/manage-state",
       ],
-      serviceTypes: ["/manage-service-types",  "/manage-services", "/create-service-type", "/add-service","/create-service-activities", "/manage-service-activities"],
+      serviceTypes: ["/manage-service-types", "/manage-services", "/create-service-type", "/add-service", "/create-service-activities", "/manage-service-activities"],
       sellers: ["/manage-sellers", "/create-seller", "/view-seller"],
       team: ["/manage-team", "/add-team", "/manage-roles", "/add-role", "/latest-updates", "/manage-updates"],
       tasks: ["/manage-task", "/create-task", "/rejected-tasks"],
@@ -96,6 +97,8 @@ const Sidebar = ({ isOpen }) => {
               <Link to="/manage-departments" className={`dropdown-item ${isLinkActive("/manage-departments")}`}>Departments</Link>
               <Link to="/manage-billing" className={`dropdown-item ${isLinkActive("/manage-billing")}`}>Billing Cycle</Link>
               <Link to="/manage-state" className={`dropdown-item ${isLinkActive("/manage-state")}`}>States</Link>
+              <Link to="/manage-digital-marketing-price" className={`dropdown-item ${isLinkActive("/manage-digital-marketing-price")}`}> Digital Market Pricing</Link>
+
             </div>
           </div>
 

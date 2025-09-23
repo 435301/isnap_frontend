@@ -1,169 +1,296 @@
-import React, { useState, useEffect } from 'react';
-import Sidebar from '../components/Sidebar';
-import Navbar from '../components/Navbar';
-import { Link } from 'react-router-dom';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap-icons/font/bootstrap-icons.css';
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import Sidebar from "../components/Sidebar";
+import Navbar from "../components/Navbar";
+import ViewServiceActivityModal from "../components/Modal/ViewServiceActivityModal";
+import EditServiceActivityOffcanvas from "../components/Modal/EditServiceActivityOffcanvas";
+import DeleteConfirmationModal from "../components/Modal/DeleteConfirmationModal";
+import {
+  fetchServiceActivities,
+  deleteServiceActivity,
+  updateServiceActivity,
+  clearServiceActivitySuccessMessage,
+} from "../../redux/actions/serviceActivityActions";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ManageServiceActivities = () => {
-    const updates = [
-        { id: 1, ServicesCategory: 'Marketplace Business', ServicesTypes: 'Business Launch', ServiceActivities: 'Account Registration', Status: 'Active' },
-        { id: 2, ServicesCategory: 'Digital Marketing Services', ServicesTypes: '-', ServiceActivities: 'SEO (Search Engine Optimization)', Status: 'In Active ' },
-        { id: 3, ServicesCategory: 'Photography Services', ServicesTypes: 'Product Photography', ServiceActivities: 'Single Product Shot', Status: 'Active' },
+  const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 992);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState(null);
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [showEditOffcanvas, setShowEditOffcanvas] = useState(false);
+  const [selectedActivity, setSelectedActivity] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
-    ];
+  const dispatch = useDispatch();
+  const {
+    activities,
+    loading,
+    error,
+    totalPages,
+    successMessage,
+  } = useSelector((state) => state.serviceActivity);
 
-    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  // Fetch activities
+  useEffect(() => {
+    dispatch(fetchServiceActivities(currentPage, itemsPerPage, searchTerm, statusFilter));
+  }, [dispatch, currentPage, searchTerm, statusFilter]);
 
-    useEffect(() => {
-        const handleResize = () => {
-            setWindowWidth(window.innerWidth);
-            if (window.innerWidth >= 992) {
-                setIsSidebarOpen(true);
-            } else {
-                setIsSidebarOpen(false);
-            }
-        };
+  // Toast on success
+  useEffect(() => {
+    if (successMessage) {
+      toast.success(successMessage);
+      dispatch(clearServiceActivitySuccessMessage());
+    }
+    if (error) {
+      toast.error(error);
+    }
+  }, [successMessage, error, dispatch]);
 
-        handleResize(); // Run on load
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, []);
+  const handleToggleSidebar = () => setIsSidebarOpen((prev) => !prev);
 
-    const handleToggleSidebar = () => {
-        setIsSidebarOpen(!isSidebarOpen);
-    };
+  const handleRefresh = () => {
+    setSearchTerm("");
+    setStatusFilter(null);
+    setCurrentPage(1);
+    dispatch(fetchServiceActivities(1, itemsPerPage, "", ""));
+  };
 
-    return (
-        <div className="container-fluid position-relative bg-white d-flex p-0">
-            <Sidebar isOpen={isSidebarOpen} />
-            <div
-                className="content flex-grow-1"
-                style={{
-                    marginLeft:
-                        windowWidth >= 992
-                            ? isSidebarOpen
-                                ? 259
-                                : 95
-                            : isSidebarOpen
-                                ? 220
-                                : 0,
-                    transition: "margin-left 0.3s ease",
-                }}
-            >
-                <Navbar onToggleSidebar={handleToggleSidebar} />
+  const handleStatusChange = (e) =>
+    setStatusFilter(e.target.value === "" ? null : e.target.value);
 
-                <div className="container-fluid px-4 pt-3">
-                    {/* Page Header */}
-                    <div className="row">
-                        <div className="bg-white p-3 rounded shadow-sm card-header mb-2">
-                            <div className="row g-2 align-items-center">
-                                <div className="col-lg-6">
-                                    <h5 className="form-ServicesCategory m-0">Manage Service Activities
-                                    </h5>
-                                </div>
-                                <div className="col-lg-6 text-end">
-                                    <Link to="/create-service-activities" className="btn btn-new-lead">
-                                        <i className="bi bi-plus-circle me-1"></i>
-                                        Add Service Activities
+  const handleConfirmDelete = async () => {
+    await dispatch(deleteServiceActivity(deleteId));
+    setShowDeleteModal(false);
+    setDeleteId(null);
+    dispatch(fetchServiceActivities(currentPage, itemsPerPage, searchTerm, statusFilter));
+  };
 
-                                    </Link>
-                                </div>
+  const handleSaveChanges = async (updatedActivity) => {
+    try {
+      await dispatch(updateServiceActivity(updatedActivity));
+      setShowEditOffcanvas(false);
+      setSelectedActivity(null);
+      dispatch(fetchServiceActivities(currentPage, itemsPerPage, searchTerm, statusFilter));
+    } catch (err) {
+      toast.error(err.response?.data?.message || err.message);
+    }
+  };
+
+  return (
+    <div className="container-fluid position-relative bg-white d-flex p-0">
+      <Sidebar isOpen={isSidebarOpen} />
+      <div
+        className="content flex-grow-1"
+        style={{
+          marginLeft: isSidebarOpen ? 259 : 95,
+          transition: "margin-left 0.3s",
+        }}
+      >
+        <Navbar onToggleSidebar={handleToggleSidebar} />
+
+        <div className="container-fluid px-4 pt-3">
+          {/* Header */}
+          <div className="row mb-2">
+            <div className="bg-white p-3 rounded shadow-sm card-header d-flex justify-content-between align-items-center">
+              <h5 className="form-title m-0">Manage Service Activities</h5>
+              <Link to="/create-service-activities" className="btn btn-new-lead">
+                <i className="bi bi-plus-circle me-1"></i> Add Service Activity
+              </Link>
+            </div>
+          </div>
+
+          {/* Filter */}
+          <div className="row mb-2">
+            <div className="bg-white p-3 rounded shadow-sm card-header">
+              <div className="row g-2 align-items-center">
+                <div className="col-md-4">
+                  <input
+                    type="text"
+                    className="form-control border-0"
+                    placeholder="Search by Service Category"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
+                <div className="col-md-3">
+                  <select
+                    className="form-select"
+                    value={statusFilter === null ? "" : statusFilter}
+                    onChange={handleStatusChange}
+                  >
+                    <option value="">All</option>
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+                  </select>
+                </div>
+                <div className="col-md-2 d-flex">
+                  <button
+                    className="btn btn-success me-3"
+                    onClick={() => setCurrentPage(1)}
+                  >
+                    <i className="bi bi-search"></i>
+                  </button>
+                  <button className="btn btn-light" onClick={handleRefresh}>
+                    <i className="bi bi-arrow-clockwise"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Table */}
+          <div className="row">
+            <div className="bg-white p-3 rounded shadow-sm card-header">
+              <div className="table-responsive">
+                {loading ? (
+                  <p>Loading service activities...</p>
+                ) : activities.length === 0 ? (
+                  <p>No activities found.</p>
+                ) : (
+                  <table className="table align-middle table-striped table-hover">
+                    <thead className="table-light">
+                      <tr>
+                        <th>#</th>
+                        <th>Service Category</th>
+                        <th>Service Type</th>
+                        <th>Service Activity</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {activities.map((a, index) => (
+                        <tr key={a.id}>
+                          <td>{index + 1 + (currentPage - 1) * itemsPerPage}</td>
+                          <td>{a.serviceCategoryName}</td>
+                          <td>{a.serviceTypeName || "-"}</td>
+                          <td>{a.activityName}</td>
+                          <td>
+                            <span
+                              className={`badge ${
+                                a.status === "Active"
+                                  ? "bg-success-light text-success"
+                                  : "bg-danger-light text-danger"
+                              }`}
+                            >
+                              {a.status}
+                            </span>
+                          </td>
+                          <td>
+                            <div className="d-flex gap-2">
+                              <button
+                                className="btn btn-icon btn-view"
+                                onClick={() => {
+                                  setSelectedActivity(a);
+                                  setShowViewModal(true);
+                                }}
+                              >
+                                <i className="bi bi-eye"></i>
+                              </button>
+                              <button
+                                className="btn btn-icon btn-edit"
+                                onClick={() => {
+                                  setSelectedActivity(a);
+                                  setShowEditOffcanvas(true);
+                                }}
+                              >
+                                <i className="bi bi-pencil-square"></i>
+                              </button>
+                              <button
+                                className="btn btn-icon btn-delete"
+                                onClick={() => {
+                                  setDeleteId(a.id);
+                                  setShowDeleteModal(true);
+                                }}
+                              >
+                                <i className="bi bi-trash"></i>
+                              </button>
                             </div>
-                        </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+            </div>
+          </div>
 
-                        {/* Search & Filter */}
-                        <div className="bg-white p-3 rounded shadow-sm card-header mb-4">
-                            <div className="row g-2 align-items-center">
-                                <div className="col-md-4">
-                                    <div className="input-group">
-                                        <input
-                                            type="text"
-                                            className="form-control border-0"
-                                            placeholder="Search By Service Category"
-                                        />
-                                    </div>
-                                </div>
-                                <div className="col-md-3">
-                                    <select className="form-select">
-                                        <option selected>Select Status</option>
-                                        <option>Active</option>
-                                        <option>In Active</option>
-                                    </select>
-                                </div>
-                                <div className="col-md-2 d-flex">
-                                    <button className="btn btn-success text-white me-3">
-                                        <i className="bi bi-search"></i>
-                                    </button>
-                                    <button className="btn btn-light border-1">
-                                        <i className="bi bi-arrow-clockwise"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+          {/* Pagination */}
+          <div className="d-flex justify-content-end mt-3">
+            <nav>
+              <ul className="pagination custom-pagination mb-0">
+                <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+                  <button
+                    className="page-link"
+                    onClick={() => setCurrentPage(currentPage - 1)}
+                  >
+                    &lt;
+                  </button>
+                </li>
+                {Array.from({ length: totalPages || 1 }, (_, i) => i + 1).map(
+                  (page) => (
+                    <li
+                      key={page}
+                      className={`page-item ${currentPage === page ? "active" : ""}`}
+                    >
+                      <button className="page-link" onClick={() => setCurrentPage(page)}>
+                        {page}
+                      </button>
+                    </li>
+                  )
+                )}
+                <li
+                  className={`page-item ${
+                    currentPage === totalPages ? "disabled" : ""
+                  }`}
+                >
+                  <button
+                    className="page-link"
+                    onClick={() => setCurrentPage(currentPage + 1)}
+                  >
+                    &gt;
+                  </button>
+                </li>
+              </ul>
+            </nav>
+          </div>
 
-                    {/* Table */}
-                    <div className="row">
-                        <div className="bg-white p-3 rounded shadow-sm card-header mb-4">
-                            <div className="table-responsive">
-                                <table className="table align-middle table-striped table-hover">
-                                    <thead className="table-light">
-                                        <tr>
-                                            <th>S.no</th>
-                                            <th>Service Categories</th>
-                                            <th>Service Types</th>
-                                            <th>Service Activities</th>
-
-                                            <th>Status</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {updates.map((update, index) => (
-                                            <tr key={update.id}>
-                                                <td>{index + 1}</td>
-                                                <td>{update.ServicesCategory}</td>
-                                                <td>{update.ServicesTypes}</td>
-                                                <td>{update.ServiceActivities}</td>
-
-                                                <td>
-                                                    <span
-                                                        className={`badge px-3 py-2 ${update.Status.trim().toLowerCase() === "active"
-                                                            ? "bg-success-light text-success"
-                                                            : "bg-danger-light text-danger"
-                                                            }`}
-                                                    >
-                                                        {update.Status.trim().toLowerCase() === "active" ? "Active" : "Inactive"}
-                                                    </span>
-                                                </td>
-
-                                                <td>
-                                                    <div className="d-flex gap-2 align-items-center">
-                                                        <button className="btn btn-icon btn-view">
-                                                            <i className="bi bi-eye"></i>
-                                                        </button>
-                                                        <button className="btn btn-icon btn-edit">
-                                                            <i className="bi bi-pencil-square"></i>
-                                                        </button>
-                                                        <button className="btn btn-icon btn-delete">
-                                                            <i className="bi bi-trash"></i>
-                                                        </button>
-
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div> {/* container-fluid */}
-            </div> {/* content */}
+          {/* Modals */}
+          {showViewModal && (
+            <ViewServiceActivityModal
+              show={showViewModal}
+              handleClose={() => setShowViewModal(false)}
+              activity={selectedActivity}
+            />
+          )}
+          {showEditOffcanvas && (
+            <EditServiceActivityOffcanvas
+              show={showEditOffcanvas}
+              handleClose={() => setShowEditOffcanvas(false)}
+              activity={selectedActivity}
+              onSave={handleSaveChanges}
+            />
+          )}
+          {showDeleteModal && (
+            <DeleteConfirmationModal
+              show={showDeleteModal}
+              handleClose={() => setShowDeleteModal(false)}
+              handleConfirm={handleConfirmDelete}
+            />
+          )}
         </div>
-    );
+
+        <ToastContainer />
+      </div>
+    </div>
+  );
 };
 
 export default ManageServiceActivities;

@@ -39,6 +39,8 @@ import CreateServicesTypes from "./admin/pages/CreateServicesTypes";
 import ManageServiceTypes from "./admin/pages/ManageServiceTypes";
 import CreateServicesActivities from "./admin/pages/CreateServicesActivities";
 import ManageServiceActivities from "./admin/pages/ManageServiceActivities";
+import ManageDigitalMarketPricing from "./admin/pages/ManageDigitalMarketPricing";
+import CreateDigitalMarketPricing from "./admin/pages/CreateDigitalMarketPricing";
 
 import MarketplaceType from "./admin/pages/MarketplaceType";
 import ManageServicesType from "./admin/pages/ManageServicesType";
@@ -114,6 +116,8 @@ function App() {
         <Route path="/add-product-listing" element={<AdminRoute><AddProductListing /></AdminRoute>} />
         <Route path="/manage-commission" element={<AdminRoute><ManageComissionPricing /></AdminRoute>} />
         <Route path="/create-commission" m element={<AdminRoute><CommissionPricing /></AdminRoute>} />
+        <Route path="/manage-digital-marketing-price" element={<AdminRoute><ManageDigitalMarketPricing /></AdminRoute>} />
+        <Route path="/create-digital-marketing-price" element={<AdminRoute><CreateDigitalMarketPricing /></AdminRoute>} />
 
         <Route path="/add-service-type" element={<AdminRoute><AddServicesType /></AdminRoute>} />
         <Route path="/add-state" element={<AdminRoute><AddState /></AdminRoute>} />
