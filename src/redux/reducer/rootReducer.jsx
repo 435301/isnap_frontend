@@ -37,7 +37,8 @@ const rootReducer = combineReducers({
   digitalMarket: digitalMarketReducer,
   serviceActivity: serviceActivityReducer,
   subServices: subServiceReducer,
-});
+  keyAccountAllCommissions:keyAccountSubscriptionReducer
+,});
 
 
 export default rootReducer;

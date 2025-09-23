@@ -13,7 +13,10 @@ import {
     FETCH_KEY_ACCOUNT_COMMISSION_FAILURE,
     FETCH_KEYACCOUNT_SUBSCRIPTION_REQUEST,
     FETCH_KEYACCOUNT_SUBSCRIPTION_SUCCESS,
-    FETCH_KEYACCOUNT_SUBSCRIPTION_FAILURE
+    FETCH_KEYACCOUNT_SUBSCRIPTION_FAILURE,
+    FETCH_KEY_ACCOUNT_COMMISSIONS_REQUEST,
+    FETCH_KEY_ACCOUNT_COMMISSIONS_SUCCESS,
+    FETCH_KEY_ACCOUNT_COMMISSIONS_FAILURE,
 } from "../actions/keyAccountSubscriptionAction";
 
 const initialState = {
@@ -23,6 +26,7 @@ const initialState = {
     commissions: [],
     total: 0,
     security: null,
+    serviceTypes: [],
 };
 
 const keyAccountSubscriptionReducer = (state = initialState, action) => {
@@ -32,6 +36,7 @@ const keyAccountSubscriptionReducer = (state = initialState, action) => {
         case CREATE_KEYACCOUNT_COMMISSION_REQUEST:
         case FETCH_KEY_ACCOUNT_COMMISSION_REQUEST:
         case FETCH_KEYACCOUNT_SUBSCRIPTION_REQUEST:
+        case FETCH_KEY_ACCOUNT_COMMISSIONS_REQUEST:
             return { ...state, loading: true, error: null };
 
         case CREATE_SUBSCRIPTION_SUCCESS: {
@@ -88,14 +93,23 @@ const keyAccountSubscriptionReducer = (state = initialState, action) => {
                 total: action.payload.total || 0,
                 error: null,
             }
+        case FETCH_KEY_ACCOUNT_COMMISSIONS_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                serviceTypes: action.payload.serviceTypes,
+                total: action.payload.total,
+                error: null,
+            };
         case CREATE_SUBSCRIPTION_FAILURE:
         case DELETE_SUBSCRIPTION_FAILURE:
         case CREATE_KEYACCOUNT_COMMISSION_FAILURE:
         case FETCH_KEY_ACCOUNT_COMMISSION_FAILURE:
         case FETCH_KEYACCOUNT_SUBSCRIPTION_FAILURE:
+        case FETCH_KEY_ACCOUNT_COMMISSIONS_FAILURE:
             return { ...state, loading: false, error: action.payload };
         case "CLEAR_KEYACCOUNT_SUBSCRIPTIONS":
-            return { ...state, subscriptions: [], commissions: [], total: 0, security: null };
+            return { ...state, subscriptions: [], commissions: [], total: 0, security: null ,serviceTypes:[]};
 
         default:
             return state;
