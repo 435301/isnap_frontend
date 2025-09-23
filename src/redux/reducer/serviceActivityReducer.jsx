@@ -1,11 +1,4 @@
-import {
-  FETCH_SERVICE_ACTIVITIES_REQUEST,
-  FETCH_SERVICE_ACTIVITIES_SUCCESS,
-  FETCH_SERVICE_ACTIVITIES_FAILURE,
-  DELETE_SERVICE_ACTIVITY_SUCCESS,
-  UPDATE_SERVICE_ACTIVITY_SUCCESS,
-  CLEAR_SERVICE_ACTIVITY_SUCCESS_MESSAGE,
-} from "../actions/serviceActivityActions";
+// src/redux/reducer/serviceActivityReducer.jsx
 
 const initialState = {
   activities: [],
@@ -13,34 +6,36 @@ const initialState = {
   error: null,
   successMessage: null,
   totalPages: 1,
+  currentPage: 1,
 };
 
-const serviceActivityReducer = (state = initialState, action) => {
+export const serviceActivityReducer = (state = initialState, action) => {
   switch (action.type) {
-    case FETCH_SERVICE_ACTIVITIES_REQUEST:
+    case "FETCH_SERVICE_ACTIVITIES_REQUEST":
       return { ...state, loading: true, error: null };
-
-    case FETCH_SERVICE_ACTIVITIES_SUCCESS:
+    case "FETCH_SERVICE_ACTIVITIES_SUCCESS":
       return {
         ...state,
         loading: false,
         activities: action.payload.activities,
         totalPages: action.payload.totalPages,
+        currentPage: action.payload.currentPage,
       };
-
-    case FETCH_SERVICE_ACTIVITIES_FAILURE:
+    case "FETCH_SERVICE_ACTIVITIES_FAILURE":
+    case "SERVICE_ACTIVITY_ERROR":
       return { ...state, loading: false, error: action.payload };
-
-    case DELETE_SERVICE_ACTIVITY_SUCCESS:
-    case UPDATE_SERVICE_ACTIVITY_SUCCESS:
-      return { ...state, successMessage: action.payload };
-
-    case CLEAR_SERVICE_ACTIVITY_SUCCESS_MESSAGE:
+    case "CREATE_SERVICE_ACTIVITY_SUCCESS":
+    case "UPDATE_SERVICE_ACTIVITY_SUCCESS":
+      return { ...state, successMessage: "Action completed successfully", error: null };
+    case "DELETE_SERVICE_ACTIVITY_SUCCESS":
+      return { 
+        ...state, 
+        successMessage: "Deleted successfully", 
+        activities: state.activities.filter(a => a.id !== action.payload) 
+      };
+    case "CLEAR_SERVICE_ACTIVITY_SUCCESS_MESSAGE":
       return { ...state, successMessage: null };
-
     default:
       return state;
   }
 };
-
-export default serviceActivityReducer;

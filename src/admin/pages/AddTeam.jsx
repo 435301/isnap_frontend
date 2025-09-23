@@ -123,8 +123,7 @@ const handleChange = (e) => {
     // Upload Proof
     if (!formData.uploadProof) newErrors.uploadProof = 'Upload Proof is required';
 
-    // Address
-    if (!formData.address.trim()) newErrors.address = 'Address is required';
+   
 
     // Password
     if (!formData.password.trim()) newErrors.password = 'Password is required';
@@ -313,7 +312,7 @@ const handleChange = (e) => {
 
                   {/* Address */}
                   <div className="col-md-4">
-                    <label className="form-label">Address <span className="text-danger">*</span></label>
+                    <label className="form-label">Address </label>
                     <input
                       type="text"
                       name="address"

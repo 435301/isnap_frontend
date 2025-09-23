@@ -1,32 +1,21 @@
 import React, { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
-import ViewServiceActivityModal from "../components/Modal/ViewServiceActivityModal";
-import EditServiceActivityOffcanvas from "../components/Modal/EditServiceActivityOffcanvas";
-import DeleteConfirmationModal from "../components/Modal/DeleteConfirmationModal";
+import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import {
   fetchServiceActivities,
   deleteServiceActivity,
   updateServiceActivity,
   clearServiceActivitySuccessMessage,
 } from "../../redux/actions/serviceActivityActions";
+import ViewServiceActivityModal from "../components/Modal/ViewServiceActivityModal";
+import EditServiceActivityOffcanvas from "../components/Modal/EditServiceActivityOffcanvas";
+import DeleteConfirmationModal from "../components/Modal/DeleteConfirmationModal";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const ManageServiceActivities = () => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 992);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState(null);
-  const [showViewModal, setShowViewModal] = useState(false);
-  const [showEditOffcanvas, setShowEditOffcanvas] = useState(false);
-  const [selectedActivity, setSelectedActivity] = useState(null);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [deleteId, setDeleteId] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
-
   const dispatch = useDispatch();
   const {
     activities,
@@ -36,12 +25,25 @@ const ManageServiceActivities = () => {
     successMessage,
   } = useSelector((state) => state.serviceActivity);
 
+  const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 992);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [showEditOffcanvas, setShowEditOffcanvas] = useState(false);
+  const [selectedActivity, setSelectedActivity] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
   // Fetch activities
   useEffect(() => {
-    dispatch(fetchServiceActivities(currentPage, itemsPerPage, searchTerm, statusFilter));
+    dispatch(
+      fetchServiceActivities(currentPage, itemsPerPage, searchTerm, statusFilter)
+    );
   }, [dispatch, currentPage, searchTerm, statusFilter]);
 
-  // Toast on success
+  // Toasts for success/error
   useEffect(() => {
     if (successMessage) {
       toast.success(successMessage);
@@ -56,13 +58,10 @@ const ManageServiceActivities = () => {
 
   const handleRefresh = () => {
     setSearchTerm("");
-    setStatusFilter(null);
+    setStatusFilter("");
     setCurrentPage(1);
     dispatch(fetchServiceActivities(1, itemsPerPage, "", ""));
   };
-
-  const handleStatusChange = (e) =>
-    setStatusFilter(e.target.value === "" ? null : e.target.value);
 
   const handleConfirmDelete = async () => {
     await dispatch(deleteServiceActivity(deleteId));
@@ -73,6 +72,9 @@ const ManageServiceActivities = () => {
 
   const handleSaveChanges = async (updatedActivity) => {
     try {
+      if (!updatedActivity.serviceCategoryId) {
+        return toast.error("Service Category ID is required");
+      }
       await dispatch(updateServiceActivity(updatedActivity));
       setShowEditOffcanvas(false);
       setSelectedActivity(null);
@@ -87,10 +89,7 @@ const ManageServiceActivities = () => {
       <Sidebar isOpen={isSidebarOpen} />
       <div
         className="content flex-grow-1"
-        style={{
-          marginLeft: isSidebarOpen ? 259 : 95,
-          transition: "margin-left 0.3s",
-        }}
+        style={{ marginLeft: isSidebarOpen ? 259 : 95, transition: "margin-left 0.3s" }}
       >
         <Navbar onToggleSidebar={handleToggleSidebar} />
 
@@ -121,8 +120,8 @@ const ManageServiceActivities = () => {
                 <div className="col-md-3">
                   <select
                     className="form-select"
-                    value={statusFilter === null ? "" : statusFilter}
-                    onChange={handleStatusChange}
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
                   >
                     <option value="">All</option>
                     <option value="Active">Active</option>
@@ -159,7 +158,7 @@ const ManageServiceActivities = () => {
                         <th>#</th>
                         <th>Service Category</th>
                         <th>Service Type</th>
-                        <th>Service Activity</th>
+                        <th>Activity Name</th>
                         <th>Status</th>
                         <th>Actions</th>
                       </tr>
@@ -169,18 +168,18 @@ const ManageServiceActivities = () => {
                         <tr key={a.id}>
                           <td>{index + 1 + (currentPage - 1) * itemsPerPage}</td>
                           <td>{a.serviceCategoryName}</td>
-                          <td>{a.serviceTypeName || "-"}</td>
+                          <td>{a.subServiceName || "-"}</td>
                           <td>{a.activityName}</td>
                           <td>
                             <span
-                              className={`badge ${
-                                a.status === "Active"
+                              className={`badge ${a.status === 1
                                   ? "bg-success-light text-success"
                                   : "bg-danger-light text-danger"
-                              }`}
+                                }`}
                             >
-                              {a.status}
+                              {a.status === 1 ? "Active" : "Inactive"}
                             </span>
+
                           </td>
                           <td>
                             <div className="d-flex gap-2">
@@ -220,46 +219,6 @@ const ManageServiceActivities = () => {
                 )}
               </div>
             </div>
-          </div>
-
-          {/* Pagination */}
-          <div className="d-flex justify-content-end mt-3">
-            <nav>
-              <ul className="pagination custom-pagination mb-0">
-                <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
-                  <button
-                    className="page-link"
-                    onClick={() => setCurrentPage(currentPage - 1)}
-                  >
-                    &lt;
-                  </button>
-                </li>
-                {Array.from({ length: totalPages || 1 }, (_, i) => i + 1).map(
-                  (page) => (
-                    <li
-                      key={page}
-                      className={`page-item ${currentPage === page ? "active" : ""}`}
-                    >
-                      <button className="page-link" onClick={() => setCurrentPage(page)}>
-                        {page}
-                      </button>
-                    </li>
-                  )
-                )}
-                <li
-                  className={`page-item ${
-                    currentPage === totalPages ? "disabled" : ""
-                  }`}
-                >
-                  <button
-                    className="page-link"
-                    onClick={() => setCurrentPage(currentPage + 1)}
-                  >
-                    &gt;
-                  </button>
-                </li>
-              </ul>
-            </nav>
           </div>
 
           {/* Modals */}

@@ -181,15 +181,23 @@ const CreateLead = () => {
 
                   {/* Lead Source */}
                   <div className="col-md-4">
-                    <label className="form-label">Lead Source</label>
-                    <input
-                      type="text"
+                    <label className="form-label">
+                      Lead Source <span className="text-danger">*</span>
+                    </label>
+                    <select
                       name="leadSource"
-                      value={formData.leadSource}
+                      value={formData.leadSource || ""}
                       onChange={handleChange}
-                      className="form-control"
-                      placeholder="Lead Source (e.g., Social Media)"
-                    />
+                      className="form-select"
+                    >
+                      <option value="">Select Lead Source</option>
+                      <option value="Social Media">Social Media</option>
+                      <option value="Website">Website</option>
+                      <option value="Referral">Referral</option>
+                      <option value="Advertisement">Advertisement</option>
+                      <option value="Cold Call">Cold Call</option>
+                      <option value="Other">Other</option>
+                    </select>
                   </div>
 
                   {/* Follow-up Date & Time */}

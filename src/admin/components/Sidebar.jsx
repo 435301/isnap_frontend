@@ -30,13 +30,13 @@ const Sidebar = ({ isOpen }) => {
         "/manage-services-type",
         "/manage-product-listing",
         "/manage-commission",
-        "/manage-departments",
+
         "/manage-billing",
         "/manage-state",
       ],
       serviceTypes: ["/manage-service-types", "/manage-services", "/create-service-type", "/add-service", "/create-service-activities", "/manage-service-activities"],
       sellers: ["/manage-sellers", "/create-seller", "/view-seller"],
-      team: ["/manage-team", "/add-team", "/manage-roles", "/add-role", "/latest-updates", "/manage-updates"],
+      team: ["/manage-team", "/add-team", "/manage-roles", "/manage-departments", "create-department", "/add-role", "/latest-updates", "/manage-updates"],
       tasks: ["/manage-task", "/create-task", "/rejected-tasks"],
       leads: ["/manage-leads", "/create-lead", "/view-lead"],
       notifications: ["/view-notifications", "/notification-settings"],
@@ -94,7 +94,6 @@ const Sidebar = ({ isOpen }) => {
               <Link to="/manage-services-type" className={`dropdown-item ${isLinkActive("/manage-services-type")}`}>Marketplaces</Link>
               <Link to="/manage-product-listing" className={`dropdown-item ${isLinkActive("/manage-product-listing")}`}>Product Listing</Link>
               <Link to="/manage-commission" className={`dropdown-item ${isLinkActive("/manage-commission")}`}>Commission Pricing</Link>
-              <Link to="/manage-departments" className={`dropdown-item ${isLinkActive("/manage-departments")}`}>Departments</Link>
               <Link to="/manage-billing" className={`dropdown-item ${isLinkActive("/manage-billing")}`}>Billing Cycle</Link>
               <Link to="/manage-state" className={`dropdown-item ${isLinkActive("/manage-state")}`}>States</Link>
               <Link to="/manage-digital-marketing-price" className={`dropdown-item ${isLinkActive("/manage-digital-marketing-price")}`}> Digital Market Pricing</Link>
@@ -130,6 +129,8 @@ const Sidebar = ({ isOpen }) => {
               {isOpen && <span>Leads</span>}
             </a>
             <div className={`dropdown-menu bg-transparent border-0 ${isDropdownActive("leads") ? "show" : ""}`}>
+              <Link to="/leads-status" className={`dropdown-item ${isLinkActive("/leads-status")}`}>Leads Status</Link>
+
               <Link to="/manage-leads" className={`dropdown-item ${isLinkActive("/manage-leads")}`}>Manage Leads</Link>
               <Link to="/create-lead" className={`dropdown-item ${isLinkActive("/create-lead")}`}>Create Lead</Link>
             </div>
@@ -163,8 +164,11 @@ const Sidebar = ({ isOpen }) => {
               {isOpen && <span>Team</span>}
             </a>
             <div className={`dropdown-menu bg-transparent border-0 ${isDropdownActive("team") ? "show" : ""}`}>
-              <Link to="/manage-team" className={`dropdown-item ${isLinkActive("/manage-team")}`}>Teams</Link>
+              <Link to="/manage-departments" className={`dropdown-item ${isLinkActive("/manage-departments")}`}>Departments</Link>
               <Link to="/manage-roles" className={`dropdown-item ${isLinkActive("/manage-roles")}`}>Roles</Link>
+              <Link to="/manage-roles-features" className={`dropdown-item ${isLinkActive("//manage-roles-features")}`}>Roles Features</Link>
+
+              <Link to="/manage-team" className={`dropdown-item ${isLinkActive("/manage-team")}`}>Teams</Link>
               <Link to="/latest-updates" className={`dropdown-item ${isLinkActive("/latest-updates")}`}>Latest Updates</Link>
               <Link to="/manage-updates" className={`dropdown-item ${isLinkActive("/manage-updates")}`}>Manage Updates</Link>
             </div>

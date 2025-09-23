@@ -94,9 +94,9 @@ const LeadView = () => {
                     <div className="bg-white p-3 rounded shadow-sm mb-4">
                         <div className="d-flex justify-content-between align-items-center mb-2">
                             <h5 className="mb-0">Latest Updates</h5>
-                            <select className="form-select form-select-sm w-auto">
+                            {/* <select className="form-select form-select-sm w-auto">
                                 <option>Sort by date</option>
-                            </select>
+                            </select> */}
                         </div>
 
                         <div className="mb-3 p-2 border rounded d-flex align-items-start ">
@@ -135,35 +135,7 @@ const LeadView = () => {
                         </div>
                     </div>
 
-                    {/* Upcoming Activity */}
-                    <div className="bg-white p-3 rounded shadow-sm mb-4">
-                        <span className="badge bg-success mb-2">Upcoming Activity</span>
-                        <div className="p-2 border rounded d-flex align-items-start ">
-  <div
-                                className="d-flex align-items-center justify-content-center me-3 rounded"
-                                style={{ width: "40px", height: "40px", backgroundColor: "#3B82F6" }}
-                            >
-                                <i className="bi bi-person-fill text-white"></i>
-                            </div>                            <div>
-                                <h6 className="mb-1">Product Meeting</h6>
-                                <p className="mb-1 small text-muted">
-                                    A product team meeting is a gathering of the cross-functional product team – ideally including team members from product, engineering, marketing, and customer support.
-                                </p>
-                                <small className="text-muted">27 Jul 2023, 05:00 pm</small>
-                                <div className="mt-2 d-flex gap-2">
-                                    <select className="form-select form-select-sm w-auto">
-                                        <option>Sort by date</option>
-                                    </select>
-                                    <select className="form-select form-select-sm w-auto">
-                                        <option>High</option>
-                                    </select>
-                                    <select className="form-select form-select-sm w-auto">
-                                        <option>Akeeb Shaik</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+
                 </div> {/* container-fluid */}
             </div> {/* content */}
         </div>

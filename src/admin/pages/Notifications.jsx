@@ -112,8 +112,8 @@ const Notifications = () => {
                                 <h5 className="form-title m-0">Notifications</h5>
                             </div>
                             <div className="col-lg-10 text-end">
-                                <Link to="/manage-updates" className="btn btn-success text-white">
-                                    Manage Updates
+                                <Link to="/manage-notifications" className="btn btn-success text-white">
+                                    Manage Notifications
                                 </Link>
                             </div>
                         </div>
