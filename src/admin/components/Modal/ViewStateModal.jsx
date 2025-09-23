@@ -32,10 +32,13 @@ const ViewStateModal = ({ showViewModal, setShowViewModal, selectedState }) => {
             {/* <p>
               <strong>State Code:</strong> {selectedState.stateCode}
             </p> */}
-            <p>
-              <strong>Status:</strong>{" "}
-              {selectedState.stateStatus ? "Active" : "Inactive"}
-            </p>
+           <p>
+  <strong>Status:</strong>{" "}
+  <span style={{ color: selectedState.stateStatus ? "green" : "red", fontWeight: "" }}>
+    {selectedState.stateStatus ? "Active" : "Inactive"}
+  </span>
+</p>
+
           </div>
           <div className="modal-footer">
             <button className="btn btn-light" onClick={handleClose}>

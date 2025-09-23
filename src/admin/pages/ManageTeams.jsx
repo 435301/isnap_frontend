@@ -94,8 +94,8 @@ const ManageTeams = () => {
       statusFilter === ""
         ? true
         : statusFilter === "active"
-        ? team.status === true
-        : team.status === false;
+          ? team.status === true
+          : team.status === false;
     return matchesName && matchesStatus;
   });
 
@@ -111,8 +111,8 @@ const ManageTeams = () => {
                 ? 259
                 : 95
               : isSidebarOpen
-              ? 220
-              : 0,
+                ? 220
+                : 0,
           transition: "margin-left 0.3s ease",
         }}
       >
@@ -195,6 +195,8 @@ const ManageTeams = () => {
                         <th>Name</th>
                         <th>Gender</th>
                         <th>Email</th>
+                        <th>Password</th>
+
                         <th>Role</th>
                         <th>Address</th>
                         <th>Status</th>
@@ -208,21 +210,22 @@ const ManageTeams = () => {
                           <td>{team.name}</td>
                           <td>{team.gender || "-"}</td>
                           <td>{team.email}</td>
+                          <td>{team.password}</td>
+
                           <td>
                             {team.userRole === 1
                               ? "Admin"
                               : team.userRole === 0
-                              ? "User"
-                              : "Editor"}
+                                ? "User"
+                                : "Editor"}
                           </td>
                           <td>{team.address || "-"}</td>
                           <td>
                             <span
-                              className={`badge ${
-                                team.status
-                                  ? "bg-success-light text-success"
-                                  : "bg-danger-light text-danger"
-                              }`}
+                              className={`badge ${team.status
+                                ? "bg-success-light text-success"
+                                : "bg-danger-light text-danger"
+                                }`}
                             >
                               {team.status ? "Active" : "Inactive"}
                             </span>

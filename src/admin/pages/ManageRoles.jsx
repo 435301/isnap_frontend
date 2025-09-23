@@ -78,7 +78,7 @@ const ManageRoles = () => {
       setShowEditModal(false);
       setSelectedRole(null);
     } catch (err) {
-      toast.error("Failed to update role. Please try again.");
+      toast.error("Role title must contain only alphabets and spaces.");
     }
   };
 
