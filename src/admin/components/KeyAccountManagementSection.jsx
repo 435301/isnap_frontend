@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchServiceTypes } from '../../redux/actions/serviceTypeActions';
-import { createKeyAccountCommission, createSubscription, deleteSubscription, fetchKeyAccountCommission, fetchKeyAccountSubscription } from '../../redux/actions/keyAccountSubscriptionAction';
+import { createKeyAccountCommission, createSubscription, deleteSubscription, fetchKeyAccountAllCommissions, fetchKeyAccountCommission, fetchKeyAccountSubscription } from '../../redux/actions/keyAccountSubscriptionAction';
 import DeleteConfirmationModal from './Modal/DeleteConfirmationModal';
 import { fetchCommissions } from '../../redux/actions/commissionActions';
 import { fetchBusinessLaunches } from '../../redux/actions/businessLaunchActions';
@@ -18,16 +18,10 @@ const KeyAccountManagementSection = ({
   console.log('businessIdkeyaccountEdit', businessIdEdit);
   const dispatch = useDispatch();
 
-  const { subscriptions = [], loading, error } = useSelector(
-    (state) => state.subscriptions || {}
-  );
+  const { subscriptions = [], loading, error } = useSelector((state) => state.subscriptions || {});
+  const { commissions = [], security } = useSelector((state) => state.subscriptions || {});
+  const { serviceTypes = [], total } = useSelector((state) => state.keyAccountAllCommissions || {});
 
-  const { commissions = [], security } = useSelector(
-    (state) => state.subscriptions || {}
-  );
-
-  console.log('commission', commissions);
-  console.log('subscriptions', subscriptions);
   const serviceType = useSelector((state) => state.serviceType.serviceTypes || []);
   const [formData, setFormData] = useState({
     serviceType: "",
@@ -58,9 +52,10 @@ const KeyAccountManagementSection = ({
   useEffect(() => {
     if (businessIdEdit) {
       dispatch(fetchKeyAccountSubscription(businessIdEdit));
-      dispatch(fetchKeyAccountCommission(businessIdEdit, formData.serviceType || 0));
+      dispatch(fetchKeyAccountAllCommissions(businessIdEdit || businessId));
     }
     else {
+      dispatch({ type: "CLEAR_KEYACCOUNT_SUBSCRIPTIONS" });
       setFormData({
         serviceType: "",
         actualPrice: "",
@@ -148,20 +143,25 @@ const KeyAccountManagementSection = ({
     }
   };
 
-  const validate = () => {
+  const validateSubscription = () => {
     const newErrors = {};
     if (!formData.serviceType) newErrors.serviceType = "Service Type is required";
     if (!formData.offerPrice) newErrors.offerPrice = "Offer Price is required";
-if (!formData.keyAccountRows[0]?.securityDeposit) {
-    newErrors.securityDeposit = "Security Deposit is required";
-  }
+    return newErrors;
+  };
 
+  const validateCommission = () => {
+    const newErrors = {};
+    if (!formData.keyAccountRows[0]?.securityDeposit) {
+      newErrors.securityDeposit = "Security Deposit is required";
+    }
     return newErrors;
   };
 
   const handleSubmitSubscription = async (e) => {
+    console.log('clicked')
     e.preventDefault();
-    const newErrors = validate();
+    const newErrors = validateSubscription();
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
 
@@ -201,7 +201,9 @@ if (!formData.keyAccountRows[0]?.securityDeposit) {
 
   const handleSubmitCommission = async (e) => {
     e.preventDefault();
-
+    const newErrors = validateCommission();
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) return;
     const payload = {
       businessId: businessIdEdit ? businessIdEdit : businessId,
       serviceTypeId: Number(formData.serviceType),
@@ -217,7 +219,7 @@ if (!formData.keyAccountRows[0]?.securityDeposit) {
 
     try {
       const res = await dispatch(createKeyAccountCommission(payload));
-      await dispatch(fetchKeyAccountCommission(businessIdEdit || businessId, formData.serviceType));
+      await dispatch(fetchKeyAccountAllCommissions(businessIdEdit || businessId, formData.serviceType));
       console.log('res', res.data.commissions.serviceTypeId);
       setFormData({
         serviceType: "",
@@ -265,15 +267,18 @@ if (!formData.keyAccountRows[0]?.securityDeposit) {
   };
 
   const handleEditCommission = (row, serviceTypeId) => {
-    const marketplace = commissions[serviceTypeId];
-    const filtered = commissions.filter(c => c.serviceTypeId === row.serviceTypeId);
+    // find the serviceType object from the API response
+    const marketplace = serviceTypes.find(s => s.serviceTypeId === serviceTypeId);
+
+    if (!marketplace) return; // safety check
+
     setFormData((prev) => ({
       ...prev,
       serviceType: serviceTypeId,
       keyAccountRows: [
         {
-          securityDeposit: marketplace?.securityDeposit || "",
-          commissionTiers: marketplace.commissions.map((c) => ({
+          securityDeposit: marketplace.security?.securityDeposit || "",
+          commissionTiers: (marketplace.commissions || []).map((c) => ({
             id: c.id,
             commissionId: c.commissionId,
             commissionTitle: c.commissionTitle,
@@ -283,10 +288,10 @@ if (!formData.keyAccountRows[0]?.securityDeposit) {
         },
       ],
     }));
+
     setActiveKeyAccountSection("Commission");
     if (!expandedSections.keyAccountManagement) toggleSection("keyAccountManagement");
   };
-
 
   // Delete row
   const handleDeleteClick = (id) => {
@@ -299,19 +304,6 @@ if (!formData.keyAccountRows[0]?.securityDeposit) {
     setShowDeleteModal(false);
     setToDelete(null);
   };
-
-  const grouped = commissions.reduce((acc, c) => {
-    if (!acc[c.serviceTypeId]) {
-      acc[c.serviceTypeId] = {
-        serviceTypeId: c.serviceTypeId,
-        serviceTypeName: c.serviceTypeName,
-        commissions: [],
-        securityDeposit: security?.securityDeposit || 0,
-      };
-    }
-    acc[c.serviceTypeId].commissions.push(c);
-    return acc;
-  }, {});
 
 
   return (
@@ -417,6 +409,7 @@ if (!formData.keyAccountRows[0]?.securityDeposit) {
                                   name="actualCommission"
                                   value={row.actualCommission}
                                   onChange={(e) => handleCommissionChange(index, e)}
+                                  disabled
                                 />
                               </td>
                               <td className="text-center">
@@ -489,9 +482,7 @@ if (!formData.keyAccountRows[0]?.securityDeposit) {
                       </>
                     ) : (
                       <>
-                        <th>Commission Title</th>
-                        <th>Actual Commission %</th>
-                        <th>Offer Commission %</th>
+                        <th>Commission Tiers</th>
                         <th>Security Deposit</th>
                       </>
                     )}
@@ -499,7 +490,7 @@ if (!formData.keyAccountRows[0]?.securityDeposit) {
                     <th>Action</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className='text-center'>
                   {loading ? (
                     <tr>
                       <td colSpan={activeKeyAccountSection === "Subscription" ? 5 : 7}>
@@ -537,28 +528,31 @@ if (!formData.keyAccountRows[0]?.securityDeposit) {
                         <td colSpan="5">No subscription data available</td>
                       </tr>
                     )
-                  ) : commissions.length > 0 ? (
-                    Object.values(grouped).map((marketplace, idx) =>
-                      marketplace.commissions.map((row, index) => (
-                        <tr key={row.commissionId}>
-                          <td>{idx + 1}.{index + 1}</td>
-                          <td>{marketplace.serviceTypeName}</td>
-                          <td>{row.commissionTitle}</td>
-                          <td>{row.actualPercentage}</td>
-                          <td>{row.offerPercentage}</td>
-                          <td>{marketplace.securityDeposit || "-"}</td>
-                          <td>
-                            <button
-                              type="button"
-                              className="btn btn-sm btn-outline-primary me-2"
-                              onClick={() => handleEditCommission(row)}
-                            >
-                              <i className="bi bi-pencil"></i>
-                            </button>
-                          </td>
-                        </tr>
-                      ))
-                    )
+                  ) : serviceTypes.length > 0 ? (
+                    serviceTypes.map((service, idx) => (
+                      <tr key={service.serviceTypeId}>
+                        <td>{idx + 1}</td>
+                        <td>{service.serviceTypeName}</td>
+                        <td>
+                          {service.commissions?.map(c => (
+                            <div key={c.commissionId}>
+                              {c.commissionTitle} - Actual: {c.actualPercentage}% | Offer: {c.offerPercentage}%
+                            </div>
+                          )) || '-'}
+                        </td>
+                        <td>{service.security?.securityDeposit || '-'}</td>
+                        <td>
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-outline-primary me-2"
+                            onClick={() => handleEditCommission(null, service.serviceTypeId)}
+                          >
+                            <i className="bi bi-pencil"></i>
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+
                   ) : (
                     <tr>
                       <td colSpan="7">No commission data available</td>
