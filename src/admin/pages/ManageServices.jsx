@@ -202,8 +202,8 @@ const ManageServicesCategory = () => {
                     <thead className="table-light">
                       <tr>
                         <th>S.no</th>
-                        <th>Category Name</th>
-                        <th>Category Code</th>
+                        <th>Service Category Name</th>
+                        <th>Service Category Code</th>
                         <th>Status</th>
                         <th>Action</th>
                       </tr>
@@ -212,8 +212,8 @@ const ManageServicesCategory = () => {
                       {categories.map((cat, index) => (
                         <tr key={cat.id}>
                           <td>{(currentPage - 1) * itemsPerPage + index + 1}</td>
-                          <td>{cat.categoryName}</td>
-                          <td>{cat.categoryCode}</td>
+                          <td>{cat.serviceCategoryName}</td>
+                          <td>{cat.serviceCategoryCode}</td>
                           <td>
                             <span
                               className={`badge ${cat.status ? "bg-success-light text-success" : "bg-danger-light text-danger"

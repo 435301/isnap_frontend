@@ -14,8 +14,12 @@ import businessReducer from "./businessReducer";
 import { businessLaunchReducer } from "./businessLaunchReducer";
 import { catalogListingReducer } from "./catalogListingReducer";
 import keyAccountSubscriptionReducer from "./keyAccountSubscriptionReducer";
+<<<<<<< HEAD
 import { digitalMarketReducer } from "./digitalMarketReducer";
 import serviceActivityReducer from "./serviceActivityReducer";
+=======
+import { subServiceReducer } from "./subServiceReducer";
+>>>>>>> cf2fe0676cf245dfee8553525ac54ad4593a4ef5
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -33,9 +37,13 @@ const rootReducer = combineReducers({
   businessLaunches: businessLaunchReducer,
   catalogListing: catalogListingReducer,
   subscriptions: keyAccountSubscriptionReducer,
+<<<<<<< HEAD
   digitalMarket: digitalMarketReducer,
   serviceActivity: serviceActivityReducer,
 
+=======
+  subServices: subServiceReducer,
+>>>>>>> cf2fe0676cf245dfee8553525ac54ad4593a4ef5
 });
 
 

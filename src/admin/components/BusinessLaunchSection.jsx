@@ -205,7 +205,7 @@ const BusinessLaunchSection = ({ businessId, expandedSections, toggleSection, bu
                     type="number"
                     className="form-control"
                     name="actualPrice"
-                    placeholder="567"
+                    placeholder="000"
                     value={formData.actualPrice}
                     onChange={handleChange}
                     disabled
@@ -218,7 +218,7 @@ const BusinessLaunchSection = ({ businessId, expandedSections, toggleSection, bu
                     type="number"
                     className="form-control"
                     name="offerPrice"
-                    placeholder="467"
+                    placeholder="000"
                     value={formData.offerPrice}
                     onChange={handleChange}
                   />

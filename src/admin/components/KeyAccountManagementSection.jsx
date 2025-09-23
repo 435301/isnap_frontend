@@ -136,6 +136,7 @@ const KeyAccountManagementSection = ({
         ],
       }));
       if (value) {
+        await dispatch(fetchKeyAccountSubscription(businessIdEdit || businessId, value));
         // Fetch commissions + security for this businessId + serviceType
         await dispatch(fetchKeyAccountCommission(businessId, value));
       }
@@ -151,6 +152,10 @@ const KeyAccountManagementSection = ({
     const newErrors = {};
     if (!formData.serviceType) newErrors.serviceType = "Service Type is required";
     if (!formData.offerPrice) newErrors.offerPrice = "Offer Price is required";
+if (!formData.keyAccountRows[0]?.securityDeposit) {
+    newErrors.securityDeposit = "Security Deposit is required";
+  }
+
     return newErrors;
   };
 
@@ -212,6 +217,7 @@ const KeyAccountManagementSection = ({
 
     try {
       const res = await dispatch(createKeyAccountCommission(payload));
+      await dispatch(fetchKeyAccountCommission(businessIdEdit || businessId, formData.serviceType));
       console.log('res', res.data.commissions.serviceTypeId);
       setFormData({
         serviceType: "",
@@ -258,15 +264,16 @@ const KeyAccountManagementSection = ({
     if (!expandedSections.subscriptions) toggleSection("subscriptions");
   };
 
-  const handleEditCommission = (row) => {
+  const handleEditCommission = (row, serviceTypeId) => {
+    const marketplace = commissions[serviceTypeId];
     const filtered = commissions.filter(c => c.serviceTypeId === row.serviceTypeId);
     setFormData((prev) => ({
       ...prev,
-      serviceType: row.serviceTypeId,
+      serviceType: serviceTypeId,
       keyAccountRows: [
         {
-          securityDeposit: security?.securityDeposit || "",
-          commissionTiers: filtered.map((c) => ({
+          securityDeposit: marketplace?.securityDeposit || "",
+          commissionTiers: marketplace.commissions.map((c) => ({
             id: c.id,
             commissionId: c.commissionId,
             commissionTitle: c.commissionTitle,
@@ -292,6 +299,20 @@ const KeyAccountManagementSection = ({
     setShowDeleteModal(false);
     setToDelete(null);
   };
+
+  const grouped = commissions.reduce((acc, c) => {
+    if (!acc[c.serviceTypeId]) {
+      acc[c.serviceTypeId] = {
+        serviceTypeId: c.serviceTypeId,
+        serviceTypeName: c.serviceTypeName,
+        commissions: [],
+        securityDeposit: security?.securityDeposit || 0,
+      };
+    }
+    acc[c.serviceTypeId].commissions.push(c);
+    return acc;
+  }, {});
+
 
   return (
     <div className="accordion mb-3">
@@ -370,6 +391,7 @@ const KeyAccountManagementSection = ({
                         value={formData.offerPrice}
                         onChange={handleChange}
                       />
+                      {errors.offerPrice && <div className="text-danger small">{errors.offerPrice}</div>}
                     </div>
                   </div>
                 )}
@@ -421,6 +443,7 @@ const KeyAccountManagementSection = ({
                         value={formData.keyAccountRows[0]?.securityDeposit || ''}
                         onChange={handleSecurityDepositChange}
                       />
+                      {errors.securityDeposit && <div className="text-danger small">{errors.securityDeposit}</div>}
                     </div>
                   </div>
                 )}
@@ -453,134 +476,100 @@ const KeyAccountManagementSection = ({
               </div>
             </div>
             <div className="table-responsive mb-3">
-              {activeKeyAccountSection === "Subscription" ? (
-                <>
-                  <table className="table table-bordered">
-                    <thead className="thead-light">
-                      <tr>
-                        <th>S.no</th>
-                        <th>Service Type</th>
+              <table className="table table-bordered">
+                <thead className="thead-light">
+                  <tr>
+                    <th>S.no</th>
+                    <th>Service Type</th>
+
+                    {activeKeyAccountSection === "Subscription" ? (
+                      <>
                         <th>Subscription (Actual Price)</th>
                         <th>Subscription (Offer Price)</th>
-                        <th>Action</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {loading ? (
-                        <tr><td colSpan="5">Loading...</td></tr>
-                      ) : subscriptions.length > 0 ? (
-                        subscriptions.map((row, index) => (
-                          <tr key={row.id}>
-                            <td>{index + 1}</td>
-                            <td>{row.serviceTypeName}</td>
-                            <td>{row.actualPrice}</td>
-                            <td>{row.offerPrice}</td>
-                            <td>
-                              <button
-                                type="button"
-                                className="btn btn-sm btn-outline-primary me-2"
-                                onClick={() => handleEdit(row)}
-                              >
-                                <i className="bi bi-pencil"></i>
-                              </button>
-                              <button
-                                type="button"
-                                className="btn btn-sm btn-outline-danger"
-                                onClick={() => handleDeleteClick(row.id)}
-                              >
-                                <i className="bi bi-trash"></i>
-                              </button>
-                            </td>
-                          </tr>
-                        ))
-                      ) : (
-                        <tr><td colSpan="9">No data available</td></tr>
-                      )}
-                    </tbody>
-                  </table>
-                </>
-
-              ) : (
-                ""
-              )}
-            </div>
-
-            <div className="table-responsive mb-3">
-              {activeKeyAccountSection === "Commission" ? (
-                <>
-                  <table className="table table-bordered align-middle">
-                    <thead className="table-light">
-                      <tr>
-                        <th>S.no</th>
-                        <th>Service Type</th>
+                      </>
+                    ) : (
+                      <>
+                        <th>Commission Title</th>
+                        <th>Actual Commission %</th>
+                        <th>Offer Commission %</th>
                         <th>Security Deposit</th>
-                        <th>Commission Tiers</th>
-                        <th>Action</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {commissions.length > 0 ? (
-                        Object.values(
-                          commissions.reduce((acc, c) => {
-                            if (!acc[c.serviceTypeId]) {
-                              acc[c.serviceTypeId] = {
-                                serviceTypeId: c.serviceTypeId,
-                                serviceTypeName: c.serviceTypeName,
-                                commissions: [],
-                              };
-                            }
-                            acc[c.serviceTypeId].commissions.push(c);
-                            return acc;
-                          }, {})
-                        ).map((group, index) => (
-                          <tr key={group.serviceTypeId}>
-                            <td>{index + 1}</td>
-                            <td><strong>{group.serviceTypeName}</strong></td>
-                            <td>
-                              <span className="badge text-dark">
-                                ₹{security?.securityDeposit || 0}
-                              </span>
-                            </td>
-                            <td>
-                              <ul className="list-unstyled mb-0">
-                                {group.commissions.map((c, i) => (
-                                  <li key={i} className="mb-1">
-                                    <div>
-                                      <span className="fw-semibold">{c.commissionTitle}</span>{" "}
-                                      <span className="badge bg-secondary">
-                                        Actual: {c.actualPercentage}%
-                                      </span>{" "}
-                                      <span className="badge bg-success">
-                                        Offer: {c.offerPercentage}%
-                                      </span>
-                                    </div>
-                                  </li>
-                                ))}
-                              </ul>
-                            </td>
-                            <td>
-                              <button
-                                type="button"
-                                className="btn btn-sm btn-outline-primary"
-                                onClick={() => handleEditCommission(group)}
-                              >
-                                <i className="bi bi-pencil"></i> Edit
-                              </button>
-                            </td>
-                          </tr>
-                        ))
-                      ) : (
-                        <tr>
-                          <td colSpan="5">No commissions available</td>
+                      </>
+                    )}
+
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {loading ? (
+                    <tr>
+                      <td colSpan={activeKeyAccountSection === "Subscription" ? 5 : 7}>
+                        Loading...
+                      </td>
+                    </tr>
+                  ) : activeKeyAccountSection === "Subscription" ? (
+                    subscriptions.length > 0 ? (
+                      subscriptions.map((row, index) => (
+                        <tr key={row.id}>
+                          <td>{index + 1}</td>
+                          <td>{row.serviceTypeName}</td>
+                          <td>{row.actualPrice}</td>
+                          <td>{row.offerPrice}</td>
+                          <td>
+                            <button
+                              type="button"
+                              className="btn btn-sm btn-outline-primary me-2"
+                              onClick={() => handleEdit(row)}
+                            >
+                              <i className="bi bi-pencil"></i>
+                            </button>
+                            <button
+                              type="button"
+                              className="btn btn-sm btn-outline-danger"
+                              onClick={() => handleDeleteClick(row.id)}
+                            >
+                              <i className="bi bi-trash"></i>
+                            </button>
+                          </td>
                         </tr>
-                      )}
-                    </tbody>
-                  </table>
-                </>
-              ) : (
-                ""
-              )}
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="5">No subscription data available</td>
+                      </tr>
+                    )
+                  ) : commissions.length > 0 ? (
+                    Object.values(grouped).map((marketplace, idx) =>
+                      marketplace.commissions.map((row, index) => (
+                        <tr key={row.commissionId}>
+                          <td>{idx + 1}.{index + 1}</td>
+                          <td>{marketplace.serviceTypeName}</td>
+                          <td>{row.commissionTitle}</td>
+                          <td>{row.actualPercentage}</td>
+                          <td>{row.offerPercentage}</td>
+                          <td>{marketplace.securityDeposit || "-"}</td>
+                          <td>
+                            <button
+                              type="button"
+                              className="btn btn-sm btn-outline-primary me-2"
+                              onClick={() => handleEditCommission(row)}
+                            >
+                              <i className="bi bi-pencil"></i>
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    )
+                  ) : (
+                    <tr>
+                      <td colSpan="7">No commission data available</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
             </div>
+
+
+
             <DeleteConfirmationModal
               show={showDeleteModal}
               handleClose={() => setShowDeleteModal(false)}
