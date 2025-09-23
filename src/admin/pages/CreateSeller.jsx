@@ -10,11 +10,11 @@ import DigitalMarketing from "../components/DigitalMarketing";
 import Photography from "../components/Photography";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
- 
+
 const CreateSeller = () => {
   const dispatch = useDispatch();
   const { id } = useParams(); // for edit mode
- 
+
   const [formData, setFormData] = useState({
     lead: "",
     businessName: "",
@@ -40,18 +40,25 @@ const CreateSeller = () => {
       { serviceType: "", actualPrice: "", offerPrice: "", securityDeposit: "", commissionTiers: [] },
     ],
   });
- 
+
   const [errors, setErrors] = useState({});
   const [activeTab, setActiveTab] = useState("Business Details");
   const [expandedSections, setExpandedSections] = useState({
     businessLaunch: true,
     catalogListing: false,
     keyAccountManagement: false,
+    digitalMarketing: false,
+    productPhotography: true,
+    photographyLifestyle: false,
+    modelPhotography: false,
+    photographyAplus: false,
+    photographyStore: false,
+    photographySocial: false,
   });
   const [businessId, setBusinessId] = useState(null);
   console.log('businessIdcreateseller', businessId);
- 
- 
+
+
   // Toggle accordion sections
   const toggleSection = (section) => {
     setExpandedSections((prev) => ({
@@ -59,7 +66,7 @@ const CreateSeller = () => {
       [section]: !prev[section],
     }));
   };
- 
+
   // Handle input changes
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -74,16 +81,16 @@ const CreateSeller = () => {
       return newErrors;
     });
   };
- 
+
   const handleMobileChange = (e) => {
     let value = e.target.value.replace(/\D/g, "");
     if (value.startsWith("0")) value = value.slice(1);
     if (value.length > 10) value = value.slice(0, 10);
- 
+
     setFormData((prev) => ({ ...prev, regdMobileNumber: value }));
     setErrors((prev) => {
       const newErrors = { ...prev };
- 
+
       if (value.length === 0) {
         newErrors.regdMobileNumber = "Valid Regd Mobile number is required";
       } else if (value.length !== 10) {
@@ -94,7 +101,7 @@ const CreateSeller = () => {
       return newErrors;
     });
   };
- 
+
   const handleSpocMobileChange = (e) => {
     let value = e.target.value.replace(/\D/g, "");
     if (value.startsWith("0")) value = value.slice(1);
@@ -102,7 +109,7 @@ const CreateSeller = () => {
     setFormData((prev) => ({ ...prev, spocMobileNumber: value }));
     setErrors((prev) => {
       const newErrors = { ...prev };
- 
+
       if (value.length === 0) {
         newErrors.spocMobileNumber = "Valid SPOC Mobile number is required";
       } else if (value.length !== 10) {
@@ -113,8 +120,8 @@ const CreateSeller = () => {
       return newErrors;
     });
   };
- 
- 
+
+
   // Row handlers
   const handleServiceRowChange = (index, e) => {
     const { name, value } = e.target;
@@ -139,7 +146,7 @@ const CreateSeller = () => {
     updatedRows[index][name] = value;
     setFormData((prev) => ({ ...prev, keyAccountRows: updatedRows }));
   };
- 
+
   const handleRemoveServiceRow = (index) => {
     const updatedRows = [...formData.serviceRows];
     if (updatedRows.length > 1) {
@@ -161,7 +168,7 @@ const CreateSeller = () => {
       setFormData((prev) => ({ ...prev, keyAccountRows: updatedRows }));
     }
   };
- 
+
   // Populate form when editing
   const populateFormData = (businessData) => {
     setFormData((prev) => ({
@@ -178,7 +185,7 @@ const CreateSeller = () => {
       keyAccountRows: businessData.keyAccountRows || prev.keyAccountRows,
     }));
   };
- 
+
   // Fetch business if ID exists (edit mode)
   useEffect(() => {
     if (id) {
@@ -189,7 +196,7 @@ const CreateSeller = () => {
         .catch((err) => toast.error("Failed to load business details"));
     }
   }, [id, dispatch]);
- 
+
   // Submit form
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -208,7 +215,7 @@ const CreateSeller = () => {
     if (!formData.gstNumber) newErrors.gstNumber = "GST Number is required";
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
- 
+
     try {
       const data = new FormData();
       if (formData.lead) {
@@ -230,18 +237,18 @@ const CreateSeller = () => {
       data.append("serviceRows", JSON.stringify(formData.serviceRows));
       data.append("catalogRows", JSON.stringify(formData.catalogRows));
       data.append("keyAccountRows", JSON.stringify(formData.keyAccountRows));
-     const res = await dispatch(createBusiness(data));
-     console.log('response', res);
-       if (res?.data?.id) {
-      setBusinessId(res.data?.id);      
-      setErrors({});
-      setActiveTab("Marketplace Business");
-    }
-     
+      const res = await dispatch(createBusiness(data));
+      console.log('response', res);
+      if (res?.data?.id) {
+        setBusinessId(res.data?.id);
+        setErrors({});
+        setActiveTab("Marketplace Business");
+      }
+
     } catch (error) {
     }
   };
- 
+
   return (
     <div className="container-fluid position-relative bg-white d-flex p-0">
       <Sidebar isOpen={true} />
@@ -260,7 +267,7 @@ const CreateSeller = () => {
               </div>
             </div>
           </div>
- 
+
           <div className="bg-white rounded shadow-sm mb-3">
             <ul className="nav nav-tabs">
               {["Business Details", "Marketplace Business", "Digital Marketing", "Photography"].map(
@@ -277,7 +284,7 @@ const CreateSeller = () => {
               )}
             </ul>
           </div>
- 
+
           <div className="bg-white p-3 rounded shadow-sm card-header">
             {activeTab === "Business Details" && (
               <BusinessDetails
@@ -303,14 +310,24 @@ const CreateSeller = () => {
                 handleRemoveKeyAccountRow={handleRemoveKeyAccountRow}
                 expandedSections={expandedSections}
                 toggleSection={toggleSection}
-                 businessId={businessId}
+                businessId={businessId}
               />
             )}
             {activeTab === "Digital Marketing" && (
-              <DigitalMarketing formData={formData} setFormData={setFormData} />
+              <DigitalMarketing formData={formData} setFormData={setFormData} toggleSection={toggleSection} />
             )}
             {activeTab === "Photography" && (
-              <Photography formData={formData} setFormData={setFormData} />
+              <Photography 
+              formData={formData}
+                setFormData={setFormData}
+                errors={errors}
+                setErrors={setErrors}
+                expandedSections={expandedSections}   
+                toggleSection={toggleSection}
+                handleServiceRowChange={handleServiceRowChange}
+                handleRemoveServiceRow={handleRemoveServiceRow}
+                // handleSubmit={handleSubmit}
+                 />
             )}
           </div>
         </div>
@@ -319,5 +336,5 @@ const CreateSeller = () => {
     </div>
   );
 };
- 
+
 export default CreateSeller;
