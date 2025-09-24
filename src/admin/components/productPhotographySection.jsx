@@ -1,4 +1,5 @@
 import React from "react";
+import { useSelector } from "react-redux";
 
 const ProductPhotographySection = ({
     expandedSections,
@@ -9,7 +10,12 @@ const ProductPhotographySection = ({
     handleServiceRowChange,
     handleRemoveServiceRow,
     resetSection,
+    businessId,
 }) => {
+    console.log('businessIdproduct', businessId);
+    const billing = useSelector((state) => state.billing.billingCycles || []);
+
+    
     return (
         <div className="accordion mb-3">
             <div className="accordion-item">
@@ -32,7 +38,7 @@ const ProductPhotographySection = ({
                         <div className="row g-3 mb-3 align-items-center">
                             <div className="col-md-4">
                                 <label className="form-label">
-                                    Service Type <span className="text-danger">*</span>
+                                    Service Activities <span className="text-danger">*</span>
                                 </label>
                                 <select
                                     className="form-select"
@@ -98,7 +104,7 @@ const ProductPhotographySection = ({
                                 />
                             </div>
 
-                             <div className="col-md-2">
+                            <div className="col-md-2">
                                 <label className="form-label">Total Price</label>
                                 <input
                                     type="number"
@@ -115,12 +121,15 @@ const ProductPhotographySection = ({
                                 <select
                                     className="form-select"
                                     name="billingCycle"
-                                    value={getServiceRow(0).billingCycle}
-                                    onChange={(e) => handleServiceRowChange(0, e)}
+                                    value={formData.billingCycle}
+                                    // onChange={handleChange}
                                 >
                                     <option value="">Select Billing Cycle</option>
-                                    <option value="Monthly">Monthly</option>
-                                    <option value="Quarterly">Quarterly</option>
+                                    {billing.map((cycle) => (
+                                        <option key={cycle.id} value={cycle.id}>
+                                            {cycle.title}
+                                        </option>
+                                    ))}
                                 </select>
                             </div>
 
@@ -151,7 +160,7 @@ const ProductPhotographySection = ({
                             </button>
                         </div>
 
-                           {/* Table */}
+                        {/* Table */}
                         <div className="table-responsive mb-3">
                             <table className="table table-bordered">
                                 <thead className="thead-light">

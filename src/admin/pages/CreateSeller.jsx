@@ -327,6 +327,7 @@ const CreateSeller = () => {
                 toggleSection={toggleSection}
                 handleServiceRowChange={handleServiceRowChange}
                 handleRemoveServiceRow={handleRemoveServiceRow}
+                 businessId={businessId}
                 // handleSubmit={handleSubmit}
                  />
             )}

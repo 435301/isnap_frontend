@@ -7,7 +7,7 @@ import PhotographyStoreSection from "./storeSection";
 import PhotographySocialSection from "./socialMediaContentSection";
 
 const Photography = ({
-  formData,  setFormData, errors,  setErrors,   expandedSections,toggleSection,handleServiceRowChange,  handleRemoveServiceRow,  handleSubmit,
+  formData,  setFormData, errors,  setErrors,   expandedSections,toggleSection,handleServiceRowChange,  handleRemoveServiceRow,  handleSubmit,businessId
 }) => {
 
   const getServiceRow = (index) => {
@@ -50,6 +50,7 @@ const Photography = ({
           handleServiceRowChange={handleServiceRowChange}
           handleRemoveServiceRow={handleRemoveServiceRow}
           resetSection={resetSection}
+          businessId={businessId}
         />
 
 
@@ -63,6 +64,7 @@ const Photography = ({
           handleServiceRowChange={handleServiceRowChange}
           handleRemoveServiceRow={handleRemoveServiceRow}
           resetSection={resetSection}
+          businessId={businessId}
         />
         {/* Model Photography Section */}
         <ModelPhotographySection
