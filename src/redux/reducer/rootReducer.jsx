@@ -17,6 +17,7 @@ import keyAccountSubscriptionReducer from "./keyAccountSubscriptionReducer";
 import { digitalMarketReducer } from "./digitalMarketReducer";
 import { subServiceReducer } from "./subServiceReducer";
 import { serviceActivityReducer } from "./serviceActivityReducer";
+import { digitalMarketingReducer } from "./digitalMarketingReducer";
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -37,8 +38,9 @@ const rootReducer = combineReducers({
   digitalMarket: digitalMarketReducer,
   serviceActivity: serviceActivityReducer,
   subServices: subServiceReducer,
-  keyAccountAllCommissions:keyAccountSubscriptionReducer
-,});
+  keyAccountAllCommissions:keyAccountSubscriptionReducer,
+   digitalMarketing: digitalMarketingReducer,
+});
 
 
 export default rootReducer;

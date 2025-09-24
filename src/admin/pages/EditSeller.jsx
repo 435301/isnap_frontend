@@ -220,10 +220,10 @@ const EditSeller = () => {
                             />
                         )}
                         {activeTab === "Digital Marketing" && (
-                            <DigitalMarketing formData={formData} setFormData={setFormData} businessId={id} />
+                            <DigitalMarketing formData={formData} setFormData={setFormData} businessId={id} businessIdEdit={id} />
                         )}
                         {activeTab === "Photography" && (
-                            <Photography formData={formData} setFormData={setFormData} businessId={id} />
+                            <Photography formData={formData} setFormData={setFormData} businessId={id} businessIdEdit={id} />
                         )}
                     </div>
                 </div>
