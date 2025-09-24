@@ -1248,7 +1248,9 @@ h3 {
     padding: 9px;
     display: unset;
 }
-
+.Business span{
+font-size: 23px;
+}
 thead,
 tbody,
 th {

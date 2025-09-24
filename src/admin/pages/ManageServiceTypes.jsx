@@ -1,15 +1,9 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
-import { Link } from "react-router-dom";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap-icons/font/bootstrap-icons.css";
+import { Link, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  fetchSubServices,
-  deleteSubService,
-  updateSubService,
-} from "../../redux/actions/subServiceActions";
+import { fetchSubServices, deleteSubService, updateSubService } from "../../redux/actions/subServiceActions";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -20,9 +14,8 @@ import DeleteConfirmationModal from "../components/Modal/DeleteConfirmationModal
 
 const ManageServiceActivities = () => {
   const dispatch = useDispatch();
-  const { subServices, loading, error } = useSelector(
-    (state) => state.subServices
-  );
+  const { subServices, loading, error } = useSelector((state) => state.subServices);
+  const location = useLocation();
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 992);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -34,7 +27,7 @@ const ManageServiceActivities = () => {
   const [selectedService, setSelectedService] = useState(null);
   const [deleteId, setDeleteId] = useState(null);
 
-  // Sidebar responsive
+  // Sidebar resize
   useEffect(() => {
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
@@ -47,57 +40,40 @@ const ManageServiceActivities = () => {
 
   // Fetch services
   useEffect(() => {
-    dispatch(
-      fetchSubServices({
-        page: 1,
-        search: "",
-        serviceCategoryId: "",
-        showStatus: "",
-      })
-    );
+    dispatch(fetchSubServices({ page: 1, search: "", serviceCategoryId: "", showStatus: "" }));
   }, [dispatch]);
 
-  // Toast message after creation
+  // Show success toast if coming from create page
   useEffect(() => {
-    const created = sessionStorage.getItem("subServiceCreated");
-    if (created) {
+    if (location.state?.subServiceCreated) {
       toast.success("Sub-service created successfully!");
-      sessionStorage.removeItem("subServiceCreated");
+      window.history.replaceState({}, document.title);
     }
-  }, []);
+  }, [location.state]);
 
   const handleToggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
-  // Delete confirmation handler
   const handleConfirmDelete = () => {
     if (deleteId) {
       dispatch(deleteSubService(deleteId)).then(() => {
         toast.success("Sub-service deleted successfully!");
-        dispatch(
-          fetchSubServices({
-            page: 1,
-            search: "",
-            serviceCategoryId: "",
-            showStatus: "",
-          })
-        );
+        dispatch(fetchSubServices({ page: 1, search: "", serviceCategoryId: "", showStatus: "" }));
         setShowDeleteModal(false);
         setDeleteId(null);
       });
     }
   };
 
-  // Save updated sub-service
-const handleSaveChanges = (updatedService) => {
-  dispatch(updateSubService(updatedService.id, updatedService))
-    .then(() => {
+  const handleSaveChanges = async (updatedService) => {
+    try {
+      await dispatch(updateSubService(updatedService.id, updatedService));
       toast.success("Sub-service updated successfully!");
       dispatch(fetchSubServices({ page: 1, search: "", serviceCategoryId: "", showStatus: "" }));
       setShowEdit(false);
-    })
-    .catch(() => toast.error("Failed to update sub-service"));
-};
-
+    } catch {
+      toast.error("Failed to update sub-service");
+    }
+  };
 
   return (
     <div className="container-fluid position-relative bg-white d-flex p-0">
@@ -105,21 +81,12 @@ const handleSaveChanges = (updatedService) => {
       <div
         className="content flex-grow-1"
         style={{
-          marginLeft:
-            windowWidth >= 992
-              ? isSidebarOpen
-                ? 259
-                : 95
-              : isSidebarOpen
-              ? 220
-              : 0,
+          marginLeft: windowWidth >= 992 ? (isSidebarOpen ? 259 : 95) : isSidebarOpen ? 220 : 0,
           transition: "margin-left 0.3s ease",
         }}
       >
         <Navbar onToggleSidebar={handleToggleSidebar} />
-
         <div className="container-fluid px-4 pt-3">
-          {/* Page Header */}
           <div className="row mb-3">
             <div className="bg-white p-3 rounded shadow-sm card-header d-flex justify-content-between align-items-center">
               <h5 className="m-0">Manage Service Types</h5>
@@ -146,15 +113,11 @@ const handleSaveChanges = (updatedService) => {
                   <tbody>
                     {loading ? (
                       <tr>
-                        <td colSpan="5" className="text-center">
-                          Loading...
-                        </td>
+                        <td colSpan="5" className="text-center">Loading...</td>
                       </tr>
                     ) : error ? (
                       <tr>
-                        <td colSpan="5" className="text-center text-danger">
-                          {error}
-                        </td>
+                        <td colSpan="5" className="text-center text-danger">{error}</td>
                       </tr>
                     ) : subServices.length > 0 ? (
                       subServices.map((service, index) => (
@@ -163,43 +126,19 @@ const handleSaveChanges = (updatedService) => {
                           <td>{service.serviceCategoryName}</td>
                           <td>{service.subServiceName}</td>
                           <td>
-                            <span
-                              className={`badge px-3 py-2 ${
-                                service.status === 1
-                                  ? "bg-success-light text-success"
-                                  : "bg-danger-light text-danger"
-                              }`}
-                            >
+                            <span className={`badge px-3 py-2 ${service.status === 1 ? "bg-success-light text-success" : "bg-danger-light text-danger"}`}>
                               {service.status === 1 ? "Active" : "Inactive"}
                             </span>
                           </td>
                           <td>
                             <div className="d-flex gap-2">
-                              <button
-                                className="btn btn-icon btn-view"
-                                onClick={() => {
-                                  setSelectedService(service);
-                                  setShowView(true);
-                                }}
-                              >
+                              <button className="btn btn-icon btn-view" onClick={() => { setSelectedService(service); setShowView(true); }}>
                                 <i className="bi bi-eye"></i>
                               </button>
-                              <button
-                                className="btn btn-icon btn-edit"
-                                onClick={() => {
-                                  setSelectedService(service);
-                                  setShowEdit(true);
-                                }}
-                              >
+                              <button className="btn btn-icon btn-edit" onClick={() => { setSelectedService(service); setShowEdit(true); }}>
                                 <i className="bi bi-pencil-square"></i>
                               </button>
-                              <button
-                                className="btn btn-icon btn-delete"
-                                onClick={() => {
-                                  setDeleteId(service.id);
-                                  setShowDeleteModal(true);
-                                }}
-                              >
+                              <button className="btn btn-icon btn-delete" onClick={() => { setDeleteId(service.id); setShowDeleteModal(true); }}>
                                 <i className="bi bi-trash"></i>
                               </button>
                             </div>
@@ -208,9 +147,7 @@ const handleSaveChanges = (updatedService) => {
                       ))
                     ) : (
                       <tr>
-                        <td colSpan="5" className="text-center">
-                          No services found
-                        </td>
+                        <td colSpan="5" className="text-center">No services found</td>
                       </tr>
                     )}
                   </tbody>
@@ -221,28 +158,9 @@ const handleSaveChanges = (updatedService) => {
         </div>
 
         {/* Modals */}
-        {showView && (
-          <ViewSubServiceModal
-            show={showView}
-            handleClose={() => setShowView(false)}
-            subService={selectedService}
-          />
-        )}
-        {showEdit && (
-          <EditSubServiceModal
-            show={showEdit}
-            handleClose={() => setShowEdit(false)}
-            subService={selectedService}
-            onSave={handleSaveChanges}
-          />
-        )}
-        {showDeleteModal && (
-          <DeleteConfirmationModal
-            show={showDeleteModal}
-            handleClose={() => setShowDeleteModal(false)}
-            handleConfirm={handleConfirmDelete}
-          />
-        )}
+        {showView && <ViewSubServiceModal show={showView} handleClose={() => setShowView(false)} subService={selectedService} />}
+        {showEdit && <EditSubServiceModal show={showEdit} handleClose={() => setShowEdit(false)} subService={selectedService} onSave={handleSaveChanges} />}
+        {showDeleteModal && <DeleteConfirmationModal show={showDeleteModal} handleClose={() => setShowDeleteModal(false)} handleConfirm={handleConfirmDelete} />}
 
         <ToastContainer />
       </div>

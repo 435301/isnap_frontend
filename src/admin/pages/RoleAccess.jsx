@@ -90,10 +90,14 @@ const RoleAccess = () => {
             <div className="content flex-grow-1">
                 <Navbar onToggleSidebar={handleToggleSidebar} />
                 <div className="container-fluid px-4 pt-3">
+                    <div className="row"> <div className="bg-white p-3 rounded shadow-sm card-header mb-2">
+                        <h5 className="m-0">Roles Features</h5>
+                    </div>
+                    </div>
                     <div className="bg-white p-3 rounded shadow-sm row">
                         {/* Marketplace Business */}
                         <div className="col-lg-4">
-                            <div
+                            <div className="Business"
                                 style={{ display: "flex", alignItems: "center", cursor: "pointer" }}
                                 onClick={() => setMarketplaceOpen((prev) => !prev)}
                             >
@@ -133,7 +137,8 @@ const RoleAccess = () => {
                                             <div className="ms-4 mt-2">
                                                 {Object.keys(businessLaunchItems).map((item) => (
                                                     <div key={item}>
-                                                        <label>
+                                                        <label style={{ display: "flex", alignItems: "center", cursor: "pointer", fontWeight: "normal", fontWeight: "normal" }}>
+
                                                             <input
                                                                 type="checkbox"
                                                                 checked={businessLaunchItems[item]}
@@ -151,7 +156,7 @@ const RoleAccess = () => {
                             )}
                         </div>
                         <div className="col-lg-4">
-                            <div
+                            <div className="Business"
                                 style={{ display: "flex", alignItems: "center", cursor: "pointer" }}
                                 onClick={() => setDigitalMarketingOpen((prev) => !prev)}
                             >
@@ -182,7 +187,7 @@ const RoleAccess = () => {
                                     <div className="row">
                                         {Object.keys(digitalMarketingItems).map((item) => (
                                             <div key={item} className="col-md-12 mb-2">
-                                                <label style={{ display: "flex", alignItems: "center", cursor: "pointer" }}>
+                                                <label style={{ display: "flex", alignItems: "center", cursor: "pointer", fontWeight: "normal", fontWeight: "normal" }}>
                                                     <input
                                                         type="checkbox"
                                                         checked={digitalMarketingItems[item]}
@@ -204,9 +209,9 @@ const RoleAccess = () => {
                         </div>
                         <div className="col-lg-4">
                             {/* Photography Services Heading */}
-                            <div
+                            <div className="Business"
                                 style={{ display: "flex", alignItems: "center", cursor: "pointer" }}
-                                onClick={() => setMarketplaceOpen((prev) => !prev)}
+                                onClick={() => setProductPhotographyOpen((prev) => !prev)}
                             >
                                 <input
                                     type="checkbox"
@@ -230,13 +235,40 @@ const RoleAccess = () => {
                                 <span className="ms-2 fw-bold">Photography Services</span>
                             </div>
 
-                            {/* Product Photography Sub-items */}
+                            {/* Product Photography Sub-section with Checkbox */}
                             {productPhotographyOpen && (
                                 <div className="ms-4 mt-2">
+                                    <div
+                                        style={{ display: "flex", alignItems: "center", cursor: "pointer", marginBottom: "8px" }}
+                                        onClick={() => setProductPhotographyOpen((prev) => !prev)} // optional toggle for sub-section
+                                    >
+                                        <input
+                                            type="checkbox"
+                                            checked={Object.values(productPhotographyItems).every(Boolean)}
+                                            ref={(el) => {
+                                                if (el)
+                                                    el.indeterminate =
+                                                        Object.values(productPhotographyItems).some(Boolean) &&
+                                                        !Object.values(productPhotographyItems).every(Boolean);
+                                            }}
+                                            onChange={() => {
+                                                const newValue = !Object.values(productPhotographyItems).every(Boolean);
+                                                const updatedItems = Object.keys(productPhotographyItems).reduce((acc, key) => {
+                                                    acc[key] = newValue;
+                                                    return acc;
+                                                }, {});
+                                                setProductPhotographyItems(updatedItems);
+                                            }}
+                                            style={{ accentColor: "purple" }}
+                                        />
+                                        <span className="ms-2 fw-bold">Product Photography</span>
+                                    </div>
+
+                                    {/* Product Photography Items */}
                                     <div className="row">
                                         {Object.keys(productPhotographyItems).map((item) => (
                                             <div key={item} className="col-md-12 mb-2">
-                                                <label style={{ display: "flex", alignItems: "center", cursor: "pointer" }}>
+                                                <label style={{ display: "flex", alignItems: "center", cursor: "pointer", fontWeight: "normal" }}>
                                                     <input
                                                         type="checkbox"
                                                         checked={productPhotographyItems[item]}
@@ -256,7 +288,6 @@ const RoleAccess = () => {
                                 </div>
                             )}
                         </div>
-
                     </div>
                 </div>
             </div>

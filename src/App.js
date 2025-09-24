@@ -53,6 +53,8 @@ import AddProductListing from "./admin/pages/AddProductListing";
 import ManageComissionPricing from "./admin/pages/ManageComissionPricing";
 import CommissionPricing from "./admin/pages/CommissionPricing";
 import EditSeller from "./admin/pages/EditSeller";
+import LeadStatus from "./admin/pages/LeadStatus";
+import ManageLeadsStatus from "./admin/pages/ManageLeadsStatus";
 
 // Team Pages
 import TeamDashboard from "./Team/pages/Dashboard";
@@ -103,7 +105,7 @@ function App() {
           }
         />
         <Route path="/latest-updates" element={<AdminRoute><LastestUpdates /></AdminRoute>} />
-        <Route path="/role-access" element={<AdminRoute><RoleAccess /></AdminRoute>} />
+        <Route path="/manage-roles-features" element={<AdminRoute><RoleAccess /></AdminRoute>} />
         <Route path="/manage-billing" element={<AdminRoute><ManageBilling /></AdminRoute>} />
         <Route path="/manage-services-type" element={<AdminRoute><ManageServicesType /></AdminRoute>} />
         <Route path="/manage-services" element={<AdminRoute><ManageServices /></AdminRoute>} />
@@ -118,6 +120,8 @@ function App() {
         <Route path="/create-commission" m element={<AdminRoute><CommissionPricing /></AdminRoute>} />
         <Route path="/manage-digital-marketing-price" element={<AdminRoute><ManageDigitalMarketPricing /></AdminRoute>} />
         <Route path="/create-digital-marketing-price" element={<AdminRoute><CreateDigitalMarketPricing /></AdminRoute>} />
+        <Route path="/leads-status" element={<AdminRoute><LeadStatus /></AdminRoute>} />
+        <Route path="/manage-leads-status" element={<AdminRoute><ManageLeadsStatus /></AdminRoute>} />
 
         <Route path="/add-service-type" element={<AdminRoute><AddServicesType /></AdminRoute>} />
         <Route path="/add-state" element={<AdminRoute><AddState /></AdminRoute>} />
