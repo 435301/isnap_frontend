@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import { createSubServices } from "../../redux/actions/subServiceActions";
-import { toast } from "react-toastify";
+import { fetchCategories } from "../../redux/actions/categoryActions";
+import { toast, ToastContainer } from "react-toastify";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
+import "react-toastify/dist/ReactToastify.css";
 
 const CreateServicesTypes = () => {
   const dispatch = useDispatch();
@@ -15,34 +17,28 @@ const CreateServicesTypes = () => {
   const [rows, setRows] = useState([
     { servicesCategory: "", serviceType: "", status: "", isGenderApplicable: 0 },
   ]);
-  const [categories, setCategories] = useState([]);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 992);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
-  // Handle window resize for sidebar
+  // Redux categories state
+  const { categories } = useSelector((state) => state.category); // Assuming your reducer has `category.categories`
+
+  // Sidebar responsive
   useEffect(() => {
     const handleResize = () => {
-      const width = window.innerWidth;
-      setWindowWidth(width);
-      setIsSidebarOpen(width >= 992);
+      setWindowWidth(window.innerWidth);
+      setIsSidebarOpen(window.innerWidth >= 992);
     };
-    handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Dummy categories (replace with API fetch if needed)
+  // Fetch categories from backend
   useEffect(() => {
-    setCategories([
-      { id: 1, name: "Marketplace Business" },
-      { id: 2, name: "Digital Marketing Services" },
-      { id: 3, name: "Photography Services" },
-    ]);
-  }, []);
+    dispatch(fetchCategories());
+  }, [dispatch]);
 
-  const handleToggleSidebar = () => {
-    setIsSidebarOpen((prev) => !prev);
-  };
+  const handleToggleSidebar = () => setIsSidebarOpen((prev) => !prev);
 
   const handleChange = (index, e) => {
     const { name, value } = e.target;
@@ -59,8 +55,7 @@ const CreateServicesTypes = () => {
   };
 
   const handleRemoveRow = (index) => {
-    const updatedRows = rows.filter((_, i) => i !== index);
-    setRows(updatedRows);
+    setRows(rows.filter((_, i) => i !== index));
   };
 
   const handleSubmit = (e) => {
@@ -74,7 +69,6 @@ const CreateServicesTypes = () => {
       }
     }
 
-    // Prepare payload
     const payload = {
       serviceCategoryId: rows[0].servicesCategory,
       subServices: rows.map((row) => ({
@@ -85,17 +79,12 @@ const CreateServicesTypes = () => {
       })),
     };
 
-    // Dispatch create action and redirect
     dispatch(createSubServices(payload))
       .then(() => {
-        // Store flag in sessionStorage to show toast on next page
-        sessionStorage.setItem("subServiceCreated", "true");
-        navigate("/manage-service-types");
+        toast.success("Sub-services created successfully!");
+        navigate("/manage-service-types", { state: { subServiceCreated: true } });
       })
-      .catch((err) => {
-        toast.error("Failed to create sub-services.");
-        console.error(err);
-      });
+      .catch(() => toast.error("Failed to create sub-services."));
   };
 
   return (
@@ -104,13 +93,11 @@ const CreateServicesTypes = () => {
       <div
         className="content flex-grow-1"
         style={{
-          marginLeft:
-            windowWidth >= 992 ? (isSidebarOpen ? 259 : 95) : isSidebarOpen ? 220 : 0,
+          marginLeft: windowWidth >= 992 ? (isSidebarOpen ? 259 : 95) : isSidebarOpen ? 220 : 0,
           transition: "margin-left 0.3s ease",
         }}
       >
         <Navbar onToggleSidebar={handleToggleSidebar} />
-
         <div className="container-fluid px-4 pt-3">
           <div className="row mb-2">
             <div className="bg-white p-3 rounded shadow-sm card-header">
@@ -130,7 +117,7 @@ const CreateServicesTypes = () => {
           <div className="row">
             <div className="bg-white p-3 rounded shadow-sm card-header mb-4">
               <form onSubmit={handleSubmit}>
-                {/* Service Category - only once */}
+                {/* Service Category */}
                 <div className="row g-3 mb-3">
                   <div className="col-md-3">
                     <label className="form-label">
@@ -143,9 +130,9 @@ const CreateServicesTypes = () => {
                       className="form-select"
                     >
                       <option value="">Select Category</option>
-                      {categories.map((cat) => (
+                      {categories?.map((cat) => (
                         <option key={cat.id} value={cat.id}>
-                          {cat.name}
+                          {cat.categoryName || cat.serviceCategoryName}
                         </option>
                       ))}
                     </select>
@@ -202,7 +189,6 @@ const CreateServicesTypes = () => {
                       </div>
                     </div>
 
-                    {/* Add / Remove buttons */}
                     {index === rows.length - 1 && (
                       <div className="col-md-2 d-flex align-items-end">
                         <button type="button" className="btn btn-outline-primary me-2" onClick={handleAddRow}>
@@ -238,6 +224,8 @@ const CreateServicesTypes = () => {
           </div>
         </div>
       </div>
+
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
     </div>
   );
 };

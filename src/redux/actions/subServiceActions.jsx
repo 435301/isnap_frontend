@@ -67,25 +67,24 @@ export const fetchSubServices = (
 
 // ------------------------ UPDATE ------------------------
 export const updateSubService = (id, payload) => async (dispatch) => {
-  dispatch({ type: UPDATE_SUBSERVICES_REQUEST });
-  try {
-    const response = await axios.put(
-      `${BASE_URL}/subService/update/${id}`,
-      payload,  // 🔹 payload must include serviceCategoryId
-      getAuthHeaders(false)
-    );
-    if (response.data.status) {
-      dispatch({ type: UPDATE_SUBSERVICES_SUCCESS, payload: response.data.data });
-    } else {
-      dispatch({ type: UPDATE_SUBSERVICES_FAILURE, payload: response.data.message });
+    dispatch({ type: UPDATE_SUBSERVICES_REQUEST });
+    try {
+        const response = await axios.put(
+            `${BASE_URL}/subService/update/${id}`, // 🔹 include ID in URL
+            payload,
+            getAuthHeaders(false)
+        );
+
+        if (response.data.status) {
+            dispatch({ type: UPDATE_SUBSERVICES_SUCCESS, payload: response.data.data });
+        } else {
+            dispatch({ type: UPDATE_SUBSERVICES_FAILURE, payload: response.data.msg });
+        }
+    } catch (error) {
+        dispatch({ type: UPDATE_SUBSERVICES_FAILURE, payload: error.message });
     }
-  } catch (error) {
-    dispatch({
-      type: UPDATE_SUBSERVICES_FAILURE,
-      payload: error.response?.data?.message || error.message,
-    });
-  }
 };
+
 
 // ------------------------ DELETE ------------------------
 export const deleteSubService = (id) => async (dispatch) => {
