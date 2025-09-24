@@ -311,10 +311,11 @@ const CreateSeller = () => {
                 expandedSections={expandedSections}
                 toggleSection={toggleSection}
                 businessId={businessId}
+                 setActiveTab={setActiveTab}
               />
             )}
             {activeTab === "Digital Marketing" && (
-              <DigitalMarketing formData={formData} setFormData={setFormData} toggleSection={toggleSection} />
+              <DigitalMarketing formData={formData} setFormData={setFormData} toggleSection={toggleSection}  businessId={businessId}  errors={errors}  setActiveTab={setActiveTab} />
             )}
             {activeTab === "Photography" && (
               <Photography 

@@ -18,7 +18,8 @@ const MarketplaceBusiness = ({
   expandedSections,
   toggleSection,
   businessId,
-  businessIdEdit
+  businessIdEdit,
+  setActiveTab
 }) => {
   const navigate = useNavigate();
   console.log('businessIdmarketplace', businessId);
@@ -59,7 +60,7 @@ const MarketplaceBusiness = ({
       />
       <div className="col-md-12 d-flex justify-content-end mt-5 mb-4">
         <button type="button" className="btn btn-outline-secondary px-5 me-2">Cancel</button>
-        <button type="button"  onClick={() => navigate("/manage-sellers")} className="btn btn-success px-5">Next</button>
+        <button type="button"  onClick={() => setActiveTab("Digital Marketing")} className="btn btn-success px-5" >Next</button>
       </div>
     </form>
   );
