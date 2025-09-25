@@ -223,7 +223,7 @@ const EditSeller = () => {
                             <DigitalMarketing formData={formData} setFormData={setFormData} businessId={id} businessIdEdit={id} />
                         )}
                         {activeTab === "Photography" && (
-                            <Photography formData={formData} setFormData={setFormData} businessId={id} businessIdEdit={id} />
+                            <Photography formData={formData} setFormData={setFormData} businessId={id} businessIdEdit={id}   toggleSection={toggleSection} expandedSections={expandedSections}/>
                         )}
                     </div>
                 </div>

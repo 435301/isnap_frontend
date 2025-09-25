@@ -1,21 +1,195 @@
-import React from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { createProductPhotography, deleteProductPhotography, getProductPhotographyById, getTotalPrice, listProductPhotography } from "../../redux/actions/productPhotographyAction";
+import { fetchBillingCycles } from "../../redux/actions/billingActions";
+import { fetchServiceActivities } from "../../redux/actions/serviceActivityActions";
+import DeleteConfirmationModal from "./Modal/DeleteConfirmationModal";
 
 const ProductPhotographySection = ({
     expandedSections,
     toggleSection,
-    formData,
-    errors,
-    getServiceRow,
-    handleServiceRowChange,
-    handleRemoveServiceRow,
-    resetSection,
     businessId,
+    businessIdEdit,
 }) => {
+    const dispatch = useDispatch();
     console.log('businessIdproduct', businessId);
+    console.log('editId', businessIdEdit)
     const billing = useSelector((state) => state.billing.billingCycles || []);
+    const { activities } = useSelector((state) => state.serviceActivity);
+    const { productPhotographyList } = useSelector((state) => state.productPhotography);
+    console.log('productPhotographyList', productPhotographyList)
+    const [toDelete, setToDelete] = useState(null);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-    
+
+    const [formData, setFormData] = useState({
+        id: 0,
+        serviceActivities: "",
+        quantity: 0,
+        actualPrice: 0,
+        offerPrice: 0,
+        totalPrice: 0,
+        billingCycle: "",
+        taskDays: 0,
+    });
+    const [errors, setErrors] = useState({});
+    const serviceOptions = activities.filter((act) => act.serviceCategoryId === 3 && act.subServiceId === 1).map((act) => ({ value: act.id, label: act.activityName, }));
+    const { totalPriceData } = useSelector((state) => state.productPhotography);
+
+    useEffect(() => {
+        dispatch(fetchServiceActivities());
+        dispatch(fetchBillingCycles());
+    }, [dispatch]);
+
+    useEffect(() => {
+        if (businessId && !businessIdEdit) {
+            setFormData({
+                id: 0,
+                serviceActivities: "",
+                quantity: 0,
+                actualPrice: 0,
+                offerPrice: 0,
+                totalPrice: 0,
+                billingCycle: "",
+                taskDays: 0,
+            });
+        }
+    }, [businessId, businessIdEdit]);
+
+
+    useEffect(() => {
+        if (businessIdEdit) {
+            dispatch(getProductPhotographyById(businessIdEdit));
+        }
+        else {
+            dispatch({ type: "CLEAR_PRODUCT_PHOTOGRPAHY_LISTING" });
+            setFormData({
+                id: 0,
+                serviceActivities: "",
+                quantity: 0,
+                actualPrice: 0,
+                offerPrice: 0,
+                totalPrice: 0,
+                billingCycle: "",
+                taskDays: 0,
+            });
+        }
+    }, [businessIdEdit, dispatch]);
+
+
+    useEffect(() => {
+        if (formData.quantity && formData.offerPrice) {
+            dispatch(getTotalPrice(Number(formData.quantity), Number(formData.offerPrice)));
+        }
+    }, [formData.quantity, formData.offerPrice, dispatch]);
+
+    useEffect(() => {
+        if (totalPriceData) {
+            setFormData((prev) => ({
+                ...prev,
+                totalPrice: totalPriceData.totalPrice,
+            }));
+        }
+    }, [totalPriceData]);
+
+    useEffect(() => {
+        if (businessId) {
+            dispatch(listProductPhotography(businessId));
+        }
+    }, [dispatch, businessId]);
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setErrors((prev) => ({
+            ...prev,
+            [name]: "",
+        }));
+        if (name === "serviceActivities") {
+            const selectedActivity = activities.find((act) => act.id === parseInt(value));
+            setFormData({
+                ...formData,
+                serviceActivities: value,
+                actualPrice: selectedActivity ? selectedActivity.price : 0,
+                offerPrice: selectedActivity ? selectedActivity.price : 0
+            });
+        } else {
+            setFormData({ ...formData, [name]: value });
+        }
+    };
+
+    // Validation function
+    const validate = () => {
+        const newErrors = {};
+        if (!formData.serviceActivities) { newErrors.serviceActivities = "Service Activity is required"; }
+        if (!formData.quantity || formData.quantity <= 0) { newErrors.quantity = "Quantity is required"; }
+        if (!formData.offerPrice || formData.offerPrice <= 0) { newErrors.offerPrice = "Offer Price is required"; }
+        if (formData.offerPrice && formData.actualPrice && Number(formData.offerPrice) > Number(formData.actualPrice)) { newErrors.offerPrice = "Offer Price should not exceed Actual Price"; }
+        if (!formData.billingCycle) { newErrors.billingCycle = "Billing Cycle is required"; }
+        if (!formData.taskDays || formData.taskDays <= 0) { newErrors.taskDays = "Task days is required"; }
+        return newErrors;
+    };
+
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        const newErrors = validate();
+        setErrors(newErrors);
+        if (Object.keys(newErrors).length > 0) return;
+        const payload = {
+            id: Number(formData.id),
+            businessId: businessIdEdit ? businessIdEdit : businessId,
+            activityId: Number(formData.serviceActivities),
+            qty: Number(formData.quantity),
+            actualPrice: Number(formData.actualPrice),
+            offerPrice: Number(formData.offerPrice),
+            totalPrice: Number(formData.totalPrice),
+            billCycleId: Number(formData.billingCycle),
+            taskCompletionDays: Number(formData.taskDays),
+            status: 1,
+        };
+        try {
+            dispatch(createProductPhotography(payload));
+            setFormData({
+                id: 0,
+                serviceActivities: "",
+                quantity: 0,
+                actualPrice: 0,
+                offerPrice: 0,
+                totalPrice: 0,
+                billingCycle: "",
+                taskDays: 0,
+            });
+        } catch (err) {
+            console.error("API error:", err);
+        }
+    };
+
+    const handleEdit = (row) => {
+        setFormData({
+            id: Number(row.id),
+            serviceActivities: Number(row.activityId),
+            quantity: Number(row.qty),
+            actualPrice: Number(row.actualPrice),
+            offerPrice: Number(row.offerPrice),
+            totalPrice: Number(row.totalPrice),
+            billingCycle: Number(row.billCycleId),
+            taskDays: Number(row.taskCompletionDays),
+        });
+        if (!expandedSections.photographyProduct) toggleSection("photographyProduct");
+    };
+
+    // Delete row
+    const handleDeleteClick = (id) => {
+        setToDelete(id);
+        setShowDeleteModal(true);
+    };
+
+    const handleDelete = async () => {
+        await dispatch(deleteProductPhotography(toDelete));
+        setShowDeleteModal(false);
+        setToDelete(null);
+    };
+
     return (
         <div className="accordion mb-3">
             <div className="accordion-item">
@@ -23,7 +197,7 @@ const ProductPhotographySection = ({
                     <button
                         className={`accordion-button ${!expandedSections ? "collapsed" : ""}`}
                         type="button"
-                        onClick={() => toggleSection("photographyProduct")}
+                        onClick={() => toggleSection ? toggleSection("photographyProduct") : null}
                         aria-expanded={expandedSections?.photographyProduct}
                     >
                         Product Photography
@@ -42,42 +216,23 @@ const ProductPhotographySection = ({
                                 </label>
                                 <select
                                     className="form-select"
-                                    name="serviceType"
-                                    value={getServiceRow(0).serviceType}
-                                    onChange={(e) => handleServiceRowChange(0, e)}
+                                    name="serviceActivities"
+                                    value={formData.serviceActivities}
+                                    onChange={handleChange}
                                 >
-                                    <option value="">Select Service Type</option>
-                                    <option value="Single Product Shot">Single Product Shot</option>
-                                    <option value="Lifestyle & Creative Photography">
-                                        Lifestyle & Creative Photography
-                                    </option>
-                                    <option value="Model Photography">Model Photography</option>
-                                    <option value="A+ Content Photography">
-                                        A+ Content Photography
-                                    </option>
-                                    <option value="Store, Showroom & Manufacturing Unit Shoots">
-                                        Store, Showroom & Manufacturing Unit Shoots
-                                    </option>
-                                    <option value="Social Media Ready Content">
-                                        Social Media Ready Content
-                                    </option>
+                                    <option value="">Select Service Activity</option>
+                                    {serviceOptions.map((option) => (
+                                        <option key={option.value} value={option.value}>
+                                            {option.label}
+                                        </option>
+                                    ))}
                                 </select>
-                                {errors?.[`serviceType${0}`] && (
-                                    <div className="text-danger small">
-                                        {errors[`serviceType${0}`]}
-                                    </div>
-                                )}
+                                {errors.serviceActivities && <div className="text-danger small">{errors.serviceActivities}</div>}
                             </div>
                             <div className="col-md-2">
-                                <label className="form-label">Quantity</label>
-                                <input
-                                    type="number"
-                                    placeholder="567"
-                                    className="form-control"
-                                    name="quantity"
-                                    value={getServiceRow(0).quantity}
-                                    onChange={(e) => handleServiceRowChange(0, e)}
-                                />
+                                <label className="form-label">Quantity<span className="text-danger"> *</span></label>
+                                <input type="number" className="form-control" name="quantity" value={formData.quantity} onChange={handleChange} />
+                                {errors.quantity && <div className="text-danger small">{errors.quantity}</div>}
                             </div>
 
                             <div className="col-md-2">
@@ -87,78 +242,56 @@ const ProductPhotographySection = ({
                                     placeholder="567"
                                     className="form-control"
                                     name="actualPrice"
-                                    value={getServiceRow(0).actualPrice}
-                                    onChange={(e) => handleServiceRowChange(0, e)}
+                                    value={formData.actualPrice}
+                                    onChange={handleChange}
+                                    disabled
                                 />
+
                             </div>
 
                             <div className="col-md-2">
-                                <label className="form-label">Offer Price</label>
-                                <input
-                                    type="number"
-                                    placeholder="467"
-                                    className="form-control"
-                                    name="offerPrice"
-                                    value={getServiceRow(0).offerPrice}
-                                    onChange={(e) => handleServiceRowChange(0, e)}
-                                />
+                                <label className="form-label">Offer Price<span className="text-danger"> *</span></label>
+                                <input type="number" className="form-control" name="offerPrice" value={formData.offerPrice} onChange={handleChange} />
+                                {errors.offerPrice && <div className="text-danger small">{errors.offerPrice}</div>}
                             </div>
-
                             <div className="col-md-2">
-                                <label className="form-label">Total Price</label>
-                                <input
-                                    type="number"
-                                    placeholder="567"
-                                    className="form-control"
-                                    name="totalPrice"
-                                    value={getServiceRow(0).totalPrice}
-                                    onChange={(e) => handleServiceRowChange(0, e)}
-                                />
+                                <label className="form-label">Total Price<span className="text-danger"> *</span></label>
+                                <input type="number" className="form-control" name="totalPrice" value={formData.totalPrice} onChange={handleChange} disabled />
+
                             </div>
-
                             <div className="col-md-2">
-                                <label className="form-label">Billing Cycle</label>
-                                <select
-                                    className="form-select"
-                                    name="billingCycle"
-                                    value={formData.billingCycle}
-                                    // onChange={handleChange}
-                                >
+                                <label className="form-label">Billing Cycle<span className="text-danger"> *</span></label>
+                                <select className="form-select" name="billingCycle" value={formData.billingCycle} onChange={handleChange}>
                                     <option value="">Select Billing Cycle</option>
                                     {billing.map((cycle) => (
-                                        <option key={cycle.id} value={cycle.id}>
-                                            {cycle.title}
-                                        </option>
+                                        <option key={cycle.id} value={cycle.id}>{cycle.title}</option>
                                     ))}
                                 </select>
+                                {errors.billingCycle && <div className="text-danger small">{errors.billingCycle}</div>}
                             </div>
-
                             <div className="col-md-2">
-                                <label className="form-label">Task Completion Days</label>
-                                <input
-                                    type="number"
-                                    className="form-control"
-                                    placeholder="No. of days"
-                                    name="taskDays"
-                                    value={getServiceRow(0).taskDays}
-                                    onChange={(e) => handleServiceRowChange(0, e)}
-                                />
+                                <label className="form-label">Task Completion Days<span className="text-danger"> *</span></label>
+                                <input type="number" className="form-control" name="taskDays" value={formData.taskDays} onChange={handleChange} />
+                                {errors.taskDays && <div className="text-danger small">{errors.taskDays}</div>}
                             </div>
                         </div>
 
-                        {/* Buttons */}
                         <div className="col-md-12 d-flex justify-content-end mt-3 mb-3">
-                            <button
-                                type="button"
-                                className="btn btn-outline-secondary px-5 me-2"
-                                onClick={() => resetSection(0)}
-                            >
-                                Reset
-                            </button>
-                            <button type="submit" className="btn btn-success px-5">
-                                Save
-                            </button>
+                            <button type="button" className="btn btn-outline-secondary px-5 me-2" onClick={() =>
+                                setFormData({
+                                    id: 0,
+                                    serviceActivities: "",
+                                    quantity: 0,
+                                    actualPrice: 0,
+                                    offerPrice: 0,
+                                    totalPrice: 0,
+                                    billingCycle: "",
+                                    taskDays: 0,
+                                })
+                            }>Reset</button>
+                            <button type="submit" onClick={handleSubmit} className="btn btn-success px-5">{formData.id > 0 ? "Update" : "Save"} </button>
                         </div>
+
 
                         {/* Table */}
                         <div className="table-responsive mb-3">
@@ -172,31 +305,34 @@ const ProductPhotographySection = ({
                                         <th>Offer Price</th>
                                         <th>Total Price</th>
                                         <th>Billing Cycle</th>
+                                        <th>Task Days</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody className="text-center">
-                                    {formData.serviceRows.length > 0 ? (
-                                        formData.serviceRows.slice(0, 1).map((row, index) => (
+                                    {productPhotographyList?.length > 0 ? (
+                                        productPhotographyList?.map((row, index) => (
                                             <tr key={index}>
                                                 <td>{index + 1}</td>
-                                                <td>{row.serviceType}</td>
-                                                <td>{row.quantity}</td>
+                                                <td>{row.activityName}</td>
+                                                <td>{row.qty}</td>
                                                 <td>{row.actualPrice}</td>
                                                 <td>{row.offerPrice}</td>
                                                 <td>{row.totalPrice}</td>
-                                                <td>{row.billingCycle}</td>
+                                                <td>{row.billCycleTitle}</td>
+                                                <td>{row.taskCompletionDays}</td>
                                                 <td>
-                                                    <button className="btn btn-sm btn-outline-primary me-2">
+                                                    <button type="button" className="btn btn-sm btn-outline-primary me-2" onClick={() => handleEdit(row)}>
                                                         <i className="bi bi-pencil"></i>
                                                     </button>
                                                     <button
+                                                        type="button"
                                                         className="btn btn-sm btn-outline-danger"
-                                                        onClick={() => handleRemoveServiceRow(index)}
-                                                        disabled={formData.serviceRows.length === 1}
+                                                        onClick={() => handleDeleteClick(row.id)}
                                                     >
                                                         <i className="bi bi-trash"></i>
                                                     </button>
+
                                                 </td>
                                             </tr>
                                         ))
@@ -210,6 +346,11 @@ const ProductPhotographySection = ({
                                 </tbody>
                             </table>
                         </div>
+                        <DeleteConfirmationModal
+                            show={showDeleteModal}
+                            handleClose={() => setShowDeleteModal(false)}
+                            handleConfirm={handleDelete}
+                        />
                     </div>
                 </div>
             </div>

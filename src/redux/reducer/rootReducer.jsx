@@ -44,7 +44,7 @@ const rootReducer = combineReducers({
   keyAccountAllCommissions: keyAccountSubscriptionReducer,
   digitalMarketing: digitalMarketingReducer,
   productPhotography: productPhotographyReducer,
-  lifeStyletPhotography:lifeStylePhotographyReducer,
+  lifestylePhotography:lifeStylePhotographyReducer,
   modelPhotography:modelPhotographyReducer,
 });
 
