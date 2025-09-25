@@ -5,11 +5,15 @@ import { fetchServiceActivities } from '../../redux/actions/serviceActivityActio
 import { createDigitalMarketing, fetchDigitalMarketingByBusinessId, resetDigitalMarketing } from '../../redux/actions/digitalMarketingAction';
 import { fetchBillingCycles } from '../../redux/actions/billingActions';
 import { fetchDigitalMarketById } from '../../redux/actions/digitalMarketActions';
+import BASE_URL from '../../config/config';
+import axios from 'axios';
+import getAuthHeaders from '../../utils/auth';
 
 const DigitalMarketing = ({ businessId, setActiveTab, businessIdEdit }) => {
     const dispatch = useDispatch();
 
     const { activities } = useSelector((state) => state.serviceActivity);
+    console.log('activities', activities)
     const billing = useSelector((state) => state.billing.billingCycles || []);
     const { markets } = useSelector((state) => state.digitalMarket || {});
     const { digitalMarketing } = useSelector((state) => state.digitalMarketing);
@@ -26,6 +30,37 @@ const DigitalMarketing = ({ businessId, setActiveTab, businessIdEdit }) => {
         status: "",
     });
     const [errors, setErrors] = useState({});
+    const [serviceOptions, setServiceOptions] = useState([]);
+    console.log('serviceOptions', serviceOptions)
+
+    useEffect(() => {
+        const fetchActivities = async () => {
+            try {
+                const response = await axios.post(
+                    `${BASE_URL}/activity/list`,
+                    {
+                        page: 1,
+                        search: "",
+                        serviceCategoryId: 2,
+                        subServiceId: 0,
+                        showStatus: "",
+                    },
+                    getAuthHeaders()
+                );
+
+                const options = response.data.data.activities.map((act) => ({
+                    value: act.id,
+                    label: act.activityName,
+                }));
+                setServiceOptions(options);
+                console.log('serviceOptions', options); // should now show fetched activities
+            } catch (err) {
+                console.error("Failed to fetch activities:", err);
+            }
+        };
+        fetchActivities();
+    }, []);
+
 
     useEffect(() => {
         dispatch(fetchServiceActivities());
@@ -41,16 +76,16 @@ const DigitalMarketing = ({ businessId, setActiveTab, businessIdEdit }) => {
         }
     }, [businessIdEdit, dispatch]);
 
-    useEffect(() => {
-        if (markets && markets.length > 0 && !formData.actualPrice) {
-            setFormData((prev) => ({
-                ...prev,
-                id: markets[0].id || 0,
-                actualPrice: markets[0].price || '',
-                offerPrice: markets[0].price || '',
-            }));
-        }
-    }, [markets, formData.actualPrice, setFormData]);
+    // useEffect(() => {
+    //     if (markets && markets.length > 0 && !formData.actualPrice) {
+    //         setFormData((prev) => ({
+    //             ...prev,
+    //             id: markets[0].id || 0,
+    //             actualPrice: markets[0].price || '',
+    //             offerPrice: markets[0].price || '',
+    //         }));
+    //     }
+    // }, [markets, formData.actualPrice, setFormData]);
 
     useEffect(() => {
         if (digitalMarketing && digitalMarketing.id) {
@@ -76,12 +111,12 @@ const DigitalMarketing = ({ businessId, setActiveTab, businessIdEdit }) => {
         }
     }, [digitalMarketing]);
 
-    const serviceOptions = activities
-        .filter((act) => act.serviceCategoryId === 2)
-        .map((act) => ({
-            value: act.id,
-            label: act.activityName,
-        }));
+    // const serviceOptions = activities
+    //     .filter((act) => act.serviceCategoryId === 2 && act.subServiceId === 0)
+    //     .map((act) => ({
+    //         value: act.id,
+    //         label: act.activityName,
+    //     }));
 
     const handleMultiSelectChange = (selectedOptions) => {
         const selectedIds = selectedOptions ? selectedOptions.map(option => option.value) : [];
@@ -89,7 +124,22 @@ const DigitalMarketing = ({ businessId, setActiveTab, businessIdEdit }) => {
             ...prev,
             scopeOfServices: "",
         }));
-        setFormData({ ...formData, scopeOfServices: selectedIds });
+        // Set price only when a service is selected
+        let actualPrice = "";
+        let offerPrice = "";
+        if (selectedIds.length > 0 && markets && markets.length > 0) {
+            const market = markets.find(m => m.id === 1);  // your single market object
+            if (market) {
+                actualPrice = market.price || '';
+                offerPrice = market.price || '';
+            }
+        }
+        setFormData((prev) => ({
+            ...prev,
+            scopeOfServices: selectedIds,
+            actualPrice,
+            offerPrice,
+        }));
     };
 
     const handleChange = (e) => {
