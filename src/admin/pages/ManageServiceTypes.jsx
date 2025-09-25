@@ -14,20 +14,26 @@ import DeleteConfirmationModal from "../components/Modal/DeleteConfirmationModal
 
 const ManageServiceActivities = () => {
   const dispatch = useDispatch();
-  const { subServices, loading, error } = useSelector((state) => state.subServices);
   const location = useLocation();
+  const { subServices, loading, error } = useSelector((state) => state.subServices);
 
+  // Sidebar & window
   const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 992);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
+  // Modals
   const [showView, setShowView] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-
   const [selectedService, setSelectedService] = useState(null);
   const [deleteId, setDeleteId] = useState(null);
 
-  // Sidebar resize
+  // Filters & pagination
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState(""); // ""=all, "1"=active, "0"=inactive
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // ----------- HANDLE SIDEBAR RESIZE -----------
   useEffect(() => {
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
@@ -38,12 +44,20 @@ const ManageServiceActivities = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Fetch services
-  useEffect(() => {
-    dispatch(fetchSubServices({ page: 1, search: "", serviceCategoryId: "", showStatus: "" }));
-  }, [dispatch]);
+  const handleToggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
-  // Show success toast if coming from create page
+  // ----------- FETCH SUB-SERVICES -----------
+  useEffect(() => {
+    const showStatus = statusFilter === "0" || statusFilter === "1" ? statusFilter : "";
+    dispatch(fetchSubServices({
+      page: currentPage,
+      search: searchTerm,
+      serviceCategoryId: "",
+      showStatus: showStatus,
+    }));
+  }, [dispatch, currentPage, searchTerm, statusFilter]);
+
+  // ----------- SHOW SUCCESS TOAST ON CREATE -----------
   useEffect(() => {
     if (location.state?.subServiceCreated) {
       toast.success("Sub-service created successfully!");
@@ -51,24 +65,38 @@ const ManageServiceActivities = () => {
     }
   }, [location.state]);
 
-  const handleToggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+  // ----------- REFRESH FUNCTION -----------
+  const handleRefresh = () => {
+    setSearchTerm("");
+    setStatusFilter("");
+    setCurrentPage(1);
+  };
+  // Convert statusFilter to number or empty string
+  const showStatus = statusFilter === "" ? "" : Number(statusFilter);
 
+  dispatch(fetchSubServices({
+    page: currentPage,
+    search: searchTerm,
+    serviceCategoryId: "",
+    showStatus: showStatus,
+  }));
+
+  // ----------- DELETE SUB-SERVICE -----------
   const handleConfirmDelete = () => {
     if (deleteId) {
       dispatch(deleteSubService(deleteId)).then(() => {
         toast.success("Sub-service deleted successfully!");
-        dispatch(fetchSubServices({ page: 1, search: "", serviceCategoryId: "", showStatus: "" }));
         setShowDeleteModal(false);
         setDeleteId(null);
       });
     }
   };
 
+  // ----------- UPDATE SUB-SERVICE -----------
   const handleSaveChanges = async (updatedService) => {
     try {
       await dispatch(updateSubService(updatedService.id, updatedService));
       toast.success("Sub-service updated successfully!");
-      dispatch(fetchSubServices({ page: 1, search: "", serviceCategoryId: "", showStatus: "" }));
       setShowEdit(false);
     } catch {
       toast.error("Failed to update sub-service");
@@ -86,13 +114,55 @@ const ManageServiceActivities = () => {
         }}
       >
         <Navbar onToggleSidebar={handleToggleSidebar} />
+
         <div className="container-fluid px-4 pt-3">
+          {/* Header */}
           <div className="row mb-3">
             <div className="bg-white p-3 rounded shadow-sm card-header d-flex justify-content-between align-items-center">
               <h5 className="m-0">Manage Service Types</h5>
               <Link to="/create-service-type" className="btn btn-new-lead">
                 <i className="bi bi-plus-circle me-1"></i> Add Service Types
               </Link>
+            </div>
+          </div>
+
+          {/* Filters */}
+          <div className="row mb-2">
+            <div className="bg-white p-3 rounded shadow-sm card-header">
+              <div className="row g-2 align-items-center">
+                <div className="col-md-4">
+                  <input
+                    type="text"
+                    className="form-control border-0"
+                    placeholder="Search by Service Category"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
+                <div className="col-md-3">
+                  <select
+                    className="form-select"
+                    value={statusFilter}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (value === "0" || value === "1" || value === "") setStatusFilter(value);
+                    }}
+                  >
+                    <option value="">All</option>
+                    <option value="1">Active</option>
+                    <option value="0">Inactive</option>
+                  </select>
+
+                </div>
+                <div className="col-md-2 d-flex">
+                  <button className="btn btn-success me-3" onClick={() => setCurrentPage(1)}>
+                    <i className="bi bi-search"></i>
+                  </button>
+                  <button className="btn btn-light" onClick={handleRefresh}>
+                    <i className="bi bi-arrow-clockwise"></i>
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -162,7 +232,7 @@ const ManageServiceActivities = () => {
         {showEdit && <EditSubServiceModal show={showEdit} handleClose={() => setShowEdit(false)} subService={selectedService} onSave={handleSaveChanges} />}
         {showDeleteModal && <DeleteConfirmationModal show={showDeleteModal} handleClose={() => setShowDeleteModal(false)} handleConfirm={handleConfirmDelete} />}
 
-        <ToastContainer />
+        <ToastContainer position="top-right" autoClose={3000} />
       </div>
     </div>
   );

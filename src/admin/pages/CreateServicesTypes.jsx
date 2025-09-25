@@ -15,13 +15,14 @@ const CreateServicesTypes = () => {
   const navigate = useNavigate();
 
   const [rows, setRows] = useState([
-    { servicesCategory: "", serviceType: "", status: "", isGenderApplicable: 0 },
+    { serviceType: "", status: "Active", isGenderApplicable: 0 },
   ]);
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [errors, setErrors] = useState({});
   const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 992);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
-  // Redux categories state
-  const { categories } = useSelector((state) => state.category); // Assuming your reducer has `category.categories`
+  const categories = useSelector((state) => state.category?.categories || []);
 
   // Sidebar responsive
   useEffect(() => {
@@ -33,14 +34,14 @@ const CreateServicesTypes = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Fetch categories from backend
+  // Fetch categories
   useEffect(() => {
     dispatch(fetchCategories());
   }, [dispatch]);
 
   const handleToggleSidebar = () => setIsSidebarOpen((prev) => !prev);
 
-  const handleChange = (index, e) => {
+  const handleRowChange = (index, e) => {
     const { name, value } = e.target;
     const updatedRows = [...rows];
     updatedRows[index][name] = value;
@@ -48,43 +49,69 @@ const CreateServicesTypes = () => {
   };
 
   const handleAddRow = () => {
-    setRows([
-      ...rows,
-      { servicesCategory: rows[0].servicesCategory, serviceType: "", status: "", isGenderApplicable: 0 },
-    ]);
+    setRows([...rows, { serviceType: "", status: "Active", isGenderApplicable: 0 }]);
   };
 
   const handleRemoveRow = (index) => {
     setRows(rows.filter((_, i) => i !== index));
   };
 
+  // ---------------- VALIDATION ----------------
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!selectedCategory) {
+      newErrors.selectedCategory = "Please select a service category.";
+    }
+
+    rows.forEach((row, index) => {
+      if (!row.serviceType) {
+        newErrors[`serviceType-${index}`] = "Service Type is required.";
+      } else if (row.serviceType.length < 3) {
+        newErrors[`serviceType-${index}`] =
+          "Service Type must be at least 3 characters.";
+      }
+
+      if (!row.status) {
+        newErrors[`status-${index}`] = "Please select a status.";
+      }
+    });
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Validation
-    for (const row of rows) {
-      if (!row.servicesCategory || !row.serviceType || !row.status) {
-        toast.error("Please fill all required fields.");
-        return;
-      }
+    if (!validateForm()) {
+      toast.error("Please fix the validation errors before submitting.");
+      return;
     }
 
     const payload = {
-      serviceCategoryId: rows[0].servicesCategory,
+      serviceCategoryId: selectedCategory,
       subServices: rows.map((row) => ({
-        subServiceName: row.serviceType,
+        subServiceName: row.serviceType.trim(),
         subServiceCode: "",
         isGenderApplicable: row.isGenderApplicable || 0,
         status: row.status === "Active" ? 1 : 0,
       })),
     };
-
     dispatch(createSubServices(payload))
       .then(() => {
         toast.success("Sub-services created successfully!");
         navigate("/manage-service-types", { state: { subServiceCreated: true } });
       })
-      .catch(() => toast.error("Failed to create sub-services."));
+      .catch((error) => {
+        // Axios error handling
+        const errMsg =
+          error.response?.data?.message ||
+          error.message ||
+          "Failed to create sub-services.";
+        toast.error(errMsg);
+      });
+
   };
 
   return (
@@ -93,7 +120,8 @@ const CreateServicesTypes = () => {
       <div
         className="content flex-grow-1"
         style={{
-          marginLeft: windowWidth >= 992 ? (isSidebarOpen ? 259 : 95) : isSidebarOpen ? 220 : 0,
+          marginLeft:
+            windowWidth >= 992 ? (isSidebarOpen ? 259 : 95) : isSidebarOpen ? 220 : 0,
           transition: "margin-left 0.3s ease",
         }}
       >
@@ -125,23 +153,30 @@ const CreateServicesTypes = () => {
                     </label>
                     <select
                       name="servicesCategory"
-                      value={rows[0].servicesCategory}
-                      onChange={(e) => handleChange(0, e)}
-                      className="form-select"
+                      value={selectedCategory}
+                      onChange={(e) => setSelectedCategory(e.target.value)}
+                      className={`form-select ${errors.selectedCategory ? "is-invalid" : ""
+                        }`}
                     >
                       <option value="">Select Category</option>
-                      {categories?.map((cat) => (
+                      {categories.map((cat) => (
                         <option key={cat.id} value={cat.id}>
                           {cat.categoryName || cat.serviceCategoryName}
                         </option>
                       ))}
                     </select>
+                    {errors.selectedCategory && (
+                      <div className="invalid-feedback">
+                        {errors.selectedCategory}
+                      </div>
+                    )}
                   </div>
                 </div>
 
-                {/* Dynamic rows */}
+                {/* Dynamic Rows */}
                 {rows.map((row, index) => (
                   <div className="row g-3 mb-3 align-items-end" key={index}>
+                    {/* Service Type */}
                     <div className="col-md-3">
                       <label className="form-label">
                         Service Type <span className="text-danger">*</span>
@@ -150,12 +185,19 @@ const CreateServicesTypes = () => {
                         type="text"
                         name="serviceType"
                         value={row.serviceType}
-                        onChange={(e) => handleChange(index, e)}
-                        className="form-control"
+                        onChange={(e) => handleRowChange(index, e)}
+                        className={`form-control ${errors[`serviceType-${index}`] ? "is-invalid" : ""
+                          }`}
                         placeholder="Enter service type"
                       />
+                      {errors[`serviceType-${index}`] && (
+                        <div className="invalid-feedback">
+                          {errors[`serviceType-${index}`]}
+                        </div>
+                      )}
                     </div>
 
+                    {/* Status */}
                     <div className="col-md-2">
                       <label className="form-label">
                         Status <span className="text-danger">*</span>
@@ -163,15 +205,22 @@ const CreateServicesTypes = () => {
                       <select
                         name="status"
                         value={row.status}
-                        onChange={(e) => handleChange(index, e)}
-                        className="form-select"
+                        onChange={(e) => handleRowChange(index, e)}
+                        className={`form-select ${errors[`status-${index}`] ? "is-invalid" : ""
+                          }`}
                       >
                         <option value="">Select Status</option>
                         <option value="Active">Active</option>
                         <option value="Inactive">Inactive</option>
                       </select>
+                      {errors[`status-${index}`] && (
+                        <div className="invalid-feedback">
+                          {errors[`status-${index}`]}
+                        </div>
+                      )}
                     </div>
 
+                    {/* Gender Applicable */}
                     <div className="col-md-2 d-flex align-items-center">
                       <div className="form-check mt-3">
                         <input
@@ -180,22 +229,36 @@ const CreateServicesTypes = () => {
                           name="isGenderApplicable"
                           checked={row.isGenderApplicable === 1}
                           onChange={(e) =>
-                            handleChange(index, {
-                              target: { name: "isGenderApplicable", value: e.target.checked ? 1 : 0 },
+                            handleRowChange(index, {
+                              target: {
+                                name: "isGenderApplicable",
+                                value: e.target.checked ? 1 : 0,
+                              },
                             })
                           }
                         />
-                        <label className="form-check-label">Gender Applicable</label>
+                        <label className="form-check-label">
+                          Gender Applicable
+                        </label>
                       </div>
                     </div>
 
+                    {/* Add/Remove Buttons */}
                     {index === rows.length - 1 && (
                       <div className="col-md-2 d-flex align-items-end">
-                        <button type="button" className="btn btn-outline-primary me-2" onClick={handleAddRow}>
+                        <button
+                          type="button"
+                          className="btn btn-outline-primary me-2"
+                          onClick={handleAddRow}
+                        >
                           <i className="bi bi-plus-circle"></i>
                         </button>
                         {rows.length > 1 && (
-                          <button type="button" className="btn btn-outline-danger py-3" onClick={() => handleRemoveRow(index)}>
+                          <button
+                            type="button"
+                            className="btn btn-outline-danger py-3"
+                            onClick={() => handleRemoveRow(index)}
+                          >
                             <i className="bi bi-dash-circle"></i>
                           </button>
                         )}
@@ -212,9 +275,11 @@ const CreateServicesTypes = () => {
                   <button
                     type="button"
                     className="btn btn-outline-secondary me-2 px-4"
-                    onClick={() =>
-                      setRows([{ servicesCategory: "", serviceType: "", status: "", isGenderApplicable: 0 }])
-                    }
+                    onClick={() => {
+                      setSelectedCategory("");
+                      setRows([{ serviceType: "", status: "", isGenderApplicable: 0 }]);
+                      setErrors({});
+                    }}
                   >
                     Cancel
                   </button>

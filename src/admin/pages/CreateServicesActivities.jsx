@@ -3,33 +3,36 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
-import { createServiceActivity } from "../../redux/actions/serviceActivityActions";
 import { fetchCategories } from "../../redux/actions/categoryActions";
-import { fetchSubServices } from "../../redux/actions/subServiceActions";
-import { toast, ToastContainer } from "react-toastify";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap-icons/font/bootstrap-icons.css";
-import "react-toastify/dist/ReactToastify.css";
+import { fetchSubServicesByCategory } from "../../redux/actions/subServiceActions";
+import { createServiceActivities } from "../../redux/actions/serviceActivityActions";
 
 const CreateServicesActivities = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // Redux State
-  const categoryList = useSelector((state) => state.category?.categories || []);
-  const activities = useSelector((state) => state.subService?.subServices || []);
+  const categories = useSelector((state) => state.category.categories || []);
+  const subServices = useSelector((state) => state.subServices.subServices || []);
 
-  // Local State
-  const [subServices, setSubServices] = useState([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 992);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  const [formHeader, setFormHeader] = useState({
-    servicesCategory: "",
-    serviceType: "",
-  });
-  const [rows, setRows] = useState([{ serviceActivity: "", activityCode: "", status: "" }]);
 
-  // ---------------------- Window Resize ----------------------
+  const [formData, setFormData] = useState({
+    serviceCategoryId: "",
+    subServiceId: "",
+    activities: [
+      { activityName: "", price: "", malePrice: "", femalePrice: "", status: 1 },
+    ],
+  });
+
+  const [genderApplicable, setGenderApplicable] = useState("no");
+
+  const [errors, setErrors] = useState({}); // Store inline error messages
+
+  useEffect(() => {
+    dispatch(fetchCategories());
+  }, [dispatch]);
+
   useEffect(() => {
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
@@ -39,81 +42,122 @@ const CreateServicesActivities = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // ---------------------- Fetch Categories ----------------------
-  useEffect(() => {
-    dispatch(fetchCategories());
-  }, [dispatch]);
-
-  // ---------------------- Fetch Sub-Services ----------------------
-  useEffect(() => {
-    if (formHeader.servicesCategory) {
-      dispatch(fetchSubServices({ serviceCategoryId: formHeader.servicesCategory }));
-      setFormHeader((prev) => ({ ...prev, serviceType: "" }));
-    } else {
-      setSubServices([]);
-    }
-  }, [formHeader.servicesCategory, dispatch]);
-
-  // ---------------------- Extract Unique Sub-Services ----------------------
-  useEffect(() => {
-    if (activities && activities.length > 0) {
-      const uniqueSubServices = activities
-        .map((act) => ({ id: act.subServiceId, name: act.subServiceName }))
-        .filter((v, i, a) => a.findIndex((t) => t.id === v.id) === i);
-      setSubServices(uniqueSubServices);
-    } else {
-      setSubServices([]);
-    }
-  }, [activities]);
-
-  // ---------------------- Handlers ----------------------
   const handleToggleSidebar = () => setIsSidebarOpen((prev) => !prev);
 
-  const handleHeaderChange = (e) => {
-    const { name, value } = e.target;
-    setFormHeader((prev) => ({ ...prev, [name]: value }));
-  };
+  // ---------- VALIDATION ----------
+  const validateForm = () => {
+    let tempErrors = {};
+    let isValid = true;
 
-  const handleChange = (index, e) => {
-    const { name, value } = e.target;
-    const updatedRows = [...rows];
-    updatedRows[index][name] = value;
-    setRows(updatedRows);
-  };
-
-  const handleAddRow = () => setRows([...rows, { serviceActivity: "", activityCode: "", status: "" }]);
-  const handleRemoveRow = (index) => setRows(rows.filter((_, i) => i !== index));
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!formHeader.servicesCategory || !formHeader.serviceType) {
-      toast.error("Please select category and service type.");
-      return;
+    if (!formData.serviceCategoryId) {
+      tempErrors.serviceCategoryId = "Please select a service category!";
+      isValid = false;
     }
 
-    for (const row of rows) {
-      if (!row.serviceActivity || !row.activityCode || !row.status) {
-        toast.error("Please fill all required fields.");
-        return;
+    formData.activities.forEach((activity, index) => {
+      if (!activity.activityName.trim()) {
+        tempErrors[`activityName${index}`] = "Activity name is required";
+        isValid = false;
       }
+
+      if (genderApplicable === "yes") {
+        if (activity.malePrice === "" || isNaN(Number(activity.malePrice)) || Number(activity.malePrice) < 0) {
+          tempErrors[`malePrice${index}`] = "Male price must be 0 or greater";
+          isValid = false;
+        }
+        if (activity.femalePrice === "" || isNaN(Number(activity.femalePrice)) || Number(activity.femalePrice) < 0) {
+          tempErrors[`femalePrice${index}`] = "Female price must be 0 or greater";
+          isValid = false;
+        }
+      } else {
+        if (activity.price === "" || isNaN(Number(activity.price)) || Number(activity.price) < 0) {
+          tempErrors[`price${index}`] = "Price must be 0 or greater";
+          isValid = false;
+        }
+      }
+    });
+
+    setErrors(tempErrors);
+    return isValid;
+  };
+
+  // ---------- CATEGORY & SUB SERVICE ----------
+  const handleCategoryChange = async (e) => {
+    const categoryId = e.target.value;
+    setFormData({ ...formData, serviceCategoryId: categoryId, subServiceId: "" });
+    setGenderApplicable("no");
+    if (categoryId) {
+      await dispatch(fetchSubServicesByCategory(categoryId));
     }
+    setErrors({ ...errors, serviceCategoryId: "" });
+  };
+
+  const handleSubServiceChange = (e) => {
+    const subServiceId = e.target.value;
+    setFormData({ ...formData, subServiceId });
+
+    const selectedSubService = subServices.find(
+      (sub) => sub.id === parseInt(subServiceId)
+    );
+    setGenderApplicable(selectedSubService?.isGenderApplicable ? "yes" : "no");
+  };
+
+  // ---------- DYNAMIC ACTIVITIES ----------
+  const handleActivityChange = (index, e) => {
+    const { name, value } = e.target;
+    const updatedActivities = [...formData.activities];
+    updatedActivities[index][name] = value;
+    setFormData({ ...formData, activities: updatedActivities });
+
+    // Clear error for this field
+    setErrors({ ...errors, [`${name}${index}`]: "" });
+  };
+
+  const handleAddActivity = () => {
+    setFormData({
+      ...formData,
+      activities: [
+        ...formData.activities,
+        { activityName: "", price: "", malePrice: "", femalePrice: "", status: 1 },
+      ],
+    });
+  };
+
+  const handleRemoveActivity = (index) => {
+    const updatedActivities = formData.activities.filter((_, i) => i !== index);
+    setFormData({ ...formData, activities: updatedActivities });
+
+    // Remove corresponding errors
+    const tempErrors = { ...errors };
+    Object.keys(tempErrors).forEach((key) => {
+      if (key.includes(`${index}`)) delete tempErrors[key];
+    });
+    setErrors(tempErrors);
+  };
+
+  // ---------- SUBMIT ----------
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!validateForm()) return;
 
     const payload = {
-      serviceCategoryId: formHeader.servicesCategory,
-      subServiceId: formHeader.serviceType,
-      activities: rows.map((row) => ({
-        activityName: row.serviceActivity,
-        activityCode: row.activityCode,
-        status: row.status === "Active" ? 1 : 0,
+      ...formData,
+      activities: formData.activities.map((a) => ({
+        ...a,
+        price: Number(a.price),
+        malePrice: Number(a.malePrice),
+        femalePrice: Number(a.femalePrice),
       })),
+      subServiceId: formData.subServiceId || 0,
     };
 
-    dispatch(createServiceActivity(payload))
-      .then(() => {
-        toast.success("Service activities created successfully!");
-        navigate("/manage-service-activities", { state: { created: true } });
-      })
-      .catch(() => toast.error("Failed to create service activities."));
+    try {
+      await dispatch(createServiceActivities(payload));
+      navigate("/manage-service-activities");
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -122,7 +166,14 @@ const CreateServicesActivities = () => {
       <div
         className="content flex-grow-1"
         style={{
-          marginLeft: windowWidth >= 992 ? (isSidebarOpen ? 259 : 95) : isSidebarOpen ? 220 : 0,
+          marginLeft:
+            windowWidth >= 992
+              ? isSidebarOpen
+                ? 259
+                : 95
+              : isSidebarOpen
+                ? 220
+                : 0,
           transition: "margin-left 0.3s ease",
         }}
       >
@@ -145,119 +196,138 @@ const CreateServicesActivities = () => {
 
           <div className="row">
             <div className="bg-white p-3 rounded shadow-sm card-header mb-4">
-              <form onSubmit={handleSubmit}>
-                {/* Header */}
+              <form onSubmit={handleSubmit} noValidate>
+                {/* Category */}
                 <div className="row g-3 mb-3">
-                  <div className="col-md-3">
-                    <label className="form-label">
-                      Service Category <span className="text-danger">*</span>
-                    </label>
+                  <div className="col-md-4">
+                    <label className="form-label">Service Category <span className="text-danger">*</span></label>
                     <select
-                      name="servicesCategory"
-                      value={formHeader.servicesCategory}
-                      onChange={handleHeaderChange}
                       className="form-select"
+                      value={formData.serviceCategoryId}
+                      onChange={handleCategoryChange}
                     >
                       <option value="">Select Category</option>
-                      {categoryList.map((cat) => (
-                        <option key={cat.id} value={cat.id}>
-                          {cat.serviceCategoryName}
-                        </option>
+                      {categories.map((cat) => (
+                        <option key={cat.id} value={cat.id}>{cat.categoryName}</option>
                       ))}
                     </select>
+                    {errors.serviceCategoryId && <small className="text-danger">{errors.serviceCategoryId}</small>}
                   </div>
 
-                  <div className="col-md-3">
-                    <label className="form-label">
-                      Service Type <span className="text-danger">*</span>
-                    </label>
+                  <div className="col-md-4">
+                    <label className="form-label"> Service Type </label>
                     <select
-                      name="serviceType"
-                      value={formHeader.serviceType}
-                      onChange={handleHeaderChange}
                       className="form-select"
+                      value={formData.subServiceId}
+                      onChange={handleSubServiceChange}
+                      disabled={!subServices.length}
                     >
-                      <option value="">Select Service Type</option>
+                      <option value="">Select Sub Service (Optional)</option>
                       {subServices.map((sub) => (
-                        <option key={sub.id} value={sub.id}>
-                          {sub.name}
-                        </option>
+                        <option key={sub.id} value={sub.id}>{sub.subServiceName}</option>
                       ))}
                     </select>
                   </div>
                 </div>
 
-                {/* Dynamic Rows */}
-                {rows.map((row, index) => (
-                  <div className="row g-3 mb-3 align-items-end" key={index}>
-                    <div className="col-md-3">
-                      <label className="form-label">
-                        Service Activity <span className="text-danger">*</span>
-                      </label>
+                {/* Dynamic Activities */}
+                {formData.activities.map((activity, index) => (
+                  <div className="row g-3 mb-3 align-items-center" key={index}>
+                    <div className="col-md-4">
+                      <label className="form-label">Activity Name <span className="text-danger">*</span></label>
                       <input
                         type="text"
-                        name="serviceActivity"
-                        value={row.serviceActivity}
-                        onChange={(e) => handleChange(index, e)}
-                        className="form-control"
+                        name="activityName"
+                        value={activity.activityName}
+                        onChange={(e) => handleActivityChange(index, e)}
+                        className={`form-control ${errors[`activityName${index}`] ? "is-invalid" : ""}`}
                         placeholder="Enter Activity Name"
                       />
+                      {errors[`activityName${index}`] && <small className="text-danger">{errors[`activityName${index}`]}</small>}
                     </div>
 
-                    <div className="col-md-2">
-                      <label className="form-label">
-                        Activity Code <span className="text-danger">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        name="activityCode"
-                        value={row.activityCode}
-                        onChange={(e) => handleChange(index, e)}
-                        className="form-control"
-                        placeholder="Enter Code"
-                      />
-                    </div>
+                    {genderApplicable === "yes" ? (
+                      <>
+                        <div className="col-md-2">
+                          <label className="form-label">Male Price</label>
+                          <input
+                            type="number"
+                            placeholder="Price"
+                            min={0}
+                            name="malePrice"
+                            value={activity.malePrice}
+                            onChange={(e) => handleActivityChange(index, e)}
+                            className={`form-control ${errors[`malePrice${index}`] ? "is-invalid" : ""}`}
+                          />
+                          {errors[`malePrice${index}`] && <small className="text-danger">{errors[`malePrice${index}`]}</small>}
+                        </div>
+
+                        <div className="col-md-2">
+                          <label className="form-label">Female Price</label>
+                          <input
+                            type="number"
+                            placeholder="Price"
+                            min={0}
+                            name="femalePrice"
+                            value={activity.femalePrice}
+                            onChange={(e) => handleActivityChange(index, e)}
+                            className={`form-control ${errors[`femalePrice${index}`] ? "is-invalid" : ""}`}
+                          />
+                          {errors[`femalePrice${index}`] && <small className="text-danger">{errors[`femalePrice${index}`]}</small>}
+                        </div>
+                      </>
+                    ) : (
+                      <div className="col-md-2">
+                        <label className="form-label">Price</label>
+                        <input
+                          type="number"
+                          placeholder="Price"
+                          min={0}
+                          name="price"
+                          value={activity.price}
+                          onChange={(e) => handleActivityChange(index, e)}
+                          className={`form-control ${errors[`price${index}`] ? "is-invalid" : ""}`}
+                        />
+                        {errors[`price${index}`] && <small className="text-danger">{errors[`price${index}`]}</small>}
+                      </div>
+                    )}
 
                     <div className="col-md-2">
-                      <label className="form-label">
-                        Status <span className="text-danger">*</span>
-                      </label>
+                      <label className="form-label">Status</label>
                       <select
                         name="status"
-                        value={row.status}
-                        onChange={(e) => handleChange(index, e)}
+                        value={activity.status}
+                        onChange={(e) => handleActivityChange(index, e)}
                         className="form-select"
                       >
-                        <option value="">Select Status</option>
-                        <option value="Active">Active</option>
-                        <option value="Inactive">Inactive</option>
+                        <option value={1}>Active</option>
+                        <option value={0}>Inactive</option>
                       </select>
                     </div>
 
-                    {index === rows.length - 1 && (
-                      <div className="col-md-1 d-flex align-items-center mt-5 gap-2">
+                    <div className="col-md-2 d-flex align-items-center mt-4 gap-2">
+                      {index === formData.activities.length - 1 && (
                         <button
                           type="button"
-                          className="btn btn-sm btn-outline-primary"
-                          onClick={handleAddRow}
+                          className="btn btn-sm btn-outline-primary py-2 mt-3"
+                          onClick={handleAddActivity}
                         >
                           <i className="bi bi-plus-circle"></i>
                         </button>
-                        {rows.length > 1 && (
-                          <button
-                            type="button"
-                            className="btn btn-sm btn-outline-danger"
-                            onClick={() => handleRemoveRow(index)}
-                          >
-                            <i className="bi bi-dash-circle"></i>
-                          </button>
-                        )}
-                      </div>
-                    )}
+                      )}
+                      {formData.activities.length > 1 && (
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-outline-danger py-2 mt-3"
+                          onClick={() => handleRemoveActivity(index)}
+                        >
+                          <i className="bi bi-dash-circle"></i>
+                        </button>
+                      )}
+                    </div>
                   </div>
                 ))}
 
-                {/* Submit */}
                 <div className="col-md-12 d-flex justify-content-end mt-4">
                   <button type="submit" className="btn btn-success me-2 px-4">
                     Submit
@@ -265,7 +335,7 @@ const CreateServicesActivities = () => {
                   <button
                     type="button"
                     className="btn btn-outline-secondary px-4"
-                    onClick={() => setRows([{ serviceActivity: "", activityCode: "", status: "" }])}
+                    onClick={() => navigate("/manage-service-activities")}
                   >
                     Cancel
                   </button>
@@ -275,8 +345,6 @@ const CreateServicesActivities = () => {
           </div>
         </div>
       </div>
-
-      <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
     </div>
   );
 };
