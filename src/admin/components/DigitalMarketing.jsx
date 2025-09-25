@@ -27,7 +27,6 @@ const DigitalMarketing = ({ businessId, setActiveTab, businessIdEdit }) => {
     });
     const [errors, setErrors] = useState({});
 
-
     useEffect(() => {
         dispatch(fetchServiceActivities());
         dispatch(fetchBillingCycles());
@@ -134,14 +133,7 @@ const DigitalMarketing = ({ businessId, setActiveTab, businessIdEdit }) => {
 
         try {
             const res = await dispatch(createDigitalMarketing(payload));
-            // if (res?.data) {
             setFormData({
-                // id: res.data.id,
-                // businessId: res.data.businessId,
-                // scopeOfServices: res.data.digitalMarketingServiceIds || [],
-                // actualPrice: res.data.actualPrice,
-                // offerPrice: res.data.offerPrice,
-                // billingCycle: res.data.billCycleId,
                 id: 0,
                 businessId: "",
                 scopeOfServices: [],

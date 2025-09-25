@@ -65,7 +65,7 @@ const AddServiceType = () => {
       setFormData({ marketPlaceId: "", serviceTypeName: "", price: "", status: 1 });
       setErrors({});
       toast.success("Marketplace added successfully!");
-      navigate("/manage-services-type");
+      navigate("/manage-marketplace");
     } catch (error) {
       // Use toast for server-side error
       toast.error(error.response?.data?.message || "Market Place already exists");
@@ -87,7 +87,7 @@ const AddServiceType = () => {
           <div className="row mb-2">
             <div className="bg-white p-3 rounded shadow-sm card-header d-flex justify-content-between align-items-center">
               <h5 className="form-title m-0">Add Marketplace</h5>
-              <Link to="/manage-services-type" className="btn btn-new-lead">
+              <Link to="/manage-marketplace" className="btn btn-new-lead">
                 Manage Marketplaces
               </Link>
             </div>

@@ -7,7 +7,7 @@ import PhotographyStoreSection from "./storeSection";
 import PhotographySocialSection from "./socialMediaContentSection";
 
 const Photography = ({
-  formData,  setFormData, errors,  setErrors,   expandedSections,toggleSection,handleServiceRowChange,  handleRemoveServiceRow,  handleSubmit,
+  formData,  setFormData, errors,  setErrors,   expandedSections,toggleSection,handleServiceRowChange,  handleRemoveServiceRow,  handleSubmit,businessId,businessIdEdit
 }) => {
 
   const getServiceRow = (index) => {
@@ -50,6 +50,8 @@ const Photography = ({
           handleServiceRowChange={handleServiceRowChange}
           handleRemoveServiceRow={handleRemoveServiceRow}
           resetSection={resetSection}
+          businessId={businessId}
+          businessIdEdit={businessIdEdit}
         />
 
 
@@ -63,6 +65,9 @@ const Photography = ({
           handleServiceRowChange={handleServiceRowChange}
           handleRemoveServiceRow={handleRemoveServiceRow}
           resetSection={resetSection}
+          businessId={businessId}
+          businessIdEdit={businessIdEdit}
+
         />
         {/* Model Photography Section */}
         <ModelPhotographySection
@@ -74,6 +79,8 @@ const Photography = ({
           handleServiceRowChange={handleServiceRowChange}
           handleRemoveServiceRow={handleRemoveServiceRow}
           resetSection={resetSection}
+          businessId={businessId}
+          businessIdEdit={businessIdEdit}
         />
 
         {/* A+ Content Photography Section */}
@@ -86,6 +93,8 @@ const Photography = ({
           handleServiceRowChange={handleServiceRowChange}
           handleRemoveServiceRow={handleRemoveServiceRow}
           resetSection={resetSection}
+           businessId={businessId}
+          businessIdEdit={businessIdEdit}
         />
         {/* Store, Showroom & Manufacturing Unit Shoots Section */}
         < PhotographyStoreSection
@@ -97,6 +106,8 @@ const Photography = ({
           handleServiceRowChange={handleServiceRowChange}
           handleRemoveServiceRow={handleRemoveServiceRow}
           resetSection={resetSection}
+           businessId={businessId}
+          businessIdEdit={businessIdEdit}
         />
 
         {/* Social Media Ready Content Section */}
@@ -109,6 +120,8 @@ const Photography = ({
           handleServiceRowChange={handleServiceRowChange}
           handleRemoveServiceRow={handleRemoveServiceRow}
           resetSection={resetSection}
+           businessId={businessId}
+          businessIdEdit={businessIdEdit}
         />
 
         <div className="col-md-12 d-flex justify-content-end mt-5 mb-4">

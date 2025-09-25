@@ -17,6 +17,11 @@ import keyAccountSubscriptionReducer from "./keyAccountSubscriptionReducer";
 import { digitalMarketReducer } from "./digitalMarketReducer";
 import subServiceReducer from './subServiceReducer';
 import { serviceActivityReducer } from "./serviceActivityReducer";
+import { digitalMarketingReducer } from "./digitalMarketingReducer";
+import { productPhotographyReducer } from "./productPhotographyReducer";
+import { lifeStylePhotographyReducer } from "./lifeStylePhotographyReducer";
+import { modelPhotographyReducer } from "./modelPhotographyReducer";
+import { aContentPhotographyReducer } from "./A+PhotographyReducer";
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -37,8 +42,13 @@ const rootReducer = combineReducers({
   digitalMarket: digitalMarketReducer,
   serviceActivity: serviceActivityReducer,
   subServices: subServiceReducer,
-  keyAccountAllCommissions:keyAccountSubscriptionReducer
-,});
+  keyAccountAllCommissions: keyAccountSubscriptionReducer,
+  digitalMarketing: digitalMarketingReducer,
+  productPhotography: productPhotographyReducer,
+  lifestylePhotography:lifeStylePhotographyReducer,
+  modelPhotography:modelPhotographyReducer,
+  aContentPhotography:aContentPhotographyReducer
+});
 
 
 export default rootReducer;
