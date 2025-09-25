@@ -22,6 +22,7 @@ import { productPhotographyReducer } from "./productPhotographyReducer";
 import { lifeStylePhotographyReducer } from "./lifeStylePhotographyReducer";
 import { modelPhotographyReducer } from "./modelPhotographyReducer";
 import { aContentPhotographyReducer } from "./A+PhotographyReducer";
+import { storePhotographyReducer } from "./storePhotographyReducer";
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -47,7 +48,8 @@ const rootReducer = combineReducers({
   productPhotography: productPhotographyReducer,
   lifestylePhotography:lifeStylePhotographyReducer,
   modelPhotography:modelPhotographyReducer,
-  aContentPhotography:aContentPhotographyReducer
+  aContentPhotography:aContentPhotographyReducer,
+  storePhotography:storePhotographyReducer,
 });
 
 
