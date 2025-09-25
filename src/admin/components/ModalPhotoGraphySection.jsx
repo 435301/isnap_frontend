@@ -31,7 +31,7 @@ const ModelPhotographySection = ({
 
     const [errors, setErrors] = useState({});
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const[isDelete, setIsDelete] = useState(null);
+    const [isDelete, setIsDelete] = useState(null);
 
     useEffect(() => {
         dispatch(fetchServiceActivities());
@@ -145,12 +145,12 @@ const ModelPhotographySection = ({
         if (!formData.serviceActivities) newErrors.serviceActivities = "Service Activity is required";
         if (!formData.actualPrice || formData.actualPrice <= 0)
             newErrors.actualPrice = "Actual Price must be greater than 0";
-        if (!formData.offerPrice )
+        if (!formData.offerPrice)
             newErrors.offerPrice = "Offer Price is required";
         if (formData.offerPrice && formData.actualPrice && Number(formData.offerPrice) > Number(formData.actualPrice)) { newErrors.offerPrice = "Offer Price should not exceed Actual Price"; }
         if (!formData.billingCycle) newErrors.billingCycle = "Billing Cycle is required";
         if (!formData.taskDays || formData.taskDays <= 0)
-            newErrors.taskDays = "Task Completion days is required";
+            newErrors.taskDays = "Task days is required";
         return newErrors;
     };
 
@@ -158,8 +158,8 @@ const ModelPhotographySection = ({
     const handleSubmit = (e) => {
         e.preventDefault();
         const newErrors = validate();
-    setErrors(newErrors);
-    if (Object.keys(newErrors).length > 0) return;
+        setErrors(newErrors);
+        if (Object.keys(newErrors).length > 0) return;
         const payload = {
             id: Number(formData.id),
             businessId: businessIdEdit ? businessIdEdit : businessId,
@@ -195,17 +195,17 @@ const ModelPhotographySection = ({
         });
     };
 
-   const handleDeleteClick = (id) => {
-     setIsDelete(id);
-     setShowDeleteModal(true);
-   };
- 
-   const handleDelete = async () => {
-     await dispatch(deleteModelPhotography(isDelete));
-     setShowDeleteModal(false);
-     setIsDelete(null);
- 
-   };
+    const handleDeleteClick = (id) => {
+        setIsDelete(id);
+        setShowDeleteModal(true);
+    };
+
+    const handleDelete = async () => {
+        await dispatch(deleteModelPhotography(isDelete));
+        setShowDeleteModal(false);
+        setIsDelete(null);
+
+    };
 
     return (
         <div className="accordion mb-3">
@@ -294,7 +294,7 @@ const ModelPhotographySection = ({
                                         className="form-control"
                                         name="offerPrice"
                                         value={formData.offerPrice}
-                                        onChange={handleChange }
+                                        onChange={handleChange}
                                     />
                                     {/* {errors.offerPrice && <div className="text-danger small">{errors.offerPrice}</div>} */}
                                 </div>
@@ -399,7 +399,7 @@ const ModelPhotographySection = ({
                                 </tbody>
                             </table>
                         </div>
-                          <DeleteConfirmationModal show={showDeleteModal} handleClose={() => setShowDeleteModal(false)} handleConfirm={handleDelete} />
+                        <DeleteConfirmationModal show={showDeleteModal} handleClose={() => setShowDeleteModal(false)} handleConfirm={handleDelete} />
                     </div>
                 </div>
             </div>

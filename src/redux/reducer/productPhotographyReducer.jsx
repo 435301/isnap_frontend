@@ -76,7 +76,8 @@ export const productPhotographyReducer = (state = initialState, action) => {
             return { ...state, loading: false, error: action.payload };
         case "CLEAR_PRODUCT_PHOTOGRPAHY_LISTING":
             return { ...state, productPhotographyList: [] };
-
+        case "RESET_TOTAL_PRICE":
+            return { ...state, totalPriceData: null };
         default:
             return state;
     }

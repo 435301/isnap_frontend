@@ -93,6 +93,8 @@ const Photography = ({
           handleServiceRowChange={handleServiceRowChange}
           handleRemoveServiceRow={handleRemoveServiceRow}
           resetSection={resetSection}
+           businessId={businessId}
+          businessIdEdit={businessIdEdit}
         />
         {/* Store, Showroom & Manufacturing Unit Shoots Section */}
         < PhotographyStoreSection
@@ -104,6 +106,8 @@ const Photography = ({
           handleServiceRowChange={handleServiceRowChange}
           handleRemoveServiceRow={handleRemoveServiceRow}
           resetSection={resetSection}
+           businessId={businessId}
+          businessIdEdit={businessIdEdit}
         />
 
         {/* Social Media Ready Content Section */}
@@ -116,6 +120,8 @@ const Photography = ({
           handleServiceRowChange={handleServiceRowChange}
           handleRemoveServiceRow={handleRemoveServiceRow}
           resetSection={resetSection}
+           businessId={businessId}
+          businessIdEdit={businessIdEdit}
         />
 
         <div className="col-md-12 d-flex justify-content-end mt-5 mb-4">
