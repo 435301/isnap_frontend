@@ -14,19 +14,17 @@ const EditSubServiceModal = ({ show, handleClose, subService, onSave }) => {
     isGenderApplicable: 0,
   });
 
-  // Fetch categories
   useEffect(() => {
     dispatch(fetchCategories());
   }, [dispatch]);
 
-  // Pre-fill form when subService changes
   useEffect(() => {
     if (subService) {
       setForm({
         serviceCategoryId: subService.serviceCategoryId || "",
         subServiceName: subService.subServiceName || "",
         status: subService.status === 1 ? "Active" : "Inactive",
-        isGenderApplicable: subService.isGenderApplicable || 0,
+        isGenderApplicable: subService.isGenderApplicable != null ? subService.isGenderApplicable : 0,
       });
     }
   }, [subService]);
@@ -46,13 +44,13 @@ const EditSubServiceModal = ({ show, handleClose, subService, onSave }) => {
 
     const payload = {
       id: subService.id,
-      serviceCategoryId: form.serviceCategoryId,
-      subServiceName: form.subServiceName,
+      serviceCategoryId: Number(form.serviceCategoryId),
+      subServiceName: form.subServiceName.trim(),
       status: form.status === "Active" ? 1 : 0,
       isGenderApplicable: form.isGenderApplicable,
     };
 
-    onSave(payload);
+    onSave(payload); // call parent handler to update Redux store
     handleClose();
   };
 
@@ -88,7 +86,7 @@ const EditSubServiceModal = ({ show, handleClose, subService, onSave }) => {
           {/* Sub-Service Name */}
           <Form.Group className="mb-3">
             <Form.Label>
-             Service Type <span className="text-danger">*</span>
+              Service Type <span className="text-danger">*</span>
             </Form.Label>
             <Form.Control
               type="text"
@@ -128,7 +126,6 @@ const EditSubServiceModal = ({ show, handleClose, subService, onSave }) => {
             />
           </Form.Group>
 
-          {/* Buttons */}
           <div className="d-flex justify-content-end gap-2">
             <Button variant="light" onClick={handleClose}>
               Cancel

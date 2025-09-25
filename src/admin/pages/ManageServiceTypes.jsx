@@ -3,7 +3,11 @@ import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import { Link, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchSubServices, deleteSubService, updateSubService } from "../../redux/actions/subServiceActions";
+import {
+  fetchSubServices,
+  deleteSubService,
+  updateSubService,
+} from "../../redux/actions/subServiceActions";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -17,23 +21,19 @@ const ManageServiceActivities = () => {
   const location = useLocation();
   const { subServices, loading, error } = useSelector((state) => state.subServices);
 
-  // Sidebar & window
   const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 992);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
-  // Modals
   const [showView, setShowView] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
   const [deleteId, setDeleteId] = useState(null);
 
-  // Filters & pagination
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState(""); // ""=all, "1"=active, "0"=inactive
   const [currentPage, setCurrentPage] = useState(1);
 
-  // ----------- HANDLE SIDEBAR RESIZE -----------
   useEffect(() => {
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
@@ -46,18 +46,20 @@ const ManageServiceActivities = () => {
 
   const handleToggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
-  // ----------- FETCH SUB-SERVICES -----------
   useEffect(() => {
-    const showStatus = statusFilter === "0" || statusFilter === "1" ? statusFilter : "";
-    dispatch(fetchSubServices({
-      page: currentPage,
-      search: searchTerm,
-      serviceCategoryId: "",
-      showStatus: showStatus,
-    }));
+    const showStatus =
+      statusFilter === "0" ? 0 : statusFilter === "1" ? 1 : "";
+
+    dispatch(
+      fetchSubServices({
+        page: currentPage,
+        search: searchTerm,
+        serviceCategoryId: "",
+        showStatus,
+      })
+    );
   }, [dispatch, currentPage, searchTerm, statusFilter]);
 
-  // ----------- SHOW SUCCESS TOAST ON CREATE -----------
   useEffect(() => {
     if (location.state?.subServiceCreated) {
       toast.success("Sub-service created successfully!");
@@ -65,23 +67,12 @@ const ManageServiceActivities = () => {
     }
   }, [location.state]);
 
-  // ----------- REFRESH FUNCTION -----------
   const handleRefresh = () => {
     setSearchTerm("");
     setStatusFilter("");
     setCurrentPage(1);
   };
-  // Convert statusFilter to number or empty string
-  const showStatus = statusFilter === "" ? "" : Number(statusFilter);
 
-  dispatch(fetchSubServices({
-    page: currentPage,
-    search: searchTerm,
-    serviceCategoryId: "",
-    showStatus: showStatus,
-  }));
-
-  // ----------- DELETE SUB-SERVICE -----------
   const handleConfirmDelete = () => {
     if (deleteId) {
       dispatch(deleteSubService(deleteId)).then(() => {
@@ -92,10 +83,18 @@ const ManageServiceActivities = () => {
     }
   };
 
-  // ----------- UPDATE SUB-SERVICE -----------
+  // ------------------- UPDATE -------------------
   const handleSaveChanges = async (updatedService) => {
     try {
+      // Call backend API
       await dispatch(updateSubService(updatedService.id, updatedService));
+
+      // Update Redux state directly
+      dispatch({
+        type: "UPDATE_SUB_SERVICE_SUCCESS",
+        payload: updatedService,
+      });
+
       toast.success("Sub-service updated successfully!");
       setShowEdit(false);
     } catch {
@@ -109,14 +108,20 @@ const ManageServiceActivities = () => {
       <div
         className="content flex-grow-1"
         style={{
-          marginLeft: windowWidth >= 992 ? (isSidebarOpen ? 259 : 95) : isSidebarOpen ? 220 : 0,
+          marginLeft:
+            windowWidth >= 992
+              ? isSidebarOpen
+                ? 259
+                : 95
+              : isSidebarOpen
+              ? 220
+              : 0,
           transition: "margin-left 0.3s ease",
         }}
       >
         <Navbar onToggleSidebar={handleToggleSidebar} />
 
         <div className="container-fluid px-4 pt-3">
-          {/* Header */}
           <div className="row mb-3">
             <div className="bg-white p-3 rounded shadow-sm card-header d-flex justify-content-between align-items-center">
               <h5 className="m-0">Manage Service Types</h5>
@@ -152,7 +157,6 @@ const ManageServiceActivities = () => {
                     <option value="1">Active</option>
                     <option value="0">Inactive</option>
                   </select>
-
                 </div>
                 <div className="col-md-2 d-flex">
                   <button className="btn btn-success me-3" onClick={() => setCurrentPage(1)}>

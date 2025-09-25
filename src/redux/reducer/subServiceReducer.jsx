@@ -12,6 +12,7 @@ const initialState = {
   error: null,
 };
 
+// src/redux/reducers/subServiceReducer.js
 const subServiceReducer = (state = initialState, action) => {
   switch (action.type) {
     case FETCH_SUBSERVICES_REQUEST:
@@ -21,9 +22,6 @@ const subServiceReducer = (state = initialState, action) => {
         error: null,
       };
     case FETCH_SUBSERVICES_SUCCESS:
-      // depending on your API response, action.payload might include .subServices
-      // or the array directly
-      // e.g. response.data.data.subServices OR response.data.data
       let subs = [];
       if (action.payload.subServices) {
         subs = action.payload.subServices;
@@ -32,7 +30,6 @@ const subServiceReducer = (state = initialState, action) => {
       } else if (action.payload.data && Array.isArray(action.payload.data.subServices)) {
         subs = action.payload.data.subServices;
       } else {
-        // try fallback
         subs = [];
       }
       return {
@@ -48,9 +45,20 @@ const subServiceReducer = (state = initialState, action) => {
         error: action.payload,
         subServices: [],
       };
+
+    // Add this case for updating a sub-service in the array
+    case "UPDATE_SUB_SERVICE_SUCCESS":
+      return {
+        ...state,
+        subServices: state.subServices.map((sub) =>
+          sub.id === action.payload.id ? { ...sub, ...action.payload } : sub
+        ),
+      };
+
     default:
       return state;
   }
 };
+
 
 export default subServiceReducer;

@@ -30,17 +30,10 @@ export const fetchTeams = () => async (dispatch, getState) => {
   }
 };
 
-export const createTeam = (team) => async (dispatch, getState) => {
+export const createTeam = (formData) => async (dispatch, getState) => {
   try {
     const { auth } = getState();
     const token = auth?.token || localStorage.getItem("token");
-
-    const formData = new FormData();
-    Object.entries(team).forEach(([key, value]) => {
-      if (value !== undefined && value !== null) {
-        formData.append(key, value);
-      }
-    });
 
     const response = await axios.post(`${BASE_URL}/users/create`, formData, {
       headers: {
@@ -49,11 +42,8 @@ export const createTeam = (team) => async (dispatch, getState) => {
       },
     });
 
-    console.log("Create response:", response.data);
-
-    dispatch({ type: "SET_SUCCESS_MESSAGE", payload: "Team member created!" });
-    // Optionally refresh list
-    // dispatch(fetchTeams());
+    dispatch({ type: "SET_SUCCESS_MESSAGE", payload: response.data.msg || "Team member created!" });
+    return response.data;
   } catch (error) {
     console.error("Create error:", error.response?.data || error.message);
     dispatch({
