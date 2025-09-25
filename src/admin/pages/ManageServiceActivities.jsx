@@ -27,7 +27,7 @@ const ManageServiceActivities = () => {
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 992);
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState(""); // 0, 1, or ""
   const [showViewModal, setShowViewModal] = useState(false);
   const [showEditOffcanvas, setShowEditOffcanvas] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState(null);
@@ -37,10 +37,14 @@ const ManageServiceActivities = () => {
   const itemsPerPage = 10;
 
   // Fetch activities
+  const loadActivities = () => {
+    const payloadStatus =
+      statusFilter === "" ? "" : Number(statusFilter); // convert string to number
+    dispatch(fetchServiceActivities(currentPage, itemsPerPage, searchTerm, payloadStatus));
+  };
+
   useEffect(() => {
-    dispatch(
-      fetchServiceActivities(currentPage, itemsPerPage, searchTerm, statusFilter)
-    );
+    loadActivities();
   }, [dispatch, currentPage, searchTerm, statusFilter]);
 
   // Toasts for success/error
@@ -60,14 +64,14 @@ const ManageServiceActivities = () => {
     setSearchTerm("");
     setStatusFilter("");
     setCurrentPage(1);
-    dispatch(fetchServiceActivities(1, itemsPerPage, "", ""));
+    loadActivities();
   };
 
   const handleConfirmDelete = async () => {
     await dispatch(deleteServiceActivity(deleteId));
     setShowDeleteModal(false);
     setDeleteId(null);
-    dispatch(fetchServiceActivities(currentPage, itemsPerPage, searchTerm, statusFilter));
+    loadActivities();
   };
 
   const handleSaveChanges = async (updatedActivity) => {
@@ -78,7 +82,7 @@ const ManageServiceActivities = () => {
       await dispatch(updateServiceActivity(updatedActivity));
       setShowEditOffcanvas(false);
       setSelectedActivity(null);
-      dispatch(fetchServiceActivities(currentPage, itemsPerPage, searchTerm, statusFilter));
+      loadActivities();
     } catch (err) {
       toast.error(err.response?.data?.message || err.message);
     }
@@ -121,11 +125,16 @@ const ManageServiceActivities = () => {
                   <select
                     className="form-select"
                     value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value)}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (value === "" || value === "0" || value === "1") {
+                        setStatusFilter(value);
+                      }
+                    }}
                   >
                     <option value="">All</option>
-                    <option value="Active">Active</option>
-                    <option value="Inactive">Inactive</option>
+                    <option value="1">Active</option>
+                    <option value="0">Inactive</option>
                   </select>
                 </div>
                 <div className="col-md-2 d-flex">
@@ -172,14 +181,13 @@ const ManageServiceActivities = () => {
                           <td>{a.activityName}</td>
                           <td>
                             <span
-                              className={`badge ${a.status === 1
-                                  ? "bg-success-light text-success"
-                                  : "bg-danger-light text-danger"
+                              className={`badge mt-3 ${a.status === 1
+                                ? "bg-success-light text-success"
+                                : "bg-danger-light text-danger"
                                 }`}
                             >
                               {a.status === 1 ? "Active" : "Inactive"}
                             </span>
-
                           </td>
                           <td>
                             <div className="d-flex gap-2">
@@ -217,6 +225,39 @@ const ManageServiceActivities = () => {
                     </tbody>
                   </table>
                 )}
+              </div>
+              {/* Pagination */}
+              <div className="d-flex justify-content-end align-items-center mt-3">
+                <nav>
+                  <ul className="pagination custom-pagination mb-0">
+                    <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+                      <button
+                        className="page-link"
+                        onClick={() => setCurrentPage(currentPage - 1)}
+                      >
+                        &lt;
+                      </button>
+                    </li>
+                    {Array.from({ length: totalPages || 1 }, (_, i) => i + 1).map((page) => (
+                      <li
+                        key={page}
+                        className={`page-item ${currentPage === page ? "active" : ""}`}
+                      >
+                        <button className="page-link" onClick={() => setCurrentPage(page)}>
+                          {page}
+                        </button>
+                      </li>
+                    ))}
+                    <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
+                      <button
+                        className="page-link"
+                        onClick={() => setCurrentPage(currentPage + 1)}
+                      >
+                        &gt;
+                      </button>
+                    </li>
+                  </ul>
+                </nav>
               </div>
             </div>
           </div>

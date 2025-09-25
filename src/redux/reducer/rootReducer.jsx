@@ -15,7 +15,7 @@ import { businessLaunchReducer } from "./businessLaunchReducer";
 import { catalogListingReducer } from "./catalogListingReducer";
 import keyAccountSubscriptionReducer from "./keyAccountSubscriptionReducer";
 import { digitalMarketReducer } from "./digitalMarketReducer";
-import { subServiceReducer } from "./subServiceReducer";
+import subServiceReducer from './subServiceReducer';
 import { serviceActivityReducer } from "./serviceActivityReducer";
 import { digitalMarketingReducer } from "./digitalMarketingReducer";
 import { productPhotographyReducer } from "./productPhotographyReducer";

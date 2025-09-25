@@ -1,77 +1,121 @@
 import React, { useState, useEffect } from "react";
-import { Modal, Button, Form } from "react-bootstrap";
+import { Offcanvas, Button, Form } from "react-bootstrap";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchCategories } from "../../../redux/actions/categoryActions";
 
 const EditSubServiceModal = ({ show, handleClose, subService, onSave }) => {
+  const dispatch = useDispatch();
+  const categories = useSelector((state) => state.category?.categories || []);
+
   const [form, setForm] = useState({
+    serviceCategoryId: "",
     subServiceName: "",
-    status: "Active",
-    isGenderApplicable: 0
+    status: "",
+    isGenderApplicable: 0,
   });
+
+  useEffect(() => {
+    dispatch(fetchCategories());
+  }, [dispatch]);
 
   useEffect(() => {
     if (subService) {
       setForm({
+        serviceCategoryId: subService.serviceCategoryId || "",
         subServiceName: subService.subServiceName || "",
         status: subService.status === 1 ? "Active" : "Inactive",
-        isGenderApplicable: subService.isGenderApplicable || 0
+        isGenderApplicable: subService.isGenderApplicable != null ? subService.isGenderApplicable : 0,
       });
     }
   }, [subService]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setForm(prev => ({
+    setForm((prev) => ({
       ...prev,
-      [name]: type === "checkbox" ? (checked ? 1 : 0) : value
+      [name]: type === "checkbox" ? (checked ? 1 : 0) : value,
     }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!form.subServiceName) {
-      alert("Name is required!");
-      return;
-    }
+    if (!form.serviceCategoryId) return alert("Please select a service category!");
+    if (!form.subServiceName) return alert("Sub-Service name is required!");
+
     const payload = {
       id: subService.id,
-      subServiceName: form.subServiceName,
+      serviceCategoryId: Number(form.serviceCategoryId),
+      subServiceName: form.subServiceName.trim(),
       status: form.status === "Active" ? 1 : 0,
-      isGenderApplicable: form.isGenderApplicable
+      isGenderApplicable: form.isGenderApplicable,
     };
-    onSave(payload); // 🔹 send to parent for redux call
+
+    onSave(payload); // call parent handler to update Redux store
+    handleClose();
   };
 
   if (!subService) return null;
 
   return (
-    <Modal show={show} onHide={handleClose} centered>
-      <Modal.Header closeButton>
-        <Modal.Title>Edit Sub-Service</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
+    <Offcanvas show={show} onHide={handleClose} placement="end" backdrop={true}>
+      <Offcanvas.Header closeButton>
+        <Offcanvas.Title>Edit Service Types</Offcanvas.Title>
+      </Offcanvas.Header>
+      <Offcanvas.Body>
         <Form onSubmit={handleSubmit}>
+          {/* Service Category */}
           <Form.Group className="mb-3">
-            <Form.Label>Name</Form.Label>
+            <Form.Label>
+              Service Category <span className="text-danger">*</span>
+            </Form.Label>
+            <Form.Select
+              name="serviceCategoryId"
+              value={form.serviceCategoryId}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select Category</option>
+              {categories.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.categoryName || cat.serviceCategoryName}
+                </option>
+              ))}
+            </Form.Select>
+          </Form.Group>
+
+          {/* Sub-Service Name */}
+          <Form.Group className="mb-3">
+            <Form.Label>
+              Service Type <span className="text-danger">*</span>
+            </Form.Label>
             <Form.Control
               type="text"
               name="subServiceName"
               value={form.subServiceName}
               onChange={handleChange}
+              placeholder="Enter Sub-Service Name"
+              required
             />
           </Form.Group>
 
+          {/* Status */}
           <Form.Group className="mb-3">
-            <Form.Label>Status</Form.Label>
+            <Form.Label>
+              Status <span className="text-danger">*</span>
+            </Form.Label>
             <Form.Select
               name="status"
               value={form.status}
               onChange={handleChange}
+              required
             >
+              <option value="">Select Status</option>
               <option value="Active">Active</option>
               <option value="Inactive">Inactive</option>
             </Form.Select>
           </Form.Group>
 
+          {/* Gender Applicable */}
           <Form.Group className="mb-3 form-check">
             <Form.Check
               type="checkbox"
@@ -82,12 +126,17 @@ const EditSubServiceModal = ({ show, handleClose, subService, onSave }) => {
             />
           </Form.Group>
 
-          <Button type="submit" variant="success">
-            Save Changes
-          </Button>
+          <div className="d-flex justify-content-end gap-2">
+            <Button variant="light" onClick={handleClose}>
+              Cancel
+            </Button>
+            <Button type="submit" variant="success">
+              Save Changes
+            </Button>
+          </div>
         </Form>
-      </Modal.Body>
-    </Modal>
+      </Offcanvas.Body>
+    </Offcanvas>
   );
 };
 

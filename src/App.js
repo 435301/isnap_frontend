@@ -107,7 +107,7 @@ function App() {
         <Route path="/latest-updates" element={<AdminRoute><LastestUpdates /></AdminRoute>} />
         <Route path="/manage-roles-features" element={<AdminRoute><RoleAccess /></AdminRoute>} />
         <Route path="/manage-billing" element={<AdminRoute><ManageBilling /></AdminRoute>} />
-        <Route path="/manage-services-type" element={<AdminRoute><ManageServicesType /></AdminRoute>} />
+        <Route path="/manage-marketplace" element={<AdminRoute><ManageServicesType /></AdminRoute>} />
         <Route path="/manage-services" element={<AdminRoute><ManageServices /></AdminRoute>} />
         <Route path="/market-place-type" element={<AdminRoute><MarketplaceType /></AdminRoute>} />
         <Route path="/manage-departments" element={<AdminRoute><ManageDepartments /></AdminRoute>} />
@@ -123,7 +123,7 @@ function App() {
         <Route path="/leads-status" element={<AdminRoute><LeadStatus /></AdminRoute>} />
         <Route path="/manage-leads-status" element={<AdminRoute><ManageLeadsStatus /></AdminRoute>} />
 
-        <Route path="/add-service-type" element={<AdminRoute><AddServicesType /></AdminRoute>} />
+        <Route path="/add-marketplacetype" element={<AdminRoute><AddServicesType /></AdminRoute>} />
         <Route path="/add-state" element={<AdminRoute><AddState /></AdminRoute>} />
         <Route path="/add-role" element={<AdminRoute><AddRole /></AdminRoute>} />
         <Route path="/manage-state" element={<AdminRoute><ManageState /></AdminRoute>} />
