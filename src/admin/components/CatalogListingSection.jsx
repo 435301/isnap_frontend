@@ -83,7 +83,8 @@ const CatalogListingSection = ({ businessId, expandedSections, toggleSection, bu
         ...prev,
         perSkuPrice: perSkuPriceData.perSkuPrice,
         // offerPrice: perSkuPriceData.perSkuPrice,
-        offerPrice: prev.offerPrice || perSkuPriceData.perSkuPrice,
+        // offerPrice: prev.offerPrice || perSkuPriceData.perSkuPrice,
+        offerPrice: prev.id === 0 ? perSkuPriceData.perSkuPrice : prev.offerPrice,
       }));
     };
     if (totalPriceData?.totalPrice) {
