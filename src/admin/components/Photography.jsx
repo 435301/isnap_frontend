@@ -79,6 +79,8 @@ const Photography = ({
           handleServiceRowChange={handleServiceRowChange}
           handleRemoveServiceRow={handleRemoveServiceRow}
           resetSection={resetSection}
+          businessId={businessId}
+          businessIdEdit={businessIdEdit}
         />
 
         {/* A+ Content Photography Section */}

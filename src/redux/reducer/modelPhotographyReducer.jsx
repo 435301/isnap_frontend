@@ -34,7 +34,7 @@ export const modelPhotographyReducer = (state = initialState, action) => {
                 ...state,
                 loading: false,
                 modelPhotographyList: exists
-                    ? state.modelPhotographyList.map((item) =>
+                    ? state.modelPhotographyList.map(item =>
                         item.id === action.payload.id ? action.payload : item
                     )
                     : [...state.modelPhotographyList, action.payload],
@@ -56,6 +56,8 @@ export const modelPhotographyReducer = (state = initialState, action) => {
         case GET_MODEL_PHOTOGRAPHY_FAIL:
         case DELETE_MODEL_PHOTOGRAPHY_FAIL:
             return { ...state, loading: false, error: action.payload };
+            case "CLEAR_MODEL_PHOTOGRAPHY":
+                return{...state, modelPhotographyList:[] }
         default:
             return state;
     }
