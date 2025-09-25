@@ -34,12 +34,12 @@ const DigitalMarketing = ({ businessId, setActiveTab, businessIdEdit }) => {
     }, [dispatch]);
 
     useEffect(() => {
-        if (businessIdEdit) {
+        if (businessIdEdit && Number(businessIdEdit) > 0) {
             dispatch(fetchDigitalMarketingByBusinessId(businessIdEdit));
         } else {
             dispatch(resetDigitalMarketing());
         }
-    }, [businessId, dispatch]);
+    }, [businessIdEdit, dispatch]);
 
     useEffect(() => {
         if (markets && markets.length > 0 && !formData.actualPrice) {

@@ -43,6 +43,10 @@ export const fetchDigitalMarketingByBusinessId = (businessId) => async (dispatch
     });
     return response.data; 
   } catch (error) {
+    if (error.response?.status === 404) {
+    dispatch(resetDigitalMarketing());
+    return null;
+  }
     dispatch({
       type: FETCH_DIGITAL_MARKETING_FAILURE,
       payload: error.response?.data?.message || error.message,
