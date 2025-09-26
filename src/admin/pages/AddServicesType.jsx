@@ -87,7 +87,7 @@ const AddServiceType = () => {
           <div className="row mb-2">
             <div className="bg-white p-3 rounded shadow-sm card-header d-flex justify-content-between align-items-center">
               <h5 className="form-title m-0">Add Marketplace</h5>
-              <Link to="/manage-marketplace" className="btn btn-new-lead">
+              <Link to="/manage-services-type" className="btn btn-new-lead">
                 Manage Marketplaces
               </Link>
             </div>

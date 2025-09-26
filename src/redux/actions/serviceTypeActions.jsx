@@ -62,38 +62,38 @@ export const fetchServiceTypes = (page = 1, limit = 10, search = "", status = ""
   }
 };
 
-// ------------------------ CREATE SERVICE TYPE ------------------------
 export const createServiceType = (serviceData) => async (dispatch) => {
   try {
     const payload = {
-      marketPlaceId: serviceData.marketPlaceId,
-      serviceType: serviceData.serviceTypeName, // backend key
-      price: serviceData.price,
-      status: Number(serviceData.status), // 1 or 0
+      marketPlaceId: Number(serviceData.marketPlaceId), // ✅ ensure numeric
+      serviceType: serviceData.serviceTypeName,         // ✅ backend expects "serviceType"
+      price: Number(serviceData.price),
+      status: Number(serviceData.status),
     };
 
-    const response = await axios.post(`${BASE_URL}/serviceType/create`, payload, getAuthHeaders());
+    const response = await axios.post(
+      `${BASE_URL}/serviceType/create`,
+      payload,
+      getAuthHeaders()
+    );
 
     const { status, data, message } = response.data;
 
     if (status) {
       const mappedService = {
         ...data,
-        status: Number(data?.status), // ensure 0 or 1
+        status: Number(data?.status),
       };
       dispatch({ type: CREATE_SERVICE_TYPE_SUCCESS, payload: mappedService });
       return mappedService;
     } else {
-      // ❌ Don’t dispatch SERVICE_TYPE_ERROR here → handled locally in Add page
       throw new Error(message || "Failed to create service type");
     }
   } catch (error) {
     const msg = error.response?.data?.message || error.message;
-    // ❌ Don’t dispatch SERVICE_TYPE_ERROR for create
-    throw new Error(msg); // pass error back to AddServiceType
+    throw new Error(msg);
   }
 };
-
 // ------------------------ UPDATE SERVICE TYPE ------------------------
 export const updateServiceType = (serviceData) => async (dispatch) => {
   try {
