@@ -27,6 +27,10 @@ export const FETCH_KEY_ACCOUNT_COMMISSIONS_REQUEST = "FETCH_KEY_ACCOUNT_COMMISSI
 export const FETCH_KEY_ACCOUNT_COMMISSIONS_SUCCESS = "FETCH_KEY_ACCOUNT_COMMISSIONS_SUCCESS";
 export const FETCH_KEY_ACCOUNT_COMMISSIONS_FAILURE = "FETCH_KEY_ACCOUNT_COMMISSIONS_FAILURE";
 
+export const DELETE_KEY_ACCOUNT_COMMISSION_REQUEST = "DELETE_KEY_ACCOUNT_COMMISSION_REQUEST";
+export const DELETE_KEY_ACCOUNT_COMMISSION_SUCCESS = "DELETE_KEY_ACCOUNT_COMMISSION_SUCCESS";
+export const DELETE_KEY_ACCOUNT_COMMISSION_FAILURE = "DELETE_KEY_ACCOUNT_COMMISSION_FAILURE";
+
 
 export const createSubscription = (subscriptionData) => async (dispatch) => {
   dispatch({ type: CREATE_SUBSCRIPTION_REQUEST });
@@ -184,5 +188,32 @@ export const fetchKeyAccountAllCommissions = (businessId) => async (dispatch) =>
       type: FETCH_KEY_ACCOUNT_COMMISSIONS_FAILURE,
       payload: error.response?.data?.message || error.message,
     });
+  }
+};
+
+export const deleteKeyAccountCommission = (businessId, marketPlaceId) => async (dispatch) => {
+  dispatch({ type: DELETE_KEY_ACCOUNT_COMMISSION_REQUEST });
+
+  try {
+    const response = await axios.delete(
+      `${BASE_URL}/keyAccountCommission/delete/${businessId}/${marketPlaceId}`,
+      getAuthHeaders()
+    );
+
+    dispatch({
+      type: DELETE_KEY_ACCOUNT_COMMISSION_SUCCESS,
+      payload: { businessId, marketPlaceId },
+    });
+    dispatch(fetchKeyAccountAllCommissions(businessId));
+    toast.success(response?.data?.message  || 'deleted successfully')
+    
+    return response.data;
+  } catch (error) {
+    dispatch({
+      type: DELETE_KEY_ACCOUNT_COMMISSION_FAILURE,
+      payload: error.response?.data?.message || error.message,
+    });
+    toast.error(error.response?.data?.message ||  'error deleting')
+    throw error;
   }
 };

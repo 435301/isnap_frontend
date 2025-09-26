@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchServiceTypes } from '../../redux/actions/serviceTypeActions';
-import { createKeyAccountCommission, createSubscription, deleteSubscription, fetchKeyAccountAllCommissions, fetchKeyAccountCommission, fetchKeyAccountSubscription } from '../../redux/actions/keyAccountSubscriptionAction';
+import { createKeyAccountCommission, createSubscription, deleteKeyAccountCommission, deleteSubscription, fetchKeyAccountAllCommissions, fetchKeyAccountCommission, fetchKeyAccountSubscription } from '../../redux/actions/keyAccountSubscriptionAction';
 import DeleteConfirmationModal from './Modal/DeleteConfirmationModal';
 import { fetchCommissions } from '../../redux/actions/commissionActions';
 import { fetchBusinessLaunches } from '../../redux/actions/businessLaunchActions';
@@ -42,6 +42,9 @@ const KeyAccountManagementSection = ({
   });
   const [errors, setErrors] = useState({});
   const [toDelete, setToDelete] = useState(null);
+  const [toCommissionDelete, setToCommissionDelete] = useState(null);
+  const [showDeleteSubscriptionModal, setShowDeleteSubscriptionModal] = useState(false);
+const [showDeleteCommissionModal, setShowDeleteCommissionModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [activeKeyAccountSection, setActiveKeyAccountSection] = useState('Subscription');
 
@@ -299,11 +302,24 @@ const KeyAccountManagementSection = ({
     setShowDeleteModal(true);
   };
 
+const handleDeleteClickcommission = (marketPlaceId) => {
+  setToCommissionDelete(marketPlaceId);
+  setShowDeleteCommissionModal(true);
+};
+
   const handleDelete = async () => {
     await dispatch(deleteSubscription(toDelete));
     setShowDeleteModal(false);
-    setToDelete(null);
+    setToCommissionDelete(null);
   };
+
+ const handleDeleteCommission = async () => {
+  if (toCommissionDelete) {
+    await dispatch(deleteKeyAccountCommission(businessIdEdit || businessId, toCommissionDelete));
+  }
+  setShowDeleteCommissionModal(false);
+  setToCommissionDelete(null);
+};
 
 
   return (
@@ -549,6 +565,13 @@ const KeyAccountManagementSection = ({
                           >
                             <i className="bi bi-pencil"></i>
                           </button>
+                            <button
+                            type="button"
+                            className="btn btn-sm btn-outline-danger"
+                            onClick={() => handleDeleteClickcommission(service.serviceTypeId)}
+                          >
+                            <i className="bi bi-trash"></i>
+                          </button>
                         </td>
                       </tr>
                     ))
@@ -562,13 +585,17 @@ const KeyAccountManagementSection = ({
               </table>
             </div>
 
-
-
             <DeleteConfirmationModal
               show={showDeleteModal}
               handleClose={() => setShowDeleteModal(false)}
               handleConfirm={handleDelete}
             />
+
+           <DeleteConfirmationModal
+  show={showDeleteCommissionModal}
+  handleClose={() => setShowDeleteCommissionModal(false)}
+  handleConfirm={handleDeleteCommission}
+/>
           </div>
         </div>
       </div>

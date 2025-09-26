@@ -17,6 +17,9 @@ import {
     FETCH_KEY_ACCOUNT_COMMISSIONS_REQUEST,
     FETCH_KEY_ACCOUNT_COMMISSIONS_SUCCESS,
     FETCH_KEY_ACCOUNT_COMMISSIONS_FAILURE,
+    DELETE_KEY_ACCOUNT_COMMISSION_REQUEST,
+    DELETE_KEY_ACCOUNT_COMMISSION_SUCCESS,
+    DELETE_KEY_ACCOUNT_COMMISSION_FAILURE,
 } from "../actions/keyAccountSubscriptionAction";
 
 const initialState = {
@@ -37,6 +40,7 @@ const keyAccountSubscriptionReducer = (state = initialState, action) => {
         case FETCH_KEY_ACCOUNT_COMMISSION_REQUEST:
         case FETCH_KEYACCOUNT_SUBSCRIPTION_REQUEST:
         case FETCH_KEY_ACCOUNT_COMMISSIONS_REQUEST:
+        case DELETE_KEY_ACCOUNT_COMMISSION_REQUEST:
             return { ...state, loading: true, error: null };
 
         case CREATE_SUBSCRIPTION_SUCCESS: {
@@ -101,15 +105,29 @@ const keyAccountSubscriptionReducer = (state = initialState, action) => {
                 total: action.payload.total,
                 error: null,
             };
+        case DELETE_KEY_ACCOUNT_COMMISSION_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                commissions: state.commissions.filter(
+                    (c) =>
+                        !(
+                            c.businessId === action.payload.businessId &&
+                            c.marketPlaceId === action.payload.marketPlaceId
+                        )
+                ),
+            };
         case CREATE_SUBSCRIPTION_FAILURE:
         case DELETE_SUBSCRIPTION_FAILURE:
         case CREATE_KEYACCOUNT_COMMISSION_FAILURE:
         case FETCH_KEY_ACCOUNT_COMMISSION_FAILURE:
         case FETCH_KEYACCOUNT_SUBSCRIPTION_FAILURE:
         case FETCH_KEY_ACCOUNT_COMMISSIONS_FAILURE:
+        case DELETE_KEY_ACCOUNT_COMMISSION_FAILURE:
             return { ...state, loading: false, error: action.payload };
+
         case "CLEAR_KEYACCOUNT_SUBSCRIPTIONS":
-            return { ...state, subscriptions: [], commissions: [], total: 0, security: null ,serviceTypes:[]};
+            return { ...state, subscriptions: [], commissions: [], total: 0, security: null, serviceTypes: [] };
 
         default:
             return state;
