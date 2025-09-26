@@ -14,8 +14,8 @@ const EditServiceActivityOffcanvas = ({ show, handleClose, activity, onSave }) =
   const serviceActivityState = useSelector((state) => state.serviceActivity || {});
 
   const [formData, setFormData] = useState({
-    serviceCategoryId: "",
-    subServiceId: "",
+    serviceCategoryId: 0, // default 0
+    subServiceId: 0,      // default 0
     activities: [{ id: null, activityName: "", status: 1 }],
     price: 0,
     malePrice: 0,
@@ -33,8 +33,8 @@ const EditServiceActivityOffcanvas = ({ show, handleClose, activity, onSave }) =
   useEffect(() => {
     if (activity && show) {
       setFormData({
-        serviceCategoryId: activity.serviceCategoryId || "",
-        subServiceId: activity.subServiceId || "",
+        serviceCategoryId: activity.serviceCategoryId || 0,
+        subServiceId: activity.subServiceId || 0,
         activities: activity.activities?.length
           ? activity.activities.map((a) => ({
               id: a.id || null,
@@ -63,7 +63,7 @@ const EditServiceActivityOffcanvas = ({ show, handleClose, activity, onSave }) =
   useEffect(() => {
     if (formData.subServiceId && subServices.length) {
       const selectedSubService = subServices.find(
-        (s) => s.id === parseInt(formData.subServiceId)
+        (s) => s.id === formData.subServiceId
       );
       setGenderApplicable(selectedSubService?.isGenderApplicable ? "yes" : "no");
     }
@@ -84,27 +84,25 @@ const EditServiceActivityOffcanvas = ({ show, handleClose, activity, onSave }) =
 
   // Category change
   const handleCategoryChange = async (e) => {
-    const categoryId = e.target.value;
+    const value = e.target.value ? parseInt(e.target.value) : 0;
     setFormData({
       ...formData,
-      serviceCategoryId: categoryId,
-      subServiceId: "",
+      serviceCategoryId: value,
+      subServiceId: 0, // reset to 0
     });
     setGenderApplicable("no");
 
-    if (categoryId) {
-      await dispatch(fetchSubServicesByCategory(categoryId));
+    if (value) {
+      await dispatch(fetchSubServicesByCategory(value));
     }
   };
 
   // Sub-service change
   const handleSubServiceChange = (e) => {
-    const subServiceId = e.target.value;
-    setFormData({ ...formData, subServiceId });
+    const value = e.target.value ? parseInt(e.target.value) : 0;
+    setFormData({ ...formData, subServiceId: value });
 
-    const selectedSubService = subServices.find(
-      (s) => s.id === parseInt(subServiceId)
-    );
+    const selectedSubService = subServices.find((s) => s.id === value);
     setGenderApplicable(selectedSubService?.isGenderApplicable ? "yes" : "no");
   };
 
@@ -143,14 +141,12 @@ const EditServiceActivityOffcanvas = ({ show, handleClose, activity, onSave }) =
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.serviceCategoryId) {
+    if (formData.serviceCategoryId === 0) {
       toast.error("Please select a service category!");
       return;
     }
-    if (!formData.subServiceId) {
-      toast.error("Please select a sub-service!");
-      return;
-    }
+
+   
     if (!formData.activities.length || !formData.activities[0].activityName.trim()) {
       toast.error("Please provide at least one activity name!");
       return;
@@ -194,11 +190,10 @@ const EditServiceActivityOffcanvas = ({ show, handleClose, activity, onSave }) =
             <Form.Group className="mb-3">
               <Form.Label>Service Category</Form.Label>
               <Form.Select
-                value={formData.serviceCategoryId || ""}
+                value={formData.serviceCategoryId.toString()}
                 onChange={handleCategoryChange}
-                required
               >
-                <option value="">Select Category</option>
+                <option value="0">Select Category</option>
                 {categories.map((cat) => (
                   <option key={cat.id} value={cat.id}>
                     {cat.categoryName}
@@ -211,12 +206,11 @@ const EditServiceActivityOffcanvas = ({ show, handleClose, activity, onSave }) =
             <Form.Group className="mb-3">
               <Form.Label>Service Type</Form.Label>
               <Form.Select
-                value={formData.subServiceId}
+                value={formData.subServiceId.toString()}
                 onChange={handleSubServiceChange}
                 disabled={!subServices.length}
-                required
               >
-                <option value="">Select Sub Service</option>
+                <option value="0">Select Sub Service</option>
                 {subServices.map((sub) => (
                   <option key={sub.id} value={sub.id}>
                     {sub.subServiceName}
@@ -244,9 +238,7 @@ const EditServiceActivityOffcanvas = ({ show, handleClose, activity, onSave }) =
                     type="number"
                     min={0}
                     value={formData.femalePrice}
-                    onChange={(e) =>
-                      handlePriceChange("femalePrice", e.target.value)
-                    }
+                    onChange={(e) => handlePriceChange("femalePrice", e.target.value)}
                     required
                   />
                 </Form.Group>
@@ -288,12 +280,8 @@ const EditServiceActivityOffcanvas = ({ show, handleClose, activity, onSave }) =
                     <option value={0}>Inactive</option>
                   </Form.Select>
                 </div>
-                {/* <div className="col-md-2 d-flex align-items-end gap-2">
-                  <Button
-                    size="sm"
-                    variant="outline-primary"
-                    onClick={handleAddActivity}
-                  >
+                <div className="col-md-2 d-flex align-items-end gap-2">
+                  <Button size="sm" variant="outline-primary" onClick={handleAddActivity}>
                     <i className="bi bi-plus-circle"></i>
                   </Button>
                   {formData.activities.length > 1 && (
@@ -305,7 +293,7 @@ const EditServiceActivityOffcanvas = ({ show, handleClose, activity, onSave }) =
                       <i className="bi bi-dash-circle"></i>
                     </Button>
                   )}
-                </div> */}
+                </div>
               </div>
             ))}
 
@@ -321,21 +309,19 @@ const EditServiceActivityOffcanvas = ({ show, handleClose, activity, onSave }) =
         </Offcanvas.Body>
       </Offcanvas>
 
-      {/* ToastContainer above Offcanvas */}
-     <ToastContainer
-  position="top-right"
-  autoClose={3000}
-  hideProgressBar={false}
-  newestOnTop={false}
-  closeOnClick
-  rtl={false}
-  pauseOnFocusLoss
-  draggable
-  pauseOnHover
-  theme="light"
-  style={{ zIndex: 2000 }} // make sure it's above Offcanvas
-/>
-
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        toastStyle={{ zIndex: 1060 }}
+      />
     </>
   );
 };
