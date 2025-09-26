@@ -224,7 +224,7 @@ const DigitalMarketing = ({ businessId, setActiveTab, businessIdEdit }) => {
                         <label className="form-label">Actual Price<span className='text-danger'> *</span></label>
                         <input
                             className="form-control"
-                            placeholder="345"
+                            placeholder="0"
                             type="text"
                             name="actualPrice"
                             value={formData.actualPrice || ''}
@@ -236,7 +236,7 @@ const DigitalMarketing = ({ businessId, setActiveTab, businessIdEdit }) => {
                         <label className="form-label">Offer Price<span className='text-danger'> *</span></label>
                         <input
                             className="form-control"
-                            placeholder="345"
+                            placeholder="0"
                             type="number"
                             name="offerPrice"
                             value={formData.offerPrice || ''}

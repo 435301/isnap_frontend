@@ -137,7 +137,7 @@ const AddServiceType = () => {
                   {/* Price */}
                   <div className="col-md-4">
                     <label className="form-label">
-                      Price <span className="text-danger">*</span>
+                     Launch Price <span className="text-danger">*</span>
                     </label>
                     <input
                       type="number"
