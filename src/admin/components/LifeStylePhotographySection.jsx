@@ -1,15 +1,208 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchServiceTypes } from "../../redux/actions/serviceTypeActions";
+import { fetchBillingCycles } from "../../redux/actions/billingActions";
+import { fetchServiceActivities } from "../../redux/actions/serviceActivityActions";
+import { createLifeStylePhotography, deleteLifeStylePhotography, getLifeStylePhotographyById, listLifeStyletPhotography, resetLifestylePhotography } from "../../redux/actions/lifestylePhotographyAction";
+import { getTotalPrice } from "../../redux/actions/productPhotographyAction";
+import DeleteConfirmationModal from "./Modal/DeleteConfirmationModal";
+import { fetchLifestyleActivities } from "../../redux/actions/photographyFilterAction";
 
 const LifestylePhotographySection = ({
     expandedSections,
     toggleSection,
-    formData,
-    errors,
     getServiceRow,
     handleServiceRowChange,
     handleRemoveServiceRow,
     resetSection,
+    businessId, businessIdEdit
 }) => {
+
+    const dispatch = useDispatch();
+    const billing = useSelector((state) => state.billing.billingCycles || []);
+    const { activities } = useSelector((state) => state.serviceActivity);
+    const { lifestyleActivities } = useSelector((state) => state.lifestyleActivities);
+    console.log('activities', lifestyleActivities)
+    const { lifestylePhotographyList, loading, error } = useSelector(
+        (state) => state.lifestylePhotography
+    );
+    const { totalPriceData } = useSelector((state) => state.productPhotography);
+    console.log('lifestylePhotographyList', lifestylePhotographyList)
+    const serviceOptions = lifestyleActivities.map((act) => ({
+        value: act.id,
+        label: act.activityName,
+          price: act.price,
+    }));
+
+    const [errors, setErrors] = useState({});
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [isDelete, setIsDelete] = useState(null);
+
+    const [formData, setFormData] = useState({
+        id: 0,
+        serviceTypeId: "",
+        activityId: "",
+        actualPrice: 0,
+        offerPrice: 0,
+        billingCycle: "",
+        taskDays: 0,
+        status: ""
+    });
+
+    useEffect(() => {
+        dispatch(fetchBillingCycles());
+        dispatch(fetchServiceActivities());
+        dispatch(fetchLifestyleActivities());
+    }, [dispatch]);
+
+    useEffect(() => {
+        dispatch(listLifeStyletPhotography(businessId));
+    }, [dispatch]);
+
+    useEffect(() => {
+        if (businessIdEdit) {
+            // Fetch the existing data for this business ID
+            dispatch(getLifeStylePhotographyById(businessIdEdit));
+        } else {
+            // Clear Redux state and reset form if no edit
+            dispatch(resetLifestylePhotography());
+            setFormData({
+                id: 0,
+                serviceTypeId: "",
+                activityId: "",
+                quantity: 0,
+                actualPrice: 0,
+                offerPrice: 0,
+                totalPrice: 0,
+                billingCycle: "",
+                taskDays: 0,
+            });
+        }
+    }, [businessIdEdit, dispatch]);
+
+    useEffect(() => {
+        dispatch(listLifeStyletPhotography(businessIdEdit || businessId));
+    }, [dispatch, businessIdEdit, businessId]);
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setErrors((prev) => ({
+            ...prev,
+            [name]: "",
+            actualPrice: "",
+            offerPrice: "",
+            totalPriceData: ""
+        }));
+        if (name === "serviceActivities") {
+            const selectedActivity = lifestyleActivities.find((act) => act.id === parseInt(value));
+            setFormData({
+                ...formData,
+                serviceActivities: value,
+                actualPrice: selectedActivity ? selectedActivity.price : 0,
+                offerPrice: selectedActivity ? selectedActivity.price : 0
+            });
+        } else {
+            setFormData({ ...formData, [name]: value });
+        }
+    };
+
+    useEffect(() => {
+        if (formData.quantity && formData.offerPrice) {
+            dispatch(getTotalPrice(Number(formData.quantity), Number(formData.offerPrice)));
+        }
+    }, [formData.quantity, formData.offerPrice, dispatch]);
+
+    useEffect(() => {
+        if (totalPriceData) {
+            setFormData((prev) => ({
+                ...prev,
+                totalPrice: totalPriceData.totalPrice,
+            }));
+        }
+    }, [totalPriceData]);
+
+    const resetForm = () => {
+        setFormData({
+            id: 0,
+            serviceTypeId: "",
+            serviceActivities: "",
+            quantity: 0,
+            actualPrice: 0,
+            offerPrice: 0,
+            totalPrice: 0,
+            billingCycle: "",
+            taskDays: 0,
+        });
+    };
+
+    const validate = () => {
+        const newErrors = {};
+        if (!formData.quantity) newErrors.quantity = "Quantity is required";
+        if (!formData.serviceActivities) newErrors.serviceActivities = "Service Activity is required";
+        if (!formData.offerPrice)
+            newErrors.offerPrice = "Offer Price is required";
+        if (formData.offerPrice && formData.actualPrice && Number(formData.offerPrice) > Number(formData.actualPrice)) { newErrors.offerPrice = "Offer Price should not exceed Actual Price"; }
+        if (!formData.billingCycle) newErrors.billingCycle = "Billing Cycle is required";
+        if (!formData.taskDays || formData.taskDays <= 0)
+            newErrors.taskDays = "Task days is required";
+        return newErrors;
+    };
+
+    // --- Submit Form ---
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        const newErrors = validate();
+        setErrors(newErrors);
+        if (Object.keys(newErrors).length > 0) return;
+        const payload = {
+            id: formData.id || 0, // id=0 → create, id>0 → update
+            businessId: businessIdEdit || businessId,
+            serviceTypeId: Number(formData.serviceTypeId),
+            activityId: Number(formData.serviceActivities),
+            qty: Number(formData.quantity),
+            actualPrice: Number(formData.actualPrice),
+            offerPrice: Number(formData.offerPrice),
+            totalPrice: Number(formData.totalPrice),
+            billCycleId: Number(formData.billingCycle),
+            taskCompletionDays: Number(formData.taskDays),
+            status: 1,
+        };
+
+        dispatch(createLifeStylePhotography(payload)).then(() => {
+            resetForm();
+            dispatch({ type: "RESET_TOTAL_PRICE" });
+            dispatch(listLifeStyletPhotography(businessIdEdit || businessId));
+        });
+    };
+
+    // --- Edit Row ---
+    const handleEdit = (row) => {
+        setFormData({
+            id: row.id, // important for update
+            serviceTypeId: row.serviceTypeId,
+            serviceActivities: row.activityId,
+            quantity: row.qty,
+            actualPrice: row.actualPrice,
+            offerPrice: row.offerPrice,
+            totalPrice: row.totalPrice,
+            billingCycle: row.billCycleId,
+            taskDays: row.taskCompletionDays,
+            serviceRows: formData.serviceRows || [], // keep rows intact
+        });
+    };
+
+    const handleDeleteClick = (id) => {
+        setIsDelete(id);
+        setShowDeleteModal(true);
+    };
+
+    const handleDelete = async () => {
+        await dispatch(deleteLifeStylePhotography(isDelete));
+        setShowDeleteModal(false);
+        setIsDelete(null);
+    };
+
+
     return (
         <div className="accordion mb-3">
             <div className="accordion-item">
@@ -30,39 +223,27 @@ const LifestylePhotographySection = ({
                     aria-labelledby="photographyLifestyle"
                 >
                     <div className="accordion-body">
+                        <form onSubmit={handleSubmit}>
                         {/* Form Fields */}
                         <div className="row g-3 mb-3 align-items-center">
                             <div className="col-md-4">
                                 <label className="form-label">
-                                    Service Type <span className="text-danger">*</span>
+                                    Service Activities <span className="text-danger">*</span>
                                 </label>
                                 <select
                                     className="form-select"
-                                    name="serviceType"
-                                    value={getServiceRow(1)?.serviceType}
-                                    onChange={(e) => handleServiceRowChange(1, e)}
+                                    name="serviceActivities"
+                                    value={formData.serviceActivities}
+                                    onChange={handleChange}
                                 >
-                                    <option value="">Select Service Type</option>
-                                    <option value="Single Product Shot">Single Product Shot</option>
-                                    <option value="Lifestyle & Creative Photography">
-                                        Lifestyle & Creative Photography
-                                    </option>
-                                    <option value="Model Photography">Model Photography</option>
-                                    <option value="A+ Content Photography">
-                                        A+ Content Photography
-                                    </option>
-                                    <option value="Store, Showroom & Manufacturing Unit Shoots">
-                                        Store, Showroom & Manufacturing Unit Shoots
-                                    </option>
-                                    <option value="Social Media Ready Content">
-                                        Social Media Ready Content
-                                    </option>
+                                    <option value="">Select Service Activity</option>
+                                    {serviceOptions.map((option) => (
+                                        <option key={option.value} value={option.value}>
+                                            {option.label}
+                                        </option>
+                                    ))}
                                 </select>
-                                {errors?.[`serviceType${1}`] && (
-                                    <div className="text-danger small">
-                                        {errors?.[`serviceType${1}`]}
-                                    </div>
-                                )}
+                                {errors.serviceActivities && <div className="text-danger small">{errors.serviceActivities}</div>}
                             </div>
                             <div className="col-md-2">
                                 <label className="form-label">Quantity</label>
@@ -71,20 +252,22 @@ const LifestylePhotographySection = ({
                                     placeholder="567"
                                     className="form-control"
                                     name="quantity"
-                                    value={getServiceRow(0).quantity}
-                                    onChange={(e) => handleServiceRowChange(0, e)}
+                                    value={formData?.quantity}
+                                    onChange={handleChange}
                                 />
+                                {errors.quantity && <div className="text-danger small">{errors.quantity}</div>}
                             </div>
 
                             <div className="col-md-2">
                                 <label className="form-label">Actual Price</label>
                                 <input
                                     type="number"
-                                    placeholder="567"
                                     className="form-control"
+                                    placeholder="567"
                                     name="actualPrice"
-                                    value={getServiceRow(1).actualPrice}
-                                    onChange={(e) => handleServiceRowChange(1, e)}
+                                    value={formData?.actualPrice}
+                                    onChange={handleChange}
+                                    disabled
                                 />
                             </div>
 
@@ -96,10 +279,12 @@ const LifestylePhotographySection = ({
                                     placeholder="467"
                                     className="form-control"
                                     name="offerPrice"
-                                    value={getServiceRow(1).offerPrice}
-                                    onChange={(e) => handleServiceRowChange(1, e)}
+                                    value={formData.offerPrice}
+                                    onChange={handleChange}
                                 />
+                                {errors.offerPrice && <div className="text-danger small">{errors.offerPrice}</div>}
                             </div>
+
                             <div className="col-md-2">
                                 <label className="form-label">Total Price</label>
                                 <input
@@ -107,25 +292,28 @@ const LifestylePhotographySection = ({
                                     placeholder="567"
                                     className="form-control"
                                     name="totalPrice"
-                                    value={getServiceRow(0).totalPrice}
-                                    onChange={(e) => handleServiceRowChange(0, e)}
+                                    value={formData.totalPrice}
+                                    onChange={handleChange}
+                                    disabled
                                 />
                             </div>
-
                             <div className="col-md-2">
-                                <label className="form-label">Billing Cycle</label>
+                                <label className="form-label">Billing Cycle<span className="text-danger">*</span></label>
                                 <select
                                     className="form-select"
                                     name="billingCycle"
-                                    value={getServiceRow(1).billingCycle}
-                                    onChange={(e) => handleServiceRowChange(1, e)}
+                                    value={formData.billingCycle}
+                                    onChange={handleChange}
                                 >
                                     <option value="">Select Billing Cycle</option>
-                                    <option value="Monthly">Monthly</option>
-                                    <option value="Quarterly">Quarterly</option>
+                                    {billing.map((cycle) => (
+                                        <option key={cycle.id} value={cycle.id}>
+                                            {cycle.title}
+                                        </option>
+                                    ))}
                                 </select>
+                                {errors.billingCycle && (<div className="text-danger small">{errors.billingCycle}</div>)}
                             </div>
-
                             <div className="col-md-2">
                                 <label className="form-label">Task Completion Days</label>
                                 <input
@@ -133,9 +321,10 @@ const LifestylePhotographySection = ({
                                     className="form-control"
                                     placeholder="No. of days"
                                     name="taskDays"
-                                    value={getServiceRow(1).taskDays}
-                                    onChange={(e) => handleServiceRowChange(1, e)}
+                                    value={formData?.taskDays}
+                                    onChange={handleChange}
                                 />
+                                {errors.taskDays && <div className="text-danger small">{errors.taskDays}</div>}
                             </div>
                         </div>
 
@@ -144,14 +333,15 @@ const LifestylePhotographySection = ({
                             <button
                                 type="button"
                                 className="btn btn-outline-secondary px-5 me-2"
-                                onClick={() => resetSection(1)}
+                                onClick={resetForm}
                             >
                                 Reset
                             </button>
-                            <button type="submit" className="btn btn-success px-5">
+                            <button type="button" onClick={handleSubmit} className="btn btn-success px-5">
                                 Save
                             </button>
                         </div>
+                         </form> 
 
                         {/* Table */}
                         <div className="table-responsive mb-3">
@@ -165,28 +355,30 @@ const LifestylePhotographySection = ({
                                         <th>Offer Price</th>
                                         <th>Total Price</th>
                                         <th>Billing Cycle</th>
+                                        <th>Task Days</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody className="text-center">
-                                    {formData.serviceRows.length > 0 ? (
-                                        formData.serviceRows.slice(0, 1).map((row, index) => (
+                                    {lifestylePhotographyList?.length > 0 ? (
+                                        lifestylePhotographyList?.map((row, index) => (
                                             <tr key={index}>
                                                 <td>{index + 1}</td>
-                                                <td>{row.serviceType}</td>
-                                                <td>{row.quantity}</td>
+                                                <td>{row.activityName}</td>
+                                                <td>{row.qty}</td>
                                                 <td>{row.actualPrice}</td>
                                                 <td>{row.offerPrice}</td>
                                                 <td>{row.totalPrice}</td>
-                                                <td>{row.billingCycle}</td>
+                                                <td>{row.billCycleTitle}</td>
+                                                <td>{row.taskCompletionDays}</td>
                                                 <td>
-                                                    <button className="btn btn-sm btn-outline-primary me-2">
+                                                    <button className="btn btn-sm btn-outline-primary me-2" type="button" onClick={() => handleEdit(row)}>
                                                         <i className="bi bi-pencil"></i>
                                                     </button>
                                                     <button
+                                                        type="button"
                                                         className="btn btn-sm btn-outline-danger"
-                                                        onClick={() => handleRemoveServiceRow(index)}
-                                                        disabled={formData.serviceRows.length === 1}
+                                                        onClick={() => handleDeleteClick(row?.id)}
                                                     >
                                                         <i className="bi bi-trash"></i>
                                                     </button>
@@ -203,9 +395,8 @@ const LifestylePhotographySection = ({
                                 </tbody>
                             </table>
                         </div>
-
-
-                    </div>
+                        <DeleteConfirmationModal show={showDeleteModal} handleClose={() => setShowDeleteModal(false)} handleConfirm={handleDelete} />
+                   </div>
                 </div>
             </div>
         </div>

@@ -23,6 +23,8 @@ import { lifeStylePhotographyReducer } from "./lifeStylePhotographyReducer";
 import { modelPhotographyReducer } from "./modelPhotographyReducer";
 import { aContentPhotographyReducer } from "./A+PhotographyReducer";
 import { storePhotographyReducer } from "./storePhotographyReducer";
+import { socialMediaContentPhotographyReducer } from "./socialMediaPhotographyReducer";
+import { lifestyleActivitiesReducer } from "./photographyFilterReducer";
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -50,6 +52,9 @@ const rootReducer = combineReducers({
   modelPhotography:modelPhotographyReducer,
   aContentPhotography:aContentPhotographyReducer,
   storePhotography:storePhotographyReducer,
+  socialMediaPhotography:socialMediaContentPhotographyReducer,
+  lifestyleActivities:lifestyleActivitiesReducer,
+  modelActivities:lifestyleActivitiesReducer,
 });
 
 

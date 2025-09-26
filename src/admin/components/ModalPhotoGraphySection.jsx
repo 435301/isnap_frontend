@@ -4,6 +4,7 @@ import { fetchServiceActivities } from "../../redux/actions/serviceActivityActio
 import { fetchBillingCycles } from "../../redux/actions/billingActions";
 import { createModelPhotography, deleteModelPhotography, getModelPhotographyById, listModelPhotography } from "../../redux/actions/modelPhotographyAction";
 import DeleteConfirmationModal from "./Modal/DeleteConfirmationModal";
+import { fetchModelActivities } from "../../redux/actions/photographyFilterAction";
 
 const ModelPhotographySection = ({
     expandedSections,
@@ -13,6 +14,8 @@ const ModelPhotographySection = ({
     const dispatch = useDispatch();
     const billing = useSelector((state) => state.billing.billingCycles || []);
     const { activities } = useSelector((state) => state.serviceActivity);
+    const { modelActivities } = useSelector((state) => state.modelActivities);
+    console.log('modelActivities', modelActivities)
     const { modelPhotographyList } = useSelector(
         (state) => state.modelPhotography
     );
@@ -36,6 +39,7 @@ const ModelPhotographySection = ({
     useEffect(() => {
         dispatch(fetchServiceActivities());
         dispatch(fetchBillingCycles());
+        dispatch(fetchModelActivities());
     }, [dispatch]);
 
     useEffect(() => {
@@ -68,9 +72,16 @@ const ModelPhotographySection = ({
     }, [dispatch, businessIdEdit, businessId]);
 
 
-    const serviceOptions = activities
-        .filter((act) => act.serviceCategoryId === 3 && act.subServiceId === 3)
-        .map((act) => ({ value: act.id, label: act.activityName }));
+    // const serviceOptions = lifestyleActivities
+    //     .filter((act) => act.serviceCategoryId === 3 && act.subServiceId === 6)
+    //     .map((act) => ({ value: act.id, label: act.activityName }));
+
+    const serviceOptions = modelActivities.map((act) => ({
+        value: act.id,
+        label: act.activityName,
+        malePrice: act.malePrice,
+        femalePrice: act.femalePrice,
+    }));
 
     // Handle form changes
     const handleChange = (e) => {
@@ -80,7 +91,7 @@ const ModelPhotographySection = ({
             [name]: "",
         }));
         if (name === "serviceActivities") {
-            const selectedActivity = activities.find(
+            const selectedActivity = modelActivities.find(
                 (act) => act.id === parseInt(value)
             );
 

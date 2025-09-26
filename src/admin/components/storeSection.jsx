@@ -4,6 +4,9 @@ import { fetchBillingCycles } from "../../redux/actions/billingActions";
 import { fetchServiceActivities } from "../../redux/actions/serviceActivityActions";
 import { listStorePhotography, getStorePhotographyById, clearStorePhotography, createStorePhotography, deleteStorePhotography } from "../../redux/actions/storePhotographyAction";
 import DeleteConfirmationModal from "./Modal/DeleteConfirmationModal";
+import BASE_URL from "../../config/config";
+import getAuthHeaders from "../../utils/auth";
+import axios from "axios";
 
 
 const PhotographyStoreSection = ({
@@ -20,7 +23,7 @@ const PhotographyStoreSection = ({
   const billing = useSelector((state) => state.billing.billingCycles || []);
   const { activities } = useSelector((state) => state.serviceActivity);
   const serviceOptions = activities
-    .filter((act) => act.serviceCategoryId === 3 && act.subServiceId === 19)
+    .filter((act) => act.serviceCategoryId === 3 && act.subServiceId === 8)
     .map((act) => ({ value: act.id, label: act.activityName }));
   const { storePhotographyList } = useSelector((state) => state.storePhotography)
   const [formData, setFormData] = useState({
