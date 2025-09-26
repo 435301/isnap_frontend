@@ -37,12 +37,41 @@ const AddServiceType = () => {
 
   const handleToggleSidebar = () => setIsSidebarOpen((prev) => !prev);
 
+  // const handleChange = (e) => {
+  //   const { name, value } = e.target;
+  //   setFormData((prev) => ({
+  //     ...prev,
+  //     [name]: name === "status" ? Number(value) : value,
+  //   }));
+  //   setErrors((prev) => ({ ...prev, [name]: "" }));
+  // };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: name === "status" ? Number(value) : value,
-    }));
+
+    if (name === "serviceTypeName") {
+      const selectedMarketplace = marketTypes.find(
+        (mt) => mt.id === Number(formData.marketPlaceId)
+      );
+      setFormData((prev) => ({
+        ...prev,
+        serviceTypeName: selectedMarketplace
+          ? `${value} (${selectedMarketplace.marketPlaceType})`
+          : value,
+      }));
+    } else if (name === "marketPlaceId") {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: Number(value),
+        // Also update the serviceTypeName to reflect new marketplace
+        serviceTypeName: prev.serviceTypeName
+          ? `${prev.serviceTypeName.split(" (")[0]} (${marketTypes.find(mt => mt.id === Number(value))?.marketPlaceType || ""})`
+          : "",
+      }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: name === "status" ? Number(value) : value }));
+    }
+
     setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
@@ -137,7 +166,7 @@ const AddServiceType = () => {
                   {/* Price */}
                   <div className="col-md-4">
                     <label className="form-label">
-                     Launch Price <span className="text-danger">*</span>
+                      Launch Price <span className="text-danger">*</span>
                     </label>
                     <input
                       type="number"
