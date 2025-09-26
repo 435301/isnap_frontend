@@ -243,7 +243,7 @@ const ManageServicesCategory = () => {
                               >
                                 <i className="bi bi-pencil-square"></i>
                               </button>
-                              <button
+                              {/* <button
                                 className="btn btn-icon btn-delete"
                                 onClick={() => {
                                   setDeleteId(cat.id);
@@ -251,7 +251,7 @@ const ManageServicesCategory = () => {
                                 }}
                               >
                                 <i className="bi bi-trash"></i>
-                              </button>
+                              </button> */}
                             </div>
                           </td>
                         </tr>

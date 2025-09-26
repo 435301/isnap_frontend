@@ -212,9 +212,9 @@ const ManageServiceActivities = () => {
                               <button className="btn btn-icon btn-edit" onClick={() => { setSelectedService(service); setShowEdit(true); }}>
                                 <i className="bi bi-pencil-square"></i>
                               </button>
-                              <button className="btn btn-icon btn-delete" onClick={() => { setDeleteId(service.id); setShowDeleteModal(true); }}>
+                              {/* <button className="btn btn-icon btn-delete" onClick={() => { setDeleteId(service.id); setShowDeleteModal(true); }}>
                                 <i className="bi bi-trash"></i>
-                              </button>
+                              </button> */}
                             </div>
                           </td>
                         </tr>

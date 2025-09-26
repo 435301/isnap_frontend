@@ -157,7 +157,7 @@ const ManageServicesType = () => {
                                                 return (
                                                     <tr key={s.id}>
                                                         <td>{index + 1 + (currentPage - 1) * itemsPerPage}</td>
-                                                        <td>{s.serviceType}</td>
+                                                        <td>{s.serviceType} </td>
                                                         <td> ₹ {s.price}</td>
                                                         <td>{s.marketPlaceType}</td>
 
