@@ -347,7 +347,7 @@ const KeyAccountManagementSection = ({
               <div className="col-md-12">
                 <div className="row g-3 align-items-center mb-3">
                   <div
-                    className={`col-md-2 text-white text-center p-2 ${activeKeyAccountSection === 'Subscription' ? 'bg-success' : 'bg-light'}`}
+                    className={`col-md-2 text-center p-2 ${activeKeyAccountSection === 'Subscription' ? 'bg-success' : 'bg-light'}`}
                     style={{ cursor: 'pointer' }}
                     onClick={() => setActiveKeyAccountSection('Subscription')}
                   >
