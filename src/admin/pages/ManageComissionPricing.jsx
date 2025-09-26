@@ -199,7 +199,7 @@ const ManageCommissionPricing = () => {
                   <tbody>
                     {loading ? (
                       <tr>
-                        <td colSpan="5" className="text-center text-primary">
+                        <td colSpan="5" className="text-center git">
                           Loading commissions...
                         </td>
                       </tr>
