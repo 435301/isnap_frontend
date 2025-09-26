@@ -125,7 +125,7 @@ const Photography = ({
         />
 
         <div className="col-md-12 d-flex justify-content-end mt-5 mb-4">
-          <button
+          {/* <button
             type="button"
             className="btn btn-outline-secondary px-5 me-2"
             onClick={() => {
@@ -147,7 +147,7 @@ const Photography = ({
           </button>
           <button type="submit" className="btn btn-success px-5">
             Save
-          </button>
+          </button> */}
         </div>
       </form>
     </div>

@@ -111,7 +111,7 @@ const CatalogListingSection = ({ businessId, expandedSections, toggleSection, bu
     const newErrors = {};
     if (!formData.serviceType) newErrors.serviceType = "Service Type is required";
     if (!formData.skuCount) newErrors.skuCount = "SKU count is required";
-    if (!formData.offerPrice) newErrors.offerPrice = "Offer Price is required";
+    // if (!formData.offerPrice) newErrors.offerPrice = "Offer Price is required";
     if (formData.offerPrice && formData.perSkuPrice && Number(formData.offerPrice) > Number(formData.perSkuPrice)) newErrors.offerPrice = "Offer Price should be less than Per SKU Price";
     if (!formData.billingCycle) newErrors.billingCycle = "Billing Cycle is required";
     if (!formData.taskDays) newErrors.taskDays = "Task Days is required";
@@ -303,7 +303,7 @@ const CatalogListingSection = ({ businessId, expandedSections, toggleSection, bu
               <div className="d-flex justify-content-end mb-4">
                 <button
                   type="button"
-                  className="btn btn-outline-secondary me-2"
+                  className="btn btn-outline-secondary px-5 me-2"
                   onClick={() =>
                     setFormData({
                       serviceType: "",
@@ -319,7 +319,7 @@ const CatalogListingSection = ({ businessId, expandedSections, toggleSection, bu
                 >
                   Reset
                 </button>
-                <button type="button" className="btn btn-success" onClick={handleSubmitCatalog}>
+                <button type="button" className="btn btn-success px-5" onClick={handleSubmitCatalog}>
                   {formData.id ? "Update" : "Save"}
                 </button>
               </div>

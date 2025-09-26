@@ -159,7 +159,7 @@ const DigitalMarketing = ({ businessId, setActiveTab, businessIdEdit }) => {
     const validate = () => {
         const newErrors = {};
         if (!formData.scopeOfServices || formData.scopeOfServices.length === 0) { newErrors.scopeOfServices = "Digital Marketing ServiceIds are required"; }
-        if (!formData.offerPrice) newErrors.offerPrice = "Offer Price is required";
+        // if (!formData.offerPrice) newErrors.offerPrice = "Offer Price is required";
         if (formData.offerPrice && formData.actualPrice && Number(formData.offerPrice) > Number(formData.actualPrice)) newErrors.offerPrice = "Offer Price should be than Actual Price";
         if (!formData.billingCycle) newErrors.billingCycle = "Billing Cycle is required";
         return newErrors;
@@ -237,7 +237,7 @@ const DigitalMarketing = ({ businessId, setActiveTab, businessIdEdit }) => {
                         <input
                             className="form-control"
                             placeholder="345"
-                            type="text"
+                            type="number"
                             name="offerPrice"
                             value={formData.offerPrice || ''}
                             onChange={handleChange}
@@ -264,7 +264,7 @@ const DigitalMarketing = ({ businessId, setActiveTab, businessIdEdit }) => {
                 </div>
                 <div className="col-md-12 d-flex justify-content-end mt-5 mb-4">
                     <button type="submit" className="btn btn-success px-5 me-2">Submit</button>
-                    <button type="button" className="btn btn-outline-secondary px-4">Cancel</button>
+                    <button type="button" className="btn btn-outline-secondary px-5">Cancel</button>
                 </div>
             </form>
         </div>

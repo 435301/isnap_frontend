@@ -112,8 +112,8 @@ const PhotographySocialSection = ({
     const validate = () => {
         const newErrors = {};
         if (!formData.serviceActivities) newErrors.serviceActivities = "Service Activity is required";
-        if (!formData.offerPrice)
-            newErrors.offerPrice = "Offer Price is required";
+        // if (!formData.offerPrice)
+        //     newErrors.offerPrice = "Offer Price is required";
         if (formData.offerPrice && formData.actualPrice && Number(formData.offerPrice) > Number(formData.actualPrice)) { newErrors.offerPrice = "Offer Price should not exceed Actual Price"; }
         if (!formData.billingCycle) newErrors.billingCycle = "Billing Cycle is required";
         if (!formData.taskDays || formData.taskDays <= 0)
@@ -216,7 +216,7 @@ const PhotographySocialSection = ({
                             </div>
 
                             <div className="col-md-2">
-                                <label className="form-label">Actual Price</label>
+                                <label className="form-label">Actual Price<span className='text-danger'> *</span></label>
                                 <input
                                     type="number"
                                     className="form-control"
@@ -229,7 +229,7 @@ const PhotographySocialSection = ({
                             </div>
 
                             <div className="col-md-2">
-                                <label className="form-label">Offer Price</label>
+                                <label className="form-label">Offer Price<span className='text-danger'> *</span></label>
                                 <input
                                     type="number"
                                     placeholder="467"
@@ -242,7 +242,7 @@ const PhotographySocialSection = ({
                             </div>
 
                             <div className="col-md-2">
-                                <label className="form-label">Billing Cycle</label>
+                                <label className="form-label">Billing Cycle<span className='text-danger'> *</span></label>
                                 <select
                                     className="form-select"
                                     name="billingCycle"
@@ -260,7 +260,7 @@ const PhotographySocialSection = ({
                             </div>
 
                             <div className="col-md-2">
-                                <label className="form-label">Task Completion Days</label>
+                                <label className="form-label">Task Completion Days<span className='text-danger'> *</span></label>
                                 <input
                                     type="number"
                                     className="form-control"

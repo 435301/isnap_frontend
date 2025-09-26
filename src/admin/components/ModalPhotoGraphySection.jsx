@@ -156,8 +156,8 @@ const ModelPhotographySection = ({
         if (!formData.serviceActivities) newErrors.serviceActivities = "Service Activity is required";
         if (!formData.actualPrice || formData.actualPrice <= 0)
             newErrors.actualPrice = "Actual Price must be greater than 0";
-        if (!formData.offerPrice)
-            newErrors.offerPrice = "Offer Price is required";
+        // if (!formData.offerPrice)
+            // newErrors.offerPrice = "Offer Price is required";
         if (formData.offerPrice && formData.actualPrice && Number(formData.offerPrice) > Number(formData.actualPrice)) { newErrors.offerPrice = "Offer Price should not exceed Actual Price"; }
         if (!formData.billingCycle) newErrors.billingCycle = "Billing Cycle is required";
         if (!formData.taskDays || formData.taskDays <= 0)

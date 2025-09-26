@@ -146,7 +146,7 @@ const KeyAccountManagementSection = ({
   const validateSubscription = () => {
     const newErrors = {};
     if (!formData.serviceType) newErrors.serviceType = "Service Type is required";
-    if (!formData.offerPrice) newErrors.offerPrice = "Offer Price is required";
+    // if (!formData.offerPrice) newErrors.offerPrice = "Offer Price is required";
     return newErrors;
   };
 

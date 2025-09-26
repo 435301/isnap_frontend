@@ -141,8 +141,8 @@ const PhotographyAplusAccordion = ({
         if (!formData.serviceActivities) newErrors.serviceActivities = "Service Activity is required";
         if (!formData.actualPrice || formData.actualPrice <= 0)
             newErrors.actualPrice = "Actual Price must be greater than 0";
-        if (!formData.offerPrice)
-            newErrors.offerPrice = "Offer Price is required";
+        // if (!formData.offerPrice)
+            // newErrors.offerPrice = "Offer Price is required";
         if (formData.offerPrice && formData.actualPrice && Number(formData.offerPrice) > Number(formData.actualPrice)) { newErrors.offerPrice = "Offer Price should not exceed Actual Price"; }
         if (!formData.billingCycle) newErrors.billingCycle = "Billing Cycle is required";
         if (!formData.taskDays || formData.taskDays <= 0)
@@ -268,7 +268,7 @@ const PhotographyAplusAccordion = ({
                                     {errors.serviceActivities && <div className="text-danger small">{errors.serviceActivities}</div>}
                                 </div>
                                 <div className="col-md-2">
-                                    <label className="form-label">Quantity</label>
+                                    <label className="form-label">Quantity<span className='text-danger'> *</span></label>
                                     <input
                                         type="number"
                                         placeholder="567"
@@ -281,7 +281,7 @@ const PhotographyAplusAccordion = ({
                                 </div>
 
                                 <div className="col-md-2">
-                                    <label className="form-label">Actual Price</label>
+                                    <label className="form-label">Actual Price<span className='text-danger'> *</span></label>
                                     <input
                                         type="number"
                                         className="form-control"
@@ -294,7 +294,7 @@ const PhotographyAplusAccordion = ({
                                 </div>
 
                                 <div className="col-md-2">
-                                    <label className="form-label">Offer Price</label>
+                                    <label className="form-label">Offer Price<span className='text-danger'> *</span></label>
                                     <input
                                         type="number"
                                         placeholder="467"
@@ -307,7 +307,7 @@ const PhotographyAplusAccordion = ({
                                 </div>
 
                                 <div className="col-md-2">
-                                    <label className="form-label">Total Price</label>
+                                    <label className="form-label">Total Price<span className='text-danger'> *</span></label>
                                     <input
                                         type="number"
                                         placeholder="567"
@@ -338,7 +338,7 @@ const PhotographyAplusAccordion = ({
                                 </div>
 
                                 <div className="col-md-2">
-                                    <label className="form-label">Task Completion Days</label>
+                                    <label className="form-label">Task Completion Days<span className='text-danger'> *</span></label>
                                     <input
                                         type="number"
                                         className="form-control"

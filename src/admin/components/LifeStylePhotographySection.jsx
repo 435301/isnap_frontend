@@ -139,8 +139,8 @@ const LifestylePhotographySection = ({
         const newErrors = {};
         if (!formData.quantity) newErrors.quantity = "Quantity is required";
         if (!formData.serviceActivities) newErrors.serviceActivities = "Service Activity is required";
-        if (!formData.offerPrice)
-            newErrors.offerPrice = "Offer Price is required";
+        // if (!formData.offerPrice)
+            // newErrors.offerPrice = "Offer Price is required";
         if (formData.offerPrice && formData.actualPrice && Number(formData.offerPrice) > Number(formData.actualPrice)) { newErrors.offerPrice = "Offer Price should not exceed Actual Price"; }
         if (!formData.billingCycle) newErrors.billingCycle = "Billing Cycle is required";
         if (!formData.taskDays || formData.taskDays <= 0)
@@ -236,7 +236,7 @@ const LifestylePhotographySection = ({
                                     value={formData.serviceActivities}
                                     onChange={handleChange}
                                 >
-                                    <option value="">Select Service Activity</option>
+                                    <option value="">Select Service Activity<span className='text-danger'> *</span></option>
                                     {serviceOptions.map((option) => (
                                         <option key={option.value} value={option.value}>
                                             {option.label}
@@ -246,7 +246,7 @@ const LifestylePhotographySection = ({
                                 {errors.serviceActivities && <div className="text-danger small">{errors.serviceActivities}</div>}
                             </div>
                             <div className="col-md-2">
-                                <label className="form-label">Quantity</label>
+                                <label className="form-label">Quantity<span className='text-danger'> *</span></label>
                                 <input
                                     type="number"
                                     placeholder="567"
@@ -259,7 +259,7 @@ const LifestylePhotographySection = ({
                             </div>
 
                             <div className="col-md-2">
-                                <label className="form-label">Actual Price</label>
+                                <label className="form-label">Actual Price<span className='text-danger'> *</span></label>
                                 <input
                                     type="number"
                                     className="form-control"
@@ -273,7 +273,7 @@ const LifestylePhotographySection = ({
 
 
                             <div className="col-md-2">
-                                <label className="form-label">Offer Price</label>
+                                <label className="form-label">Offer Price<span className='text-danger'> *</span></label>
                                 <input
                                     type="number"
                                     placeholder="467"
@@ -286,7 +286,7 @@ const LifestylePhotographySection = ({
                             </div>
 
                             <div className="col-md-2">
-                                <label className="form-label">Total Price</label>
+                                <label className="form-label">Total Price<span className='text-danger'> *</span></label>
                                 <input
                                     type="number"
                                     placeholder="567"
@@ -315,7 +315,7 @@ const LifestylePhotographySection = ({
                                 {errors.billingCycle && (<div className="text-danger small">{errors.billingCycle}</div>)}
                             </div>
                             <div className="col-md-2">
-                                <label className="form-label">Task Completion Days</label>
+                                <label className="form-label">Task Completion Days<span className='text-danger'> *</span></label>
                                 <input
                                     type="number"
                                     className="form-control"
@@ -349,7 +349,7 @@ const LifestylePhotographySection = ({
                                 <thead className="thead-light">
                                     <tr>
                                         <th>S.no</th>
-                                        <th>Service Type</th>
+                                        <th>Service Activity</th>
                                         <th>Quantity</th>
                                         <th>Actual Price</th>
                                         <th>Offer Price</th>

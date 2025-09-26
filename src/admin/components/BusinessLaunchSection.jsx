@@ -89,7 +89,7 @@ const BusinessLaunchSection = ({ businessId, expandedSections, toggleSection, bu
   const validate = () => {
     const newErrors = {};
     if (!formData.serviceType) newErrors.serviceType = "Service Type is required";
-    if (!formData.offerPrice) newErrors.offerPrice = "Offer Price is required";
+    // if (!formData.offerPrice) newErrors.offerPrice = "Offer Price is required";
     if (formData.offerPrice && formData.actualPrice && Number(formData.offerPrice) > Number(formData.actualPrice)) newErrors.offerPrice = "Offer Price should be than Actual Price";
     if (!formData.billingCycle) newErrors.billingCycle = "Billing Cycle is required";
     if (!formData.taskDays) newErrors.taskDays = "Task Days is required";
@@ -266,7 +266,7 @@ const BusinessLaunchSection = ({ businessId, expandedSections, toggleSection, bu
               <div className="d-flex justify-content-end mb-4">
                 <button
                   type="button"
-                  className="btn btn-outline-secondary me-2"
+                  className="btn btn-outline-secondary px-5 me-2"
                   onClick={() =>
                     setFormData({
                       serviceType: "",
@@ -280,7 +280,7 @@ const BusinessLaunchSection = ({ businessId, expandedSections, toggleSection, bu
                 >
                   Reset
                 </button>
-                <button type="button" className="btn btn-success" onClick={handleSubmitBusinessLaunch}>
+                <button type="button" className="btn btn-success px-5" onClick={handleSubmitBusinessLaunch}>
                   {formData.id ? "Update" : "Save"}
                 </button>
               </div>
