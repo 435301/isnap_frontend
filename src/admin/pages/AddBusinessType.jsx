@@ -3,11 +3,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
-import { createMarketType } from "../../redux/actions/marketTypeActions";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { createBusinessType } from "../../redux/actions/businessTypeAction";
 
 const AddBusinessType = () => {
   const dispatch = useDispatch();
@@ -15,15 +15,12 @@ const AddBusinessType = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const [formData, setFormData] = useState({
-    marketTypePlaceName: "",
-    marketTypeStatus: "Active",
+    businessType: "",
+    status: "",
   });
-  const [backendError, setBackendError] = useState("");
 
   const [errors, setErrors] = useState({});
-
-  // ✅ Get error state from redux
-  const { error } = useSelector((state) => state.marketType || {});
+  const { error } = useSelector((state) => state.businessTypes || {});
 
   useEffect(() => {
     const handleResize = () => setIsSidebarOpen(window.innerWidth >= 992);
@@ -36,28 +33,27 @@ const AddBusinessType = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev,   [name]: name === "status" ? Number(value) : value, }));
     setErrors((prev) => ({ ...prev, [name]: "" }));
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const validationErrors = {};
-    if (!formData.marketTypePlaceName.trim())
-      validationErrors.marketTypePlaceName = "Marketplace Type Name is required.";
-    if (!formData.marketTypeStatus)
-      validationErrors.marketTypeStatus = "Status is required.";
-
+    if (!formData.businessType.trim())
+      validationErrors.businessType = "Business Type is required.";
+    if (!formData.status === "")
+      validationErrors.status = "Status is required.";
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
     }
-
     try {
-      await dispatch(createMarketType(formData));
-      toast.success("Marketplace Type added successfully!");
-      navigate("/market-place-type");
+      await dispatch(createBusinessType(formData));
+      toast.success("Business Type created successfully")
+      navigate("/manage-business-type");
     } catch (err) {
-      toast.error(err.message); // This will show "Market Place Type already exists"
+      console.log(err)
     }
   };
 
@@ -99,14 +95,14 @@ const AddBusinessType = () => {
                     </label>
                     <input
                       type="text"
-                      name="marketTypePlaceName"
-                      value={formData.marketTypePlaceName}
+                      name="businessType"
+                      value={formData.businessType}
                       onChange={handleChange}
-                      className={`form-control ${errors.marketTypePlaceName ? "is-invalid" : ""}`}
+                      className={`form-control ${errors.businessType ? "is-invalid" : ""}`}
                       placeholder="Enter Business Type "
                     />
-                    {errors.marketTypePlaceName && (
-                      <div className="invalid-feedback">{errors.marketTypePlaceName}</div>
+                    {errors.businessType && (
+                      <div className="invalid-feedback">{errors.businessType}</div>
                     )}
                   </div>
 
@@ -115,17 +111,17 @@ const AddBusinessType = () => {
                       Status <span className="text-danger">*</span>
                     </label>
                     <select
-                      name="marketTypeStatus"
-                      value={formData.marketTypeStatus}
+                      name="status"
+                      value={formData.status}
                       onChange={handleChange}
-                      className={`form-select ${errors.marketTypeStatus ? "is-invalid" : ""}`}
+                      className={`form-select ${errors.status ? "is-invalid" : ""}`}
                     >
                       <option value="">Select Status</option>
-                      <option value="Active">Active</option>
-                      <option value="Inactive">Inactive</option>
+                      <option value="1">Active</option>
+                      <option value="0">Inactive</option>
                     </select>
-                    {errors.marketTypeStatus && (
-                      <div className="invalid-feedback">{errors.marketTypeStatus}</div>
+                    {errors.status && (
+                      <div className="invalid-feedback">{errors.status}</div>
                     )}
                   </div>
 
@@ -136,7 +132,7 @@ const AddBusinessType = () => {
                     <button
                       type="button"
                       className="btn btn-outline-secondary px-4"
-                      onClick={() => navigate("/market-place-type")}
+                      onClick={() => navigate("/manage-business-type")}
                     >
                       Cancel
                     </button>
