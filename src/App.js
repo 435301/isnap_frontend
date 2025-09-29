@@ -75,6 +75,10 @@ import MouAgreement from "./Seller/pages/MouAgreement";
 import MouA2 from "./Seller/pages/MouA2";
 import MouA3 from "./Seller/pages/MouA3";
 import TaskSummarySellar from "./Seller/pages/TaskSummarySellar";
+import ManageBusinessType from "./admin/pages/ManageBusinessType.jsx";
+import AddBusinessType from "./admin/pages/AddBusinessType.jsx";
+import ManageLeadSource from "./admin/pages/ManageLeadSource.jsx";
+import AddLeadSource from "./admin/pages/AddLeadSource.jsx";
 
 function App() {
   return (
@@ -108,6 +112,8 @@ function App() {
         <Route path="/manage-roles-features" element={<AdminRoute><RoleAccess /></AdminRoute>} />
         <Route path="/manage-billing" element={<AdminRoute><ManageBilling /></AdminRoute>} />
         <Route path="/manage-marketplace" element={<AdminRoute><ManageServicesType /></AdminRoute>} />
+        <Route path="/manage-business-type" element={<AdminRoute><ManageBusinessType /></AdminRoute>} />
+        <Route path="/manage-lead-source" element={<AdminRoute><ManageLeadSource /></AdminRoute>} />
         <Route path="/manage-services" element={<AdminRoute><ManageServices /></AdminRoute>} />
         <Route path="/market-place-type" element={<AdminRoute><MarketplaceType /></AdminRoute>} />
         <Route path="/manage-departments" element={<AdminRoute><ManageDepartments /></AdminRoute>} />
@@ -122,8 +128,9 @@ function App() {
         <Route path="/create-digital-marketing-price" element={<AdminRoute><CreateDigitalMarketPricing /></AdminRoute>} />
         <Route path="/leads-status" element={<AdminRoute><LeadStatus /></AdminRoute>} />
         <Route path="/manage-leads-status" element={<AdminRoute><ManageLeadsStatus /></AdminRoute>} />
-
         <Route path="/add-marketplacetype" element={<AdminRoute><AddServicesType /></AdminRoute>} />
+        <Route path="/add-business-type" element={<AdminRoute><AddBusinessType /></AdminRoute>} />
+        <Route path="/add-lead-source" element={<AdminRoute><AddLeadSource /></AdminRoute>} />
         <Route path="/add-state" element={<AdminRoute><AddState /></AdminRoute>} />
         <Route path="/add-role" element={<AdminRoute><AddRole /></AdminRoute>} />
         <Route path="/manage-state" element={<AdminRoute><ManageState /></AdminRoute>} />

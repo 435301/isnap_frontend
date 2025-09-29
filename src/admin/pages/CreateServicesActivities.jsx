@@ -293,7 +293,7 @@ const CreateServicesActivities = () => {
                     )}
 
                     <div className="col-md-2">
-                      <label className="form-label">Status</label>
+                      <label className="form-label">Status<span className="text-danger"> *</span></label>
                       <select
                         name="status"
                         value={activity.status}

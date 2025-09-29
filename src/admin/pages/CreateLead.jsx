@@ -4,7 +4,7 @@ import Navbar from '../components/Navbar';
 import { Link } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
-
+import "../assets/admin/css/style.css"
 const CreateLead = () => {
   const [formData, setFormData] = useState({
     customerMobile: '',
@@ -107,7 +107,7 @@ const CreateLead = () => {
             <div className="bg-white p-3 rounded shadow-sm card-header mb-2">
               <div className="row g-2 align-items-center">
                 <div className="col-lg-6">
-                  <h5 className="form-title m-0">Create Lead</h5>
+                  <h5 className="form-title m-0">Create New Lead</h5>
                 </div>
                 <div className="col-lg-6 text-end">
                   <Link to="/manage-leads" className="btn btn-new-lead">
@@ -152,7 +152,7 @@ const CreateLead = () => {
 
                   {/* Business Type */}
                   <div className="col-md-4">
-                    <label className="form-label">Business Type</label>
+                    <label className="form-label">Business Type<span className="text-danger">*</span></label>
                     <select
                       name="businessType"
                       value={formData.businessType}
@@ -211,19 +211,29 @@ const CreateLead = () => {
                         onChange={handleChange}
                         className="form-control"
                       />
-                      <input
-                        type="time"
+                      <select
                         name="followUpTime"
                         value={formData.followUpTime}
                         onChange={handleChange}
                         className="form-control"
-                      />
+                      >
+                        <option value="">-- Select Time --</option>
+                        {Array.from({ length: 24 * 2 }, (_, i) => {
+                          const hours = String(Math.floor(i / 2)).padStart(2, "0");
+                          const minutes = i % 2 === 0 ? "00" : "30";
+                          return (
+                            <option key={i} value={`${hours}:${minutes}`}>
+                              {hours}:{minutes}
+                            </option>
+                          );
+                        })}
+                      </select>
                     </div>
                   </div>
 
                   {/* Team */}
                   <div className="col-md-4">
-                    <label className="form-label">Team Member <span className="text-danger">*</span></label>
+                    <label className="form-label">Team Member</label>
                     <select
                       name="team"
                       value={formData.team}
@@ -239,7 +249,7 @@ const CreateLead = () => {
 
                   {/* Status */}
                   <div className="col-md-4">
-                    <label className="form-label">Status</label>
+                    <label className="form-label">Status<span className="text-danger">*</span></label>
                     <select
                       name="status"
                       value={formData.status}
