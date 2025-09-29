@@ -59,6 +59,12 @@ export const businessTypeReducer = (state = initialState, action) => {
       };
 
     case FETCH_BUSINESS_TYPES_FAILURE:
+      return {
+        ...state,
+        loading: false,
+        businessTypes: [],
+        error: action.payload,
+      };
     case FETCH_BUSINESS_TYPE_FAILURE:
     case CREATE_BUSINESS_TYPE_FAILURE:
     case UPDATE_BUSINESS_TYPE_FAILURE:

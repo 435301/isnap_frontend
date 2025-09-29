@@ -8,6 +8,7 @@ import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { createLeadSource } from "../../redux/actions/leadSourceAction";
 
 const AddLeadSource = () => {
   const dispatch = useDispatch();
@@ -15,15 +16,11 @@ const AddLeadSource = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const [formData, setFormData] = useState({
-    marketTypePlaceName: "",
-    marketTypeStatus: "Active",
+    title: "",
+    status: "",
   });
-  const [backendError, setBackendError] = useState("");
-
   const [errors, setErrors] = useState({});
-
-  // ✅ Get error state from redux
-  const { error } = useSelector((state) => state.marketType || {});
+  const { error } = useSelector((state) => state.leadSources || {});
 
   useEffect(() => {
     const handleResize = () => setIsSidebarOpen(window.innerWidth >= 992);
@@ -36,28 +33,27 @@ const AddLeadSource = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev,   [name]: name === "status" ? Number(value) : value, }));
     setErrors((prev) => ({ ...prev, [name]: "" }));
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const validationErrors = {};
-    if (!formData.marketTypePlaceName.trim())
-      validationErrors.marketTypePlaceName = "Marketplace Type Name is required.";
-    if (!formData.marketTypeStatus)
-      validationErrors.marketTypeStatus = "Status is required.";
+    if (!formData.title.trim())
+      validationErrors.title = " Lead Source is required.";
+    if (!formData.status)
+      validationErrors.status = "Status is required.";
 
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
     }
-
     try {
-      await dispatch(createMarketType(formData));
-      toast.success("Marketplace Type added successfully!");
-      navigate("/market-place-type");
+      await dispatch(createLeadSource(formData));
+      navigate("/manage-lead-source");
     } catch (err) {
-      toast.error(err.message); // This will show "Market Place Type already exists"
+      console.log(err)
     }
   };
 
@@ -99,14 +95,14 @@ const AddLeadSource = () => {
                     </label>
                     <input
                       type="text"
-                      name="marketTypePlaceName"
-                      value={formData.marketTypePlaceName}
+                      name="title"
+                      value={formData.title}
                       onChange={handleChange}
-                      className={`form-control ${errors.marketTypePlaceName ? "is-invalid" : ""}`}
+                      className={`form-control ${errors.title ? "is-invalid" : ""}`}
                       placeholder="Enter Lead Source "
                     />
-                    {errors.marketTypePlaceName && (
-                      <div className="invalid-feedback">{errors.marketTypePlaceName}</div>
+                    {errors.title && (
+                      <div className="invalid-feedback">{errors.title}</div>
                     )}
                   </div>
 
@@ -115,17 +111,17 @@ const AddLeadSource = () => {
                       Status <span className="text-danger">*</span>
                     </label>
                     <select
-                      name="marketTypeStatus"
-                      value={formData.marketTypeStatus}
+                      name="status"
+                      value={formData.status}
                       onChange={handleChange}
-                      className={`form-select ${errors.marketTypeStatus ? "is-invalid" : ""}`}
+                      className={`form-select ${errors.status ? "is-invalid" : ""}`}
                     >
                       <option value="">Select Status</option>
-                      <option value="Active">Active</option>
-                      <option value="Inactive">Inactive</option>
+                      <option value="1">Active</option>
+                      <option value="0">Inactive</option>
                     </select>
                     {errors.marketTypeStatus && (
-                      <div className="invalid-feedback">{errors.marketTypeStatus}</div>
+                      <div className="invalid-feedback">{errors.status}</div>
                     )}
                   </div>
 
@@ -146,8 +142,6 @@ const AddLeadSource = () => {
             </div>
           </div>
         </div>
-        <ToastContainer position="top-right" autoClose={1500} hideProgressBar />
-
       </div>
     </div>
   );

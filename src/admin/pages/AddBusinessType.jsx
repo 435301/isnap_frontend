@@ -142,8 +142,6 @@ const AddBusinessType = () => {
             </div>
           </div>
         </div>
-        <ToastContainer position="top-right" autoClose={1500} hideProgressBar />
-
       </div>
     </div>
   );

@@ -3,12 +3,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
-import EditMarketTypeOffcanvas from "../components/Modal/EditMarketTypeOffcanvas";
-import ViewMarketTypeModal from "../components/Modal/ViewMarketTypeModal";
 import DeleteConfirmationModal from "../components/Modal/DeleteConfirmationModal";
-import { fetchMarketTypes, deleteMarketType, updateMarketType, clearMarketTypeSuccessMessage } from "../../redux/actions/marketTypeActions";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { fetchLeadSources, deleteLeadSource, updateLeadSource } from "../../redux/actions/leadSourceAction";
+import EditLeadSourceOffcanvas from "../components/Modal/EditLeadSourceOffCanvas";
+import ViewLeadSourceModal from "../components/Modal/ViewLeadSourceModal";
 
 const ManageLeadSource = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 992);
@@ -16,52 +14,58 @@ const ManageLeadSource = () => {
   const [statusFilter, setStatusFilter] = useState(null);
   const [showViewModal, setShowViewModal] = useState(false);
   const [showEditOffcanvas, setShowEditOffcanvas] = useState(false);
-  const [selectedMarketType, setSelectedMarketType] = useState(null);
+  const [selectedLeadSource, setSelectedLeadSource] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
   const dispatch = useDispatch();
-  const { marketTypes, loading, error, totalPages, successMessage } = useSelector((state) => state.marketType);
+  const { leadSources, loading, error, totalPages } = useSelector((state) => state.leadSources);
 
   useEffect(() => {
-    dispatch(fetchMarketTypes(currentPage, itemsPerPage, searchTerm, statusFilter));
+    dispatch(fetchLeadSources({
+      search: searchTerm,
+      page: currentPage,
+      showStatus: statusFilter === null ? "" : statusFilter
+    }));
   }, [dispatch, currentPage, searchTerm, statusFilter]);
-
-useEffect(() => {
-  if (successMessage) {
-    toast.success(successMessage);
-    dispatch(clearMarketTypeSuccessMessage());
-  }
- 
-}, [successMessage, error, dispatch]);
-
 
   const handleToggleSidebar = () => setIsSidebarOpen((prev) => !prev);
   const handleRefresh = () => {
-    setSearchTerm(""); setStatusFilter(null); setCurrentPage(1);
-    dispatch(fetchMarketTypes(1, itemsPerPage, "", ""));
+    setSearchTerm("");
+    setStatusFilter(null);
+    setCurrentPage(1);
+    dispatch(fetchLeadSources({ search: "", page: 1, showStatus: "" }));
   };
-  const handleStatusChange = (e) => setStatusFilter(e.target.value === "" ? null : Number(e.target.value));
+  const handleStatusChange = (e) => {
+    const value = e.target.value;
+    setStatusFilter(value === "" ? null : Number(value));
+    setCurrentPage(1);
+  };
 
-  const handleConfirmDelete = async () => {
-    await dispatch(deleteMarketType(deleteId));
+  const handleSaveChanges = async (updatedLeadSource) => {
+    try {
+      await dispatch(updateLeadSource(updatedLeadSource.id, updatedLeadSource));
+      setShowEditOffcanvas(false);
+      setSelectedLeadSource(null);
+      dispatch(fetchLeadSources());
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleDeleteClick = (id) => {
+    setDeleteId(id);
+    setShowDeleteModal(true);
+  };
+
+  const handleDelete = async () => {
+    await dispatch(deleteLeadSource(deleteId));
     setShowDeleteModal(false);
     setDeleteId(null);
-    dispatch(fetchMarketTypes(currentPage, itemsPerPage, searchTerm, statusFilter));
   };
 
-const handleSaveChanges = async (updatedMarketType) => {
-  try {
-    await dispatch(updateMarketType(updatedMarketType));
-    setShowEditOffcanvas(false);
-    setSelectedMarketType(null);
-    dispatch(fetchMarketTypes(currentPage, itemsPerPage, searchTerm, statusFilter));
-  } catch (err) {
-    toast.error(err.response?.data?.message || err.message);
-  }
-};
 
   return (
     <div className="container-fluid position-relative bg-white d-flex p-0">
@@ -114,7 +118,7 @@ const handleSaveChanges = async (updatedMarketType) => {
                     <i className="bi bi-arrow-clockwise"></i>
                   </button>
                 </div>
-               
+
               </div>
             </div>
           </div>
@@ -123,41 +127,54 @@ const handleSaveChanges = async (updatedMarketType) => {
           <div className="row">
             <div className="bg-white p-3 rounded shadow-sm card-header">
               <div className="table-responsive">
-                {loading ? <p>Loading market types...</p> : marketTypes.length === 0 ? <p>No markettypes found.</p> :
+                {loading ? (
+                  <p>Loading lead sources...</p>
+                ) : (
                   <table className="table align-middle table-striped table-hover">
                     <thead className="table-light">
                       <tr>
                         <th>#</th>
-                        <th>Business Type </th>
+                        <th>Lead Source Title</th>
                         <th>Status</th>
                         <th>Actions</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {marketTypes.map((m, index) => (
-                        <tr key={m.id}>
-                          <td>{index + 1 + (currentPage - 1) * itemsPerPage}</td>
-                          <td>{m.marketTypeName}</td>
-                          <td><span className={`badge ${m.status ? "bg-success-light text-success" : "bg-danger-light text-danger"}`}>{m.status ? "Active" : "Inactive"}</span></td>
-                          <td>
-                            <div className="d-flex gap-2">
-                              <button className="btn btn-icon btn-view" onClick={() => { setSelectedMarketType(m); setShowViewModal(true); }}>
-                                <i className="bi bi-eye"></i>
-                              </button>
-                              <button className="btn btn-icon btn-edit" onClick={() => { setSelectedMarketType(m); setShowEditOffcanvas(true); }}>
-                                <i className="bi bi-pencil-square"></i>
-                              </button>
-                              <button className="btn btn-icon btn-delete" onClick={() => { setDeleteId(m.id); setShowDeleteModal(true); }}>
-                                <i className="bi bi-trash"></i>
-                              </button>
-                            </div>
-                          </td>
+                      {leadSources.length === 0 ? (
+                        <tr>
+                          <td colSpan="4" className="text-center">No Lead Source found.</td>
                         </tr>
-                      ))}
+                      ) : (
+                        leadSources.map((m, index) => (
+                          <tr key={m.id}>
+                            <td>{index + 1 + (currentPage - 1) * itemsPerPage}</td>
+                            <td>{m.LeadSourceTitle}</td>
+                            <td>
+                              <span className={`badge ${m.status ? "bg-success-light text-success" : "bg-danger-light text-danger"}`}>
+                                {m.status ? "Active" : "Inactive"}
+                              </span>
+                            </td>
+                            <td>
+                              <div className="d-flex gap-2">
+                                <button className="btn btn-icon btn-view" onClick={() => { setSelectedLeadSource(m); setShowViewModal(true); }}>
+                                  <i className="bi bi-eye"></i>
+                                </button>
+                                <button className="btn btn-icon btn-edit" onClick={() => { setSelectedLeadSource(m); setShowEditOffcanvas(true); }}>
+                                  <i className="bi bi-pencil-square"></i>
+                                </button>
+                                <button className="btn btn-icon btn-delete" onClick={() => handleDeleteClick(m.id)}>
+                                  <i className="bi bi-trash"></i>
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))
+                      )}
                     </tbody>
                   </table>
-                }
+                )}
               </div>
+
             </div>
           </div>
 
@@ -181,18 +198,16 @@ const handleSaveChanges = async (updatedMarketType) => {
           </div>
 
           {/* Modals */}
-          {showViewModal && <ViewMarketTypeModal show={showViewModal} handleClose={() => setShowViewModal(false)} marketType={selectedMarketType} />}
-          {showEditOffcanvas && <EditMarketTypeOffcanvas show={showEditOffcanvas} handleClose={() => setShowEditOffcanvas(false)} marketType={selectedMarketType} onSave={handleSaveChanges} />}
+          {showViewModal && <ViewLeadSourceModal show={showViewModal} handleClose={() => setShowViewModal(false)} leadSource={selectedLeadSource} />}
+          {showEditOffcanvas && <EditLeadSourceOffcanvas show={showEditOffcanvas} handleClose={() => setShowEditOffcanvas(false)} leadSource={selectedLeadSource} onSave={handleSaveChanges} />}
           {showDeleteModal && (
             <DeleteConfirmationModal
               show={showDeleteModal}
               handleClose={() => setShowDeleteModal(false)}
-              handleConfirm={handleConfirmDelete}
+              handleConfirm={handleDelete}
             />
           )}
         </div>
-
-        <ToastContainer />
       </div>
     </div>
   );

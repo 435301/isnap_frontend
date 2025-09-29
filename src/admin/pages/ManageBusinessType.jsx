@@ -49,16 +49,16 @@ const ManageBusinessType = () => {
     setCurrentPage(1);
   };
 
-    const handleDeleteClick = (id) => {
-      setDeleteId(id);
-      setShowDeleteModal(true);
-    };
-  
-    const handleDelete = async () => {
-      await dispatch(deleteBusinessType(deleteId));
-      setShowDeleteModal(false);
-      setDeleteId(null);
-    };
+  const handleDeleteClick = (id) => {
+    setDeleteId(id);
+    setShowDeleteModal(true);
+  };
+
+  const handleDelete = async () => {
+    await dispatch(deleteBusinessType(deleteId));
+    setShowDeleteModal(false);
+    setDeleteId(null);
+  };
 
   const handleSaveChanges = async (updatedBusinessType) => {
     try {
@@ -131,7 +131,9 @@ const ManageBusinessType = () => {
           <div className="row">
             <div className="bg-white p-3 rounded shadow-sm card-header">
               <div className="table-responsive">
-                {loading ? <p>Loading business types...</p> : businessTypes.length === 0 ? <p>No business types found.</p> :
+                {loading ? (
+                  <p>Loading business types...</p>
+                ) : (
                   <table className="table align-middle table-striped table-hover">
                     <thead className="table-light">
                       <tr>
@@ -142,35 +144,41 @@ const ManageBusinessType = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {businessTypes.map((m, index) => (
-                        <tr key={m.id}>
-                          <td>{index + 1 + (currentPage - 1) * itemsPerPage}</td>
-                          <td>{m.businessType}</td>
-                          <td><span className={`badge ${m.status ? "bg-success-light text-success" : "bg-danger-light text-danger"}`}>{m.status ? "Active" : "Inactive"}</span></td>
-                          <td>
-                            <div className="d-flex gap-2">
-                              <button className="btn btn-icon btn-view" onClick={() => {
-                                setSelectedBusinessType(m);
-                                setShowViewModal(true);
-                              }}>
-                                <i className="bi bi-eye"></i>
-                              </button>
-                              <button className="btn btn-icon btn-edit" onClick={() => {
-                                setSelectedBusinessType(m);
-                                setShowEditOffcanvas(true);
-                              }}>
-                                <i className="bi bi-pencil-square"></i>
-                              </button>
-                              <button className="btn btn-icon btn-delete" onClick={() => handleDeleteClick(m.id)}>
-                                <i className="bi bi-trash"></i>
-                              </button>
-                            </div>
-                          </td>
+                      {businessTypes.length === 0 ? (
+                        <tr>
+                          <td colSpan="4" className="text-center">No Business Type found.</td>
                         </tr>
-                      ))}
+                      ) : (
+                        businessTypes.map((m, index) => (
+                          <tr key={m.id}>
+                            <td>{index + 1 + (currentPage - 1) * itemsPerPage}</td>
+                            <td>{m.businessType}</td>
+                            <td><span className={`badge ${m.status ? "bg-success-light text-success" : "bg-danger-light text-danger"}`}>{m.status ? "Active" : "Inactive"}</span></td>
+                            <td>
+                              <div className="d-flex gap-2">
+                                <button className="btn btn-icon btn-view" onClick={() => {
+                                  setSelectedBusinessType(m);
+                                  setShowViewModal(true);
+                                }}>
+                                  <i className="bi bi-eye"></i>
+                                </button>
+                                <button className="btn btn-icon btn-edit" onClick={() => {
+                                  setSelectedBusinessType(m);
+                                  setShowEditOffcanvas(true);
+                                }}>
+                                  <i className="bi bi-pencil-square"></i>
+                                </button>
+                                <button className="btn btn-icon btn-delete" onClick={() => handleDeleteClick(m.id)}>
+                                  <i className="bi bi-trash"></i>
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))
+                      )}
                     </tbody>
                   </table>
-                }
+                )}
               </div>
             </div>
           </div>

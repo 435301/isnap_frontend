@@ -26,6 +26,7 @@ import { storePhotographyReducer } from "./storePhotographyReducer";
 import { socialMediaContentPhotographyReducer } from "./socialMediaPhotographyReducer";
 import { lifestyleActivitiesReducer } from "./photographyFilterReducer";
 import { businessTypeReducer } from "./businessTypeReducer";
+import leadSourceReducer from "./leadSourceReducer";
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -57,6 +58,7 @@ const rootReducer = combineReducers({
   lifestyleActivities:lifestyleActivitiesReducer,
   modelActivities:lifestyleActivitiesReducer,
   businessTypes: businessTypeReducer,
+  leadSources:leadSourceReducer,
 });
 
 
