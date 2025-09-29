@@ -13,10 +13,7 @@ export const fetchTeams = () => async (dispatch, getState) => {
       headers: { Authorization: `Bearer ${token}` },
     });
 
-    console.log("Fetch Teams Response:", response.data);
-
-    // ✅ Correctly use users array from response
-    const teamsArray = response.data.users || []; // <--- important
+    const teamsArray = response.data.users || [];
 
     dispatch({
       type: "FETCH_TEAMS_SUCCESS",
@@ -30,6 +27,7 @@ export const fetchTeams = () => async (dispatch, getState) => {
   }
 };
 
+// Create team
 export const createTeam = (formData) => async (dispatch, getState) => {
   try {
     const { auth } = getState();
@@ -42,7 +40,11 @@ export const createTeam = (formData) => async (dispatch, getState) => {
       },
     });
 
-    dispatch({ type: "SET_SUCCESS_MESSAGE", payload: response.data.msg || "Team member created!" });
+    dispatch({
+      type: "SET_SUCCESS_MESSAGE",
+      payload: response.data.msg || "Team member created!",
+    });
+
     return response.data;
   } catch (error) {
     console.error("Create error:", error.response?.data || error.message);
@@ -53,6 +55,7 @@ export const createTeam = (formData) => async (dispatch, getState) => {
     throw error;
   }
 };
+
 // Update team
 export const updateTeam = (team) => async (dispatch, getState) => {
   try {
@@ -60,53 +63,38 @@ export const updateTeam = (team) => async (dispatch, getState) => {
     const token = auth?.token || localStorage.getItem("token");
 
     const { id, photo, idProof, ...rest } = team;
-
-    // Prepare FormData
     const formData = new FormData();
 
-    // Append normal fields
     Object.entries(rest).forEach(([key, value]) => {
-      if (value !== undefined && value !== null) {
-        formData.append(key, value);
-      }
+      if (value !== undefined && value !== null) formData.append(key, value);
     });
 
-    // Append files if they are new uploads
-    if (photo && photo instanceof File) {
-      formData.append("photo", photo);
-    }
-    if (idProof && idProof instanceof File) {
-      formData.append("idProof", idProof);
-    }
+    if (photo && photo instanceof File) formData.append("photo", photo);
+    if (idProof && idProof instanceof File) formData.append("idProof", idProof);
 
-    const response = await axios.put(
-      `${BASE_URL}/users/update/${id}`,
-      formData,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-        },
-      }
-    );
-
-    console.log("Update response:", response.data);
+    const response = await axios.put(`${BASE_URL}/users/update/${id}`, formData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
+    });
 
     dispatch(fetchTeams());
     dispatch({
       type: "SET_SUCCESS_MESSAGE",
       payload: "Team updated successfully!",
     });
+
+    return response.data;
   } catch (error) {
     console.error("Update error:", error.response?.data || error.message);
     dispatch({
       type: "SET_ERROR_MESSAGE",
-      payload: error.response?.data?.message || "Update failed",
+      payload: error.response?.data?.msg || "Update failed",
     });
     throw error;
   }
 };
-
 
 // Delete team
 export const deleteTeam = (id) => async (dispatch, getState) => {
@@ -114,20 +102,36 @@ export const deleteTeam = (id) => async (dispatch, getState) => {
     const { auth } = getState();
     const token = auth?.token || localStorage.getItem("token");
 
-    await axios.delete(`${BASE_URL}/users/${id}`, {
+    await axios.delete(`${BASE_URL}/users/delete/${id}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
 
     dispatch(fetchTeams());
-    dispatch({ type: "SET_SUCCESS_MESSAGE", payload: "Team deleted successfully!" });
+    dispatch({
+      type: "SET_SUCCESS_MESSAGE",
+      payload: "Team deleted successfully!",
+    });
   } catch (error) {
+    console.error("Delete error:", error.response?.data || error.message);
+    dispatch({
+      type: "SET_ERROR_MESSAGE",
+      payload: error.response?.data?.msg || "Delete failed",
+    });
     throw error;
   }
 };
 
-// Success messages
+// Success & error messages
 export const setSuccessMessage = (message) => ({
   type: "SET_SUCCESS_MESSAGE",
   payload: message,
 });
-export const clearSuccessMessage = () => ({ type: "CLEAR_SUCCESS_MESSAGE" });
+
+export const setErrorMessage = (message) => ({
+  type: "SET_ERROR_MESSAGE",
+  payload: message,
+});
+
+export const clearSuccessMessage = () => ({
+  type: "CLEAR_SUCCESS_MESSAGE",
+});
