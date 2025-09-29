@@ -32,6 +32,10 @@ const Sidebar = ({ isOpen }) => {
         "/add-marketplacetype",
         "/manage-billing",
         "/manage-state",
+        "/manage-business-type",
+        "/add-business-type",
+        "/manage-lead-source",
+
       ],
       serviceTypes: ["/manage-service-types", "/manage-services", "/create-service-type", "/add-service", "/create-service-activities", "/manage-service-activities"],
       sellers: ["/manage-sellers", "/create-seller", "/view-seller"],
@@ -96,6 +100,8 @@ const Sidebar = ({ isOpen }) => {
               <Link to="/manage-billing" className={`dropdown-item ${isLinkActive("/manage-billing")}`}>Billing Cycle</Link>
               <Link to="/manage-state" className={`dropdown-item ${isLinkActive("/manage-state")}`}>States</Link>
               <Link to="/manage-digital-marketing-price" className={`dropdown-item ${isLinkActive("/manage-digital-marketing-price")}`}> Digital Market Pricing</Link>
+              <Link to="/manage-business-type" className={`dropdown-item ${isLinkActive("/manage-business-type")}`}>Business Types</Link>
+              <Link to="/manage-lead-source" className={`dropdown-item ${isLinkActive("/manage-lead-source")}`}>Lead Source</Link>
 
             </div>
           </div>
@@ -128,10 +134,9 @@ const Sidebar = ({ isOpen }) => {
               {isOpen && <span>Leads</span>}
             </a>
             <div className={`dropdown-menu bg-transparent border-0 ${isDropdownActive("leads") ? "show" : ""}`}>
-              <Link to="/leads-status" className={`dropdown-item ${isLinkActive("/leads-status")}`}>Leads Status</Link>
-
+              <Link to="/create-lead" className={`dropdown-item ${isLinkActive("/create-lead")}`}>Create New Lead</Link>
               <Link to="/manage-leads" className={`dropdown-item ${isLinkActive("/manage-leads")}`}>Manage Leads</Link>
-              <Link to="/create-lead" className={`dropdown-item ${isLinkActive("/create-lead")}`}>Create Lead</Link>
+               <Link to="/leads-status" className={`dropdown-item ${isLinkActive("/leads-status")}`}>Leads Status</Link>
             </div>
           </div>
 
