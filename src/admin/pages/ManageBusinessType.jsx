@@ -22,7 +22,7 @@ const ManageBusinessType = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 15;
 
   const dispatch = useDispatch();
   const { businessTypes, loading, error, totalPages } = useSelector((state) => state.businessTypes);

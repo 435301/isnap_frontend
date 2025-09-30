@@ -3,16 +3,20 @@ import Sidebar from '../components/Sidebar';
 import Navbar from '../components/Navbar';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { createLeadStatus } from '../../redux/actions/leadStatusAction';
+import { useDispatch } from 'react-redux';
+import { toast } from 'react-toastify';
 
 const LeadStatusPage = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    leadName: '',
-   
-    leadStatus: '', // Status field
+    title: '',
+    status: '',
   });
 
-  const [error, setError] = useState('');
+  const [errors, setErrors] = useState('');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
@@ -33,20 +37,38 @@ const LeadStatusPage = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: name === "status" ? Number(value) : value, }));
+    setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    if (!formData.leadName || !formData.leadEmail || !formData.leadStatus) {
-      setError('Please fill all required fields.');
-      return;
+  const validate = () => {
+    let newErrors = {};
+    if (!formData.title.trim()) {
+      newErrors.title = "Lead Title is required.";
+    } else if (formData.title.trim().length < 3) {
+      newErrors.title = "Lead Title must be at least 3 characters.";
     }
+    if (!formData.status === "") {
+      newErrors.status = "Lead Status is required.";
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
-    setError('');
-    console.log('Lead Status Submitted:', formData);
-    // Add API logic here to save lead status
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!validate()) return;
+    try {
+      const res = await dispatch(createLeadStatus(formData));
+      if (res?.status) {
+        navigate("/manage-leads-status");
+      } else {
+        console.warn("Lead status creation failed:", res?.message);
+      }
+    } catch (err) {
+      console.log('err')
+    }
   };
 
   return (
@@ -61,8 +83,8 @@ const LeadStatusPage = () => {
                 ? 259
                 : 95
               : isSidebarOpen
-              ? 220
-              : 0,
+                ? 220
+                : 0,
           transition: 'margin-left 0.3s ease',
         }}
       >
@@ -72,8 +94,8 @@ const LeadStatusPage = () => {
           <div className="row">
             <div className="bg-white p-3 rounded shadow-sm card-header mb-2 d-flex justify-content-between align-items-center">
               <h5 className="form-title m-0">Lead Status</h5>
-                <Link to="/manage-leads-status" className="btn btn-new-lead">
-               Manage Lead Status
+              <Link to="/manage-leads-status" className="btn btn-new-lead">
+                Manage Lead Status
               </Link>
             </div>
           </div>
@@ -90,49 +112,43 @@ const LeadStatusPage = () => {
                     </label>
                     <input
                       type="text"
-                      name="leadName"
-                      value={formData.leadName}
+                      name="title"
+                      value={formData.title}
                       onChange={handleChange}
-                      className="form-control"
+                      className={`form-control ${errors.title ? 'is-invalid' : ''}`}
                       placeholder="Enter lead Title"
-                      required
                     />
+                    {errors.title && <div className="invalid-feedback">{errors.title}</div>}
+
                   </div>
-
-                 
-
                   {/* Lead Status */}
                   <div className="col-md-4">
                     <label className="form-label">
                       Lead Status <span className="text-danger">*</span>
                     </label>
                     <select
-                      name="leadStatus"
-                      value={formData.leadStatus}
+                      name="status"
+                      value={formData.status}
                       onChange={handleChange}
-                      className="form-select"
-                      required
+                      className={`form-select ${errors.status ? 'is-invalid' : ''}`}
                     >
                       <option value="">Select status</option>
-                      <option value="new">Active</option>
-                      <option value="contacted">In Active</option>
-                     
-                    </select>
-                  </div>
+                      <option value="1">Active</option>
+                      <option value="0">In Active</option>
 
-                  {/* Error Message */}
-                  {error && (
-                    <div className="col-md-12">
-                      <div className="alert alert-danger py-2">{error}</div>
-                    </div>
-                  )}
+                    </select>
+                    {errors.status && <div className="invalid-feedback">{errors.status}</div>}
+                  </div>
 
                   {/* Form Buttons */}
                   <div className="col-md-12 d-flex justify-content-end mt-4">
                     <button type="submit" className="btn btn-success px-4 me-2">
                       Save
                     </button>
-                    <button type="reset" className="btn btn-outline-secondary px-4">
+                    <button type="reset" className="btn btn-outline-secondary px-4" onClick={() => {
+                      setFormData({ title: "", status: "" });
+                      setErrors({});
+                    }}>
                       Cancel
                     </button>
                   </div>

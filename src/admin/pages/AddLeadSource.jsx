@@ -120,7 +120,7 @@ const AddLeadSource = () => {
                       <option value="1">Active</option>
                       <option value="0">Inactive</option>
                     </select>
-                    {errors.marketTypeStatus && (
+                    {errors.status && (
                       <div className="invalid-feedback">{errors.status}</div>
                     )}
                   </div>

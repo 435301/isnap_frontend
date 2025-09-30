@@ -4,17 +4,36 @@ import Navbar from '../components/Navbar';
 import { Link } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import { useDispatch, useSelector } from 'react-redux';
+import { deleteLeadStatus, fetchLeadStatus, updateLeadStatus } from '../../redux/actions/leadStatusAction';
+import EditLeadStatusOffcanvas from '../components/Modal/editLeadStatusOffCanvas';
+import ViewLeadStatusModal from '../components/Modal/ViewLeadStatusModal';
+import DeleteConfirmationModal from '../components/Modal/DeleteConfirmationModal';
 
 const ManageLeads = () => {
-    const [leads, setLeads] = useState([
-        { id: 1, name: 'Krishna', email: 'krishna@example.com', status: 'New', createdDate: '10-02-2025' },
-        { id: 2, name: 'Suresh', email: 'suresh@example.com', status: 'Contacted', createdDate: '12-02-2025' },
-        { id: 3, name: 'Seshu', email: 'seshu@example.com', status: 'In Progress', createdDate: '15-02-2025' },
-        { id: 4, name: 'GVK Fashions', email: 'gvk@example.com', status: 'Closed', createdDate: '18-02-2025' },
-    ]);
-
+    const dispatch = useDispatch();
+    const { leadStatus = [], loading, error } = useSelector((state) => state.leadStatus);
+    console.log('leadStatus', leadStatus)
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+    const [selectedLeadStatus, setselectedLeadStatus] = useState(null);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [deleteId, setDeleteId] = useState(null);
+    const [showEditOffcanvas, setShowEditOffcanvas] = useState(false);
+    const [showViewModal, setShowViewModal] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 15;
+    const [searchTerm, setSearchTerm] = useState("");
+    const [statusFilter, setStatusFilter] = useState(null);
+
+    useEffect(() => {
+        dispatch(fetchLeadStatus({
+            search: searchTerm,
+            page: currentPage,
+            showStatus: statusFilter === null ? "" : statusFilter
+        }));
+    }, [dispatch, currentPage, searchTerm, statusFilter]);
+
 
     useEffect(() => {
         const handleResize = () => {
@@ -30,6 +49,40 @@ const ManageLeads = () => {
         setIsSidebarOpen(!isSidebarOpen);
     };
 
+    const handleStatusChange = (e) => {
+        const value = e.target.value;
+        setStatusFilter(value === "" ? null : Number(value));
+        setCurrentPage(1);
+    };
+
+    const handleSaveChanges = async (data) => {
+        try {
+            await dispatch(updateLeadStatus(data.id, data));
+            setShowEditOffcanvas(false);
+            setselectedLeadStatus(null);
+            dispatch(fetchLeadStatus());
+        } catch (err) {
+            console.log('error')
+        }
+    };
+
+    const handleDeleteClick = (id) => {
+        setDeleteId(id);
+        setShowDeleteModal(true);
+    };
+
+    const handleDelete = async () => {
+        await dispatch(deleteLeadStatus(deleteId));
+        setShowDeleteModal(false);
+        setDeleteId(null);
+    };
+
+    const handleRefresh = () => {
+        setSearchTerm("");
+        setStatusFilter(null);
+        setCurrentPage(1);
+        dispatch(fetchLeadStatus({ search: "", page: 1, showStatus: "" }));
+    };
     return (
         <div className="container-fluid position-relative bg-white d-flex p-0">
             <Sidebar isOpen={isSidebarOpen} />
@@ -59,7 +112,7 @@ const ManageLeads = () => {
                                 </div>
                                 <div className="col-md-4"></div>
                                 <div className="col-lg-6 text-end">
-                                    <Link to="/add-lead" className="btn btn-new-lead">
+                                    <Link to="/leads-status" className="btn btn-new-lead">
                                         <i className="bi bi-plus-circle me-1"></i>
                                         Add Lead
                                     </Link>
@@ -72,23 +125,25 @@ const ManageLeads = () => {
                             <div className="row g-2 align-items-center">
                                 <div className="col-md-4">
                                     <div className="input-group">
-                                        <input type="text" className="form-control border-0" placeholder="Search Lead" />
+                                        <input type="text" className="form-control border-0" placeholder="Search Lead" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
                                     </div>
                                 </div>
                                 <div className="col-md-3">
-                                    <select className="form-select">
-                                        <option selected>Select Status</option>
-                                        <option>New</option>
-                                        <option>Contacted</option>
-                                        <option>In Progress</option>
-                                        <option>Closed</option>
+                                    <select
+                                        className="form-select"
+                                        value={statusFilter === null ? "" : statusFilter}
+                                        onChange={handleStatusChange}
+                                    >
+                                        <option value="">All</option>
+                                        <option value="1">Active</option>
+                                        <option value="0">Inactive</option>
                                     </select>
                                 </div>
                                 <div className="col-md-2 d-flex">
-                                    <button className="btn btn-success text-white me-3">
+                                    <button className="btn btn-success text-white me-3" onClick={() => setCurrentPage(1)}>
                                         <i className="bi bi-search"></i>
                                     </button>
-                                    <button className="btn btn-light border-1">
+                                    <button className="btn btn-light border-1" onClick={handleRefresh}>
                                         <i className="bi bi-arrow-clockwise"></i>
                                     </button>
                                 </div>
@@ -100,51 +155,65 @@ const ManageLeads = () => {
                     <div className="row">
                         <div className="bg-white p-3 rounded shadow-sm card-header mb-4">
                             <div className="table-responsive">
-                                <table className="table align-middle table-striped table-hover">
-                                    <thead className="table-light">
-                                        <tr>
-                                            <th>S.no</th>
-                                            <th>Lead Name</th>
-
-                                            <th>Status</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {leads.map((lead, index) => (
-                                            <tr key={lead.id}>
-                                                <td>{index + 1}</td>
-                                                <td>{lead.name}</td>
-                                                <td>{lead.status}</td>
-                                                <td>
-                                                    <div className="d-flex gap-2 align-items-center">
-                                                        <button className="btn btn-icon btn-view">
-                                                            <i className="bi bi-eye"></i>
-                                                        </button>
-                                                        <button className="btn btn-icon btn-edit">
-                                                            <i className="bi bi-pencil-square"></i>
-                                                        </button>
-                                                        <button className="btn btn-icon btn-delete">
-                                                            <i className="bi bi-trash"></i>
-                                                        </button>
-                                                        <div className="dropdown">
-                                                            <button className="btn btn-icon btn-outline-secondary" type="button" data-bs-toggle="dropdown">
-                                                                <i className="bi bi-three-dots-vertical"></i>
-                                                            </button>
-                                                            <ul className="dropdown-menu">
-                                                                <li><a className="dropdown-item" href="#">View</a></li>
-                                                                <li><a className="dropdown-item" href="#">Edit</a></li>
-                                                                <li><a className="dropdown-item" href="#">Delete</a></li>
-                                                            </ul>
-                                                        </div>
-                                                    </div>
-                                                </td>
+                                {loading ? (
+                                    <p>Loading lead status...</p>
+                                ) : (
+                                    <table className="table align-middle table-striped table-hover">
+                                        <thead className="table-light">
+                                            <tr>
+                                                <th>S.no</th>
+                                                <th>Lead Name</th>
+                                                <th>Status</th>
+                                                <th>Action</th>
                                             </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody>
+                                            {leadStatus.length === 0 ? (
+                                                <tr>
+                                                    <td colSpan="4" className="text-center">No Lead status found.</td>
+                                                </tr>
+                                            ) : (
+                                                leadStatus.map((lead, index) => (
+                                                    <tr key={lead.id}>
+                                                        <td>{index + 1}</td>
+                                                        <td>{lead.LeadStatusTitle}</td>
+                                                        <td><span className={`badge ${lead.status ? "bg-success-light text-success" : "bg-danger-light text-danger"}`}>{lead.status ? "Active" : "Inactive"}</span></td>
+                                                        <td>
+                                                            <div className="d-flex gap-2">
+                                                                <button className="btn btn-icon btn-view" onClick={() => {
+                                                                    setselectedLeadStatus(lead);
+                                                                    setShowViewModal(true);
+                                                                }}>
+                                                                    <i className="bi bi-eye"></i>
+                                                                </button>
+                                                                <button className="btn btn-icon btn-edit" onClick={() => {
+                                                                    setselectedLeadStatus(lead);
+                                                                    setShowEditOffcanvas(true);
+                                                                }}>
+                                                                    <i className="bi bi-pencil-square"></i>
+                                                                </button>
+                                                                <button className="btn btn-icon btn-delete" onClick={() => handleDeleteClick(lead?.id)} >
+                                                                    <i className="bi bi-trash"></i>
+                                                                </button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                ))
+                                            )}
+                                        </tbody>
+                                    </table>
+                                )}
                             </div>
                         </div>
+                        {showViewModal && <ViewLeadStatusModal show={showViewModal} handleClose={() => setShowViewModal(false)} leadStatus={selectedLeadStatus} />}
+                        {showEditOffcanvas && <EditLeadStatusOffcanvas show={showEditOffcanvas} handleClose={() => setShowEditOffcanvas(false)} leadStatus={selectedLeadStatus} onSave={handleSaveChanges} />}
+                        {showDeleteModal && (
+                            <DeleteConfirmationModal
+                                show={showDeleteModal}
+                                handleClose={() => setShowDeleteModal(false)}
+                                handleConfirm={handleDelete}
+                            />
+                        )}
                     </div>
                 </div> {/* container-fluid */}
             </div> {/* content */}
