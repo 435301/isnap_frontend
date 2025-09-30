@@ -1,7 +1,7 @@
 
 import React from "react";
 
-const Pagination = ({ currentPage, totalPages, onPageChange }) => {
+const PaginationComponent = ({ currentPage, totalPages, onPageChange }) => {
   if (totalPages <= 1) return null;
 
   const handlePageChange = (page) => {
@@ -52,4 +52,4 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
   );
 };
 
-export default Pagination;
+export default PaginationComponent;

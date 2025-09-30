@@ -9,10 +9,12 @@ import { deleteLeadStatus, fetchLeadStatus, updateLeadStatus } from '../../redux
 import EditLeadStatusOffcanvas from '../components/Modal/editLeadStatusOffCanvas';
 import ViewLeadStatusModal from '../components/Modal/ViewLeadStatusModal';
 import DeleteConfirmationModal from '../components/Modal/DeleteConfirmationModal';
+import Pagination from '../../common/pagination';
+import PaginationComponent from '../../common/pagination';
 
 const ManageLeads = () => {
     const dispatch = useDispatch();
-    const { leadStatus = [], loading, error } = useSelector((state) => state.leadStatus);
+    const { leadStatus = [], loading, error ,totalPages} = useSelector((state) => state.leadStatus);
     console.log('leadStatus', leadStatus)
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -205,6 +207,11 @@ const ManageLeads = () => {
                                 )}
                             </div>
                         </div>
+                        <PaginationComponent
+                            currentPage={currentPage}
+                            totalPages={totalPages || 1}
+                            onPageChange={setCurrentPage}
+                        />
                         {showViewModal && <ViewLeadStatusModal show={showViewModal} handleClose={() => setShowViewModal(false)} leadStatus={selectedLeadStatus} />}
                         {showEditOffcanvas && <EditLeadStatusOffcanvas show={showEditOffcanvas} handleClose={() => setShowEditOffcanvas(false)} leadStatus={selectedLeadStatus} onSave={handleSaveChanges} />}
                         {showDeleteModal && (

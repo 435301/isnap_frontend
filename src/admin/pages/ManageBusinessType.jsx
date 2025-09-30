@@ -11,6 +11,8 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import EditBusinessTypeOffcanvas from "../components/Modal/EditBusinessTypeOffcanvas";
 import ViewBusinessTypeModal from "../components/Modal/ViewBusinessTypeModal";
+import Pagination from "../../common/pagination";
+import PaginationComponent from "../../common/pagination";
 
 const ManageBusinessType = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 992);
@@ -32,6 +34,7 @@ const ManageBusinessType = () => {
     dispatch(fetchBusinessTypes({
       search: searchTerm,
       page: currentPage,
+      limit:itemsPerPage,
       showStatus: statusFilter === null ? "" : statusFilter
     }));
   }, [dispatch, currentPage, searchTerm, statusFilter]);
@@ -182,27 +185,11 @@ const ManageBusinessType = () => {
               </div>
             </div>
           </div>
-
-          {/* Pagination */}
-          <div className="d-flex justify-content-end mt-3">
-            <nav>
-              <ul className="pagination custom-pagination mb-0">
-                <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
-                  <button className="page-link" onClick={() => setCurrentPage(currentPage - 1)}>&lt;</button>
-                </li>
-                {Array.from({ length: totalPages || 1 }, (_, i) => i + 1).map((page) => (
-                  <li key={page} className={`page-item ${currentPage === page ? "active" : ""}`}>
-                    <button className="page-link" onClick={() => setCurrentPage(page)}>{page}</button>
-                  </li>
-                ))}
-                <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
-                  <button className="page-link" onClick={() => setCurrentPage(currentPage + 1)}>&gt;</button>
-                </li>
-              </ul>
-            </nav>
-          </div>
-
-          {/* Modals */}
+          <PaginationComponent
+            currentPage={currentPage}
+            totalPages={totalPages || 1}
+            onPageChange={setCurrentPage}
+          />
           {showViewModal && <ViewBusinessTypeModal show={showViewModal} handleClose={() => setShowViewModal(false)} businessType={selectedBusinessType} />}
           {showEditOffcanvas && <EditBusinessTypeOffcanvas show={showEditOffcanvas} handleClose={() => setShowEditOffcanvas(false)} businessType={selectedBusinessType} onSave={handleSaveChanges} />}
           {showDeleteModal && (
@@ -213,8 +200,6 @@ const ManageBusinessType = () => {
             />
           )}
         </div>
-
-        <ToastContainer />
       </div>
     </div>
   );
