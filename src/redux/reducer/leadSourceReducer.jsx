@@ -44,6 +44,9 @@ const leadSourceReducer = (state = initialState, action) => {
         case FETCH_LEAD_SOURCE_SUCCESS:
             return { ...state, loading: false, selectedLeadSource: action.payload };
         case CREATE_LEAD_SOURCE_SUCCESS:
+            return {
+                leadSources: [...state.leadSources, action.payload],
+            };
         case UPDATE_LEAD_SOURCE_SUCCESS:
         case DELETE_LEAD_SOURCE_SUCCESS:
             return {

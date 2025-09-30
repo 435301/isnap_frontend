@@ -48,7 +48,7 @@ const EditLeadSourceOffcanvas = ({ show, handleClose, leadSource, onSave }) => {
               type="text"
               value={formData.title}
               onChange={(e) =>
-                setFormData({ ...formData, leadSource: e.target.value })
+                setFormData({ ...formData, title: e.target.value })
               }
             />
           </Form.Group>

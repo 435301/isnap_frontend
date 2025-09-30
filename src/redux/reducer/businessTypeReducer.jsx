@@ -51,6 +51,9 @@ export const businessTypeReducer = (state = initialState, action) => {
       return { ...state, loading: false, selectedBusinessType: action.payload };
 
     case CREATE_BUSINESS_TYPE_SUCCESS:
+      return {
+        businessTypes: [...state.businessTypes, action.payload],
+      };
     case UPDATE_BUSINESS_TYPE_SUCCESS:
     case DELETE_BUSINESS_TYPE_SUCCESS:
       return {

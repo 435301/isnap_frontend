@@ -42,7 +42,7 @@ const AddLeadSource = () => {
     const validationErrors = {};
     if (!formData.title.trim())
       validationErrors.title = " Lead Source is required.";
-    if (!formData.status)
+    if (!formData.status === "")
       validationErrors.status = "Status is required.";
 
     if (Object.keys(validationErrors).length > 0) {
@@ -50,8 +50,10 @@ const AddLeadSource = () => {
       return;
     }
     try {
-      await dispatch(createLeadSource(formData));
+      const res = await dispatch(createLeadSource(formData));
+      if(res?.status){
       navigate("/manage-lead-source");
+      }
     } catch (err) {
       console.log(err)
     }

@@ -50,12 +50,13 @@ export const fetchBusinessTypeById = (id, payload = { page: 1, search: "", showS
 export const createBusinessType = (payload) => async (dispatch) => {
     dispatch({ type: CREATE_BUSINESS_TYPE_REQUEST });
     try {
-        const { data } = await axios.post(`${BASE_URL}/businessType/create`, payload, getAuthHeaders(false));
-        dispatch({ type: CREATE_BUSINESS_TYPE_SUCCESS, payload: data.message });
-        toast.success(data.message || 'Business Type created successfully');
+        const response = await axios.post(`${BASE_URL}/businessType/create`, payload, getAuthHeaders(false));
+        dispatch({ type: CREATE_BUSINESS_TYPE_SUCCESS, payload: response.data });
+        toast.success(response.data.message || 'Business Type created successfully');
         dispatch(fetchBusinessTypes());
+        return response.data
     } catch (error) {
-        dispatch({ type: CREATE_BUSINESS_TYPE_FAILURE, payload: error.message });
+        dispatch({ type: CREATE_BUSINESS_TYPE_FAILURE, payload: error.response?.data?.message || error.message || "Failed to create business type",});
         toast.error(error.response.data.message || 'Failed to add business type');
     }
 };

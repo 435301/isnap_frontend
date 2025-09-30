@@ -37,12 +37,13 @@ export const fetchLeadSources = (payload = { search: "", page: 1, showStatus: ""
 export const createLeadSource = (payload) => async (dispatch) => {
   dispatch({ type: CREATE_LEAD_SOURCE_REQUEST });
   try {
-    const { data } = await axios.post(`${BASE_URL}/leadSource/create`, payload, getAuthHeaders());
-    dispatch({ type: CREATE_LEAD_SOURCE_SUCCESS, payload: data.message });
-    toast.success(data.message || "Lead Source created successfully");
+    const response = await axios.post(`${BASE_URL}/leadSource/create`, payload, getAuthHeaders());
+    dispatch({ type: CREATE_LEAD_SOURCE_SUCCESS, payload: response.data });
+    toast.success(response.data.message || "Lead Source created successfully");
     dispatch(fetchLeadSources());
+    return response.data;
   } catch (error) {
-    dispatch({ type: CREATE_LEAD_SOURCE_FAILURE, payload: error.message });
+    dispatch({ type: CREATE_LEAD_SOURCE_FAILURE, payload:error.response?.data?.message || error.message || "Failed to create lead source"});
     toast.error(error.response?.data?.message || "Failed to create lead source");
   }
 };

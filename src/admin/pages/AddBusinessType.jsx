@@ -33,7 +33,7 @@ const AddBusinessType = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev,   [name]: name === "status" ? Number(value) : value, }));
+    setFormData((prev) => ({ ...prev, [name]: name === "status" ? Number(value) : value, }));
     setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
@@ -49,9 +49,10 @@ const AddBusinessType = () => {
       return;
     }
     try {
-      await dispatch(createBusinessType(formData));
-      toast.success("Business Type created successfully")
-      navigate("/manage-business-type");
+      const res = await dispatch(createBusinessType(formData));
+      if (res?.status) {
+        navigate("/manage-business-type");
+      }
     } catch (err) {
       console.log(err)
     }
@@ -83,7 +84,7 @@ const AddBusinessType = () => {
             <div className="bg-white p-3 rounded shadow-sm card-header mb-4">
               {error && (
                 <div className="">
-                
+
                 </div>
               )}
 
