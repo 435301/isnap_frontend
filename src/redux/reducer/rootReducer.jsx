@@ -30,6 +30,7 @@ import leadSourceReducer from "./leadSourceReducer";
 import leadStatusReducer from "./leadStatusReducer";
 import { leadReducer } from "./leadReducer";
 import { leadHistoryReducer } from "./leadTeamReducer";
+import latestUpdatesReducer from "./latestUpdateReducer";
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -65,6 +66,7 @@ const rootReducer = combineReducers({
   leadStatus:leadStatusReducer,
   leads:leadReducer,
   leadHistory:leadHistoryReducer,
+  latestUpdates:latestUpdatesReducer,
 });
 
 

@@ -4,15 +4,19 @@ import Navbar from '../components/Navbar';
 import { Link } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchLatestUpdates } from '../../redux/actions/latestUpdatesAction';
 
 const ManageUpdates = () => {
-  const updates = [
-    { id: 1, title: 'Lorem ipsum is simply dummy', createdDate: '10-02-2025', sendTo: 'All' },
-    { id: 2, title: 'Lorem ipsum is simply dummy', createdDate: '10-02-2025', sendTo: 'Krishna' },
-    { id: 3, title: 'Lorem ipsum is simply dummy', createdDate: '10-02-2025', sendTo: 'Suresh, Seshu' },
-    { id: 4, title: 'Lorem ipsum is simply dummy', createdDate: '10-02-2025', sendTo: 'GVK Fashions' },
-    { id: 5, title: 'Lorem ipsum is simply dummy', createdDate: '10-02-2025', sendTo: 'All' },
-  ];
+   const dispatch = useDispatch();
+  const { latestUpdates, loading, error, totalPages } = useSelector(
+    (state) => state.latestUpdates
+  );
+  console.log('latestUpdates',latestUpdates)
+
+    useEffect(() => {
+    dispatch(fetchLatestUpdates());
+  }, [dispatch]);
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -113,18 +117,18 @@ const ManageUpdates = () => {
                     <tr>
                       <th>S.no</th>
                       <th>Title</th>
-                      <th>Created Date</th>
+                      <th>Description</th>
                       <th>Send to whom</th>
                       <th>Action</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {updates.map((update, index) => (
+                    {latestUpdates.map((update, index) => (
                       <tr key={update.id}>
                         <td>{index + 1}</td>
                         <td>{update.title}</td>
-                        <td>{update.createdDate}</td>
-                        <td>{update.sendTo}</td>
+                        <td>{update.description}</td>
+                        <td>{update.roleName}</td>
                         <td>
                           <div className="d-flex gap-2 align-items-center">
                             <button className="btn btn-icon btn-view">
