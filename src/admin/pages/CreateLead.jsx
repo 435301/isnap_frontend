@@ -7,6 +7,10 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 import "../assets/admin/css/style.css"
 import { useDispatch, useSelector } from 'react-redux';
 import { checkMobile, createLead, fetchLeads } from '../../redux/actions/leadAction';
+import { fetchLeadSources } from '../../redux/actions/leadSourceAction';
+import { fetchLeadStatus } from '../../redux/actions/leadStatusAction';
+import { fetchBusinessTypes } from '../../redux/actions/businessTypeAction';
+import { fetchTeams } from '../../redux/actions/teamActions';
 
 const CreateLead = () => {
   const dispatch = useDispatch();
@@ -22,6 +26,10 @@ const CreateLead = () => {
 
   useEffect(() => {
     dispatch(fetchLeads());
+        dispatch(fetchLeadSources());
+        dispatch(fetchLeadStatus());
+        dispatch(fetchBusinessTypes());
+        dispatch(fetchTeams());
   }, [dispatch])
   const [formData, setFormData] = useState({
     customerMobile: '',
