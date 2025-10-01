@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "../../redux/actions/authAction";
 import logo from "../assets/admin/images/logo.png";
 import "bootstrap-icons/font/bootstrap-icons.css";
@@ -9,6 +9,8 @@ const Sidebar = ({ isOpen }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+    const { user } = useSelector((state) => state.auth);
+    console.log('user', user)
 
   // Active link check
   const isLinkActive = (path) => {

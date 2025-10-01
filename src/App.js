@@ -91,7 +91,7 @@ function App() {
         {/* Admin Routes */}
         <Route path="/dashboard" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
         <Route path="/add-market-type" element={<AdminRoute><AddMarketplaceType /></AdminRoute>} />
-        <Route path="/view-lead" element={<AdminRoute><ViewLead /></AdminRoute>} />
+        <Route path="/view-lead/:id" element={<AdminRoute><ViewLead /></AdminRoute>} />
         <Route
           path="/view-seller/:id"
           element={

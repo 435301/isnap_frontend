@@ -1,27 +1,45 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../components/Sidebar';
 import Navbar from '../components/Navbar';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import "../assets/admin/css/style.css"
+import { useDispatch, useSelector } from 'react-redux';
+import { checkMobile, createLead, fetchLeads } from '../../redux/actions/leadAction';
+
 const CreateLead = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { mobileCheck } = useSelector((state) => state.leads);
+  const { businessTypes } = useSelector((state) => state.businessTypes);
+  const { leadSources } = useSelector((state) => state.leadSources);
+  const { leadStatus = [] } = useSelector((state) => state.leadStatus);
+  console.log('leadStatus', leadStatus)
+  const { teams = [] } = useSelector(state => state.teams || {});
+  console.log('businessTypes', businessTypes)
+
+  useEffect(() => {
+    dispatch(fetchLeads());
+  }, [dispatch])
   const [formData, setFormData] = useState({
     customerMobile: '',
     customerName: '',
-    businessType: '',
-    email: '',
-    leadSource: '',
+    businessTypeId: '',
+    emailId: '',
+    leadSourceId: '',
     followUpDate: '',
     followUpTime: '',
     leadDetails: '',
-    team: '',
-    status: '',
+    teamId: 0,
+    leadStatusId: '',
   });
 
   const [errors, setErrors] = useState({});
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
 
   useEffect(() => {
     const handleResize = () => {
@@ -35,22 +53,32 @@ const CreateLead = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  useEffect(() => {
+    if (mobileCheck) {
+      setFormData((prev) => ({
+        ...prev,
+        customerName: mobileCheck.customerName || prev.customerName,
+        // emailId: mobileCheck.emailId || prev.emailId,
+      }));
+    }
+  }, [mobileCheck]);
+
   const handleToggleSidebar = () => setIsSidebarOpen(prev => !prev);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
 
-    // Remove error for the field dynamically
-    setErrors(prevErrors => ({
+    setErrors((prevErrors) => ({
       ...prevErrors,
-      [name]: '',
+      [name]: "",
     }));
   };
+
 
   const validate = () => {
     const newErrors = {};
@@ -58,30 +86,41 @@ const CreateLead = () => {
     const emailPattern = /^\S+@\S+\.\S+$/;
 
     if (!formData.customerMobile.trim()) {
-      newErrors.customerMobile = 'Mobile number is required';
+      newErrors.customerMobile = "Mobile number is required";
     } else if (!phonePattern.test(formData.customerMobile)) {
-      newErrors.customerMobile = 'Enter a valid 10-digit mobile number starting with 6-9';
+      newErrors.customerMobile =
+        "Enter a valid 10-digit mobile number starting with 6-9";
     }
 
-    if (!formData.customerName.trim()) newErrors.customerName = 'Customer name is required';
-    if (!formData.leadDetails.trim()) newErrors.leadDetails = 'Lead details are required';
-    if (!formData.team.trim()) newErrors.team = 'Team is required';
-    if (!formData.email.trim()) newErrors.email = 'Email is required';
-    else if (!emailPattern.test(formData.email)) newErrors.email = 'Invalid email format';
+    if (!formData.customerName.trim())
+      newErrors.customerName = "Customer name is required";
+    if (!formData.leadDetails.trim())
+      newErrors.leadDetails = "Lead details are required";
+    if (!formData.emailId.trim()) newErrors.emailId = "Email is required";
+    else if (!emailPattern.test(formData.emailId))
+      newErrors.emailId = "Invalid email format";
+    if (!formData.businessTypeId) newErrors.businessTypeId = "Business Type is required";
+    if (!formData.leadSourceId) newErrors.leadSourceId = "Lead Source is required";
+    if (!formData.leadStatusId) newErrors.leadStatusId = "Lead Status is required";
 
     return newErrors;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const validationErrors = validate();
     setErrors(validationErrors);
-
-    if (Object.keys(validationErrors).length === 0) {
-      console.log('Lead Submitted:', formData);
-      // Submit to backend
+    if (Object.keys(validationErrors).length > 0) return;
+    try {
+      const res = await dispatch(createLead(formData));
+      if (res?.status) {
+        navigate("/manage-leads");
+      }
+    } catch (err) {
+      console.log(err);
     }
-  };
+  }
+
 
   return (
     <div className="container-fluid position-relative bg-white d-flex p-0">
@@ -129,11 +168,20 @@ const CreateLead = () => {
                       type="text"
                       name="customerMobile"
                       value={formData.customerMobile}
-                      onChange={handleChange}
-                      className={`form-control ${errors.customerMobile ? 'is-invalid' : ''}`}
+                      onChange={(e) => {
+                        handleChange(e);
+
+                        if (e.target.value.length === 10) {
+                          dispatch(checkMobile(e.target.value));
+                        }
+                      }}
+                      className={`form-control ${errors.customerMobile ? "is-invalid" : ""
+                        }`}
                       placeholder="Customer Mobile Number"
                     />
-                    {errors.customerMobile && <div className="invalid-feedback">{errors.customerMobile}</div>}
+                    {errors.customerMobile && (
+                      <div className="invalid-feedback">{errors.customerMobile}</div>
+                    )}
                   </div>
 
                   {/* Customer Name */}
@@ -144,25 +192,37 @@ const CreateLead = () => {
                       name="customerName"
                       value={formData.customerName}
                       onChange={handleChange}
-                      className={`form-control ${errors.customerName ? 'is-invalid' : ''}`}
+                      className={`form-control ${errors.customerName ? "is-invalid" : ""}`}
                       placeholder="Enter customer name"
                     />
-                    {errors.customerName && <div className="invalid-feedback">{errors.customerName}</div>}
+                    {errors.customerName && (
+                      <div className="invalid-feedback">{errors.customerName}</div>
+                    )}
                   </div>
 
                   {/* Business Type */}
                   <div className="col-md-4">
                     <label className="form-label">Business Type<span className="text-danger">*</span></label>
                     <select
-                      name="businessType"
-                      value={formData.businessType}
+                      name="businessTypeId"
+                      value={formData.businessTypeId}
                       onChange={handleChange}
-                      className="form-select"
+                      className={`form-select ${errors.businessTypeId ? "is-invalid" : ""
+                        }`}
                     >
                       <option value="">Select Business Type</option>
-                      <option value="Retail">Retail</option>
-                      <option value="Wholesale">Wholesale</option>
+                      {businessTypes
+                        ?.filter((b) => b.status === 1) //only active
+                        .map((business) => (
+                          <option key={business.id} value={business.id}>
+                            {business.businessType}
+                          </option>
+                        ))}
+
                     </select>
+                    {errors.businessTypeId && (
+                      <div className="invalid-feedback">{errors.businessTypeId}</div>
+                    )}
                   </div>
 
                   {/* Email */}
@@ -170,13 +230,13 @@ const CreateLead = () => {
                     <label className="form-label">Email ID <span className="text-danger">*</span></label>
                     <input
                       type="email"
-                      name="email"
-                      value={formData.email}
+                      name="emailId"
+                      value={formData.emailId}
                       onChange={handleChange}
-                      className={`form-control ${errors.email ? 'is-invalid' : ''}`}
+                      className={`form-control ${errors.emailId ? 'is-invalid' : ''}`}
                       placeholder="Enter email address"
                     />
-                    {errors.email && <div className="invalid-feedback">{errors.email}</div>}
+                    {errors.emailId && <div className="invalid-feedback">{errors.emailId}</div>}
                   </div>
 
                   {/* Lead Source */}
@@ -185,19 +245,22 @@ const CreateLead = () => {
                       Lead Source <span className="text-danger">*</span>
                     </label>
                     <select
-                      name="leadSource"
-                      value={formData.leadSource || ""}
+                      name="leadSourceId"
+                      value={formData.leadSourceId || ""}
                       onChange={handleChange}
-                      className="form-select"
+                      className={`form-select ${errors.leadSourceId ? "is-invalid" : ""
+                        }`}
                     >
                       <option value="">Select Lead Source</option>
-                      <option value="Social Media">Social Media</option>
-                      <option value="Website">Website</option>
-                      <option value="Referral">Referral</option>
-                      <option value="Advertisement">Advertisement</option>
-                      <option value="Cold Call">Cold Call</option>
-                      <option value="Other">Other</option>
+                      {leadSources?.filter((b) => b.status === 1).map((leadSource) => (
+                        <option key={leadSource?.id} value={leadSource?.id}>
+                          {leadSource?.LeadSourceTitle}
+                        </option>
+                      ))}
                     </select>
+                    {errors.leadSourceId && (
+                      <div className="invalid-feedback">{errors.leadSourceId}</div>
+                    )}
                   </div>
 
                   {/* Follow-up Date & Time */}
@@ -235,32 +298,40 @@ const CreateLead = () => {
                   <div className="col-md-4">
                     <label className="form-label">Team Member</label>
                     <select
-                      name="team"
-                      value={formData.team}
+                      name="teamId"
+                      value={formData.teamId}
                       onChange={handleChange}
-                      className={`form-select ${errors.team ? 'is-invalid' : ''}`}
+                      className="form-select "
                     >
                       <option value="">Select Team Member</option>
-                      <option value="Sales">Sales</option>
-                      <option value="Support">Support</option>
+                      {teams?.map((team) => (
+                        <option key={team?.id} value={team?.id}>
+                          {team?.name}
+                        </option>
+                      ))}
                     </select>
-                    {errors.team && <div className="invalid-feedback">{errors.team}</div>}
                   </div>
 
                   {/* Status */}
                   <div className="col-md-4">
-                    <label className="form-label">Status<span className="text-danger">*</span></label>
+                    <label className="form-label">Lead Status<span className="text-danger">*</span></label>
                     <select
-                      name="status"
-                      value={formData.status}
+                      name="leadStatusId"
+                      value={formData.leadStatusId}
                       onChange={handleChange}
-                      className="form-select"
+                      className={`form-select ${errors.leadStatusId ? "is-invalid" : ""
+                        }`}
                     >
                       <option value="">Select Status</option>
-                      <option value="New">New</option>
-                      <option value="In Progress">In Progress</option>
-                      <option value="Closed">Closed</option>
+                      {leadStatus?.filter((b) => b.status === 1).map((leadStatus) => (
+                        <option key={leadStatus.id} value={leadStatus.id}>
+                          {leadStatus?.LeadStatusTitle}
+                        </option>
+                      ))}
                     </select>
+                    {errors.leadStatusId && (
+                      <div className="invalid-feedback">{errors.leadStatusId}</div>
+                    )}
                   </div>
 
                   {/* Lead Details */}

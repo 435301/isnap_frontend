@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../components/Sidebar';
 import Navbar from '../components/Navbar';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import BASE_URL from '../../config/config';
+import getAuthHeaders from '../../utils/auth';
 
 const LeadView = () => {
+    const { id } = useParams(); 
+    const [lead, setLead] = useState(null);
+    console.log('lead', lead)
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
@@ -23,6 +28,22 @@ const LeadView = () => {
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, []);
+
+    useEffect(() => {
+        const fetchLead = async () => {
+            try {
+                const response = await fetch(`${BASE_URL}/lead/${id}`, getAuthHeaders());
+                const data = await response.json();
+                setLead(data);
+            } catch (error) {
+                console.error("Failed to fetch lead:", error);
+            } finally {
+                // setLoading(false);
+            }
+        };
+
+        fetchLead();
+    }, [id]);
 
     const handleToggleSidebar = () => {
         setIsSidebarOpen(!isSidebarOpen);
@@ -57,30 +78,57 @@ const LeadView = () => {
                             <table className="table table-borderless mb-0">
                                 <tbody>
                                     <tr>
-                                        <td><span className="fw-bold">Customer Name:</span> Akeeb Shaik</td>
-                                        <td><span className="fw-bold">Customer Mobile Number:</span> 7780515180</td>
+                                        <td>
+                                            <span className="fw-bold">Customer Name:</span> {lead?.data?.customerName}
+                                        </td>
+                                        <td><span className="fw-bold">Customer Mobile Number:</span> {lead?.data?.customerMobile}</td>
                                     </tr>
                                     <tr>
-                                        <td><span className="fw-bold">Business Type:</span> Person</td>
-                                        <td><span className="fw-bold">Email ID:</span> info@richlabz.com</td>
+                                        <td><span className="fw-bold">Business Type:</span> {lead?.data?.businessTypeName}</td>
+                                        <td><span className="fw-bold">Email ID:</span> {lead?.data?.emailId}</td>
                                     </tr>
                                     <tr>
-                                        <td><span className="fw-bold">Team:</span> KNS Reddy</td>
-                                        <td><span className="fw-bold">Status:</span> <span className="text-danger">In Active</span></td>
+                                        <td><span className="fw-bold">Team:</span>{lead?.data?.teamName}</td>
+                                        <td>
+                                            <strong>Status:</strong>{" "}
+                                            <span
+                                                className={
+                                                    lead?.data.leadStatusTitle === "New"
+                                                        ? "text-primary"
+                                                        : lead?.data.leadStatusTitle === "Contacted"
+                                                            ? "text-warning"
+                                                            : lead?.data.leadStatusTitle === "Closed"
+                                                                ? "text-danger"
+                                                                : "text-success"
+                                                }
+                                            >
+                                                {lead?.data.leadStatusTitle}
+                                            </span>
+                                        </td>
                                     </tr>
                                     <tr>
-                                        <td><span className="fw-bold">Lead Source:</span> Social Media</td>
-                                        <td><span className="fw-bold">Follow up Date:</span> 10/02/2025</td>
+
+                                        <td><span className="fw-bold">Follow up Date:</span> {lead?.data.followUpDate
+                                            ? new Date(lead.data.followUpDate).toLocaleDateString("en-IN", {
+                                                day: "2-digit",
+                                                month: "short",
+                                                year: "numeric",
+                                            })
+                                            : "-"}</td>
                                     </tr>
                                     <tr>
-                                        <td><span className="fw-bold">Follow up Time:</span> 08:00 PM</td>
+                                        <td><span className="fw-bold">Follow up Time:</span>  {lead?.data.followUpTime
+                                            ? new Date(`1970-01-01T${lead.data.followUpTime}`).toLocaleTimeString("en-IN", {
+                                                hour: "2-digit",
+                                                minute: "2-digit",
+                                                hour12: true,
+                                            })
+                                            : "-"}</td>
                                         <td></td>
                                     </tr>
                                     <tr>
                                         <td colSpan="2">
-                                            <span className="fw-bold">Description:</span> Please accept my apologies for the inconvenience caused.
-                                            It would be much appreciated if it’s possible to reschedule to 6:00 PM,
-                                            or any other day that week.
+                                            <span className="fw-bold">Lead Details:</span> {lead?.data.leadDetails}
                                         </td>
                                     </tr>
                                 </tbody>
