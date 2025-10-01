@@ -13,8 +13,7 @@ export const AdminRoute = ({ children }) => {
     localStorage.removeItem("user");
     return <Navigate to="/login" replace />;
   }
-
-  if (user?.role !== "admin") return <h2>403 - Unauthorized</h2>;
+  if (user?.roleName !== "Admin") return <h2>401 - Unauthorized</h2>;
   return children;
 };
 
@@ -22,8 +21,13 @@ export const AdminRoute = ({ children }) => {
 export const TeamRoute = ({ children }) => {
   const { token, user } = useSelector((state) => state.auth);
   console.log("TeamRoute - Token:", token, "User:", user); // Debug
-  if (!token) return <Navigate to="/login" replace />;
-  if (user?.role !== "team") return <h2>403 - Unauthorized</h2>;
+   if (!token || !isTokenValid(token)) {
+    //  Clear invalid token
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("user");
+    return <Navigate to="/login" replace />;
+  };
+  if (user?.roleName !== "Team") return <h2>401 - Unauthorized</h2>;
   return children;
 };
 
@@ -32,6 +36,6 @@ export const SellerRoute = ({ children }) => {
   const { token, user } = useSelector((state) => state.auth);
   console.log("SellerRoute - Token:", token, "User:", user); // Debug
   if (!token) return <Navigate to="/login" replace />;
-  if (user?.role !== "seller") return <h2>403 - Unauthorized</h2>;
+  if (user?.roleName !== "Seller") return <h2>401 - Unauthorized</h2>;
   return children;
 };

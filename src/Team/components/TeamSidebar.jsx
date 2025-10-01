@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import logo from "../../admin/assets/admin/images/logo.png";
 import "bootstrap-icons/font/bootstrap-icons.css";
+import { logoutUser } from "../../redux/actions/authAction";
+import { useDispatch } from "react-redux";
 
 const TeamSidebar = ({ isOpen }) => {
   const location = useLocation();
   const [activeDropdown, setActiveDropdown] = useState(null);
+    const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const dropdownRoutes = {
     reports: ["/team/create-report", "/team/manage-reports"],
@@ -37,6 +41,12 @@ const TeamSidebar = ({ isOpen }) => {
       dropdownRoutes[dropdown]?.includes(location.pathname)
     );
   };
+
+    const handleLogout = () => {
+      dispatch(logoutUser());
+      navigate("/login");
+    };
+  
 
   return (
     <div
@@ -149,15 +159,22 @@ const TeamSidebar = ({ isOpen }) => {
             {isOpen && <span>Change Password</span>}
           </Link>
 
-          <Link
+          {/* <Link
             to="/logout"
             className={`nav-item nav-link text-danger ${isLinkActive(
               "/logout"
             )}`}
-          >
-            <i className="bi bi-box-arrow-right me-2"></i>
-            {isOpen && <span>Logout</span>}
-          </Link>
+          > */}
+            <button
+              onClick={handleLogout}
+              className="nav-item nav-link text-danger"
+              style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}
+            >
+              <i className="bi bi-box-arrow-right me-2"></i>
+              {isOpen && <span>Logout</span>}
+            </button>
+         
+          {/* </Link> */}
         </div>
       </nav>
     </div>

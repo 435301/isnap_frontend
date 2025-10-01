@@ -9,8 +9,8 @@ const Sidebar = ({ isOpen }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-    const { user } = useSelector((state) => state.auth);
-    console.log('user', user)
+  const { user } = useSelector((state) => state.auth);
+  console.log('user', user)
 
   // Active link check
   const isLinkActive = (path) => {
@@ -69,6 +69,42 @@ const Sidebar = ({ isOpen }) => {
     navigate("/login");
   };
 
+  // ------------------ Role-based Sidebar ------------------
+  // Define allowed menus by role
+  const allowedMenus = {
+    Admin: [
+      "dashboard",
+      "master-data",
+      "serviceTypes",
+      "leads",
+      "sellers",
+      "team",
+      "tasks",
+      "products",
+      "notifications",
+      "change-password",
+      "logout",
+    ],
+    Team: [
+      "dashboard",
+      "leads",
+      "tasks",
+      "change-password",
+      "logout",
+    ],
+    Seller: [
+      "dashboard",
+      "products",
+      "change-password",
+      "logout",
+    ],
+  };
+
+  // Get role, fallback to empty so it won’t render anything wrong
+  const role = user?.roleName || "team"; // defaulting to team if null
+  console.log('role',role)
+  const menusToShow = allowedMenus[role] || [];
+
   return (
     <div className={`sidebar pb-3 ${isOpen ? "sidebar-open" : "sidebar-closed"}`}>
       <nav className="navbar">
@@ -78,10 +114,12 @@ const Sidebar = ({ isOpen }) => {
 
         <div className="navbar-nav w-100">
           {/* Dashboard */}
-          <Link to="/dashboard" className={`nav-item nav-link ${isLinkActive("/dashboard")}`}>
-            <i className="bi bi-speedometer2 me-2"></i>
-            {isOpen && <span>Dashboard</span>}
-          </Link>
+          {menusToShow.includes("dashboard") && (
+            <Link to="/dashboard" className={`nav-item nav-link ${isLinkActive("/dashboard")}`}>
+              <i className="bi bi-speedometer2 me-2"></i>
+              {isOpen && <span>Dashboard</span>}
+            </Link>
+          )}
 
           {/* Master Data */}
           <div className={`nav-item dropdown ${isDropdownActive("master-data") ? "show" : ""}`}>
@@ -126,21 +164,23 @@ const Sidebar = ({ isOpen }) => {
           </div>
 
           {/* Leads */}
-          <div className={`nav-item dropdown ${isDropdownActive("leads") ? "show" : ""}`}>
-            <a
-              href="#!"
-              className={`nav-link dropdown-toggle ${isDropdownActive("leads") ? "active" : ""}`}
-              onClick={() => handleDropdownToggle("leads")}
-            >
-              <i className="bi bi-person-plus-fill me-2"></i>
-              {isOpen && <span>Leads</span>}
-            </a>
-            <div className={`dropdown-menu bg-transparent border-0 ${isDropdownActive("leads") ? "show" : ""}`}>
-              <Link to="/create-lead" className={`dropdown-item ${isLinkActive("/create-lead")}`}>Create New Lead</Link>
-              <Link to="/manage-leads" className={`dropdown-item ${isLinkActive("/manage-leads")}`}>Manage Leads</Link>
-               <Link to="/leads-status" className={`dropdown-item ${isLinkActive("/leads-status")}`}>Leads Status</Link>
+          {menusToShow.includes("leads") && (
+            <div className={`nav-item dropdown ${isDropdownActive("leads") ? "show" : ""}`}>
+              <a
+                href="#!"
+                className={`nav-link dropdown-toggle ${isDropdownActive("leads") ? "active" : ""}`}
+                onClick={() => handleDropdownToggle("leads")}
+              >
+                <i className="bi bi-person-plus-fill me-2"></i>
+                {isOpen && <span>Leads</span>}
+              </a>
+              <div className={`dropdown-menu bg-transparent border-0 ${isDropdownActive("leads") ? "show" : ""}`}>
+                <Link to="/create-lead" className={`dropdown-item ${isLinkActive("/create-lead")}`}>Create New Lead</Link>
+                <Link to="/manage-leads" className={`dropdown-item ${isLinkActive("/manage-leads")}`}>Manage Leads</Link>
+                <Link to="/leads-status" className={`dropdown-item ${isLinkActive("/leads-status")}`}>Leads Status</Link>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Sellers */}
           <div className={`nav-item dropdown ${isDropdownActive("sellers") ? "show" : ""}`}>
@@ -181,22 +221,23 @@ const Sidebar = ({ isOpen }) => {
           </div>
 
           {/* Tasks */}
-          <div className={`nav-item dropdown ${isDropdownActive("tasks") ? "show" : ""}`}>
-            <a
-              href="#!"
-              className={`nav-link dropdown-toggle ${isDropdownActive("tasks") ? "active" : ""}`}
-              onClick={() => handleDropdownToggle("tasks")}
-            >
-              <i className="bi bi-list-check me-2"></i>
-              {isOpen && <span>Tasks</span>}
-            </a>
-            <div className={`dropdown-menu bg-transparent border-0 ${isDropdownActive("tasks") ? "show" : ""}`}>
-              <Link to="/manage-task" className={`dropdown-item ${isLinkActive("/manage-task")}`}>Manage Task</Link>
-              <Link to="/create-task" className={`dropdown-item ${isLinkActive("/create-task")}`}>Create Task</Link>
-              <Link to="/rejected-tasks" className={`dropdown-item ${isLinkActive("/rejected-tasks")}`}>Rejected Task</Link>
+          {menusToShow.includes("tasks") && (
+            <div className={`nav-item dropdown ${isDropdownActive("tasks") ? "show" : ""}`}>
+              <a
+                href="#!"
+                className={`nav-link dropdown-toggle ${isDropdownActive("tasks") ? "active" : ""}`}
+                onClick={() => handleDropdownToggle("tasks")}
+              >
+                <i className="bi bi-list-check me-2"></i>
+                {isOpen && <span>Tasks</span>}
+              </a>
+              <div className={`dropdown-menu bg-transparent border-0 ${isDropdownActive("tasks") ? "show" : ""}`}>
+                <Link to="/manage-task" className={`dropdown-item ${isLinkActive("/manage-task")}`}>Manage Task</Link>
+                <Link to="/create-task" className={`dropdown-item ${isLinkActive("/create-task")}`}>Create Task</Link>
+                <Link to="/rejected-tasks" className={`dropdown-item ${isLinkActive("/rejected-tasks")}`}>Rejected Task</Link>
+              </div>
             </div>
-          </div>
-
+          )}
           {/* Products */}
           <div className={`nav-item dropdown ${isDropdownActive("products") ? "show" : ""}`}>
             <a
@@ -230,20 +271,24 @@ const Sidebar = ({ isOpen }) => {
           </div>
 
           {/* Change Password */}
-          <Link to="/change-password" className={`nav-item nav-link ${isLinkActive("/change-password")}`}>
-            <i className="bi bi-key me-2"></i>
-            {isOpen && <span>Change Password</span>}
-          </Link>
+          {menusToShow.includes("change-password") && (
+            <Link to="/change-password" className={`nav-item nav-link ${isLinkActive("/change-password")}`}>
+              <i className="bi bi-key me-2"></i>
+              {isOpen && <span>Change Password</span>}
+            </Link>
+          )}
 
           {/* Logout */}
-          <button
-            onClick={handleLogout}
-            className="nav-item nav-link text-danger"
-            style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}
-          >
-            <i className="bi bi-box-arrow-right me-2"></i>
-            {isOpen && <span>Logout</span>}
-          </button>
+          {menusToShow.includes("logout") && (
+            <button
+              onClick={handleLogout}
+              className="nav-item nav-link text-danger"
+              style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}
+            >
+              <i className="bi bi-box-arrow-right me-2"></i>
+              {isOpen && <span>Logout</span>}
+            </button>
+          )}
         </div>
       </nav>
     </div>

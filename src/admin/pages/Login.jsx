@@ -30,15 +30,16 @@ const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { loading, error, token, user } = useSelector((state) => state.auth);
+  console.log('user123', user)
 
   // Redirect based on user role after login
   useEffect(() => {
-    if (token && user?.role) {
-      if (user.role === "admin") {
+    if (token && user?.roleName) {
+      if (user.roleName === "Admin") {
         navigate("/dashboard");
-      } else if (user.role === "team") {
+      } else if (user.roleName === "Team") {
         navigate("/team/dashboard");
-      } else if (user.role === "seller") {
+      } else if (user.roleName === "Seller") {
         navigate("/seller/dashboard");
       }
     }
