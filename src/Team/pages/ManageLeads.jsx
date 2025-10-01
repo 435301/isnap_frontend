@@ -4,10 +4,46 @@ import Navbar from '../components/TeamNavbar';
 import { Link } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchLeadHistory } from '../../redux/actions/leadTeamAction';
+import moment from "moment";
+import EditLeadOffCanvasModal from '../../admin/components/Modal/EditLeadOffCanvasModal';
+import EditLeadOffCanvasTeamModal from '../components/EditLeadOffCanvasTeam';
+import { fetchLeadStatus } from '../../redux/actions/leadStatusAction';
+import PaginationComponent from '../../common/pagination';
 
 const TeamManageLeads = () => {
+  const dispatch = useDispatch();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const { leadHistory, loading, error, updateLoading, updateSuccess, limit, totalPages } = useSelector((state) => state.leadHistory);
+  const { user = [] } = useSelector((state) => state.auth)
+  const { leadStatus = [] } = useSelector((state) => state.leadStatus);
+  console.log('leadHistory', user)
+  const [showEditOffcanvas, setShowEditOffcanvas] = useState(false);
+  const [selectedLead, setselectedLead] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState(null);
+
+    const fetchLeadHistoryData = () => {
+    if (user?.id) {
+      dispatch(
+        fetchLeadHistory({
+          search: searchTerm,
+          page: currentPage,
+          limit,
+          leadStatusId: statusFilter || "",
+          teamId: user?.id,
+        })
+      );
+    }
+  };
+
+  useEffect(() => {
+   fetchLeadHistoryData();
+    dispatch(fetchLeadStatus());
+  }, [dispatch, currentPage, limit, user?.id, searchTerm, statusFilter]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -28,32 +64,12 @@ const TeamManageLeads = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  const leads = [
-    {
-      id: 1,
-      name: 'Akeeb Shaik',
-      email: 'john@example.com',
-      phone: '9876543210',
-      LastUpdatedDate: '10-02-2025',
-      status: 'New',
-    },
-    {
-      id: 2,
-      name: 'Praveen Saaho',
-      email: 'john@example.com',
-      phone: '9876543210',
-      LastUpdatedDate: '10-02-2025',
-      status: 'Contacted',
-    },
-    {
-      id: 3,
-      name: 'Madhavi',
-      email: 'john@example.com',
-      phone: '9876543210',
-      LastUpdatedDate: '10-02-2025',
-      status: 'Closed',
-    },
-  ];
+   const handleReset = () => {
+    setSearchTerm("");
+    setStatusFilter("");
+    setCurrentPage(1);
+    fetchLeadHistoryData();
+  };
 
   return (
     <div className="container-fluid position-relative bg-white d-flex p-0">
@@ -68,8 +84,8 @@ const TeamManageLeads = () => {
                 ? 259
                 : 95
               : isSidebarOpen
-              ? 220
-              : 0,
+                ? 220
+                : 0,
           transition: 'margin-left 0.3s ease',
         }}
       >
@@ -85,7 +101,7 @@ const TeamManageLeads = () => {
                 </div>
                 <div className="col-md-4"></div>
                 <div className="col-lg-6 text-end">
-                
+
                 </div>
               </div>
             </div>
@@ -97,22 +113,33 @@ const TeamManageLeads = () => {
                   <input
                     type="text"
                     className="form-control border-0 bg-light"
-                    placeholder="Search by Name or Email"
+                    placeholder="Search by Name "
+                     value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
                   />
                 </div>
                 <div className="col-md-3">
-                  <select className="form-select">
-                    <option>Select Status</option>
-                    <option>New</option>
-                    <option>Contacted</option>
-                    <option>Qualified</option>
+                  <select
+                    className="form-select"
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                  >
+                    <option value="">Select Status</option>
+                    {leadStatus.map((status) => (
+                      <option key={status.id} value={status.id}>
+                        {status?.LeadStatusTitle}
+                      </option>
+                    ))}
                   </select>
                 </div>
                 <div className="col-md-2 d-flex">
-                  <button className="btn btn-success text-white me-3">
+                  <button className="btn btn-success text-white me-3" onClick={() => {
+                      setCurrentPage(1);
+                      fetchLeadHistoryData();
+                    }} >
                     <i className="bi bi-search"></i>
                   </button>
-                  <button className="btn btn-light border-1">
+                  <button className="btn btn-light border-1"  onClick={handleReset}>
                     <i className="bi bi-arrow-clockwise"></i>
                   </button>
                 </div>
@@ -124,185 +151,88 @@ const TeamManageLeads = () => {
           <div className="row">
             <div className="bg-white p-3 rounded shadow-sm card-header mb-4">
               <div className="table-responsive">
-                <table className="table align-middle table-striped table-hover">
-                  <thead className="table-light">
-                    <tr>
-                      <th>S.No</th>
-                      <th>Customer Name</th>
-                      <th>Mobile Number</th>
-                      <th>Last Updated Date</th>
-                      <th>Status</th>
-                      <th>Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {leads.map((lead, index) => (
-                      <tr key={lead.id}>
-                        <td>{index + 1}</td>
-                        <td>{lead.name}</td>
-                        <td>{lead.phone}</td>
-                        <td>{lead.LastUpdatedDate}</td>
-                        <td>
-                          <span
-                            className={
-                              lead.status === 'New'
-                                ? 'text-primary'
-                                : lead.status === 'Contacted'
-                                ? 'text-warning'
-                                : lead.status === 'Closed'
-                                ? 'text-danger'
-                                : 'text-success'
-                            }
-                          >
-                            {lead.status}
-                          </span>
-                        </td>
-                        <td>
-                          <div className="d-flex gap-2 align-items-center">
-                            <button className="btn btn-icon btn-view">
-                              <i className="bi bi-eye"></i>
-                            </button>
-                            <button
-                              className="btn btn-icon btn-edit"
-                              data-bs-toggle="modal"
-                              data-bs-target="#editLeadModal"
-                            >
-                              <i className="bi bi-pencil-square"></i>
-                            </button>
-                            <button className="btn btn-icon btn-delete">
-                              <i className="bi bi-trash"></i>
-                            </button>
-                            <div className="dropdown">
-                              <button
-                                className="btn btn-icon btn-outline-secondary"
-                                type="button"
-                                data-bs-toggle="dropdown"
-                              >
-                                <i className="bi bi-three-dots-vertical"></i>
-                              </button>
-                              <ul className="dropdown-menu">
-                                <li>
-                                  <a className="dropdown-item" href="#">
-                                    View
-                                  </a>
-                                </li>
-                                <li>
-                                  <a className="dropdown-item" href="#">
-                                    Edit
-                                  </a>
-                                </li>
-                                <li>
-                                  <a className="dropdown-item" href="#">
-                                    Delete
-                                  </a>
-                                </li>
-                              </ul>
-                            </div>
-                          </div>
-                        </td>
+                {loading ? (
+                  <p>Loading leadHistory...</p>
+                ) : (
+                  <table className="table align-middle table-striped table-hover">
+                    <thead className="table-light">
+                      <tr>
+                        <th>S.No</th>
+                        <th>Customer Name</th>
+                        <th>Mobile Number</th>
+                        <th>Last Updated Date</th>
+                        <th>Last Updated Time</th>
+                        <th>Lead Details</th>
+                        <th>Status</th>
+                        <th>Action</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {(!leadHistory || leadHistory.length === 0) ? (
+                        <tr>
+                          <td colSpan="8" className="text-center">No lead history found.</td>
+                        </tr>
+                      ) : (
+                        leadHistory?.map((lead, index) => (
+                          <tr key={lead.id}>
+                            <td>{index + 1}</td>
+                            <td>{lead?.customerName}</td>
+                            <td>{lead?.customerMobile}</td>
+                            <td>{lead?.followUpDate ? moment(lead.followUpDate).format("DD MMM YYYY") : "-"}</td>
+                            <td>{lead?.followUpTime ? moment(lead?.followUpTime, "HH:mm:ss").format("hh:mm A") : "-"}</td>
+                            <td>{lead.leadDetails}</td>
+                            <td>
+                              <span
+                                className={
+                                  lead?.leadStatusTitle === 'New'
+                                    ? 'text-primary'
+                                    : lead?.leadStatusTitle === 'Contacted'
+                                      ? 'text-warning'
+                                      : lead?.leadStatusTitle === 'Closed'
+                                        ? 'text-danger'
+                                        : 'text-success'
+                                }
+                              >
+                                {lead.leadStatusTitle}
+                              </span>
+                            </td>
+                            <td>
+                              <div className="d-flex gap-2 align-items-center">
+
+                                <button
+                                  className="btn btn-icon btn-edit"
+                                  onClick={() => {
+                                    setselectedLead(lead);
+                                    setShowEditOffcanvas(true);
+                                  }}
+                                >
+                                  <i className="bi bi-pencil-square"></i>
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                )}
               </div>
             </div>
+            <PaginationComponent
+              currentPage={currentPage}
+              totalPages={totalPages || 1}
+              onPageChange={setCurrentPage}
+            />
+            {selectedLead && (
+              <EditLeadOffCanvasTeamModal
+                show={showEditOffcanvas}
+                handleClose={() => setShowEditOffcanvas(false)}
+                selectedLead={selectedLead}
+              />
+            )}
           </div>
         </div>
 
-        {/* Edit Modal */}
-        <div
-          className="modal modal-lg right fade"
-          id="editLeadModal"
-          tabIndex="-1"
-          aria-labelledby="editLeadModalLabel"
-          aria-hidden="true"
-        >
-          <div className="modal-dialog">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title" id="editLeadModalLabel">
-                  Edit Lead
-                </h5>
-                <button
-                  type="button"
-                  className="btn-close"
-                  data-bs-dismiss="modal"
-                  aria-label="Close"
-                ></button>
-              </div>
-              <div className="modal-body card-header">
-                <form className="me-3">
-                  <div className="row g-3">
-                    <div className="col-md-6">
-                      <label className="form-label">
-                        Customer Name <span className="text-danger">*</span>
-                      </label>
-                      <input type="text" className="form-control" placeholder="Enter name" />
-                    </div>
-                    <div className="col-md-6">
-                      <label className="form-label">
-                        Customer Mobile Number <span className="text-danger">*</span>
-                      </label>
-                      <input type="text" className="form-control" placeholder="Enter mobile" />
-                    </div>
-                    <div className="col-md-6">
-                      <label className="form-label">Business Type</label>
-                      <select className="form-select">
-                        <option>Person</option>
-                        <option>Company</option>
-                      </select>
-                    </div>
-                    <div className="col-md-6">
-                      <label className="form-label">Email ID</label>
-                      <input type="email" className="form-control" placeholder="Enter email" />
-                    </div>
-                    <div className="col-md-6">
-                      <label className="form-label">Lead Source</label>
-                      <input type="text" className="form-control" placeholder="Source" />
-                    </div>
-                    <div className="col-md-6">
-                      <label className="form-label">Follow up date & time</label>
-                      <input type="datetime-local" className="form-control" />
-                    </div>
-                    <div className="col-md-6">
-                      <label className="form-label">Team</label>
-                      <input type="text" className="form-control" placeholder="Team" />
-                    </div>
-                    <div className="col-md-6">
-                      <label className="form-label">
-                        Status <span className="text-danger">*</span>
-                      </label>
-                      <select className="form-select">
-                        <option>TODO</option>
-                        <option>New</option>
-                        <option>Contacted</option>
-                        <option>Closed</option>
-                      </select>
-                    </div>
-                    <div className="col-12">
-                      <label className="form-label">
-                        Lead Details (Description) <span className="text-danger">*</span>
-                      </label>
-                      <textarea className="form-control" placeholder="Lead details"></textarea>
-                    </div>
-                  </div>
-                  <div className="d-flex justify-content-end gap-2 mt-4">
-                    <button
-                      type="button"
-                      className="btn btn-light"
-                      data-bs-dismiss="modal"
-                    >
-                      Cancel
-                    </button>
-                    <button type="submit" className="btn btn-success">
-                      Save Changes
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-        </div>
 
       </div>
     </div>

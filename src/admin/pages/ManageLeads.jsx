@@ -194,6 +194,9 @@ const ManageLeads = () => {
           <div className="row">
             <div className="bg-white p-3 rounded shadow-sm card-header mb-4">
               <div className="table-responsive">
+                  {loading ? (
+                  <p>Loading leads...</p>
+                ) : (
                 <table className="table align-middle table-striped table-hover">
                   <thead className="table-light">
                     <tr>
@@ -207,7 +210,12 @@ const ManageLeads = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {leads.map((lead, index) => (
+                     {leads.length === 0 ? (
+                        <tr>
+                          <td colSpan="4" className="text-center">No leads found.</td>
+                        </tr>
+                      ) : (
+                    leads.map((lead, index) => (
                       <tr key={lead.id}>
                         <td>{index + 1}</td>
                         <td>{lead.customerName}</td>
@@ -249,9 +257,11 @@ const ManageLeads = () => {
                           </div>
                         </td>
                       </tr>
-                    ))}
+                     ))
+                      )}
                   </tbody>
                 </table>
+                 )}
               </div>
             </div>
              <PaginationComponent

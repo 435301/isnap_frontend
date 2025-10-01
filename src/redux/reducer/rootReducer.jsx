@@ -29,6 +29,7 @@ import { businessTypeReducer } from "./businessTypeReducer";
 import leadSourceReducer from "./leadSourceReducer";
 import leadStatusReducer from "./leadStatusReducer";
 import { leadReducer } from "./leadReducer";
+import { leadHistoryReducer } from "./leadTeamReducer";
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -63,6 +64,7 @@ const rootReducer = combineReducers({
   leadSources:leadSourceReducer,
   leadStatus:leadStatusReducer,
   leads:leadReducer,
+  leadHistory:leadHistoryReducer,
 });
 
 

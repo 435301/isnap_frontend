@@ -74,7 +74,7 @@ const EditLeadOffCanvasModal = ({
           <div className="row g-3">
             {/* Customer Mobile */}
             <div className="col-md-6">
-              <Form.Label>Customer Mobile Number *</Form.Label>
+              <Form.Label>Customer Mobile Number<span className="text-danger"> *</span></Form.Label>
               <Form.Control
                 type="text"
                 name="customerMobile"
@@ -87,7 +87,7 @@ const EditLeadOffCanvasModal = ({
 
             {/* Customer Name */}
             <div className="col-md-6">
-              <Form.Label>Customer Name *</Form.Label>
+              <Form.Label>Customer Name<span className="text-danger"> *</span></Form.Label>
               <Form.Control
                 type="text"
                 name="customerName"
@@ -100,7 +100,7 @@ const EditLeadOffCanvasModal = ({
 
             {/* Business Type */}
             <div className="col-md-6">
-              <Form.Label>Business Type *</Form.Label>
+              <Form.Label>Business Type<span className="text-danger"> *</span></Form.Label>
               <Form.Select
                 name="businessTypeId"
                 value={formData.businessTypeId}
@@ -120,7 +120,7 @@ const EditLeadOffCanvasModal = ({
 
             {/* Email */}
             <div className="col-md-6">
-              <Form.Label>Email ID</Form.Label>
+              <Form.Label>Email ID<span className="text-danger"> *</span></Form.Label>
               <Form.Control
                 type="email"
                 name="emailId"
@@ -132,7 +132,7 @@ const EditLeadOffCanvasModal = ({
 
             {/* Lead Source */}
             <div className="col-md-6">
-              <Form.Label>Lead Source *</Form.Label>
+              <Form.Label>Lead Source<span className="text-danger"> *</span></Form.Label>
               <Form.Select
                 name="leadSourceId"
                 value={formData.leadSourceId}
@@ -199,7 +199,7 @@ const EditLeadOffCanvasModal = ({
 
             {/* Lead Status */}
             <div className="col-md-6">
-              <Form.Label>Lead Status *</Form.Label>
+              <Form.Label>Lead Status<span className="text-danger"> *</span></Form.Label>
               <Form.Select
                 name="leadStatusId"
                 value={formData.leadStatusId}
@@ -219,7 +219,7 @@ const EditLeadOffCanvasModal = ({
 
             {/* Lead Details */}
             <div className="col-12">
-              <Form.Label>Lead Details *</Form.Label>
+              <Form.Label>Lead Details<span className="text-danger"> *</span></Form.Label>
               <Form.Control
                 type="text"
                 name="leadDetails"
