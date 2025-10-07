@@ -62,10 +62,10 @@ const TeamLatestUpdates = () => {
       }));
       setErrors((prev) => ({ ...prev, images: "" }));
     } else if (name === "pdfs" || name === "files") {
-  setFormData(prev => ({
-    ...prev,
-    files: Array.from(files) // ensures array
-  }));
+      setFormData(prev => ({
+        ...prev,
+        files: Array.from(files) // ensures array
+      }));
       setErrors((prev) => ({ ...prev, files: "" }));
     } else {
       setFormData((prev) => ({
@@ -105,8 +105,8 @@ const TeamLatestUpdates = () => {
     const newErrors = {};
     if (!formData.title.trim()) newErrors.title = 'Title is required';
     if (!formData.description.trim()) newErrors.description = 'Description is required';
-  if (!formData.images || formData.images.length === 0) newErrors.images = 'At least one image is required';
-  if (!formData.files || formData.files.length === 0) newErrors.files = 'At least one file is required';
+    if (!formData.images || formData.images.length === 0) newErrors.images = 'At least one image is required';
+    if (!formData.files || formData.files.length === 0) newErrors.files = 'At least one file is required';
 
     formData.urls.forEach((url, idx) => {
       if (!url.trim()) {
@@ -160,9 +160,11 @@ const TeamLatestUpdates = () => {
       team: "All",
       title: "",
       description: "",
-      images: null,
-      files: null,
-      urls: [""],
+      images: [],
+      existingImages: [],
+      files: [],
+      existingFiles: [],
+      urls: [{ url: "" }],
     })
     navigate("/manage-updates");
   };

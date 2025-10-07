@@ -162,20 +162,6 @@ const EditTeamLatestUpdates = () => {
         if (!formData.title.trim()) newErrors.title = "Title is required";
         if (!formData.description.trim())
             newErrors.description = "Description is required";
-        if (!formData.images || formData.images.length === 0) newErrors.images = 'At least one image is required';
-        if (!formData.files || formData.files.length === 0) newErrors.files = 'At least one file is required';
-        formData.urls.forEach((url, idx) => {
-            if (!url.trim()) {
-                newErrors[`url-${idx}`] = 'URL is required';
-            } else {
-                try {
-                    new URL(url);
-                } catch {
-                    newErrors[`url-${idx}`] = 'Invalid URL';
-                }
-            }
-        });
-
         return newErrors;
     };
 
@@ -211,6 +197,19 @@ const EditTeamLatestUpdates = () => {
         dispatch(deleteLatestUpdateFile(fileId));
     };
 
+    const handleReset = () => {
+        setFormData({
+            team: "All",
+            title: "",
+            description: "",
+            images: [],
+            existingImages: [],
+            files: [],
+            existingFiles: [],
+            urls: [{ url: "" }],
+        })
+        navigate("/manage-updates");
+    };
     return (
         <div className="container-fluid position-relative bg-white d-flex p-0">
             <Sidebar isOpen={isSidebarOpen} />
@@ -319,7 +318,7 @@ const EditTeamLatestUpdates = () => {
 
                                         {/* Preview new images */}
                                         <div className="mt-2 d-flex flex-wrap gap-2">
-                                            {formData.images.map((img, idx) => (
+                                            {formData?.images.map((img, idx) => (
                                                 <div key={idx} className="position-relative">
                                                     <img
                                                         src={URL.createObjectURL(img)}
@@ -331,9 +330,9 @@ const EditTeamLatestUpdates = () => {
                                         </div>
 
                                         {/* Existing Images */}
-                                        {formData.existingImages.length > 0 && (
+                                        {formData?.existingImages.length > 0 && (
                                             <div className="mt-3 d-flex flex-wrap gap-2">
-                                                {formData.existingImages.map(img => (
+                                                {formData?.existingImages.map(img => (
                                                     <div key={img.id} className="position-relative">
                                                         <img
                                                             src={img.url}
@@ -370,7 +369,7 @@ const EditTeamLatestUpdates = () => {
 
                                         {/* New files */}
                                         <ul className="mt-2">
-                                            {formData.files.map((file, idx) => (
+                                            {formData?.files.map((file, idx) => (
                                                 <li key={idx}>
                                                     {file.name}
                                                 </li>
@@ -379,7 +378,7 @@ const EditTeamLatestUpdates = () => {
 
                                         {/* Existing files */}
                                         <ul className="mt-2">
-                                            {formData.existingFiles.map(file => (
+                                            {formData?.existingFiles.map(file => (
                                                 <li key={file.id}>
                                                     <a href={file.url} target="_blank" rel="noopener noreferrer">
                                                         {file.name}
@@ -396,7 +395,7 @@ const EditTeamLatestUpdates = () => {
                                         </ul>
                                     </div>
                                     <div className="col-md-8 d-flex flex-column gap-3">
-                                        {formData.urls.map((url, index) => (
+                                        {formData?.urls.map((url, index) => (
                                             <div key={index} className="d-flex align-items-end gap-2 url" >
                                                 <div className="flex-grow-1">
                                                     <label className="form-label">
@@ -427,7 +426,7 @@ const EditTeamLatestUpdates = () => {
                                                 )}
 
                                                 {/* Add URL button only next to the last input */}
-                                                {index === formData.urls.length - 1 && (
+                                                {index === formData?.urls.length - 1 && (
                                                     <button
                                                         type="button"
                                                         className="btn btn-outline-primary mb-2"
@@ -443,16 +442,7 @@ const EditTeamLatestUpdates = () => {
                                     {/* Buttons */}
                                     <div className="col-md-12 d-flex justify-content-end mt-4">
                                         <button type="submit" className="btn btn-success px-4 me-2" disabled={loading}>  {loading ? "Updating..." : "Update"}</button>
-                                        <button type="button" className="btn btn-outline-secondary px-4" onClick={() =>
-                                            setFormData({
-                                                team: "All",
-                                                title: "",
-                                                description: "",
-                                                image: null,
-                                                file: null,
-                                                urls: [""],
-                                            })
-                                        }>Cancel</button>
+                                        <button type="button" className="btn btn-outline-secondary px-4" onClick={() => handleReset()}>Cancel</button>
                                     </div>
 
                                 </div>
