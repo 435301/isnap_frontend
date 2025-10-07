@@ -136,9 +136,7 @@ const EditTeamLatestUpdates = () => {
         );
 
         if (existingFile) {
-            if (window.confirm("Are you sure you want to delete this URL?")) {
-                handleDeleteFile(existingFile.id); // Call API
-            }
+            handleDeleteFile(existingFile.id); // Call API
         }
 
         // Remove from local state
@@ -162,6 +160,26 @@ const EditTeamLatestUpdates = () => {
         if (!formData.title.trim()) newErrors.title = "Title is required";
         if (!formData.description.trim())
             newErrors.description = "Description is required";
+        const totalImages =
+            (formData.images?.length || 0) + (formData.existingImages?.length || 0);
+        if (totalImages === 0)
+            newErrors.images = "At least one image is required";
+        const totalFiles =
+            (formData.files?.length || 0) + (formData.existingFiles?.length || 0);
+        if (totalFiles === 0)
+            newErrors.files = "At least one file is required";
+        formData?.urls.forEach((u, idx) => {
+            const url = u.url?.trim();
+            if (!url) {
+                newErrors[`url-${idx}`] = "URL is required";
+            } else {
+                try {
+                    new URL(url);
+                } catch {
+                    newErrors[`url-${idx}`] = "Invalid URL";
+                }
+            }
+        });
         return newErrors;
     };
 
