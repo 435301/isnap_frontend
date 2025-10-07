@@ -10,6 +10,9 @@ export const UPDATE_LEAD_HISTORY_REQUEST = "UPDATE_LEAD_HISTORY_REQUEST";
 export const UPDATE_LEAD_HISTORY_SUCCESS = "UPDATE_LEAD_HISTORY_SUCCESS";
 export const UPDATE_LEAD_HISTORY_FAIL = "UPDATE_LEAD_HISTORY_FAIL";
 export const RESET_UPDATE_LEAD_HISTORY = "RESET_UPDATE_LEAD_HISTORY";
+export const FETCH_LEAD_HISTORY_REQUEST = "FETCH_LEAD_HISTORY_REQUEST";
+export const FETCH_LEAD_HISTORY_SUCCESS = "FETCH_LEAD_HISTORY_SUCCESS";
+export const FETCH_LEAD_HISTORY_FAILURE = "FETCH_LEAD_HISTORY_FAILURE";
 
 
 // -------- LIST LEAD HISTORY --------
@@ -66,3 +69,19 @@ export const updateLeadHistory = (id, leadData) => async (dispatch) => {
 export const resetUpdateLeadHistory = () => ({
   type: RESET_UPDATE_LEAD_HISTORY,
 });
+
+export const fetchLeadHistoryAll = (leadId) => async (dispatch) => {
+  try {
+    dispatch({ type: FETCH_LEAD_HISTORY_REQUEST });
+    const response = await axios.post( `${BASE_URL}/leadHistory/history`, { leadId }, getAuthHeaders());
+    dispatch({
+      type: FETCH_LEAD_HISTORY_SUCCESS,
+      payload: response.data.data.leadHistories || [],
+    });
+  } catch (error) {
+    dispatch({
+      type: FETCH_LEAD_HISTORY_FAILURE,
+      payload: error.response?.data?.message || error.message,
+    });
+  }
+};
