@@ -1,19 +1,31 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Sidebar from '../components/Sidebar';
 import Navbar from '../components/Navbar';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import { useDispatch, useSelector } from 'react-redux';
+import { createLatestUpdate, deleteLatestUpdateFile } from '../../redux/actions/latestUpdatesAction';
+import { fetchRoles } from '../../redux/actions/roleActions';
+import "../assets/admin/css/style.css";
 
 const TeamLatestUpdates = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { loading, success, error } = useSelector((state) => state.latestUpdates);
+  const { roles = [] } = useSelector(state => state.roles || {});
+
   const [formData, setFormData] = useState({
     team: 'All',
     title: '',
     description: '',
-    image: null,
-    file: null,
+    images: [],
+    files: [],
     urls: ['']  // multiple URLs
   });
+
+  const imageRef = useRef(null);
+  const fileRef = useRef(null);
 
   const [errors, setErrors] = useState({});
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -26,6 +38,10 @@ const TeamLatestUpdates = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  useEffect(() => {
+    dispatch(fetchRoles());
+  }, dispatch)
+
   const handleToggleSidebar = () => setIsSidebarOpen(prev => !prev);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
@@ -33,19 +49,30 @@ const TeamLatestUpdates = () => {
   const handleChange = (e) => {
     const { name, value, files } = e.target;
 
-    if (name.startsWith('url')) {
-      // Handle urls with name format: url-0, url-1, etc.
-      const index = parseInt(name.split('-')[1], 10);
+    if (name.startsWith("url")) {
+      const index = parseInt(name.split("-")[1], 10);
       const newUrls = [...formData.urls];
       newUrls[index] = value;
-      setFormData(prev => ({ ...prev, urls: newUrls }));
-      setErrors(prev => ({ ...prev, [`url-${index}`]: '' }));
-    } else {
-      setFormData(prev => ({
+      setFormData((prev) => ({ ...prev, urls: newUrls }));
+      setErrors((prev) => ({ ...prev, [`url-${index}`]: "" }));
+    } else if (name === "images") {
+      setFormData((prev) => ({
         ...prev,
-        [name]: files ? files[0] : value
+        images: Array.from(files), // store multiple images
       }));
-      setErrors(prev => ({ ...prev, [name]: '' }));
+      setErrors((prev) => ({ ...prev, images: "" }));
+    } else if (name === "pdfs" || name === "files") {
+  setFormData(prev => ({
+    ...prev,
+    files: Array.from(files) // ensures array
+  }));
+      setErrors((prev) => ({ ...prev, files: "" }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: files ? files[0] : value,
+      }));
+      setErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
 
@@ -76,11 +103,10 @@ const TeamLatestUpdates = () => {
   // Validate all form fields including all URLs
   const validateForm = () => {
     const newErrors = {};
-    if (!formData.team) newErrors.team = 'Team is required';
     if (!formData.title.trim()) newErrors.title = 'Title is required';
     if (!formData.description.trim()) newErrors.description = 'Description is required';
-    if (!formData.image) newErrors.image = 'Image is required';
-    if (!formData.file) newErrors.file = 'File is required';
+  if (!formData.images || formData.images.length === 0) newErrors.images = 'At least one image is required';
+  if (!formData.files || formData.files.length === 0) newErrors.files = 'At least one file is required';
 
     formData.urls.forEach((url, idx) => {
       if (!url.trim()) {
@@ -103,9 +129,42 @@ const TeamLatestUpdates = () => {
     setErrors(validationErrors);
 
     if (Object.keys(validationErrors).length === 0) {
-      console.log('Submitted Latest Updates:', formData);
-      // TODO: API call or further processing here
+      const apiData = new FormData();
+      apiData.append("roleId", formData.team === "All" ? 0 : formData.team);
+      apiData.append("title", formData.title);
+      apiData.append("description", formData.description);
+      apiData.append("status", 1);
+      apiData.append("urls", formData.urls.join(","));
+      formData.images.forEach(img => apiData.append("images", img));
+      //  apiData.append("pdfs", formData.files);
+      formData.files.forEach(file => apiData.append("pdfs", file));
+      dispatch(createLatestUpdate(apiData));
+      setFormData({
+        team: "All",
+        title: "",
+        description: "",
+        urls: [],
+        images: null,
+        files: null,
+      });
+      setErrors({});
+      if (imageRef.current) imageRef.current.value = "";
+      if (fileRef.current) fileRef.current.value = "";
+      navigate("/manage-updates")
     }
+
+  };
+
+  const handleReset = () => {
+    setFormData({
+      team: "All",
+      title: "",
+      description: "",
+      images: null,
+      files: null,
+      urls: [""],
+    })
+    navigate("/manage-updates");
   };
 
   return (
@@ -120,8 +179,8 @@ const TeamLatestUpdates = () => {
                 ? 259
                 : 95
               : isSidebarOpen
-              ? 220
-              : 0,
+                ? 220
+                : 0,
           transition: "margin-left 0.3s ease",
         }}
       >
@@ -159,9 +218,12 @@ const TeamLatestUpdates = () => {
                       className={`form-select ${errors.team ? 'is-invalid' : ''}`}
                     >
                       <option value="All">All</option>
-                      <option value="Sales">Sales</option>
-                      <option value="Support">Support</option>
-                      <option value="Marketing">Marketing</option>
+                      {roles.map((role) => (
+                        <option keys={role?.id} value={role?.id}>
+                          {role?.roleTitle}
+                        </option>
+                      ))}
+
                     </select>
                     {errors.team && <div className="invalid-feedback">{errors.team}</div>}
                   </div>
@@ -199,29 +261,60 @@ const TeamLatestUpdates = () => {
                   <div className="col-md-4">
                     <label className="form-label">Upload Image <span className="text-danger">*</span></label>
                     <input
+                      ref={imageRef}
                       type="file"
-                      name="image"
+                      name="images"
                       accept="image/*"
+                      multiple
                       onChange={handleChange}
-                      className={`form-control ${errors.image ? 'is-invalid' : ''}`}
+                      className={`form-control ${errors.images ? 'is-invalid' : ''}`}
                     />
-                    {errors.image && <div className="invalid-feedback">{errors.image}</div>}
+                    {errors.images && <div className="invalid-feedback">{errors.images}</div>}
+                    {formData.images && formData.images.length > 0 && (
+                      <div className="mt-2 d-flex flex-wrap gap-2">
+                        {formData.images.map((img, idx) => (
+                          <img
+                            key={idx}
+                            src={URL.createObjectURL(img)}
+                            alt={`Preview ${idx + 1}`}
+                            className='image-preview'
+                          />
+                        ))}
+                      </div>
+                    )}
+
                   </div>
 
                   {/* Upload File */}
                   <div className="col-md-4">
                     <label className="form-label">Upload File <span className="text-danger">*</span></label>
                     <input
+                      ref={fileRef}
                       type="file"
-                      name="file"
+                      name="files"
+                      multiple
                       onChange={handleChange}
-                      className={`form-control ${errors.file ? 'is-invalid' : ''}`}
+                      className={`form-control ${errors.files ? 'is-invalid' : ''}`}
                     />
-                    {errors.file && <div className="invalid-feedback">{errors.file}</div>}
+                    {errors.files && <div className="invalid-feedback">{errors.files}</div>}
+                    {formData.files && formData.files.length > 0 && (
+                      <div className="mt-2 d-flex flex-column gap-1">
+                        {formData.files.map((file, idx) => (
+                          <a
+                            key={idx}
+                            href={URL.createObjectURL(file)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {file.name}
+                          </a>
+                        ))}
+                      </div>
+                    )}
                   </div>
                   <div className="col-md-8 d-flex flex-column gap-3">
                     {formData.urls.map((url, index) => (
-                      <div key={index} className="d-flex align-items-end gap-2" style={{ minWidth: '600px' }}>
+                      <div key={index} className="d-flex align-items-end gap-2 url" >
                         <div className="flex-grow-1">
                           <label className="form-label">
                             URL <span className="text-danger">*</span>
@@ -266,8 +359,10 @@ const TeamLatestUpdates = () => {
 
                   {/* Buttons */}
                   <div className="col-md-12 d-flex justify-content-end mt-4">
-                    <button type="submit" className="btn btn-success px-4 me-2">Submit</button>
-                    <button type="button" className="btn btn-outline-secondary px-4">Cancel</button>
+                    <button type="submit" className="btn btn-success px-4 me-2" disabled={loading}> {loading ? "Submitting..." : "Submit"}</button>
+                    <button type="button" className="btn btn-outline-secondary px-4" onClick={() =>
+                      handleReset()
+                    }>Cancel</button>
                   </div>
 
                 </div>

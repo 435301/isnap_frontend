@@ -79,6 +79,7 @@ import ManageBusinessType from "./admin/pages/ManageBusinessType.jsx";
 import AddBusinessType from "./admin/pages/AddBusinessType.jsx";
 import ManageLeadSource from "./admin/pages/ManageLeadSource.jsx";
 import AddLeadSource from "./admin/pages/AddLeadSource.jsx";
+import EditTeamLatestUpdates from "./admin/pages/EditLatestUpdates.jsx";
 
 function App() {
   return (
@@ -109,6 +110,7 @@ function App() {
           }
         />
         <Route path="/latest-updates" element={<AdminRoute><LastestUpdates /></AdminRoute>} />
+        <Route path="/edit-latest-updates/:id" element={<AdminRoute><EditTeamLatestUpdates /></AdminRoute>} />
         <Route path="/manage-roles-features" element={<AdminRoute><RoleAccess /></AdminRoute>} />
         <Route path="/manage-billing" element={<AdminRoute><ManageBilling /></AdminRoute>} />
         <Route path="/manage-marketplace" element={<AdminRoute><ManageServicesType /></AdminRoute>} />
