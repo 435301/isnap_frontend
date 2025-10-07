@@ -4,11 +4,11 @@ import { loginUser } from "../../redux/actions/authAction";
 import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
-import "../assets/admin/css/login.css";
-import logo from "../assets/admin/images/logo.png";
-import { validateLoginForm } from "./validation";
+import "../../admin/assets/admin/css/login.css";
+import logo from "../../admin/assets/admin/images/logo.png";
+import { validateLoginForm } from "../../admin/pages/validation";
 
-const Login = () => {
+const SellerLogin = () => {
   const [formData, setFormData] = useState({
     emailOrMobile: "",
     password: "",
@@ -126,7 +126,7 @@ const Login = () => {
         </div>
         <h6 className="text-muted mt-3">
           Welcome to <br />
-          <span className="text-success">Isnap Task Management System</span>
+          <span className="text-success">Seller Login</span>
         </h6>
 
         {/* LOGIN FORM */}
@@ -291,4 +291,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default SellerLogin;

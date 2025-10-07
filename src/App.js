@@ -80,6 +80,7 @@ import AddBusinessType from "./admin/pages/AddBusinessType.jsx";
 import ManageLeadSource from "./admin/pages/ManageLeadSource.jsx";
 import AddLeadSource from "./admin/pages/AddLeadSource.jsx";
 import EditTeamLatestUpdates from "./admin/pages/EditLatestUpdates.jsx";
+import SellerLogin from "./Seller/pages/SellerLogin.jsx";
 
 function App() {
   return (
@@ -87,6 +88,7 @@ function App() {
       <Routes>
         {/* Public Routes */}
         <Route path="/login" element={<Login />} />
+        <Route path="/seller/login" element={<SellerLogin />} />
         <Route path="/" element={<Navigate to="/login" />} />
 
         {/* Admin Routes */}
