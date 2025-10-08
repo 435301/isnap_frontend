@@ -33,8 +33,8 @@ const SellerLogin = () => {
   const { loading, error, token, user } = useSelector((state) => state.auth);
 
   useEffect(() => {
-       if (user.roleName === "Seller") {
-        if (user.mouStatus === 1) {
+       if (user?.roleName === "Seller") {
+        if (user?.mouStatus === 1) {
           navigate("/seller/dashboard");
         } else {
           navigate("/seller/mou-1");
