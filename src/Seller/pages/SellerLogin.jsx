@@ -7,6 +7,7 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import "../../admin/assets/admin/css/login.css";
 import logo from "../../admin/assets/admin/images/logo.png";
 import { validateLoginForm } from "../../admin/pages/validation";
+import { updateMouStatus } from "../../redux/actions/mouAction";
 
 const SellerLogin = () => {
   const [formData, setFormData] = useState({
@@ -30,19 +31,15 @@ const SellerLogin = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { loading, error, token, user } = useSelector((state) => state.auth);
-  console.log('user123', user)
 
-  // Redirect based on user role after login
   useEffect(() => {
-    if (token && user?.roleName) {
-      if (user.roleName === "Admin") {
-        navigate("/dashboard");
-      } else if (user.roleName === "Team") {
-        navigate("/team/dashboard");
-      } else if (user.roleName === "Seller") {
-        navigate("/seller/mou-1");
+       if (user.roleName === "Seller") {
+        if (user.mouStatus === 1) {
+          navigate("/seller/dashboard");
+        } else {
+          navigate("/seller/mou-1");
+        }
       }
-    }
   }, [token, user, navigate]);
 
   const handleChange = (e) => {
@@ -58,6 +55,7 @@ const SellerLogin = () => {
 
     if (Object.keys(validationErrors).length === 0) {
       dispatch(loginUser(formData));
+
     }
   };
 

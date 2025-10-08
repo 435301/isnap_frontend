@@ -1,9 +1,17 @@
 import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import logo from "../assets/images/logo.png";
+import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import { updateMouStatus } from "../../redux/actions/mouAction";
+import {useNavigate} from "react-router-dom"
 
 const Agreement = () => {
+   const dispatch = useDispatch();
+   const navigate = useNavigate();
   const [isAccepted, setIsAccepted] = useState(false);
+   const { user} = useSelector((state) => state.auth);
+   console.log('user',user)
 
   const handleCheckboxChange = () => {
     setIsAccepted(!isAccepted);
@@ -12,10 +20,10 @@ const Agreement = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!isAccepted) {
-      alert("You must accept the agreement to proceed.");
+      toast.warn("Please accept the terms and conditions");
     } else {
-      alert("Form submitted successfully!");
-      // Add your actual submission logic here
+      dispatch(updateMouStatus(user.id, 1)); // status = 1 if accepted
+      navigate("/seller/dashboard")
     }
   };
 
