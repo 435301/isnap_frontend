@@ -35,7 +35,12 @@ export const TeamRoute = ({ children }) => {
 export const SellerRoute = ({ children }) => {
   const { token, user } = useSelector((state) => state.auth);
   console.log("SellerRoute - Token:", token, "User:", user); // Debug
-  if (!token) return <Navigate to="/login" replace />;
+  if (!token || !isTokenValid(token)) {
+    //  Clear invalid token
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("user");
+    return <Navigate to="/seller/login" replace />;
+  };
   if (user?.roleName !== "Seller") return <h2>401 - Unauthorized</h2>;
   return children;
 };
