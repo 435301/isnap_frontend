@@ -1,17 +1,22 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import logo from "../assets/images/logo.png";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
-import { updateMouStatus } from "../../redux/actions/mouAction";
-import {useNavigate} from "react-router-dom"
+import { fetchMouDetails, updateMouStatus } from "../../redux/actions/mouAction";
+import { useNavigate } from "react-router-dom"
 
 const Agreement = () => {
-   const dispatch = useDispatch();
-   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [isAccepted, setIsAccepted] = useState(false);
-   const { user} = useSelector((state) => state.auth);
-   console.log('user',user)
+  const { user } = useSelector((state) => state.auth);
+  const { mouList, loading, error, serviceTypes, commissionPricings } = useSelector((state) => state.mou);
+  console.log('mouList', serviceTypes)
+
+  useEffect(() => {
+    dispatch(fetchMouDetails());
+  }, [dispatch])
 
   const handleCheckboxChange = () => {
     setIsAccepted(!isAccepted);
@@ -330,7 +335,7 @@ const Agreement = () => {
                       </p>
 
                       {/* Checkbox */}
-                     
+
                     </div>
 
 
@@ -833,7 +838,7 @@ const Agreement = () => {
 
                       <p>2. Name s/o, Age, Occ, Residence Adhaar No.</p>
 
-                    
+
                     </div>
 
 
@@ -956,43 +961,55 @@ const Agreement = () => {
                         <tbody>
                           <tr>
                             <td>BUSINESS LAUNCH</td>
-                            <td>₹5000 – NATIONAL E-COMMERCE<br />₹11000 – INTL E-COMMERCE<br />₹11000 – QUICK COMMERCE</td>
+                            <td>
+                              {serviceTypes.map((service, index) => (
+                                <div key={service.id} className="pb-2">
+                                  ₹{service.price} – {service.marketPlaceType}
+                                  {index < serviceTypes.length - 1 && <br />}
+                                </div>
+                              ))}
+                            </td>
                             <td>ONE TIME FEE</td>
                           </tr>
+
+                          {/* PRODUCT LISTINGS */}
                           <tr>
                             <td>PRODUCT LISTINGS</td>
-                            <td>₹100/SKU/ACCOUNT.</td>
+                            <td>
+                              {mouList.map((item, index) => (
+                                <div key={item.id}>
+                                  ₹{item.price}/SKU/ACCOUNT
+                                  <br />
+                                  Quantity Range: {item.fromQty} – {item.toQty}
+                                  {index < mouList.length - 1 && <hr className="my-1" />}
+                                </div>
+                              ))}
+                            </td>
                             <td>ONE TIME FEE</td>
                           </tr>
+
+                          {/* KEY ACCOUNT MANAGEMENT */}
                           <tr>
                             <td>KEY ACCOUNT MANAGEMENT</td>
                             <td colSpan="2">
-                              WE PROVIDE TWO PRICING OPTIONS<br />
-                              1. PERCENTAGE (%) OF THE MERCHANDISE VALUE (ON MARKETPLACE TRANSACTIONS), ALONG WITH A CAUTION DEPOSIT OF ₹29000 EACH ACCOUNT (REFUNDABLE).<br />
+                              WE PROVIDE TWO PRICING OPTIONS
+                              <br />
+                              1. PERCENTAGE (%) OF THE MERCHANDISE VALUE (ON MARKETPLACE TRANSACTIONS), ALONG WITH A CAUTION DEPOSIT OF ₹29000 EACH ACCOUNT (REFUNDABLE).
+                              <br />
                               <table className="table table-bordered mt-2">
                                 <thead>
                                   <tr>
-                                    <th>PERCENTAGE (%) ON G.M.V IN INR</th>
-                                    <th></th>
+                                    <th>COMMISSION TITLE</th>
+                                    <th>PERCENTAGE (%)</th>
                                   </tr>
                                 </thead>
                                 <tbody>
-                                  <tr>
-                                    <td>&lt;10 LAKHS</td>
-                                    <td>10%</td>
-                                  </tr>
-                                  <tr>
-                                    <td>&lt;50 LAKHS</td>
-                                    <td>8%</td>
-                                  </tr>
-                                  <tr>
-                                    <td>&lt;300 LAKHS</td>
-                                    <td>4%</td>
-                                  </tr>
-                                  <tr>
-                                    <td>&gt;300 LAKHS</td>
-                                    <td>2%</td>
-                                  </tr>
+                                  {commissionPricings.map((commission) => (
+                                    <tr key={commission.id}>
+                                      <td>{commission.commissionTitle}</td>
+                                      <td>{commission.percentage}%</td>
+                                    </tr>
+                                  ))}
                                 </tbody>
                               </table>
                             </td>
