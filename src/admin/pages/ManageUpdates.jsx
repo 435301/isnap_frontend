@@ -134,7 +134,7 @@ const ManageUpdates = () => {
                     <input
                       type="text"
                       className="form-control border-0"
-                      placeholder="Search"
+                      placeholder="Search by Latest updates"
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                     />

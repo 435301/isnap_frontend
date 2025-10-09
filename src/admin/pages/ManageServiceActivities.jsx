@@ -116,7 +116,7 @@ const ManageServiceActivities = () => {
                   <input
                     type="text"
                     className="form-control border-0"
-                    placeholder="Search by Service Category"
+                    placeholder="Search by Service activity"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
