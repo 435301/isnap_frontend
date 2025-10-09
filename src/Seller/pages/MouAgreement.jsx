@@ -964,7 +964,7 @@ const Agreement = () => {
                             <td>
                               {serviceTypes.map((service, index) => (
                                 <div key={service.id} className="pb-2">
-                                  ₹{service.price} – {service.marketPlaceType}
+                                  ₹{service.price} – {service.serviceType}
                                   {index < serviceTypes.length - 1 && <br />}
                                 </div>
                               ))}
