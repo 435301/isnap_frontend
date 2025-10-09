@@ -6,14 +6,18 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import BASE_URL from '../../config/config';
 import getAuthHeaders from '../../utils/auth';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchLeadHistoryAll } from '../../redux/actions/leadTeamAction';
 
 const LeadView = () => {
-    const { id } = useParams(); 
+    const { id } = useParams();
+    const dispatch = useDispatch();
     const [lead, setLead] = useState(null);
     console.log('lead', lead)
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-
+    const { leadHistories } = useSelector((state) => state.leadHistory);
+    console.log('leadHistories', leadHistories)
     useEffect(() => {
         const handleResize = () => {
             setWindowWidth(window.innerWidth);
@@ -48,6 +52,12 @@ const LeadView = () => {
     const handleToggleSidebar = () => {
         setIsSidebarOpen(!isSidebarOpen);
     };
+
+    useEffect(() => {
+        if (id) {
+            dispatch(fetchLeadHistoryAll(id));
+        }
+    }, [dispatch]);
 
     return (
         <div className="container-fluid position-relative bg-white d-flex p-0">
@@ -183,8 +193,104 @@ const LeadView = () => {
                         </div>
                     </div>
 
+                    <div className="bg-white rounded shadow-sm mb-4">
+                        <div className="p-2" style={{ backgroundColor: "#d6d6f5" }}>
+                            <h6 className="mb-0 fw-bold">Lead History</h6>
+                        </div>
+                        <div className="p-3">
+                            <table className="table table-borderless mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Created At</th>
+                                        <th>Updated At</th>
+                                        <th>Follow Up Date</th>
+                                        <th>Follow Up Time</th>
+                                        <th>Lead Details</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {leadHistories && leadHistories.length > 0 ? (
+                                        leadHistories.map((leadHis, index) => (
+                                            <tr key={index}>
+                                                <td>
+                                                    {leadHis.createdAt
+                                                        ? new Date(leadHis.createdAt).toLocaleString("en-IN", {
+                                                            day: "2-digit",
+                                                            month: "short",
+                                                            year: "numeric",
+                                                            hour: "2-digit",
+                                                            minute: "2-digit",
+                                                            hour12: true,
+                                                        })
+                                                        : "-"}
+                                                </td>
+                                                <td>
+                                                    {leadHis.updatedAt
+                                                        ? new Date(leadHis.updatedAt).toLocaleString("en-IN", {
+                                                            day: "2-digit",
+                                                            month: "short",
+                                                            year: "numeric",
+                                                            hour: "2-digit",
+                                                            minute: "2-digit",
+                                                            hour12: true,
+                                                        })
+                                                        : "-"}
+                                                </td>
+                                                <td>
+                                                    {leadHis.followUpDate
+                                                        ? new Date(leadHis.followUpDate).toLocaleDateString("en-IN", {
+                                                            day: "2-digit",
+                                                            month: "short",
+                                                            year: "numeric",
+                                                        })
+                                                        : "-"}
+                                                </td>
+                                                <td>
+                                                    {leadHis.followUpTime
+                                                        ? new Date(`1970-01-01T${leadHis.followUpTime}`).toLocaleTimeString("en-IN", {
+                                                            hour: "2-digit",
+                                                            minute: "2-digit",
+                                                            hour12: true,
+                                                        })
+                                                        : "-"}
+                                                </td>
+                                                <td>{leadHis.leadDetails || "-"}</td>
+                                                <td>
+                                                    <span
+                                                        className={
+                                                            leadHis.leadStatusTitle === "New"
+                                                                ? "text-primary fw-bold"
+                                                                : leadHis.leadStatusTitle === "Contacted"
+                                                                    ? "text-warning fw-bold"
+                                                                    : leadHis.leadStatusTitle === "Closed"
+                                                                        ? "text-danger fw-bold"
+                                                                        : "text-success fw-bold"
+                                                        }
+                                                    >
+                                                        {leadHis.leadStatusTitle || "-"}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    ) : (
+                                        <tr>
+                                            <td colSpan="6" className="text-center text-muted">
+                                                No lead history found.
+                                            </td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+
+                        </div>
+                    </div>
+
+
 
                 </div> {/* container-fluid */}
+
+
             </div> {/* content */}
         </div>
     );
