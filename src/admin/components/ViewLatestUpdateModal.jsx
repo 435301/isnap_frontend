@@ -49,9 +49,9 @@ const ViewUpdateModal = ({ show, handleClose, update }) => {
       
       </Modal.Body>
       <Modal.Footer>
-        <Button  className="btn btn-light" onClick={handleClose}>
+        <button  className="btn btn-light" onClick={handleClose}>
           Close
-        </Button>
+        </button>
       </Modal.Footer>
     </Modal>
   );

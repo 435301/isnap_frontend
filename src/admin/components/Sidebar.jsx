@@ -215,7 +215,7 @@ const Sidebar = ({ isOpen }) => {
               <Link to="/manage-roles-features" className={`dropdown-item ${isLinkActive("//manage-roles-features")}`}>Roles Features</Link>
 
               <Link to="/manage-team" className={`dropdown-item ${isLinkActive("/manage-team")}`}>Teams</Link>
-              <Link to="/latest-updates" className={`dropdown-item ${isLinkActive("/latest-updates")}`}>Latest Updates</Link>
+              {/* <Link to="/latest-updates" className={`dropdown-item ${isLinkActive("/latest-updates")}`}>Latest Updates</Link> */}
               <Link to="/manage-updates" className={`dropdown-item ${isLinkActive("/manage-updates")}`}>Manage Updates</Link>
             </div>
           </div>

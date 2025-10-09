@@ -26,10 +26,10 @@ const CreateLead = () => {
 
   useEffect(() => {
     dispatch(fetchLeads());
-        dispatch(fetchLeadSources());
-        dispatch(fetchLeadStatus());
-        dispatch(fetchBusinessTypes());
-        dispatch(fetchTeams());
+    dispatch(fetchLeadSources());
+    dispatch(fetchLeadStatus());
+    dispatch(fetchBusinessTypes());
+    dispatch(fetchTeams());
   }, [dispatch])
   const [formData, setFormData] = useState({
     customerMobile: '',
@@ -68,6 +68,12 @@ const CreateLead = () => {
         customerName: mobileCheck.customerName || prev.customerName,
         // emailId: mobileCheck.emailId || prev.emailId,
       }));
+      if (mobileCheck.customerName) {
+        setErrors((prev) => ({
+          ...prev,
+          customerName: "",
+        }));
+      }
     }
   }, [mobileCheck]);
 

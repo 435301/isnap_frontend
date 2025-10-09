@@ -69,7 +69,7 @@ export const createLatestUpdate = (formData) => async (dispatch) => {
       payload: response.data,
     });
     dispatch(fetchLatestUpdates());
-    toast.success(response?.message || "Latest Update created successfully");
+    toast.success(response?.data.message || "Latest Update created successfully");
   } catch (error) {
     dispatch({
       type: CREATE_LATEST_UPDATE_FAILURE,
