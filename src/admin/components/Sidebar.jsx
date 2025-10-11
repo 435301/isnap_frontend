@@ -210,6 +210,7 @@ const Sidebar = ({ isOpen }) => {
               {isOpen && <span>Team</span>}
             </a>
             <div className={`dropdown-menu bg-transparent border-0 ${isDropdownActive("team") ? "show" : ""}`}>
+              <Link to="/manage-wings" className={`dropdown-item ${isLinkActive("/manage-wings")}`}>Wings</Link>
               <Link to="/manage-departments" className={`dropdown-item ${isLinkActive("/manage-departments")}`}>Departments</Link>
               <Link to="/manage-roles" className={`dropdown-item ${isLinkActive("/manage-roles")}`}>Roles</Link>
               <Link to="/manage-roles-features" className={`dropdown-item ${isLinkActive("//manage-roles-features")}`}>Roles Features</Link>

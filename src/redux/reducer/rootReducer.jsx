@@ -32,6 +32,7 @@ import { leadReducer } from "./leadReducer";
 import { leadHistoryReducer } from "./leadTeamReducer";
 import latestUpdatesReducer from "./latestUpdateReducer";
 import mouStatusReducer from "./mouReducer";
+import { wingsReducer } from "./wingReducer";
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -70,6 +71,7 @@ const rootReducer = combineReducers({
   latestUpdates: latestUpdatesReducer,
   mouStatus: mouStatusReducer,
   mou: mouStatusReducer,
+  wings:wingsReducer,
 });
 
 

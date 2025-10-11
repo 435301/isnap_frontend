@@ -81,6 +81,8 @@ import ManageLeadSource from "./admin/pages/ManageLeadSource.jsx";
 import AddLeadSource from "./admin/pages/AddLeadSource.jsx";
 import EditTeamLatestUpdates from "./admin/pages/EditLatestUpdates.jsx";
 import SellerLogin from "./Seller/pages/SellerLogin.jsx";
+import ManageWing from "./admin/pages/ManageWings.jsx";
+import AddWing from "./admin/pages/AddWing.jsx";
 
 function App() {
   return (
@@ -120,9 +122,11 @@ function App() {
         <Route path="/manage-lead-source" element={<AdminRoute><ManageLeadSource /></AdminRoute>} />
         <Route path="/manage-services" element={<AdminRoute><ManageServices /></AdminRoute>} />
         <Route path="/market-place-type" element={<AdminRoute><MarketplaceType /></AdminRoute>} />
+        <Route path="/manage-wings" element={<AdminRoute><ManageWing /></AdminRoute>} />
         <Route path="/manage-departments" element={<AdminRoute><ManageDepartments /></AdminRoute>} />
         <Route path="/add-service" element={<AdminRoute><AddService /></AdminRoute>} />
         <Route path="/create-department" element={<AdminRoute><AddDepartment /></AdminRoute>} />
+        <Route path="/create-wing" element={<AdminRoute><AddWing /></AdminRoute>} />
         <Route path="/create-billing" element={<AdminRoute><CreateBillingCycle /></AdminRoute>} />
         <Route path="/manage-product-listing" element={<AdminRoute><ManageProductListing /></AdminRoute>} />
         <Route path="/add-product-listing" element={<AdminRoute><AddProductListing /></AdminRoute>} />
