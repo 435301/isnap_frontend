@@ -5,14 +5,26 @@ import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchMouDetails, updateMouStatus } from "../../redux/actions/mouAction";
 import { useNavigate } from "react-router-dom"
+import axios from "axios";
 
 const Agreement = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [isAccepted, setIsAccepted] = useState(false);
-  const { user } = useSelector((state) => state.auth);
+  const { seller } = useSelector((state) => state.sellerAuth);
   const { mouList, loading, error, serviceTypes, commissionPricings } = useSelector((state) => state.mou);
   console.log('mouList', serviceTypes)
+
+      const getIpAddress = async () => {
+  try {
+    const response = await axios.get("https://api.ipify.org?format=json");
+    return response.data.ip; // e.g. "123.45.67.89"
+  } catch (error) {
+    console.error("Error fetching IP address:", error);
+    return "Unknown";
+  }
+};
+
 
   useEffect(() => {
     dispatch(fetchMouDetails());
@@ -22,12 +34,13 @@ const Agreement = () => {
     setIsAccepted(!isAccepted);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!isAccepted) {
       toast.warn("Please accept the terms and conditions");
     } else {
-      dispatch(updateMouStatus(user.id, 1)); // status = 1 if accepted
+       const ipAddress = await getIpAddress();
+      dispatch(updateMouStatus(seller.id, 1, ipAddress));
       navigate("/seller/dashboard")
     }
   };

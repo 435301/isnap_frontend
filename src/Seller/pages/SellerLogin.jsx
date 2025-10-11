@@ -6,8 +6,9 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "../../admin/assets/admin/css/login.css";
 import logo from "../../admin/assets/admin/images/logo.png";
-import { validateLoginForm } from "../../admin/pages/validation";
 import { updateMouStatus } from "../../redux/actions/mouAction";
+import { businessForgotPassword, businessLogin, businessResetPassword, businessVerifyOtp } from "../../redux/actions/sellerAuthAction";
+import { toast } from "react-toastify";
 
 const SellerLogin = () => {
   const [formData, setFormData] = useState({
@@ -17,7 +18,7 @@ const SellerLogin = () => {
 
   const [errors, setErrors] = useState({});
   const [showForgot, setShowForgot] = useState(false);
-  const [forgotStep, setForgotStep] = useState(1); // 1=email/mobile, 2=otp, 3=new password
+  const [forgotStep, setForgotStep] = useState(1); 
   const [forgotData, setForgotData] = useState({
     emailOrMobile: "",
     otp: "",
@@ -25,96 +26,113 @@ const SellerLogin = () => {
     confirmPassword: "",
   });
 
-  const [forgotError, setForgotError] = useState("");
-  const [forgotSuccess, setForgotSuccess] = useState("");
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { loading, error, token, user } = useSelector((state) => state.auth);
 
-  useEffect(() => {
-       if (user?.roleName === "Seller") {
-        if (user?.mouStatus === 1) {
+  const {
+    loading,
+    error,
+    token,
+    seller,
+    message,
+    otp,
+  } = useSelector((state) => state.sellerAuth);
+  console.log('seller', seller)
+
+    useEffect(() => {
+        if (seller?.mouStatus === 1) {
           navigate("/seller/dashboard");
         } else {
           navigate("/seller/mou-1");
-        }
       }
-  }, [token, user, navigate]);
+  }, [token, seller, navigate]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    setErrors((prev) => ({ ...prev, [name]: "" }));
+//   useEffect(() => {
+//   const handleNavigation = async () => {
+//     if (seller) {
+//       const ipAddress = await getIpAddress();
+//       dispatch(updateMouStatus(seller.id, seller.mouStatus, ipAddress));
+//       if (seller?.mouStatus === 1) {
+//         navigate("/seller/dashboard");
+//       } else {
+//         navigate("/seller/mou-1");
+//       }
+//     }
+//   };
+
+//   handleNavigation();
+// }, [token, seller, navigate, dispatch]);
+
+
+  // --- FORM VALIDATION ---
+  const validateLoginForm = (data) => {
+    let errors = {};
+    if (!data.emailOrMobile.trim()) errors.emailOrMobile = "Email or Mobile is required.";
+    if (!data.password.trim()) errors.password = "Password is required.";
+    return errors;
   };
 
+  // --- LOGIN HANDLER ---
   const handleSubmit = (e) => {
     e.preventDefault();
     const validationErrors = validateLoginForm(formData);
     setErrors(validationErrors);
-
     if (Object.keys(validationErrors).length === 0) {
-      dispatch(loginUser(formData));
-
+      dispatch(
+        businessLogin({
+          identifier: formData.emailOrMobile,
+          password: formData.password,
+        })
+      );
     }
+     
   };
 
-  // Forgot password handlers
+  // --- FORGOT PASSWORD HANDLERS ---
   const handleForgotChange = (e) => {
     const { name, value } = e.target;
     setForgotData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSendOtp = (e) => {
+  const handleSendOtp = async (e) => {
     e.preventDefault();
-    setForgotError("");
-    setForgotSuccess("");
-
     if (!forgotData.emailOrMobile) {
-      setForgotError("Please enter Email or Mobile");
+      toast.error("Please enter Email or Mobile");
       return;
     }
-    // TODO: Replace with actual API call to send OTP
-    setForgotSuccess("OTP sent to " + forgotData.emailOrMobile);
+    await dispatch(businessForgotPassword(forgotData.emailOrMobile));
     setForgotStep(2);
   };
 
-  const handleVerifyOtp = (e) => {
+  const handleVerifyOtp = async (e) => {
     e.preventDefault();
-    setForgotError("");
-    setForgotSuccess("");
-
     if (!forgotData.otp) {
-      setForgotError("Enter OTP");
+      toast.error("Please enter OTP");
       return;
     }
-    // TODO: Replace with actual API call to verify OTP
-    setForgotSuccess("OTP Verified!");
+    await dispatch(businessVerifyOtp(forgotData.emailOrMobile, forgotData.otp));
     setForgotStep(3);
   };
 
-  const handleResetPassword = (e) => {
+  const handleResetPassword = async (e) => {
     e.preventDefault();
-    setForgotError("");
-    setForgotSuccess("");
 
     if (!forgotData.newPassword || !forgotData.confirmPassword) {
-      setForgotError("Enter all password fields");
+      toast.warn("Please enter both password fields");
       return;
     }
     if (forgotData.newPassword !== forgotData.confirmPassword) {
-      setForgotError("Passwords do not match!");
+      toast.error("Passwords do not match");
       return;
     }
-    // TODO: Replace with actual API call to reset password
-    setForgotSuccess("Password reset successful!");
-    setTimeout(() => {
-      setShowForgot(false);
-      setForgotStep(1);
-      setForgotData({ emailOrMobile: "", otp: "", newPassword: "", confirmPassword: "" });
-      setForgotSuccess("");
-    }, 2000);
+    await dispatch(
+      businessResetPassword(forgotData.emailOrMobile, forgotData.newPassword)
+    );
+    setShowForgot(false);
+    setForgotStep(1);
+    setForgotData({ emailOrMobile: "", otp: "", newPassword: "", confirmPassword: "" });
   };
+
 
   return (
     <div className="login-page">
@@ -122,6 +140,7 @@ const SellerLogin = () => {
         <div className="brand">
           <img src={logo} className="w-50" alt="Logo" />
         </div>
+
         <h6 className="text-muted mt-3">
           Welcome to <br />
           <span className="text-success">Seller Login</span>
@@ -141,7 +160,7 @@ const SellerLogin = () => {
                 type="text"
                 name="emailOrMobile"
                 value={formData.emailOrMobile}
-                onChange={handleChange}
+                onChange={(e) => setFormData({ ...formData, emailOrMobile: e.target.value })}
                 className={`form-control ps-5 ${errors.emailOrMobile ? "is-invalid" : ""}`}
                 placeholder="Email/Mobile"
               />
@@ -159,7 +178,7 @@ const SellerLogin = () => {
                 type="password"
                 name="password"
                 value={formData.password}
-                onChange={handleChange}
+                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 className={`form-control ps-5 ${errors.password ? "is-invalid" : ""}`}
                 placeholder="Password"
               />
@@ -183,10 +202,10 @@ const SellerLogin = () => {
             </div>
           </form>
         ) : (
-          // FORGOT PASSWORD FLOW
+          // --- FORGOT PASSWORD FLOW ---
           <form className="mt-4 text-start">
-            {forgotError && <div className="text-danger mb-3">{forgotError}</div>}
-            {forgotSuccess && <div className="text-success mb-3">{forgotSuccess}</div>}
+            {message && <div className="text-success mb-3">{message}</div>}
+            {error && <div className="text-danger mb-3">{error}</div>}
 
             {forgotStep === 1 && (
               <>
@@ -275,8 +294,7 @@ const SellerLogin = () => {
                 onClick={() => {
                   setShowForgot(false);
                   setForgotStep(1);
-                  setForgotError("");
-                  setForgotSuccess("");
+                  setForgotData({ emailOrMobile: "", otp: "", newPassword: "", confirmPassword: "" });
                 }}
               >
                 Back to Login
@@ -288,5 +306,4 @@ const SellerLogin = () => {
     </div>
   );
 };
-
 export default SellerLogin;

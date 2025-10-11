@@ -1,7 +1,7 @@
 import axios from "axios";
 import BASE_URL from "../../config/config";
-import getAuthHeaders from "../../utils/auth";
 import { toast } from "react-toastify";
+import getSellerAuthHeaders from "../../utils/sellerAuth";
 
 export const UPDATE_MOU_STATUS_REQUEST = "UPDATE_MOU_STATUS_REQUEST";
 export const UPDATE_MOU_STATUS_SUCCESS = "UPDATE_MOU_STATUS_SUCCESS";
@@ -13,11 +13,11 @@ export const FETCH_MOU_SUCCESS = "FETCH_MOU_SUCCESS";
 export const FETCH_MOU_FAILURE = "FETCH_MOU_FAILURE";
 
 
-export const updateMouStatus = (id, mouStatus) => async (dispatch) => {
+export const updateMouStatus = (id, mouStatus,ipAddress) => async (dispatch) => {
   dispatch({ type: UPDATE_MOU_STATUS_REQUEST });
 
   try {
-    const response = await axios.post(`${BASE_URL}/mouStatus`, { id, mouStatus }, getAuthHeaders(false));
+    const response = await axios.post(`${BASE_URL}/mou/mouStatus`, { id, mouStatus ,ipAddress}, getSellerAuthHeaders(false));
     
     if (response.data.status) {
       dispatch({
@@ -46,7 +46,7 @@ export const fetchMouDetails = () => {
     dispatch({ type: FETCH_MOU_REQUEST });
 
     try {
-      const response = await axios.get(`${BASE_URL}/mou` , getAuthHeaders()); 
+      const response = await axios.get(`${BASE_URL}/mou` , getSellerAuthHeaders()); 
       if (response.data.status) {
         dispatch({
           type: FETCH_MOU_SUCCESS,
