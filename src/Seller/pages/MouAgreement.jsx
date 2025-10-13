@@ -12,22 +12,32 @@ const Agreement = () => {
   const navigate = useNavigate();
   const [isAccepted, setIsAccepted] = useState(false);
   const { seller } = useSelector((state) => state.sellerAuth);
-  const { mouList, loading, error, serviceTypes, commissionPricings } = useSelector((state) => state.mou);
-  console.log('mouList', serviceTypes)
+  const {
+    mouList,
+    serviceTypes,
+    commissionPricings,
+    digitalMarketing,
+    productPhotographys,
+    keyAccountSubscriptions,
+    lifeStylePhotographys,
+    modelPhotographys,
+    aContentPhotographys,
+    storePhotographys,
+    socialMediaContentPhotographys,
+  } = useSelector((state) => state.mou);
 
-      const getIpAddress = async () => {
-  try {
-    const response = await axios.get("https://api.ipify.org?format=json");
-    return response.data.ip; // e.g. "123.45.67.89"
-  } catch (error) {
-    console.error("Error fetching IP address:", error);
-    return "Unknown";
-  }
-};
-
+  const getIpAddress = async () => {
+    try {
+      const response = await axios.get("https://api.ipify.org?format=json");
+      return response.data.ip; // e.g. "123.45.67.89"
+    } catch (error) {
+      console.error("Error fetching IP address:", error);
+      return "Unknown";
+    }
+  };
 
   useEffect(() => {
-    dispatch(fetchMouDetails());
+    dispatch(fetchMouDetails(seller.id));
   }, [dispatch])
 
   const handleCheckboxChange = () => {
@@ -39,7 +49,7 @@ const Agreement = () => {
     if (!isAccepted) {
       toast.warn("Please accept the terms and conditions");
     } else {
-       const ipAddress = await getIpAddress();
+      const ipAddress = await getIpAddress();
       dispatch(updateMouStatus(seller.id, 1, ipAddress));
       navigate("/seller/dashboard")
     }
@@ -972,33 +982,43 @@ const Agreement = () => {
                           </tr>
                         </thead>
                         <tbody>
+                          {/* BUSINESS LAUNCH */}
                           <tr>
                             <td>BUSINESS LAUNCH</td>
                             <td>
-                              {serviceTypes.map((service, index) => (
-                                <div key={service.id} className="pb-2">
-                                  ₹{service.price} – {service.serviceType}
-                                  {index < serviceTypes.length - 1 && <br />}
-                                </div>
-                              ))}
+                              {serviceTypes.length > 0 ? (
+                                serviceTypes.map((item) => (
+                                  <div key={item.id}>
+                                   {item.serviceTypeName} – ₹{item.offerPrice} 
+                                    <br />
+                                    <small>Bill Cycle: {item.billCycleTitle}</small>
+                                  </div>
+                                ))
+                              ) : (
+                                <div>—</div>
+                              )}
                             </td>
-                            <td>ONE TIME FEE</td>
+                            <td>{serviceTypes[0]?.billCycleTitle || "—"}</td>
+
                           </tr>
 
                           {/* PRODUCT LISTINGS */}
                           <tr>
                             <td>PRODUCT LISTINGS</td>
                             <td>
-                              {mouList.map((item, index) => (
-                                <div key={item.id}>
-                                  ₹{item.price}/SKU/ACCOUNT
-                                  <br />
-                                  Quantity Range: {item.fromQty} – {item.toQty}
-                                  {index < mouList.length - 1 && <hr className="my-1" />}
-                                </div>
-                              ))}
+                              {mouList.length > 0 ? (
+                                mouList.map((item) => (
+                                  <div key={item.id}>
+                                    ₹{item.offerPrice}/SKU ({item.noOfSkus} SKUs) – {item.serviceTypeName}
+                                    <br />
+                                    Total: ₹{item.totalPrice}
+                                  </div>
+                                ))
+                              ) : (
+                                <div>—</div>
+                              )}
                             </td>
-                            <td>ONE TIME FEE</td>
+                            <td>{mouList[0]?.billCycleTitle || "—"}</td>
                           </tr>
 
                           {/* KEY ACCOUNT MANAGEMENT */}
@@ -1007,7 +1027,8 @@ const Agreement = () => {
                             <td colSpan="2">
                               WE PROVIDE TWO PRICING OPTIONS
                               <br />
-                              1. PERCENTAGE (%) OF THE MERCHANDISE VALUE (ON MARKETPLACE TRANSACTIONS), ALONG WITH A CAUTION DEPOSIT OF ₹29000 EACH ACCOUNT (REFUNDABLE).
+                              1. PERCENTAGE (%) OF THE MERCHANDISE VALUE (ON MARKETPLACE TRANSACTIONS),
+                              ALONG WITH A CAUTION DEPOSIT OF ₹29000 EACH ACCOUNT (REFUNDABLE).
                               <br />
                               <table className="table table-bordered mt-2">
                                 <thead>
@@ -1017,18 +1038,203 @@ const Agreement = () => {
                                   </tr>
                                 </thead>
                                 <tbody>
-                                  {commissionPricings.map((commission) => (
-                                    <tr key={commission.id}>
-                                      <td>{commission.commissionTitle}</td>
-                                      <td>{commission.percentage}%</td>
+                                  {commissionPricings.length > 0 ? (
+                                    commissionPricings.map((commission) => (
+                                      <tr key={commission.id}>
+                                        <td>{commission.commissionTitle}</td>
+                                        <td>{commission.percentage}%</td>
+                                      </tr>
+                                    ))
+                                  ) : (
+                                    <tr>
+                                      <td colSpan="2" className="text-center">No Commissions Found</td>
                                     </tr>
-                                  ))}
+                                  )}
                                 </tbody>
                               </table>
                             </td>
                           </tr>
+
+                          {/* KEY ACCOUNT MANAGEMENT */}
+                          <tr>
+                            <td>KEY ACCOUNT SUBSCRIPTION</td>
+                            <td>
+                              {keyAccountSubscriptions?.length > 0 ? (
+                                keyAccountSubscriptions?.map((item) => (
+                                  <div key={item.id}>
+                                    {item.serviceTypeName} – ₹{item.offerPrice}
+                                  </div>
+                                ))
+                              ) : (
+                                <div>—</div>
+                              )}
+                            </td>
+                           
+                          </tr>
+
+                          {/* DIGITAL MARKETING */}
+                          {digitalMarketing && digitalMarketing.offerPrice && (
+                            <tr>
+                              <td>DIGITAL MARKETING</td>
+                              <td>
+                                {digitalMarketing.digitalMarketingServiceNames
+                                  ?.map((s) => s.name)
+                                  .join(", ")}
+                                <br />
+                                ₹{digitalMarketing.offerPrice}
+                              </td>
+                              <td>{digitalMarketing.billCycleTitle || "—"}</td>
+                            </tr>
+                          )}
+
+                          {/* PRODUCT PHOTOGRAPHY */}
+                          <tr>
+                            <td>PRODUCT PHOTOGRAPHY</td>
+                            <td>
+                              {productPhotographys?.length > 0 ? (
+                                productPhotographys.map((item) => (
+                                  <div key={item.id}>
+                                    {item.activityName} – {item.qty} × ₹{item.offerPrice} = ₹{item.totalPrice}
+                                  </div>
+                                ))
+                              ) : (
+                                <div>—</div>
+                              )}
+                            </td>
+                            <td>{productPhotographys?.length > 0 ? (
+                              productPhotographys.map((item) => (
+                                <div key={item.id}>
+                                  {item.billCycleTitle}
+                                </div>
+                              ))
+                            ) : (
+                              <div>—</div>
+                            )}</td>
+                          </tr>
+
+                            {/* lifeStylePhotographys PHOTOGRAPHY */}
+                          <tr>
+                            <td>LIFESTYLE PHOTOGRAPHY PHOTOGRAPHY</td>
+                            <td>
+                              {lifeStylePhotographys?.length > 0 ? (
+                                lifeStylePhotographys.map((item) => (
+                                  <div key={item.id}>
+                                    {item.activityName} – {item.qty} × ₹{item.offerPrice} = ₹{item.totalPrice}
+                                  </div>
+                                ))
+                              ) : (
+                                <div>—</div>
+                              )}
+                            </td>
+                            <td>{lifeStylePhotographys?.length > 0 ? (
+                              lifeStylePhotographys.map((item) => (
+                                <div key={item.id}>
+                                  {item.billCycleTitle}
+                                </div>
+                              ))
+                            ) : (
+                              <div>—</div>
+                            )}</td>
+                          </tr>
+                            {/* MODAL PHOTOGRAPHY */}
+                          <tr>
+                            <td>MODAL PHOTOGRAPHY</td>
+                            <td>
+                              {modelPhotographys?.length > 0 ? (
+                                modelPhotographys.map((item) => (
+                                  <div key={item.id}>
+                                    {item.activityName} – {item.qty} × ₹{item.offerPrice} = ₹{item.totalPrice}
+                                  </div>
+                                ))
+                              ) : (
+                                <div>—</div>
+                              )}
+                            </td>
+                            <td>{modelPhotographys?.length > 0 ? (
+                              modelPhotographys.map((item) => (
+                                <div key={item.id}>
+                                  {item.billCycleTitle}
+                                </div>
+                              ))
+                            ) : (
+                              <div>—</div>
+                            )}</td>
+                          </tr>
+                            {/* A CONTENT PHOTOGRAPHY */}
+                          <tr>
+                            <td>A+ CONTENT PHOTOGRAPHY</td>
+                            <td>
+                              {aContentPhotographys?.length > 0 ? (
+                                aContentPhotographys.map((item) => (
+                                  <div key={item.id}>
+                                    {item.activityName} – {item.qty} × ₹{item.offerPrice} = ₹{item.totalPrice}
+                                  </div>
+                                ))
+                              ) : (
+                                <div>—</div>
+                              )}
+                            </td>
+                            <td>{aContentPhotographys?.length > 0 ? (
+                              aContentPhotographys.map((item) => (
+                                <div key={item.id}>
+                                  {item.billCycleTitle}
+                                </div>
+                              ))
+                            ) : (
+                              <div>—</div>
+                            )}</td>
+                          </tr>
+                            {/* STORE PHOTOGRAPHY */}
+                          <tr>
+                            <td>STORE PHOTOGRAPHY</td>
+                            <td>
+                              {storePhotographys?.length > 0 ? (
+                                storePhotographys.map((item) => (
+                                  <div key={item.id}>
+                                    {item.activityName} – {item.qty} × ₹{item.offerPrice} = ₹{item.totalPrice}
+                                  </div>
+                                ))
+                              ) : (
+                                <div>—</div>
+                              )}
+                            </td>
+                            <td>{storePhotographys?.length > 0 ? (
+                              storePhotographys.map((item) => (
+                                <div key={item.id}>
+                                  {item.billCycleTitle}
+                                </div>
+                              ))
+                            ) : (
+                              <div>—</div>
+                            )}</td>
+                          </tr>
+
+                           <tr>
+                            <td>SOCIAL MEDIA CONTENT PHOTOGRAPHY</td>
+                            <td>
+                              {socialMediaContentPhotographys?.length > 0 ? (
+                                socialMediaContentPhotographys.map((item) => (
+                                  <div key={item.id}>
+                                    {item.activityName} – {item.qty} × ₹{item.offerPrice} = ₹{item.totalPrice}
+                                  </div>
+                                ))
+                              ) : (
+                                <div>—</div>
+                              )}
+                            </td>
+                            <td>{socialMediaContentPhotographys?.length > 0 ? (
+                              socialMediaContentPhotographys.map((item) => (
+                                <div key={item.id}>
+                                  {item.billCycleTitle}
+                                </div>
+                              ))
+                            ) : (
+                              <div>—</div>
+                            )}</td>
+                          </tr>
                         </tbody>
                       </table>
+
 
                       <p>Note: Exclusive launching charges are Rs. 25,000 for Myntra, Tira Beauty and Nykaa.</p>
 

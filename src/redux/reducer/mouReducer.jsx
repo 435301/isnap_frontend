@@ -11,9 +11,9 @@ import {
 const initialState = {
   loading: false,
   mouStatus: null, // current status
-    mouList: [],
-    serviceTypes:[],
-    commissionPricings:[],
+  mouList: [],
+  serviceTypes: [],
+  commissionPricings: [],
   error: null,
 };
 
@@ -25,15 +25,23 @@ const mouStatusReducer = (state = initialState, action) => {
       return { ...state, loading: false, mouStatus: action.payload.mouStatus };
     case UPDATE_MOU_STATUS_FAILURE:
       return { ...state, loading: false, error: action.payload };
-      case FETCH_MOU_REQUEST:
+    case FETCH_MOU_REQUEST:
       return { ...state, loading: true, error: null };
-     case FETCH_MOU_SUCCESS:
+    case FETCH_MOU_SUCCESS:
       return {
         ...state,
         loading: false,
-        mouList: action.payload.productListings || [],
-        serviceTypes: action.payload.serviceTypes || [],
-        commissionPricings: action.payload.commissionPricings || [],
+        mouList: action.payload.catalogListings || [],
+        serviceTypes: action.payload.businessLaunches || [],
+        commissionPricings: action.payload.keyAccountCommissions || [],
+        digitalMarketing: action.payload.digitalMarketing || {},
+        productPhotographys: action.payload.productPhotographys || [],
+         keyAccountSubscriptions: action.payload.keyAccountSubscriptions || [],
+        lifeStylePhotographys:action.payload.lifeStylePhotographys || [],
+        modelPhotographys: action.payload.modelPhotographys || [],
+        aContentPhotographys: action.payload.aContentPhotographys || [],
+        storePhotographys: action.payload.storePhotographys || [],
+        socialMediaContentPhotographys: action.payload.socialMediaContentPhotographys || [],
         error: null,
       };
     case FETCH_MOU_FAILURE:

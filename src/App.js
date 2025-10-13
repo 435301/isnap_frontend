@@ -90,7 +90,6 @@ function App() {
       <Routes>
         {/* Public Routes */}
         <Route path="/login" element={<Login />} />
-        <Route path="/seller/login" element={<SellerLogin />} />
         <Route path="/" element={<Navigate to="/login" />} />
 
         {/* Admin Routes */}
@@ -172,6 +171,7 @@ function App() {
         <Route path="/team/change-password" element={<TeamRoute><ChangePasswordTeam /></TeamRoute>} />
 
         {/* Seller Routes */}
+        <Route path="/seller/login" element={<SellerLogin />} />
         <Route path="/seller/dashboard" element={<SellerRoute><SellerDashboard /></SellerRoute>} />
         <Route path="/seller/add-products" element={<SellerRoute><AddProducts /></SellerRoute>} />
         <Route path="/seller/mou-1" element={<SellerRoute><MouAgreement /></SellerRoute>} />

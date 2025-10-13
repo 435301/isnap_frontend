@@ -41,12 +41,12 @@ export const updateMouStatus = (id, mouStatus,ipAddress) => async (dispatch) => 
 };
 
 
-export const fetchMouDetails = () => {
+export const fetchMouDetails = (id) => {
   return async (dispatch) => {
     dispatch({ type: FETCH_MOU_REQUEST });
 
     try {
-      const response = await axios.get(`${BASE_URL}/mou` , getSellerAuthHeaders()); 
+      const response = await axios.get(`${BASE_URL}/mou/${id}` , getSellerAuthHeaders()); 
       if (response.data.status) {
         dispatch({
           type: FETCH_MOU_SUCCESS,
