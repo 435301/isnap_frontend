@@ -1,20 +1,15 @@
 // src/redux/actions/roleActions.js
 import axios from "axios";
 import BASE_URL from "../../config/config";
+import getAuthHeaders from "../../utils/auth";
+import { toast } from "react-toastify";
 
 // Fetch roles
 export const fetchRoles = () => async (dispatch, getState) => {
   try {
     dispatch({ type: "FETCH_ROLES_REQUEST" });
-    const { auth } = getState();
-    const token = auth?.token || localStorage.getItem("token");
-
-    const response = await axios.get(`${BASE_URL}/roles`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    const rolesArray = Array.isArray(response.data.data) ? response.data.data : [];
-
+    const response = await axios.get(`${BASE_URL}/roles`, getAuthHeaders());
+    const rolesArray = Array.isArray(response.data.data.roles) ? response.data.data.roles : [];
     dispatch({
       type: "FETCH_ROLES_SUCCESS",
       payload: rolesArray,
@@ -30,61 +25,43 @@ export const fetchRoles = () => async (dispatch, getState) => {
 // Create role
 export const createRole = (role) => async (dispatch, getState) => {
   try {
-    const { auth } = getState();
-    const token = auth?.token || localStorage.getItem("token");
-
     const response = await axios.post(
       `${BASE_URL}/roles/create`,
       {
         roleTitle: role.roleTitle,
-        task: role.task,
+        wingId:role.wingId,
+        departmentId:role.departmentId,
         status: role.status,
       },
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      }
+    getAuthHeaders(false)
     );
 
     dispatch({ type: "CREATE_ROLE_SUCCESS", payload: response.data });
-    dispatch({ type: "SET_SUCCESS_MESSAGE", payload: "Role created successfully!" });
+    toast.success(response?.data.message || "Role created successfully");
     dispatch(fetchRoles());
     return response.data;
-
   } catch (error) {
-    // Backend validation errors (array of {msg})
-    if (error.response?.data?.errors && Array.isArray(error.response.data.errors)) {
-      const firstErrorMsg = error.response.data.errors[0].msg;
-      dispatch({ type: "SET_ERROR_MESSAGE", payload: firstErrorMsg });
-      return Promise.reject(firstErrorMsg);
-    }
-
-    // Other backend messages
-    const errMsg = error.response?.data?.msg || error.message || "Something went wrong";
-    dispatch({ type: "SET_ERROR_MESSAGE", payload: errMsg });
-    return Promise.reject(errMsg);
+    toast.error(error.response.data.message || "Role creation failed");
   }
 };
 
 // Update role
-export const updateRole = (role) => async (dispatch, getState) => {
+export const updateRole = (role) => async (dispatch) => {
   try {
-    const { auth } = getState();
-    const token = auth?.token || localStorage.getItem("token");
     const response = await axios.put(
       `${BASE_URL}/roles/update/${role.id}`,
       {
         roleTitle: role.roleTitle,
-        task: role.task,
+        wingId:role.wingId,
+        departmentId:role.departmentId,
         status: role.status,
-      },
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      }
+      },getAuthHeaders(false)
     );
     dispatch({ type: "UPDATE_ROLE_SUCCESS", payload: response.data });
-    dispatch({ type: "SET_SUCCESS_MESSAGE", payload: "Role updated successfully!" });
+    toast.success(response?.data.message || "Role created successfully");
     dispatch(fetchRoles());
   } catch (error) {
+    toast.error(error.response.data.message || "Role update failed");
     throw error.response?.data || error;
   }
 };
@@ -102,13 +79,10 @@ export const deleteRole = (id) => async (dispatch, getState) => {
     });
 
     dispatch({ type: "DELETE_ROLE_SUCCESS", payload: id });
-    dispatch({
-      type: "SET_SUCCESS_MESSAGE",
-      payload: res.data?.message || "Role deleted successfully!",
-    });
-
+    
     dispatch(fetchRoles());
   } catch (error) {
+    toast.error(error.response.data.message || "Role delete failed");
     throw error.response?.data || error;
   }
 };

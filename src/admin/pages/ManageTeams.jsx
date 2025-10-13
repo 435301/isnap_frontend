@@ -10,6 +10,8 @@ import { fetchTeams, deleteTeam, updateTeam, clearSuccessMessage } from "../../r
 import { fetchRoles } from "../../redux/actions/roleActions";
 import { ToastContainer, toast } from "react-toastify";
 import BASE_URL from "../../config/config";
+import { fetchDepartments } from "../../redux/actions/departmentActions";
+import { fetchWings } from "../../redux/actions/wingAction";
 
 const ManageTeams = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 992);
@@ -25,6 +27,9 @@ const ManageTeams = () => {
   const dispatch = useDispatch();
   const { teams = [], loading, error, successMessage, errorMessage } = useSelector(state => state.teams || {});
   const { roles = [] } = useSelector(state => state.roles || {});
+  const {wings} = useSelector((state) => state.wings);
+  const {departments} = useSelector((state) => state.department);
+  console.log('wings', wings)
 
   // Fetch teams and roles on mount
   useEffect(() => {
@@ -32,6 +37,8 @@ const ManageTeams = () => {
     if (!roles.length) {
       dispatch(fetchRoles());
     }
+    dispatch(fetchDepartments());
+    dispatch(fetchWings());
   }, [dispatch]);
 
   // Toast messages
@@ -67,11 +74,10 @@ const ManageTeams = () => {
   const handleSaveChanges = async updatedTeam => {
     try {
       await dispatch(updateTeam(updatedTeam));
-      dispatch(fetchTeams()); // ensure refresh
+      dispatch(fetchTeams()); 
       setShowEditModal(false);
       setSelectedTeam(null);
     } catch {
-      toast.error("Failed to update team.");
     }
   };
 
@@ -196,6 +202,9 @@ const ManageTeams = () => {
             selectedTeam={selectedTeam}
             handleSaveChanges={handleSaveChanges}
             baseUrl={BASE_URL}
+            wings={wings}
+            departments={departments}
+            teams={teams}
           />
           <ViewTeamModal
             showViewModal={showViewModal}
