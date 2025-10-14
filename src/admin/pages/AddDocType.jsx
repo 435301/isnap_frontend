@@ -10,7 +10,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { createLeadSource } from "../../redux/actions/leadSourceAction";
 
-const AddLeadSource = () => {
+const AddDocType = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -42,7 +42,7 @@ const AddLeadSource = () => {
     const validationErrors = {};
     if (!formData.title.trim())
       validationErrors.title = " Lead Source is required.";
-    if (formData.status === "")
+    if (!formData.status === "")
       validationErrors.status = "Status is required.";
 
     if (Object.keys(validationErrors).length > 0) {
@@ -52,7 +52,7 @@ const AddLeadSource = () => {
     try {
       const res = await dispatch(createLeadSource(formData));
       if(res?.status){
-      navigate("/manage-lead-source");
+      navigate("/manage-document-type");
       }
     } catch (err) {
       console.log(err)
@@ -70,11 +70,11 @@ const AddLeadSource = () => {
             <div className="bg-white p-3 rounded shadow-sm card-header mb-2">
               <div className="row g-2 align-items-center">
                 <div className="col-lg-6">
-                  <h5 className="form-title m-0">Add Lead Source</h5>
+                  <h5 className="form-title m-0">Add Document Type</h5>
                 </div>
                 <div className="col-lg-6 text-end">
-                  <Link to="/manage-lead-source" className="btn btn-new-lead">
-                    Manage Lead Source
+                  <Link to="/manage-document-type" className="btn btn-new-lead">
+                    Manage Document Type
                   </Link>
                 </div>
               </div>
@@ -91,9 +91,29 @@ const AddLeadSource = () => {
 
               <form onSubmit={handleSubmit}>
                 <div className="row g-3">
+
+                     <div className="col-md-4">
+                    <label className="form-label">
+                      Document Category <span className="text-danger">*</span>
+                    </label>
+                    <select
+                      name="status"
+                      value={formData.status}
+                      onChange={handleChange}
+                      className={`form-select ${errors.status ? "is-invalid" : ""}`}
+                    >
+                      <option value="">Select Status</option>
+                      <option value="1">Active</option>
+                      <option value="0">Inactive</option>
+                    </select>
+                    {errors.status && (
+                      <div className="invalid-feedback">{errors.status}</div>
+                    )}
+                  </div>
+
                   <div className="col-md-4">
                     <label className="form-label">
-                      Lead Source Title  <span className="text-danger">*</span>
+                      Document Type   <span className="text-danger">*</span>
                     </label>
                     <input
                       type="text"
@@ -101,7 +121,7 @@ const AddLeadSource = () => {
                       value={formData.title}
                       onChange={handleChange}
                       className={`form-control ${errors.title ? "is-invalid" : ""}`}
-                      placeholder="Enter Lead Source "
+                      placeholder="Enter Document Category "
                     />
                     {errors.title && (
                       <div className="invalid-feedback">{errors.title}</div>
@@ -134,7 +154,7 @@ const AddLeadSource = () => {
                     <button
                       type="button"
                       className="btn btn-outline-secondary px-4"
-                      onClick={() => navigate("/manage-lead-source")}
+                      onClick={() => navigate("/manage-document-type")}
                     >
                       Cancel
                     </button>
@@ -149,4 +169,4 @@ const AddLeadSource = () => {
   );
 };
 
-export default AddLeadSource;
+export default AddDocType;

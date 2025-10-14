@@ -48,7 +48,7 @@ const LeadStatusPage = () => {
     } else if (formData.title.trim().length < 3) {
       newErrors.title = "Lead Title must be at least 3 characters.";
     }
-    if (!formData.status === "") {
+    if (formData.status === "") {
       newErrors.status = "Lead Status is required.";
     }
     setErrors(newErrors);
@@ -147,7 +147,8 @@ const LeadStatusPage = () => {
                     </button>
                     <button type="reset" className="btn btn-outline-secondary px-4" onClick={() => {
                       setFormData({ title: "", status: "" });
-                      setErrors({});
+                      setErrors({});navigate("/manage-leads-status")
+                      
                     }}>
                       Cancel
                     </button>
