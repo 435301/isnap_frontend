@@ -573,10 +573,12 @@ ul {
     font-size: 15px;
     margin: 0 7px 5px 13px;
 }
+
 .dropdown-item:hover {
     color: #3ea92d !important;
     background-color: transparent;
 }
+
 .sidebar .navbar .navbar-nav .nav-link:hover,
 .sidebar .navbar .navbar-nav .nav-link.active {
     color: #fff;
@@ -1248,14 +1250,86 @@ h3 {
     padding: 9px;
     display: unset;
 }
-.Business span{
-font-size: 23px;
+
+.Business span {
+    font-size: 23px;
 }
+
+.invoice-box {
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 30px;
+    border: 1px solid #eee;
+    background-color: #fff;
+}
+
+.invoice-box h2 {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.invoice-box table th,
+.invoice-box table td {
+    padding: 8px;
+    vertical-align: top;
+}
+
+.invoice-box table th {
+    background-color: #f2f2f2;
+}
+
+.total-row {
+    font-weight: bold;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.logo {
+    max-width: 150px;
+}
+
+.amount-red {
+    color: red;
+}
+
+.border-top {
+    border-top: 2px solid #000 !important;
+}
+
 thead,
 tbody,
 th {
     font-size: 13px;
     padding: 10px 5px !important;
+}
+/* Add this CSS in your global CSS or inside a CSS module */
+.invoice-container {
+  width: 210mm;       /* A4 width */
+  min-height: 297mm;  /* A4 height */
+  padding: 20mm;
+  margin: auto;
+  background: white;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .invoice-container, .invoice-container * {
+    visibility: visible;
+  }
+  .invoice-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 210mm;
+    height: 297mm;
+    padding: 0;
+    box-shadow: none;
+  }
 }
 
 .btn-outline-info {
@@ -1983,19 +2057,20 @@ dl {
     cursor: not-allowed;
 }
 
-.img-preview-edit{
- width: 120px;
-  height: 120px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-}
-
-.image-preview{
-    width: 150px;
-    height: auto;
-    border-radius:5px ;
+.img-preview-edit {
+    width: 120px;
+    height: 120px;
+    border-radius: 8px;
     border: 1px solid #ccc;
 }
-.url{
+
+.image-preview {
+    width: 150px;
+    height: auto;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.url {
     min-width: 600px;
 }

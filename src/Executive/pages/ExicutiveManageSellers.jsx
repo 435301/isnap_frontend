@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import Sidebar from "../components/Sidebar";
-import Navbar from "../components/Navbar";
+import Sidebar from "../components/SellerSidebar";
+import Navbar from "../components/SellerNavbar";
 import DeleteConfirmationModal from "../components/Modal/DeleteConfirmationModal";
 import EditBusinessModal from "../components/Modal/EditBusinessModal";
 import {
@@ -129,7 +129,7 @@ const ManageSellers = () => {
                   <h5 className="form-title m-0">Manage Sellers</h5>
                 </div>
                 <div className="col-lg-6 text-end">
-                  <Link to="/create-seller" className="btn btn-new-lead">
+                  <Link to="/executive/create-seller" className="btn btn-new-lead">
                     <i className="bi bi-plus-circle me-1"></i> Add Seller
                   </Link>
                 </div>
@@ -240,11 +240,33 @@ const ManageSellers = () => {
                                 <i className="bi bi-trash"></i>
                               </button>
                               {/* Voice Button */}
-                              <Link to="/in-voice">
-                                <button className="btn btn-icon btn-voice">
-                                  <i className="bi bi-mic"></i>
-                                </button>
-                              </Link>
+                                 <div className="dropdown">
+                              <button
+                                className="btn btn-icon btn-outline-secondary"
+                                type="button"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false"
+                              >
+                                <i className="bi bi-three-dots-vertical"></i>
+                              </button>
+                              <ul className="dropdown-menu">
+                                <li>
+                                  <a className="dropdown-item" href="#">
+                                    Aprove
+                                  </a>
+                                </li>
+                                <li>
+                                  <a className="dropdown-item" href="#">
+                                    Rejected
+                                  </a>
+                                </li>
+                                <li>
+                                  <a className="dropdown-item" href="#">
+                                    Invoice
+                                  </a>
+                                </li>
+                              </ul>
+                            </div>
 
                             </div>
                           </td>
