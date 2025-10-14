@@ -1,6 +1,7 @@
 import axios from "axios";
 import BASE_URL from "../../config/config";
 import getAuthHeaders from "../../utils/auth";
+import { toast } from "react-toastify";
 
 // Fetch teams
 export const fetchTeams = () => async (dispatch, getState) => {
@@ -45,6 +46,7 @@ export const createTeam = (formData) => async (dispatch, getState) => {
       type: "SET_ERROR_MESSAGE",
       payload: error.response?.data?.msg || "Create failed",
     });
+    toast.error(error.response.data.message)
     throw error;
   }
 };

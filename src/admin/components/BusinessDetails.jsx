@@ -2,15 +2,18 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchStates } from "../../redux/actions/stateActions";
 import { useNavigate } from "react-router-dom";
+import { fetchLeads } from "../../redux/actions/leadAction";
 
 const BusinessDetails = ({ formData, setFormData, errors, handleChange, handleSubmit,handleMobileChange,handleSpocMobileChange }) => {
   const dispatch = useDispatch();
   const { states = [] } = useSelector((state) => state.state || {});
+      const {leads} = useSelector((state)=> state.leads);
   const navigate = useNavigate();
   
 
   useEffect(() => {
     if (states.length === 0) dispatch(fetchStates());
+      dispatch(fetchLeads());
   }, [dispatch, states.length]);
 
   return (
@@ -28,8 +31,9 @@ const BusinessDetails = ({ formData, setFormData, errors, handleChange, handleSu
             onChange={handleChange}
           >
             <option disabled value="">Select Lead</option>
-            <option value="1">Praveen Saaho</option>
-            <option value="2">Akhi</option>
+            {leads.map((lead) => (
+              <option key={lead.id} value={lead.id}>{lead.customerName}</option>
+            ))}
           </select>
 
         </div>
