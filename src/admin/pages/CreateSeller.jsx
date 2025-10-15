@@ -333,7 +333,10 @@ const CreateSeller = () => {
               // handleSubmit={handleSubmit}
               />
             )}
-            {activeTab === "Documents" && <Documents />}
+            {activeTab === "Documents" &&
+             <Documents
+             businessId={businessId}
+             />}
 
           </div>
         </div>
