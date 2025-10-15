@@ -3,14 +3,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
-import { createMarketType } from "../../redux/actions/marketTypeActions";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "bootstrap-icons/font/bootstrap-icons.css";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { createLeadSource } from "../../redux/actions/leadSourceAction";
+import { createDocumentCategory } from "../../redux/actions/docCategoryAction";
 
-const AddLeadSource = () => {
+const AddDocCatgeory = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -20,7 +17,6 @@ const AddLeadSource = () => {
     status: "",
   });
   const [errors, setErrors] = useState({});
-  const { error } = useSelector((state) => state.leadSources || {});
 
   useEffect(() => {
     const handleResize = () => setIsSidebarOpen(window.innerWidth >= 992);
@@ -41,7 +37,7 @@ const AddLeadSource = () => {
     e.preventDefault();
     const validationErrors = {};
     if (!formData.title.trim())
-      validationErrors.title = " Lead Source is required.";
+      validationErrors.title = " Document Category is required.";
     if (formData.status === "")
       validationErrors.status = "Status is required.";
 
@@ -50,9 +46,9 @@ const AddLeadSource = () => {
       return;
     }
     try {
-      const res = await dispatch(createLeadSource(formData));
+      const res = await dispatch(createDocumentCategory(formData));
       if(res?.status){
-      navigate("/manage-lead-source");
+      navigate("/manage-document-category");
       }
     } catch (err) {
       console.log(err)
@@ -70,11 +66,11 @@ const AddLeadSource = () => {
             <div className="bg-white p-3 rounded shadow-sm card-header mb-2">
               <div className="row g-2 align-items-center">
                 <div className="col-lg-6">
-                  <h5 className="form-title m-0">Add Lead Source</h5>
+                  <h5 className="form-title m-0">Add Document Category</h5>
                 </div>
                 <div className="col-lg-6 text-end">
-                  <Link to="/manage-lead-source" className="btn btn-new-lead">
-                    Manage Lead Source
+                  <Link to="/manage-document-category" className="btn btn-new-lead">
+                    Manage Document Category
                   </Link>
                 </div>
               </div>
@@ -83,17 +79,11 @@ const AddLeadSource = () => {
 
           <div className="row">
             <div className="bg-white p-3 rounded shadow-sm card-header mb-4">
-              {error && (
-                <div className="">
-                
-                </div>
-              )}
-
               <form onSubmit={handleSubmit}>
                 <div className="row g-3">
                   <div className="col-md-4">
                     <label className="form-label">
-                      Lead Source Title  <span className="text-danger">*</span>
+                      Document Category Title  <span className="text-danger">*</span>
                     </label>
                     <input
                       type="text"
@@ -101,7 +91,7 @@ const AddLeadSource = () => {
                       value={formData.title}
                       onChange={handleChange}
                       className={`form-control ${errors.title ? "is-invalid" : ""}`}
-                      placeholder="Enter Lead Source "
+                      placeholder="Enter Document Category "
                     />
                     {errors.title && (
                       <div className="invalid-feedback">{errors.title}</div>
@@ -134,7 +124,7 @@ const AddLeadSource = () => {
                     <button
                       type="button"
                       className="btn btn-outline-secondary px-4"
-                      onClick={() => navigate("/manage-lead-source")}
+                      onClick={() => navigate("/manage-document-category")}
                     >
                       Cancel
                     </button>
@@ -149,4 +139,4 @@ const AddLeadSource = () => {
   );
 };
 
-export default AddLeadSource;
+export default AddDocCatgeory;

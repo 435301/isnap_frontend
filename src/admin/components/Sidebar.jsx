@@ -37,6 +37,8 @@ const Sidebar = ({ isOpen }) => {
         "/manage-business-type",
         "/add-business-type",
         "/manage-lead-source",
+        "/manage-document-category",
+        "/manage-document-type",
 
       ],
       serviceTypes: ["/manage-service-types", "/manage-services", "/create-service-type", "/add-service", "/create-service-activities", "/manage-service-activities"],
@@ -142,6 +144,8 @@ const Sidebar = ({ isOpen }) => {
               <Link to="/manage-digital-marketing-price" className={`dropdown-item ${isLinkActive("/manage-digital-marketing-price")}`}> Digital Market Pricing</Link>
               <Link to="/manage-business-type" className={`dropdown-item ${isLinkActive("/manage-business-type")}`}>Business Types</Link>
               <Link to="/manage-lead-source" className={`dropdown-item ${isLinkActive("/manage-lead-source")}`}>Lead Source</Link>
+              <Link to="/manage-document-category" className={`dropdown-item ${isLinkActive("/manage-document-category")}`}>Document Category</Link>
+              <Link to="/manage-document-type" className={`dropdown-item ${isLinkActive("/manage-document-type")}`}>Document Type</Link>
 
             </div>
           </div>
@@ -196,7 +200,6 @@ const Sidebar = ({ isOpen }) => {
             <div className={`dropdown-menu bg-transparent border-0 ${isDropdownActive("sellers") ? "show" : ""}`}>
               <Link to="/manage-sellers" className={`dropdown-item ${isLinkActive("/manage-sellers")}`}>Manage Sellers</Link>
               <Link to="/create-seller" className={`dropdown-item ${isLinkActive("/create-seller")}`}>Create Seller</Link>
-              <Link to="/view-seller" className={`dropdown-item ${isLinkActive("/view-seller")}`}>View Seller</Link>
               <Link to="/seller/invoice-seller" className={`dropdown-item ${isLinkActive("/manage-service-activities")}`}>Invoice</Link>
 
             </div>

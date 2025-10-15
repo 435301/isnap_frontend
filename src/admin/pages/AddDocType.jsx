@@ -9,18 +9,20 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { createLeadSource } from "../../redux/actions/leadSourceAction";
+import { createDocument } from "../../redux/actions/docTypeAction";
+import { fetchDocumentCategories } from "../../redux/actions/docCategoryAction";
 
-const AddLeadSource = () => {
+const AddDocType = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
+  const { documentCategories, loading, totalPages } = useSelector(state => state.documentCategory);
   const [formData, setFormData] = useState({
-    title: "",
+    documentCategoryId: "",
+    documentType: "",
     status: "",
   });
   const [errors, setErrors] = useState({});
-  const { error } = useSelector((state) => state.leadSources || {});
 
   useEffect(() => {
     const handleResize = () => setIsSidebarOpen(window.innerWidth >= 992);
@@ -29,19 +31,25 @@ const AddLeadSource = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  useEffect(() => {
+    dispatch(fetchDocumentCategories());
+  }, [dispatch]);
+
   const handleToggleSidebar = () => setIsSidebarOpen((prev) => !prev);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev,   [name]: name === "status" ? Number(value) : value, }));
+    setFormData((prev) => ({ ...prev, [name]: name === "status" ? Number(value) : value, }));
     setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const validationErrors = {};
-    if (!formData.title.trim())
-      validationErrors.title = " Lead Source is required.";
+     if (!formData.documentCategoryId.trim())
+      validationErrors.documentCategoryId = " Document Category is required.";
+    if (!formData.documentType.trim())
+      validationErrors.documentType = " Document Type is required.";
     if (formData.status === "")
       validationErrors.status = "Status is required.";
 
@@ -50,9 +58,9 @@ const AddLeadSource = () => {
       return;
     }
     try {
-      const res = await dispatch(createLeadSource(formData));
-      if(res?.status){
-      navigate("/manage-lead-source");
+      const res = await dispatch(createDocument(formData));
+      if (res?.status) {
+        navigate("/manage-document-type");
       }
     } catch (err) {
       console.log(err)
@@ -70,11 +78,11 @@ const AddLeadSource = () => {
             <div className="bg-white p-3 rounded shadow-sm card-header mb-2">
               <div className="row g-2 align-items-center">
                 <div className="col-lg-6">
-                  <h5 className="form-title m-0">Add Lead Source</h5>
+                  <h5 className="form-title m-0">Add Document Type</h5>
                 </div>
                 <div className="col-lg-6 text-end">
-                  <Link to="/manage-lead-source" className="btn btn-new-lead">
-                    Manage Lead Source
+                  <Link to="/manage-document-type" className="btn btn-new-lead">
+                    Manage Document Type
                   </Link>
                 </div>
               </div>
@@ -83,28 +91,45 @@ const AddLeadSource = () => {
 
           <div className="row">
             <div className="bg-white p-3 rounded shadow-sm card-header mb-4">
-              {error && (
-                <div className="">
-                
-                </div>
-              )}
-
               <form onSubmit={handleSubmit}>
                 <div className="row g-3">
+
                   <div className="col-md-4">
                     <label className="form-label">
-                      Lead Source Title  <span className="text-danger">*</span>
+                      Document Category <span className="text-danger">*</span>
+                    </label>
+                    <select
+                      name="documentCategoryId"
+                      value={formData.documentCategoryId}
+                      onChange={handleChange}
+                      className={`form-select ${errors.status ? "is-invalid" : ""}`}
+                    >
+                      <option value="">Select Document Category</option>
+                      {documentCategories.map((doc) => (
+                        <option key={doc.id} value={doc.id}>
+                          {doc.title}
+                        </option>
+                      ))}
+                    </select>
+                    {errors.documentCategoryId && (
+                      <div className="invalid-feedback">{errors.documentCategoryId}</div>
+                    )}
+                  </div>
+
+                  <div className="col-md-4">
+                    <label className="form-label">
+                      Document Type<span className="text-danger">*</span>
                     </label>
                     <input
                       type="text"
-                      name="title"
-                      value={formData.title}
+                      name="documentType"
+                      value={formData.documentType}
                       onChange={handleChange}
-                      className={`form-control ${errors.title ? "is-invalid" : ""}`}
-                      placeholder="Enter Lead Source "
+                      className={`form-control ${errors.documentType ? "is-invalid" : ""}`}
+                      placeholder="Enter Document Category "
                     />
-                    {errors.title && (
-                      <div className="invalid-feedback">{errors.title}</div>
+                    {errors.documentType && (
+                      <div className="invalid-feedback">{errors.documentType}</div>
                     )}
                   </div>
 
@@ -134,7 +159,7 @@ const AddLeadSource = () => {
                     <button
                       type="button"
                       className="btn btn-outline-secondary px-4"
-                      onClick={() => navigate("/manage-lead-source")}
+                      onClick={() => navigate("/manage-document-type")}
                     >
                       Cancel
                     </button>
@@ -149,4 +174,4 @@ const AddLeadSource = () => {
   );
 };
 
-export default AddLeadSource;
+export default AddDocType;

@@ -87,6 +87,10 @@ import EditTeamLatestUpdates from "./admin/pages/EditLatestUpdates.jsx";
 import SellerLogin from "./Seller/pages/SellerLogin.jsx";
 import ManageWing from "./admin/pages/ManageWings.jsx";
 import AddWing from "./admin/pages/AddWing.jsx";
+import ManageDocCategory from "./admin/pages/ManageDocumentCategory.jsx";
+import AddDocCatgeory from "./admin/pages/AddDocumentCatgeory.jsx";
+import ManageDocType from "./admin/pages/ManageDocType.jsx";
+import AddDocType from "./admin/pages/AddDocType.jsx";
 // Exicutive
 import ExecutiveDashboard from "./Executive/pages/ExecutiveDashboard.js";
 import ExicutiveManageSellers from "./Executive/pages/ExicutiveManageSellers";
@@ -184,6 +188,10 @@ function App() {
         <Route path="/manage-service-types" element={<AdminRoute><ManageServiceTypes /></AdminRoute>} />
         <Route path="/create-service-type" element={<AdminRoute><CreateServicesTypes /></AdminRoute>} />
         <Route path="/manage-service-activities" element={<AdminRoute><ManageServiceActivities /></AdminRoute>} />
+        <Route path="/manage-document-category" element={<AdminRoute><ManageDocCategory /></AdminRoute>} />
+        <Route path="/add-document-category" element={<AdminRoute><AddDocCatgeory /></AdminRoute>} />
+        <Route path="/manage-document-type" element={<AdminRoute><ManageDocType /></AdminRoute>} />
+        <Route path="/add-document-type" element={<AdminRoute><AddDocType /></AdminRoute>} />
 
 
         {/* Team Routes */}
