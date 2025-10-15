@@ -10,10 +10,14 @@ import {
   ADD_REQUIRED_DOCUMENTS_REQUEST,
   ADD_REQUIRED_DOCUMENTS_SUCCESS,
   ADD_REQUIRED_DOCUMENTS_FAILURE,
+  FETCH_BUSINESS_REQUEST_EXECUTIVE,
+  FETCH_BUSINESS_SUCCESS_EXECUTIVE,
+  FETCH_BUSINESS_FAILURE_EXECUTIVE,
 } from "../actions/businessActions";
 
 const initialState = {
   businessDetails: [],
+  businessDetailsSales: [],
   loading: false,
   error: null,
   successMessage: null,
@@ -82,6 +86,22 @@ export default function businessReducer(state = initialState, action) {
       return {
         ...state, loading: false,  success: false, error: action.payload,
       };
+      case FETCH_BUSINESS_REQUEST_EXECUTIVE:
+      return { ...state, loading: true, error: null };
+
+    case FETCH_BUSINESS_SUCCESS_EXECUTIVE:
+      return {
+        ...state,
+        loading: false,
+        businessDetailsSales: action.payload.businessDetails,
+        currentPage: action.payload.currentPage,
+        totalPages: action.payload.totalPages,
+        total: action.payload.total,
+         limit: action.payload.limit,
+      };
+
+    case FETCH_BUSINESS_FAILURE_EXECUTIVE:
+      return { ...state, loading: false, error: action.payload };
     default:
       return state;
   }

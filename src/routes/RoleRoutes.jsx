@@ -13,7 +13,7 @@ export const AdminRoute = ({ children }) => {
     localStorage.removeItem("user");
     return <Navigate to="/login" replace />;
   }
-  if (user?.roleName !== "Admin") return <h2>401 - Unauthorized</h2>;
+  // if (user?.roleName !== "Admin") return <h2>401 - Unauthorized</h2>;
   return children;
 };
 

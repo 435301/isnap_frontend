@@ -10,6 +10,7 @@ import DigitalMarketing from "../components/DigitalMarketing";
 import Photography from "../components/Photography";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Documents from "../../admin/components/Documents";
 
 const CreateSeller = () => {
   const dispatch = useDispatch();
@@ -262,7 +263,7 @@ const CreateSeller = () => {
                   <h5 className="form-title m-0">{id ? "Edit Seller" : "Create Seller"}</h5>
                 </div>
                 <div className="col-lg-10 d-flex justify-content-end text-end">
-                  <Link to="/executive/manage-sellers" className="btn btn-new-lead">Manage Sellers</Link>
+                  <Link to="/executive/manage-seller" className="btn btn-new-lead">Manage Sellers</Link>
                 </div>
               </div>
             </div>
@@ -270,7 +271,7 @@ const CreateSeller = () => {
 
           <div className="bg-white rounded shadow-sm mb-3">
             <ul className="nav nav-tabs">
-              {["Business Details", "Marketplace Business", "Digital Marketing", "Photography"].map(
+              {["Business Details", "Marketplace Business", "Digital Marketing", "Photography", "Documents"].map(
                 (tab) => (
                   <li className="nav-item" key={tab}>
                     <button
@@ -331,6 +332,11 @@ const CreateSeller = () => {
                 // handleSubmit={handleSubmit}
                  />
             )}
+             {activeTab === "Documents" &&
+             <Documents
+             businessId={businessId}
+             />}
+
           </div>
         </div>
       </div>

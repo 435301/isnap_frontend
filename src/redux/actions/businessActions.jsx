@@ -13,6 +13,9 @@ export const CLEAR_BUSINESS_SUCCESS_MESSAGE = "CLEAR_BUSINESS_SUCCESS_MESSAGE";
 export const ADD_REQUIRED_DOCUMENTS_REQUEST = "ADD_REQUIRED_DOCUMENTS_REQUEST";
 export const ADD_REQUIRED_DOCUMENTS_SUCCESS = "ADD_REQUIRED_DOCUMENTS_SUCCESS";
 export const ADD_REQUIRED_DOCUMENTS_FAILURE = "ADD_REQUIRED_DOCUMENTS_FAILURE";
+export const FETCH_BUSINESS_REQUEST_EXECUTIVE = "FETCH_BUSINESS_REQUEST_EXECUTIVE";
+export const FETCH_BUSINESS_SUCCESS_EXECUTIVE = "FETCH_BUSINESS_SUCCESS_EXECUTIVE";
+export const FETCH_BUSINESS_FAILURE_EXECUTIVE = "FETCH_BUSINESS_FAILURE_EXECUTIVE";
 
 
 const getAuthHeaders = (isFormData = false) => {
@@ -211,4 +214,60 @@ export const addRequiredDocuments = (payload) => async (dispatch) => {
     });
     toast.error( error.response?.data?.message);
   }
+};
+
+
+export const fetchBusinessDetailsExecutive = (page = 1, limit, search = "", showStatus = "", roleType = "") => {
+  return async (dispatch) => {
+    dispatch({ type: FETCH_BUSINESS_REQUEST_EXECUTIVE });
+    try {
+      const response = await axios.post(
+        `${BASE_URL}/salesManager/sellersList`,
+        { page, limit, search, showStatus, roleType },
+        getAuthHeaders()
+      );
+
+      if (response.data.status) {
+        const {
+          businessDetails = [],
+          totalPages = 1,
+          currentPage = 1,
+          total = 0,
+          limit = 10,
+        } = response.data.data || {};
+
+        const mappedBusinesses = businessDetails.map((biz) => ({
+          id: biz.id,
+          businessName: biz.businessName,
+          sellerName: biz.sellerName,
+          regdEmail: biz.regdEmail,
+          regdMobile: biz.regdMobile,
+          spocName: biz.spocName,
+          spocMobile: biz.spocMobile,
+          stateName: biz.stateName,
+          cityName: biz.cityName,
+          gstNumber: biz.gstNumber,
+          referredBy: biz.referredBy,
+          address: biz.address,
+          businessLogo: biz.businessLogo,
+          status: biz.status,
+        }));
+
+        dispatch({
+          type: FETCH_BUSINESS_SUCCESS_EXECUTIVE,
+          payload: { businessDetails: mappedBusinesses, currentPage, totalPages, total, limit },
+        });
+      } else {
+        dispatch({
+          type: FETCH_BUSINESS_FAILURE_EXECUTIVE,
+          payload: response.data.message || "Failed to fetch businesses",
+        });
+      }
+    } catch (error) {
+      dispatch({
+        type: FETCH_BUSINESS_FAILURE_EXECUTIVE,
+        payload: error.response?.data?.message || error.message,
+      });
+    }
+  };
 };

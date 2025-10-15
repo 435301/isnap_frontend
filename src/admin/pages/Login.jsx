@@ -41,6 +41,11 @@ const Login = () => {
         navigate("/team/dashboard");
       } else if (user.roleName === "Seller") {
         navigate("/seller/mou-1");
+      } else if (user.roleName === "Sales Manager") {
+        navigate("/executive/dashboard");
+      }
+      else if (user.roleName === "Sales Executive") {
+        navigate("/executive/dashboard");
       }
     }
   }, [token, user, navigate]);

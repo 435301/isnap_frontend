@@ -93,13 +93,13 @@ import ManageDocType from "./admin/pages/ManageDocType.jsx";
 import AddDocType from "./admin/pages/AddDocType.jsx";
 // Exicutive
 import ExecutiveDashboard from "./Executive/pages/ExecutiveDashboard.js";
-import ExicutiveManageSellers from "./Executive/pages/ExicutiveManageSellers";
-import ExicutiveCreateSellers from "./Executive/pages/ExicutiveCreateSellers";
-import ExicutiveCreateLead from "./Executive/pages/ExicutiveCreateLead";
+import ExicutiveManageSellers from "./Executive/pages/ExicutiveManageSellers.jsx";
+import ExicutiveCreateSellers from "./Executive/pages/ExicutiveCreateSellers.jsx";
+import ExicutiveCreateLead from "./Executive/pages/ExicutiveCreateLead.jsx";
 import ExecutiveManageLeads from "./Executive/pages/ExecutiveManageLeads";
 import ExecutiveLeadStatus from "./Executive/pages/ExecutiveLeadStatus";
-import ExicutiveManageLeadsStatus from "./Executive/pages/ExicutiveManageLeadsStatus";
-import ExicutiveChangePassword from "./Executive/pages/ExicutiveChangePassword";
+import ExicutiveManageLeadsStatus from "./Executive/pages/ExicutiveManageLeadsStatus.jsx";
+import ExicutiveChangePassword from "./Executive/pages/ExicutiveChangePassword.jsx";
 import ExecutiveLastestUpdates from "./Executive/pages/ExecutiveLastestUpdates";
 import ExecutiveManageUpdates from "./Executive/pages/ExecutiveManageUpdates";
 // Accounts
@@ -109,6 +109,8 @@ import Taxinvoice from "./Accounts/pages/Taxinvoice";
 import AccountsInvoice from "./Accounts/pages/AccountsInvoice";
 import InvoicePage from './Accounts/pages/InvoicePage';
 import AccountsChangePassword from './Accounts/pages/AccountsChangePassword';
+import ExecutiveEditSeller from "./Executive/pages/ExecutiveEditSeller.jsx";
+import ExecutiveViewSeller from "./Executive/pages/ExecutiveViewSeller.jsx";
 
 
 function App() {
@@ -221,6 +223,8 @@ function App() {
         <Route path="/executive/dashboard" element={<ExecutiveDashboard />} />
         <Route path="/executive/manage-seller" element={<ExicutiveManageSellers />} />
         <Route path="/executive/create-seller" element={<ExicutiveCreateSellers />} />
+        <Route path="/executive/edit-seller/:id" element={<ExecutiveEditSeller />} />
+        <Route path="/executive/view-seller/:id" element={<ExecutiveViewSeller />} />
         <Route path="/executive/create-lead" element={<ExicutiveCreateLead />} />
         <Route path="/executive/manage-leads" element={<ExecutiveManageLeads />} />
         <Route path="/executive/leads-status" element={<ExecutiveLeadStatus />} />
