@@ -7,6 +7,9 @@ import {
   CREATE_BUSINESS_SUCCESS,
   BUSINESS_ERROR,
   CLEAR_BUSINESS_SUCCESS_MESSAGE,
+  ADD_REQUIRED_DOCUMENTS_REQUEST,
+  ADD_REQUIRED_DOCUMENTS_SUCCESS,
+  ADD_REQUIRED_DOCUMENTS_FAILURE,
 } from "../actions/businessActions";
 
 const initialState = {
@@ -18,6 +21,7 @@ const initialState = {
   totalPages: 1,
   total: 0,
   limit: 10,
+    addedDocuments: null,
 };
 
 export default function businessReducer(state = initialState, action) {
@@ -66,7 +70,18 @@ export default function businessReducer(state = initialState, action) {
 
     case CLEAR_BUSINESS_SUCCESS_MESSAGE:
       return { ...state, successMessage: null };
+ case ADD_REQUIRED_DOCUMENTS_REQUEST:
+      return {
+        ...state,  loading: true, success: false, error: null, };
 
+    case ADD_REQUIRED_DOCUMENTS_SUCCESS:
+      return {
+        ...state, loading: false, success: true, addedDocuments: action.payload.data.addedDocuments,
+      };
+    case ADD_REQUIRED_DOCUMENTS_FAILURE:
+      return {
+        ...state, loading: false,  success: false, error: action.payload,
+      };
     default:
       return state;
   }

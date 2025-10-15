@@ -10,6 +10,10 @@ export const DELETE_BUSINESS_SUCCESS = "DELETE_BUSINESS_SUCCESS";
 export const CREATE_BUSINESS_SUCCESS = "CREATE_BUSINESS_SUCCESS";
 export const BUSINESS_ERROR = "BUSINESS_ERROR";
 export const CLEAR_BUSINESS_SUCCESS_MESSAGE = "CLEAR_BUSINESS_SUCCESS_MESSAGE";
+export const ADD_REQUIRED_DOCUMENTS_REQUEST = "ADD_REQUIRED_DOCUMENTS_REQUEST";
+export const ADD_REQUIRED_DOCUMENTS_SUCCESS = "ADD_REQUIRED_DOCUMENTS_SUCCESS";
+export const ADD_REQUIRED_DOCUMENTS_FAILURE = "ADD_REQUIRED_DOCUMENTS_FAILURE";
+
 
 const getAuthHeaders = (isFormData = false) => {
   const token = localStorage.getItem("authToken");
@@ -188,3 +192,23 @@ export const deleteBusiness = (id) => async (dispatch) => {
 
 // Clear success message
 export const clearBusinessSuccessMessage = () => ({ type: CLEAR_BUSINESS_SUCCESS_MESSAGE });
+
+export const addRequiredDocuments = (payload) => async (dispatch) => {
+  dispatch({ type: ADD_REQUIRED_DOCUMENTS_REQUEST });
+  try {
+    const { data } = await axios.post(`${BASE_URL}/businessDetails/requiredDocuments`, payload,  getAuthHeaders());
+    dispatch({
+      type: ADD_REQUIRED_DOCUMENTS_SUCCESS,
+      payload: data,
+    });
+
+    toast.success(data.message || "Required documents added successfully");
+    return data;
+  } catch (error) {
+    dispatch({
+      type: ADD_REQUIRED_DOCUMENTS_FAILURE,
+      payload:  error.response?.data?.message,
+    });
+    toast.error( error.response?.data?.message);
+  }
+};
