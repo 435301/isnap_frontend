@@ -10,6 +10,7 @@ import Photography from "../components/Photography";
 import { fetchBusinessDetailsById, updateBusiness } from "../../redux/actions/businessActions";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Documents from "../components/Documents";
 
 const EditSeller = () => {
     const dispatch = useDispatch();
@@ -180,7 +181,7 @@ const EditSeller = () => {
                     </div>
                     <div className="bg-white rounded shadow-sm mb-3">
                         <ul className="nav nav-tabs">
-                            {["Business Details", "Marketplace Business", "Digital Marketing", "Photography"].map(
+                            {["Business Details", "Marketplace Business", "Digital Marketing", "Photography","Documents"].map(
                                 (tab) => (
                                     <li className="nav-item" key={tab}>
                                         <button
@@ -223,8 +224,12 @@ const EditSeller = () => {
                             <DigitalMarketing formData={formData} setFormData={setFormData} businessId={id} businessIdEdit={id} />
                         )}
                         {activeTab === "Photography" && (
-                            <Photography formData={formData} setFormData={setFormData} businessId={id} businessIdEdit={id}   toggleSection={toggleSection} expandedSections={expandedSections}/>
+                            <Photography formData={formData} setFormData={setFormData} businessId={id} businessIdEdit={id} toggleSection={toggleSection} expandedSections={expandedSections} />
                         )}
+                        {activeTab === "Documents" &&
+                            <Documents
+                                businessId={id} businessIdEdit={id}
+                            />}
                     </div>
                 </div>
             </div>

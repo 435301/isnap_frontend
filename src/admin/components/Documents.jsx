@@ -3,17 +3,16 @@ import { useDispatch, useSelector } from "react-redux";
 import { addRequiredDocuments } from "../../redux/actions/businessActions";
 import { fetchDocuments } from "../../redux/actions/docTypeAction";
 
-const Documents = ({ businessId }) => {
+const Documents = ({ businessId,businessIdEdit }) => {
   const dispatch = useDispatch();
   const { documents } = useSelector((state) => state.documents);
-
+  console.log('businessIdEdit',businessIdEdit)
   const [selectedCategories, setSelectedCategories] = useState([]);
 
   useEffect(() => {
     dispatch(fetchDocuments());
   }, [dispatch]);
 
-  // ✅ Handle category checkbox
   const handleCategoryChange = (categoryId) => {
     setSelectedCategories((prev) =>
       prev.includes(categoryId)
@@ -22,7 +21,7 @@ const Documents = ({ businessId }) => {
     );
   };
 
-  // ✅ Group documents by category
+
   const groupedDocs = documents.reduce((acc, doc) => {
     const catId = doc.documentCategoryId;
     if (!acc[catId]) {
@@ -35,7 +34,6 @@ const Documents = ({ businessId }) => {
     return acc;
   }, {});
 
-  // ✅ Submit only category IDs
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -75,7 +73,6 @@ const Documents = ({ businessId }) => {
 
               return docs.map((doc, index) => (
                 <tr key={doc.id}>
-                  {/* ✅ Only show category + checkbox once per group */}
                   {index === 0 && (
                     <td rowSpan={rowSpan} className="align-middle">
                       <input
