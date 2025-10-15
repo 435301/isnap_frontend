@@ -104,7 +104,7 @@ const Sidebar = ({ isOpen }) => {
 
   // Get role, fallback to empty so it won’t render anything wrong
   const role = user?.roleName || "team"; // defaulting to team if null
-  console.log('role',role)
+  console.log('role', role)
   const menusToShow = allowedMenus[role] || [];
 
   return (
@@ -164,6 +164,7 @@ const Sidebar = ({ isOpen }) => {
               <Link to="/manage-services" className={`dropdown-item ${isLinkActive("/manage-services")}`}>Service Categories</Link>
               <Link to="/manage-service-types" className={`dropdown-item ${isLinkActive("/manage-service-types")}`}>Service Types</Link>
               <Link to="/manage-service-activities" className={`dropdown-item ${isLinkActive("/manage-service-activities")}`}>Service Activities</Link>
+
             </div>
           </div>
 
@@ -199,6 +200,8 @@ const Sidebar = ({ isOpen }) => {
             <div className={`dropdown-menu bg-transparent border-0 ${isDropdownActive("sellers") ? "show" : ""}`}>
               <Link to="/manage-sellers" className={`dropdown-item ${isLinkActive("/manage-sellers")}`}>Manage Sellers</Link>
               <Link to="/create-seller" className={`dropdown-item ${isLinkActive("/create-seller")}`}>Create Seller</Link>
+              <Link to="/seller/invoice-seller" className={`dropdown-item ${isLinkActive("/manage-service-activities")}`}>Invoice</Link>
+
             </div>
           </div>
 

@@ -2,15 +2,14 @@ import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { createBusiness, fetchBusinessDetailsById } from "../../redux/actions/businessActions";
 import { useParams, Link } from "react-router-dom";
-import Sidebar from "../components/Sidebar";
-import Navbar from "../components/Navbar";
+import Sidebar from "../components/ExecutiveSidebar";
+import Navbar from "../components/ExecutiveNavbar";
 import BusinessDetails from "../components/BusinessDetails";
 import MarketplaceBusiness from "../components/MarketplaceBusiness";
 import DigitalMarketing from "../components/DigitalMarketing";
 import Photography from "../components/Photography";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Documents from "../components/Documents"; // adjust path if needed
 
 const CreateSeller = () => {
   const dispatch = useDispatch();
@@ -263,7 +262,7 @@ const CreateSeller = () => {
                   <h5 className="form-title m-0">{id ? "Edit Seller" : "Create Seller"}</h5>
                 </div>
                 <div className="col-lg-10 d-flex justify-content-end text-end">
-                  <Link to="/manage-sellers" className="btn btn-new-lead">Manage Sellers</Link>
+                  <Link to="/executive/manage-sellers" className="btn btn-new-lead">Manage Sellers</Link>
                 </div>
               </div>
             </div>
@@ -271,7 +270,7 @@ const CreateSeller = () => {
 
           <div className="bg-white rounded shadow-sm mb-3">
             <ul className="nav nav-tabs">
-              {["Business Details", "Marketplace Business", "Digital Marketing", "Photography", "Documents"].map(
+              {["Business Details", "Marketplace Business", "Digital Marketing", "Photography"].map(
                 (tab) => (
                   <li className="nav-item" key={tab}>
                     <button
@@ -284,7 +283,6 @@ const CreateSeller = () => {
                 )
               )}
             </ul>
-
           </div>
 
           <div className="bg-white p-3 rounded shadow-sm card-header">
@@ -313,28 +311,26 @@ const CreateSeller = () => {
                 expandedSections={expandedSections}
                 toggleSection={toggleSection}
                 businessId={businessId}
-                setActiveTab={setActiveTab}
+                 setActiveTab={setActiveTab}
               />
             )}
             {activeTab === "Digital Marketing" && (
-              <DigitalMarketing formData={formData} setFormData={setFormData} toggleSection={toggleSection} businessId={businessId} errors={errors} setActiveTab={setActiveTab} />
+              <DigitalMarketing formData={formData} setFormData={setFormData} toggleSection={toggleSection}  businessId={businessId}  errors={errors}  setActiveTab={setActiveTab} />
             )}
             {activeTab === "Photography" && (
-              <Photography
-                formData={formData}
+              <Photography 
+              formData={formData}
                 setFormData={setFormData}
                 errors={errors}
                 setErrors={setErrors}
-                expandedSections={expandedSections}
+                expandedSections={expandedSections}   
                 toggleSection={toggleSection}
                 handleServiceRowChange={handleServiceRowChange}
                 handleRemoveServiceRow={handleRemoveServiceRow}
-                businessId={businessId}
-              // handleSubmit={handleSubmit}
-              />
+                 businessId={businessId}
+                // handleSubmit={handleSubmit}
+                 />
             )}
-            {activeTab === "Documents" && <Documents />}
-
           </div>
         </div>
       </div>

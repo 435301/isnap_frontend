@@ -8,7 +8,7 @@ import { logoutUser } from "../../redux/actions/authAction";
 const SellerSidebar = ({ isOpen }) => {
   const location = useLocation();
   const [activeDropdown, setActiveDropdown] = useState(null);
-      const navigate = useNavigate();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -38,10 +38,10 @@ const SellerSidebar = ({ isOpen }) => {
 
   const isDropdownActive = (dropdown) => activeDropdown === dropdown;
 
-     const handleLogout = () => {
-        dispatch(logoutUser());
-        navigate("/login");
-      };
+  const handleLogout = () => {
+    dispatch(logoutUser());
+    navigate("/login");
+  };
 
   return (
     <div className={`sidebar pb-3 ${isOpen ? "sidebar-open" : "sidebar-closed"}`}>
@@ -90,6 +90,12 @@ const SellerSidebar = ({ isOpen }) => {
             </Link>
           </div>
 
+          <div className={`nav-item ${isLinkActive("/seller/invoice-seller")}`}>
+            <Link to="/seller/invoice-seller" className="nav-link">
+              <i className="bi bi-file-earmark-text me-2"></i>
+              {isOpen && <span>Invoice</span>}
+            </Link>
+          </div>
 
           {/* Change Password */}
           <Link to="/seller/change-password" className={`nav-item nav-link ${isLinkActive("/seller/change-password")}`}>
@@ -98,14 +104,14 @@ const SellerSidebar = ({ isOpen }) => {
           </Link>
 
           {/* Logout */}
-           <button
-              onClick={handleLogout}
-              className="nav-item nav-link text-danger"
-              style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}
-            >
-              <i className="bi bi-box-arrow-right me-2"></i>
-              {isOpen && <span>Logout</span>}
-            </button>
+          <button
+            onClick={handleLogout}
+            className="nav-item nav-link text-danger"
+            style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}
+          >
+            <i className="bi bi-box-arrow-right me-2"></i>
+            {isOpen && <span>Logout</span>}
+          </button>
         </div>
       </nav>
     </div>

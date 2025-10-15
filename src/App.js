@@ -55,6 +55,7 @@ import CommissionPricing from "./admin/pages/CommissionPricing";
 import EditSeller from "./admin/pages/EditSeller";
 import LeadStatus from "./admin/pages/LeadStatus";
 import ManageLeadsStatus from "./admin/pages/ManageLeadsStatus";
+import Invoice from "./admin/pages/Invoice";
 
 // Team Pages
 import TeamDashboard from "./Team/pages/Dashboard";
@@ -74,6 +75,9 @@ import TaskStatus from "./Seller/pages/TaskStatus";
 import MouAgreement from "./Seller/pages/MouAgreement";
 import MouA2 from "./Seller/pages/MouA2";
 import MouA3 from "./Seller/pages/MouA3";
+import SellerInvoicePage from "./Seller/pages/SellerInvoicePage";
+
+
 import TaskSummarySellar from "./Seller/pages/TaskSummarySellar";
 import ManageBusinessType from "./admin/pages/ManageBusinessType.jsx";
 import AddBusinessType from "./admin/pages/AddBusinessType.jsx";
@@ -87,6 +91,25 @@ import ManageDocCategory from "./admin/pages/ManageDocumentCategory.jsx";
 import AddDocCatgeory from "./admin/pages/AddDocumentCatgeory.jsx";
 import ManageDocType from "./admin/pages/ManageDocType.jsx";
 import AddDocType from "./admin/pages/AddDocType.jsx";
+// Exicutive
+import ExecutiveDashboard from "./Executive/pages/ExecutiveDashboard.js";
+import ExicutiveManageSellers from "./Executive/pages/ExicutiveManageSellers";
+import ExicutiveCreateSellers from "./Executive/pages/ExicutiveCreateSellers";
+import ExicutiveCreateLead from "./Executive/pages/ExicutiveCreateLead";
+import ExecutiveManageLeads from "./Executive/pages/ExecutiveManageLeads";
+import ExecutiveLeadStatus from "./Executive/pages/ExecutiveLeadStatus";
+import ExicutiveManageLeadsStatus from "./Executive/pages/ExicutiveManageLeadsStatus";
+import ExicutiveChangePassword from "./Executive/pages/ExicutiveChangePassword";
+import ExecutiveLastestUpdates from "./Executive/pages/ExecutiveLastestUpdates";
+import ExecutiveManageUpdates from "./Executive/pages/ExecutiveManageUpdates";
+// Accounts
+import AccountsDashboard from "./Accounts/pages/AccountsDashboard.js";
+import InvoiceNotification from './Accounts/pages/InvoiceNotification';
+import Taxinvoice from "./Accounts/pages/Taxinvoice";
+import AccountsInvoice from "./Accounts/pages/AccountsInvoice";
+import InvoicePage from './Accounts/pages/InvoicePage';
+import AccountsChangePassword from './Accounts/pages/AccountsChangePassword';
+
 
 function App() {
   return (
@@ -158,6 +181,8 @@ function App() {
         <Route path="/view-notifications" element={<AdminRoute><Notifications /></AdminRoute>} />
         <Route path="/rejected-tasks" element={<AdminRoute><RejectedTasks /></AdminRoute>} />
         <Route path="/view-summary" element={<AdminRoute><ViewSummary /></AdminRoute>} />
+        <Route path="/in-voice" element={<AdminRoute><Invoice /></AdminRoute>} />
+
         {/* Serices Types */}
         <Route path="/create-service-activities" element={<AdminRoute><CreateServicesActivities /></AdminRoute>} />
         <Route path="/manage-service-types" element={<AdminRoute><ManageServiceTypes /></AdminRoute>} />
@@ -189,6 +214,30 @@ function App() {
         <Route path="/seller/business-information" element={<SellerRoute><BusinessInformationForm /></SellerRoute>} />
         <Route path="/seller/task" element={<SellerRoute><TaskStatus /></SellerRoute>} />
         <Route path="/seller/task-summary" element={<SellerRoute><TaskSummarySellar /></SellerRoute>} />
+        <Route path="/seller/invoice-seller" element={<SellerRoute><SellerInvoicePage /></SellerRoute>} />
+
+
+        {/* Executive Routes */}
+        <Route path="/executive/dashboard" element={<ExecutiveDashboard />} />
+        <Route path="/executive/manage-seller" element={<ExicutiveManageSellers />} />
+        <Route path="/executive/create-seller" element={<ExicutiveCreateSellers />} />
+        <Route path="/executive/create-lead" element={<ExicutiveCreateLead />} />
+        <Route path="/executive/manage-leads" element={<ExecutiveManageLeads />} />
+        <Route path="/executive/leads-status" element={<ExecutiveLeadStatus />} />
+        <Route path="/executive/manage-leads-status" element={<ExicutiveManageLeadsStatus />} />
+        <Route path="/executive/change-password" element={<ExicutiveChangePassword />} />
+        <Route path="/executive/latest-updates" element={<ExecutiveLastestUpdates />} />
+        <Route path="/executive/manage-updates" element={<ExecutiveManageUpdates />} />
+        {/* Accounts Routes */}
+        <Route path="/accounts/dashboard" element={<AccountsDashboard />} />
+        <Route path="/accounts/invoice-notification" element={<InvoiceNotification />} />
+        <Route path="/accounts/create-invoice" element={<Taxinvoice />} />
+        <Route path="/accounts/invoice" element={<AccountsInvoice />} />
+        <Route path="/accounts/invoice-list" element={<InvoicePage />} />
+        <Route path="/accounts/change-password" element={<AccountsChangePassword />} />
+
+
+
       </Routes>
       <ToastContainer position="top-right" autoClose={3000} />
 
