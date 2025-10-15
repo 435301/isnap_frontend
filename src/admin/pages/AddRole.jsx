@@ -1,28 +1,39 @@
 // src/pages/roles/AddRole.js
 import React, { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
-import { createRole } from "../../redux/actions/roleActions"; 
+import { createRole } from "../../redux/actions/roleActions";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { fetchDepartments } from "../../redux/actions/departmentActions";
+import { fetchWings } from "../../redux/actions/wingAction";
 
 const AddRole = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-
+  const { wings = [] } = useSelector((state) => state.wings || {});
+  const { departments = [] } = useSelector((state) => state.department || {});
+  console.log('wings', departments)
   const [formData, setFormData] = useState({
+    wingId: "",
+    departmentId: "",
     roleTitle: "",
     task: "",
-    status: true,
+    status: "",
   });
 
   const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    dispatch(fetchWings());
+    dispatch(fetchDepartments())
+  }, [dispatch]);
 
   // Sidebar toggle on resize
   useEffect(() => {
@@ -38,7 +49,7 @@ const AddRole = () => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: name === "status" ? value === "true" : value,
+      [name]: name === "status" ? Number(value) : value,
     }));
     setErrors((prev) => ({ ...prev, [name]: "" }));
   };
@@ -48,7 +59,11 @@ const AddRole = () => {
 
     const validationErrors = {};
     if (!formData.roleTitle.trim()) validationErrors.roleTitle = "Role title is required";
-
+    if (!formData.wingId.trim()) validationErrors.wingId = "Wing Name is required";
+    if (!formData.departmentId.trim()) validationErrors.departmentId = "Department Name  is required";
+    if (!formData.status) {
+      validationErrors.status = "status is required";
+    }
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
@@ -56,7 +71,7 @@ const AddRole = () => {
 
     try {
       await dispatch(createRole(formData));
-      setFormData({ roleTitle: "", task: "", status: true });
+      setFormData({ roleTitle: "", task: "", status: "", wingName: "", departmentName: "" });
       setErrors({});
       toast.success("Role created successfully!");
       navigate("/manage-roles");
@@ -78,8 +93,8 @@ const AddRole = () => {
                 ? 259
                 : 95
               : isSidebarOpen
-              ? 220
-              : 0,
+                ? 220
+                : 0,
           transition: "margin-left 0.3s ease",
         }}
       >
@@ -106,6 +121,49 @@ const AddRole = () => {
                 <div className="row g-3">
                   <div className="col-md-4">
                     <label className="form-label">
+                      Wing <span className="text-danger">*</span>
+                    </label>
+                    <select
+                      name="wingId"
+                      value={formData.wingId}
+                      onChange={handleChange}
+                      className={`form-select ${errors.wingId ? "is-invalid" : ""}`}
+                    >
+                      <option value="">Select Wing</option>
+                      {wings.map((wing) => (
+                        <option key={wing.id} value={wing.id}>
+                          {wing.title}
+                        </option>
+                      ))}
+                    </select>
+                    {errors.wingId && (
+                      <div className="invalid-feedback">{errors.wingId}</div>
+                    )}
+                  </div>
+                  <div className="col-md-4">
+                    <label className="form-label">
+                      Department <span className="text-danger">*</span>
+                    </label>
+                    <select
+                      name="departmentId"
+                      value={formData.departmentId}
+                      onChange={handleChange}
+                      className={`form-select ${errors.departmentId ? "is-invalid" : ""}`}
+                    >
+                      <option value="">Select Department</option>
+                      {departments.map((department) => (
+                        <option key={department?.id} value={department.id}>
+                          {department?.departmentName}
+                        </option>
+                      ))}
+
+                    </select>
+                    {errors.departmentId && (
+                      <div className="invalid-feedback">{errors.departmentId}</div>
+                    )}
+                  </div>
+                  <div className="col-md-4">
+                    <label className="form-label">
                       Role Title <span className="text-danger">*</span>
                     </label>
                     <input
@@ -129,11 +187,15 @@ const AddRole = () => {
                       name="status"
                       value={formData.status}
                       onChange={handleChange}
-                      className="form-select"
+                      className={`form-select ${errors.status ? "is-invalid" : ""}`}
                     >
-                      <option value={true}>Active</option>
-                      <option value={false}>Inactive</option>
+                      <option value="">Select Status</option>
+                      <option value="1">Active</option>
+                      <option value="0">Inactive</option>
                     </select>
+                    {errors.status && (
+                      <div className="invalid-feedback">{errors.status}</div>
+                    )}
                   </div>
 
                   <div className="col-md-12 d-flex justify-content-end mt-5 mb-4">

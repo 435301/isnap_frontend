@@ -13,14 +13,7 @@ const SellerNavbar = ({ onToggleSidebar }) => {
         </h4>
       </div>
       <div className="navbar-nav align-items-center ms-auto d-flex gap-3">
-        <div className="d-none d-lg-block">
-          <div className="input-group">
-            <input type="text" className="form-control border-0" placeholder="Search" />
-            <span className="input-group-text bg-light border-0">
-              <i className="bi bi-search"></i>
-            </span>
-          </div>
-        </div>
+       
 
         <div className="nav-item dropdown">
           <a href="#" className="nav-link" data-bs-toggle="dropdown">

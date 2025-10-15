@@ -3,8 +3,9 @@ import { Offcanvas, Button, Form } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import BASE_URL from "../../../config/config";
 
-const EditTeamOffcanvas = ({ show, handleClose, selectedTeam, handleSaveChanges }) => {
+const EditTeamOffcanvas = ({ show, handleClose, selectedTeam, handleSaveChanges, wings, departments,teams }) => {
   const roles = useSelector((state) => state.roles.roles || []);
+  console.log('selectedTeam',selectedTeam)
 
   const [form, setForm] = useState({
     employeeId: "",
@@ -16,6 +17,9 @@ const EditTeamOffcanvas = ({ show, handleClose, selectedTeam, handleSaveChanges 
     status: "Active",
     photo: null,
     idProof: null,
+    wingId: "",
+    departmentId: "",
+    superior: 0,
   });
 
   useEffect(() => {
@@ -30,6 +34,9 @@ const EditTeamOffcanvas = ({ show, handleClose, selectedTeam, handleSaveChanges 
         status: selectedTeam.status ? "Active" : "Inactive",
         photo: selectedTeam.photo || null,
         idProof: null,
+        wingId: selectedTeam.wingId || "",
+        departmentId: selectedTeam.departmentId || "",
+       superior: selectedTeam.superiorId || 0,
       });
     }
   }, [selectedTeam]);
@@ -94,7 +101,7 @@ const EditTeamOffcanvas = ({ show, handleClose, selectedTeam, handleSaveChanges 
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label>Mobile</Form.Label>
+            <Form.Label>Mobile<span className="text-danger"> *</span></Form.Label>
             <Form.Control
               type="text"
               name="mobile"
@@ -104,7 +111,7 @@ const EditTeamOffcanvas = ({ show, handleClose, selectedTeam, handleSaveChanges 
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label>Gender</Form.Label>
+            <Form.Label>Gender<span className="text-danger"> *</span></Form.Label>
             <Form.Select name="gender" value={form.gender} onChange={handleChange}>
               <option value="">Select Gender</option>
               <option value="male">Male</option>
@@ -114,7 +121,29 @@ const EditTeamOffcanvas = ({ show, handleClose, selectedTeam, handleSaveChanges 
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label>User Role</Form.Label>
+            <Form.Label>Wing<span className="text-danger"> *</span></Form.Label>
+            <Form.Select name="wingId" value={form.wingId} onChange={handleChange}>
+              <option value="">Select Wing</option>
+              {wings?.map((r) => (
+                <option key={r.id} value={r.id}>{r.title}</option>
+              ))}
+            </Form.Select>
+          </Form.Group>
+
+
+          <Form.Group className="mb-3">
+            <Form.Label>Department<span className="text-danger"> *</span></Form.Label>
+            <Form.Select name="departmentId" value={form.departmentId} onChange={handleChange}>
+              <option value="">Select Department</option>
+              {departments?.map((r) => (
+                <option key={r.id} value={r.id}>{r.departmentName}</option>
+              ))}
+            </Form.Select>
+          </Form.Group>
+
+
+          <Form.Group className="mb-3">
+            <Form.Label>User Role<span className="text-danger"> *</span></Form.Label>
             <Form.Select name="userRole" value={form.userRole} onChange={handleChange}>
               <option value="">Select Role</option>
               {roles.map((r) => (
@@ -124,7 +153,17 @@ const EditTeamOffcanvas = ({ show, handleClose, selectedTeam, handleSaveChanges 
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label>Status</Form.Label>
+            <Form.Label>Superior</Form.Label>
+            <Form.Select name="superior" value={form.superior || 0} onChange={handleChange}>
+              <option value="">Select Superior</option>
+              {teams.map((r) => (
+                <option key={r.id} value={r.id}>{r.name}</option>
+              ))}
+            </Form.Select>
+          </Form.Group>
+
+          <Form.Group className="mb-3">
+            <Form.Label>Status<span className="text-danger"> *</span></Form.Label>
             <Form.Select name="status" value={form.status} onChange={handleChange}>
               <option value="Active">Active</option>
               <option value="Inactive">Inactive</option>
@@ -132,7 +171,7 @@ const EditTeamOffcanvas = ({ show, handleClose, selectedTeam, handleSaveChanges 
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label>Photo</Form.Label>
+            <Form.Label>Photo<span className="text-danger"> *</span></Form.Label>
             <Form.Control type="file" name="photo" onChange={handleChange} />
             {form.photo && (
               <img
@@ -144,7 +183,7 @@ const EditTeamOffcanvas = ({ show, handleClose, selectedTeam, handleSaveChanges 
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label>ID Proof</Form.Label>
+            <Form.Label>ID Proof<span className="text-danger"> *</span></Form.Label>
             <Form.Control type="file" name="idProof" onChange={handleChange} />
             {selectedTeam.idProof && typeof selectedTeam.idProof === "string" && (
               <img

@@ -33,14 +33,14 @@ export const TeamRoute = ({ children }) => {
 
 // Seller Only
 export const SellerRoute = ({ children }) => {
-  const { token, user } = useSelector((state) => state.auth);
-  console.log("SellerRoute - Token:", token, "User:", user); // Debug
+  const { token, seller } = useSelector((state) => state.sellerAuth);
+  console.log("SellerRoute - Token:", token, "seller:", seller); // Debug
   if (!token || !isTokenValid(token)) {
     //  Clear invalid token
-    localStorage.removeItem("authToken");
-    localStorage.removeItem("user");
+    localStorage.removeItem("sellerToken");
+    localStorage.removeItem("seller");
     return <Navigate to="/seller/login" replace />;
   };
-  if (user?.roleName !== "Seller") return <h2>401 - Unauthorized</h2>;
+  // if (seller?.roleName !== "Seller") return <h2>401 - Unauthorized</h2>;
   return children;
 };

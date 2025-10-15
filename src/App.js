@@ -75,6 +75,9 @@ import TaskStatus from "./Seller/pages/TaskStatus";
 import MouAgreement from "./Seller/pages/MouAgreement";
 import MouA2 from "./Seller/pages/MouA2";
 import MouA3 from "./Seller/pages/MouA3";
+import SellerInvoicePage from "./Seller/pages/SellerInvoicePage";
+
+
 import TaskSummarySellar from "./Seller/pages/TaskSummarySellar";
 import ManageBusinessType from "./admin/pages/ManageBusinessType.jsx";
 import AddBusinessType from "./admin/pages/AddBusinessType.jsx";
@@ -85,7 +88,7 @@ import SellerLogin from "./Seller/pages/SellerLogin.jsx";
 import ManageWing from "./admin/pages/ManageWings.jsx";
 import AddWing from "./admin/pages/AddWing.jsx";
 // Exicutive
-import ExecutiveDashboard from "./Executive/pages/Dashboard.js";
+import ExecutiveDashboard from "./Executive/pages/ExecutiveDashboard.js";
 import ExicutiveManageSellers from "./Executive/pages/ExicutiveManageSellers";
 import ExicutiveCreateSellers from "./Executive/pages/ExicutiveCreateSellers";
 import ExicutiveCreateLead from "./Executive/pages/ExicutiveCreateLead";
@@ -101,6 +104,8 @@ import InvoiceNotification from './Accounts/pages/InvoiceNotification';
 import Taxinvoice from "./Accounts/pages/Taxinvoice";
 import AccountsInvoice from "./Accounts/pages/AccountsInvoice";
 import InvoicePage from './Accounts/pages/InvoicePage';
+import AccountsChangePassword from './Accounts/pages/AccountsChangePassword';
+
 
 function App() {
   return (
@@ -108,7 +113,6 @@ function App() {
       <Routes>
         {/* Public Routes */}
         <Route path="/login" element={<Login />} />
-        <Route path="/seller/login" element={<SellerLogin />} />
         <Route path="/" element={<Navigate to="/login" />} />
 
         {/* Admin Routes */}
@@ -192,6 +196,7 @@ function App() {
         <Route path="/team/change-password" element={<TeamRoute><ChangePasswordTeam /></TeamRoute>} />
 
         {/* Seller Routes */}
+        <Route path="/seller/login" element={<SellerLogin />} />
         <Route path="/seller/dashboard" element={<SellerRoute><SellerDashboard /></SellerRoute>} />
         <Route path="/seller/add-products" element={<SellerRoute><AddProducts /></SellerRoute>} />
         <Route path="/seller/mou-1" element={<SellerRoute><MouAgreement /></SellerRoute>} />
@@ -201,6 +206,9 @@ function App() {
         <Route path="/seller/business-information" element={<SellerRoute><BusinessInformationForm /></SellerRoute>} />
         <Route path="/seller/task" element={<SellerRoute><TaskStatus /></SellerRoute>} />
         <Route path="/seller/task-summary" element={<SellerRoute><TaskSummarySellar /></SellerRoute>} />
+        <Route path="/seller/invoice-seller" element={<SellerRoute><SellerInvoicePage /></SellerRoute>} />
+
+
         {/* Executive Routes */}
         <Route path="/executive/dashboard" element={<ExecutiveDashboard />} />
         <Route path="/executive/manage-seller" element={<ExicutiveManageSellers />} />
@@ -218,6 +226,7 @@ function App() {
         <Route path="/accounts/create-invoice" element={<Taxinvoice />} />
         <Route path="/accounts/invoice" element={<AccountsInvoice />} />
         <Route path="/accounts/invoice-list" element={<InvoicePage />} />
+        <Route path="/accounts/change-password" element={<AccountsChangePassword />} />
 
 
 

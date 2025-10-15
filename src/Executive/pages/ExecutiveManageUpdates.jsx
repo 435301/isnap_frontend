@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import Sidebar from '../components/SellerNavbar';
-import Navbar from '../components/SellerSidebar';
+import Sidebar from '../components/ExecutiveNavbar';
+import Navbar from '../components/ExecutiveSidebar';
 import { Link, useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';

@@ -10,6 +10,7 @@ import DigitalMarketing from "../components/DigitalMarketing";
 import Photography from "../components/Photography";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Documents from "../components/Documents"; // adjust path if needed
 
 const CreateSeller = () => {
   const dispatch = useDispatch();
@@ -270,7 +271,7 @@ const CreateSeller = () => {
 
           <div className="bg-white rounded shadow-sm mb-3">
             <ul className="nav nav-tabs">
-              {["Business Details", "Marketplace Business", "Digital Marketing", "Photography"].map(
+              {["Business Details", "Marketplace Business", "Digital Marketing", "Photography", "Documents"].map(
                 (tab) => (
                   <li className="nav-item" key={tab}>
                     <button
@@ -283,6 +284,7 @@ const CreateSeller = () => {
                 )
               )}
             </ul>
+
           </div>
 
           <div className="bg-white p-3 rounded shadow-sm card-header">
@@ -311,26 +313,28 @@ const CreateSeller = () => {
                 expandedSections={expandedSections}
                 toggleSection={toggleSection}
                 businessId={businessId}
-                 setActiveTab={setActiveTab}
+                setActiveTab={setActiveTab}
               />
             )}
             {activeTab === "Digital Marketing" && (
-              <DigitalMarketing formData={formData} setFormData={setFormData} toggleSection={toggleSection}  businessId={businessId}  errors={errors}  setActiveTab={setActiveTab} />
+              <DigitalMarketing formData={formData} setFormData={setFormData} toggleSection={toggleSection} businessId={businessId} errors={errors} setActiveTab={setActiveTab} />
             )}
             {activeTab === "Photography" && (
-              <Photography 
-              formData={formData}
+              <Photography
+                formData={formData}
                 setFormData={setFormData}
                 errors={errors}
                 setErrors={setErrors}
-                expandedSections={expandedSections}   
+                expandedSections={expandedSections}
                 toggleSection={toggleSection}
                 handleServiceRowChange={handleServiceRowChange}
                 handleRemoveServiceRow={handleRemoveServiceRow}
-                 businessId={businessId}
-                // handleSubmit={handleSubmit}
-                 />
+                businessId={businessId}
+              // handleSubmit={handleSubmit}
+              />
             )}
+            {activeTab === "Documents" && <Documents />}
+
           </div>
         </div>
       </div>

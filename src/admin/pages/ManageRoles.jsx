@@ -31,6 +31,7 @@ const ManageRoles = () => {
   const dispatch = useDispatch();
   const { roles = [], loading = false, error = null, successMessage = null } =
     useSelector((state) => state.roles || {});
+    console.log('roles', roles)
 
   useEffect(() => {
     dispatch(fetchRoles());
@@ -191,6 +192,8 @@ const ManageRoles = () => {
                     <thead className="table-light">
                       <tr>
                         <th>S.no</th>
+                        <th>Wing Name</th>
+                        <th>Department Name</th>
                         <th>Role Name</th>
                         <th>Status</th>
                         <th>Action</th>
@@ -202,6 +205,8 @@ const ManageRoles = () => {
                         return (
                           <tr key={roleId}>
                             <td>{index + 1}</td>
+                            <td>{role.wingTitle}</td>
+                            <td>{role.departmentName}</td>
                             <td>{role.roleTitle}</td>
                             <td>
                               <span

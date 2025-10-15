@@ -1,20 +1,14 @@
 import axios from "axios";
 import BASE_URL from "../../config/config";
+import getAuthHeaders from "../../utils/auth";
+import { toast } from "react-toastify";
 
 // Fetch teams
 export const fetchTeams = () => async (dispatch, getState) => {
   try {
     dispatch({ type: "FETCH_TEAMS_REQUEST" });
-
-    const { auth } = getState();
-    const token = auth?.token || localStorage.getItem("token");
-
-    const response = await axios.get(`${BASE_URL}/users`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    const teamsArray = response.data.users || [];
-
+    const response = await axios.get(`${BASE_URL}/users`, getAuthHeaders(true));
+    const teamsArray = response.data.data.users || [];
     dispatch({
       type: "FETCH_TEAMS_SUCCESS",
       payload: teamsArray,
@@ -52,6 +46,7 @@ export const createTeam = (formData) => async (dispatch, getState) => {
       type: "SET_ERROR_MESSAGE",
       payload: error.response?.data?.msg || "Create failed",
     });
+    toast.error(error.response.data.message)
     throw error;
   }
 };

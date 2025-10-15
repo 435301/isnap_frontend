@@ -4,12 +4,23 @@ import { Link, useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import { fetchRoles } from "../../redux/actions/roleActions";
-import { createTeam, setSuccessMessage, setErrorMessage } from "../../redux/actions/teamActions";
+import { createTeam, setSuccessMessage, setErrorMessage, fetchTeams } from "../../redux/actions/teamActions";
+import { fetchDepartments } from "../../redux/actions/departmentActions";
+import { fetchWings } from "../../redux/actions/wingAction";
 
 const AddTeam = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const roles = useSelector(state => state.roles.roles || []);
+  const { teams } = useSelector((state) => state.teams);
+  const { wings } = useSelector((state) => state.wings);
+  const { departments } = useSelector((state) => state.department);
+  console.log('teams', teams)
+  useEffect(() => {
+    dispatch(fetchTeams());
+    dispatch(fetchDepartments());
+    dispatch(fetchWings());
+  }, [dispatch]);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -23,6 +34,9 @@ const AddTeam = () => {
     idProof: null,
     address: "",
     password: "",
+    wingId: "",
+    departmentId: "",
+    superior: 0,
   });
   const [errors, setErrors] = useState({});
   const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 992);
@@ -59,6 +73,8 @@ const AddTeam = () => {
     if (!formData.idProof) newErrors.idProof = "Upload Proof is required";
     if (!formData.password.trim()) newErrors.password = "Password is required";
     else if (formData.password.length < 6) newErrors.password = "Password must be at least 6 characters";
+    if (!formData.wingId.trim()) newErrors.wingId = "Wing name is required";
+    if (!formData.departmentId.trim()) newErrors.departmentId = "Department name is required";
     return newErrors;
   };
 
@@ -138,6 +154,24 @@ const AddTeam = () => {
                     {errors.mobile && <div className="text-danger small">{errors.mobile}</div>}
                   </div>
 
+                  <div className="col-md-4">
+                    <label className="form-label">Wing *</label>
+                    <select name="wingId" className="form-select" value={formData.wingId} onChange={handleChange}>
+                      <option value="">Select Wing</option>
+                      {wings.map(r => <option key={r.id} value={r.id}>{r.title}</option>)}
+                    </select>
+                    {errors.wingId && <div className="text-danger small">{errors.wingId}</div>}
+                  </div>
+
+                  <div className="col-md-4">
+                    <label className="form-label">Department *</label>
+                    <select name="departmentId" className="form-select" value={formData.departmentId} onChange={handleChange}>
+                      <option value="">Select Department</option>
+                      {departments.map(r => <option key={r.id} value={r.id}>{r.DepartmentName}</option>)}
+                    </select>
+                    {errors.departmentId && <div className="text-danger small">{errors.departmentId}</div>}
+                  </div>
+
                   {/* Role */}
                   <div className="col-md-4">
                     <label className="form-label">Role *</label>
@@ -146,6 +180,15 @@ const AddTeam = () => {
                       {roles.map(r => <option key={r.id} value={r.id}>{r.roleTitle}</option>)}
                     </select>
                     {errors.userRole && <div className="text-danger small">{errors.userRole}</div>}
+                  </div>
+
+                <div className="col-md-4">
+                    <label className="form-label">Superior</label>
+                    <select name="superior" className="form-select" value={formData.superior} onChange={handleChange}>
+                      <option value="0">Select Superior</option>
+                      {teams.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
+                    </select>
+                    {errors.superior && <div className="text-danger small">{errors.superior}</div>}
                   </div>
 
                   {/* Photo */}
@@ -183,7 +226,7 @@ const AddTeam = () => {
                   <div className="col-md-4">
                     <label className="form-label">Password *</label>
                     <input type="password" name="password" className="form-control" value={formData.password} onChange={handleChange} />
-                    {errors.password && <div className="text-danger small">{errors.password}</div>}
+                    {errors.password && <div className="textjmnhmj-danger small">{errors.password}</div>}
                   </div>
 
                   <div className="col-12 d-flex justify-content-end mt-4">

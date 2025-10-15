@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import Sidebar from "../components/SellerSidebar";   // ✅ Sidebar from SellerSidebar
-import Navbar from "../components/SellerNavbar";     // ✅ Navbar from SellerNavbar
+import Sidebar from "../components/AccountsSidebar";   // ✅ Sidebar from SellerSidebar
+import Navbar from "../components/AccountsNavbar";     // ✅ Navbar from SellerNavbar
 import DashboardCards from "../components/DashboardCards";
 import TaskStatistics from "../components/TaskStatistics";
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import Sidebar from "../components/SellerSidebar";
-import Navbar from "../components/SellerNavbar";
+import Sidebar from "../components/AccountsSidebar";
+import Navbar from "../components/AccountsNavbar";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "bootstrap-icons/font/bootstrap-icons.css";
 

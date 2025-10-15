@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import Sidebar from "../components/SellerSidebar";
-import Navbar from "../components/SellerNavbar";
+import Sidebar from "../components/ExecutiveSidebar";
+import Navbar from "../components/ExecutiveNavbar";
 import DeleteConfirmationModal from "../components/Modal/DeleteConfirmationModal";
 import EditBusinessModal from "../components/Modal/EditBusinessModal";
 import {

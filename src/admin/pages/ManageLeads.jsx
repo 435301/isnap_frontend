@@ -125,11 +125,11 @@ const ManageLeads = () => {
                 </div>
                 <div className="col-md-4"></div>
                 <div className="col-lg-6 text-end">
-                  <a to="/create-lead" className="btn btn-new-lead"
+                  <Link to="/create-lead" className="btn btn-new-lead"
                     >
-                    <i className="bi bi-plus-circle me-1"></i>
+                    <i className="bi bi-plus-circle me-1" ></i>
                     Add Lead
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>
