@@ -4,10 +4,11 @@ import { Link } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import DeleteConfirmationModal from "../components/Modal/DeleteConfirmationModal";
-import { fetchLeadSources, deleteLeadSource, updateLeadSource } from "../../redux/actions/leadSourceAction";
-import EditLeadSourceOffcanvas from "../components/Modal/EditLeadSourceOffCanvas";
-import ViewLeadSourceModal from "../components/Modal/ViewLeadSourceModal";
 import PaginationComponent from "../../common/pagination";
+import { deleteDocument, fetchDocuments, updateDocument } from "../../redux/actions/docTypeAction";
+import EditDocTypeOffcanvas from "../components/Modal/EditDocTypeModal";
+import { fetchDocumentCategories } from "../../redux/actions/docCategoryAction";
+import ViewDocTypeModal from "../components/Modal/ViewDocTypeModal";
 
 const ManageDocType = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 992);
@@ -15,29 +16,34 @@ const ManageDocType = () => {
   const [statusFilter, setStatusFilter] = useState(null);
   const [showViewModal, setShowViewModal] = useState(false);
   const [showEditOffcanvas, setShowEditOffcanvas] = useState(false);
-  const [selectedLeadSource, setSelectedLeadSource] = useState(null);
+  const [selectedDocType, setSelecteDocType] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const [doccatid, setDoccatid] = useState("");
+
 
   const dispatch = useDispatch();
-  const { leadSources, loading, error, totalPages } = useSelector((state) => state.leadSources);
-
+  const { documents, loading, error, totalPages, limit } = useSelector((state) => state.documents);
+  const { documentCategories } = useSelector(state => state.documentCategory);
   useEffect(() => {
-    dispatch(fetchLeadSources({
+    dispatch(fetchDocuments({
       search: searchTerm,
       page: currentPage,
-      showStatus: statusFilter === null ? "" : statusFilter
+      showStatus: statusFilter === null ? "" : statusFilter,
+      limit: limit,
+      documentCategoryId: doccatid
     }));
-  }, [dispatch, currentPage, searchTerm, statusFilter]);
+    dispatch(fetchDocumentCategories())
+  }, [dispatch, currentPage, searchTerm, statusFilter, doccatid]);
 
   const handleToggleSidebar = () => setIsSidebarOpen((prev) => !prev);
   const handleRefresh = () => {
     setSearchTerm("");
     setStatusFilter(null);
     setCurrentPage(1);
-    dispatch(fetchLeadSources({ search: "", page: 1, showStatus: "" }));
+     setDoccatid(""); 
+    dispatch(fetchDocuments({ search: "", page: "", showStatus: "", documentCategoryId: "" ,}));
   };
   const handleStatusChange = (e) => {
     const value = e.target.value;
@@ -45,12 +51,12 @@ const ManageDocType = () => {
     setCurrentPage(1);
   };
 
-  const handleSaveChanges = async (updatedLeadSource) => {
+  const handleSaveChanges = async (updatedDocType) => {
     try {
-      await dispatch(updateLeadSource(updatedLeadSource.id, updatedLeadSource));
+      await dispatch(updateDocument(updatedDocType.id, updatedDocType));
       setShowEditOffcanvas(false);
-      setSelectedLeadSource(null);
-      dispatch(fetchLeadSources());
+      setSelecteDocType(null);
+      dispatch(fetchDocuments());
     } catch (err) {
       console.log(err);
     }
@@ -62,7 +68,7 @@ const ManageDocType = () => {
   };
 
   const handleDelete = async () => {
-    await dispatch(deleteLeadSource(deleteId));
+    await dispatch(deleteDocument(deleteId));
     setShowDeleteModal(false);
     setDeleteId(null);
   };
@@ -108,6 +114,20 @@ const ManageDocType = () => {
                     <option value="0">Inactive</option>
                   </select>
                 </div>
+                <div className="col-md-3">
+                  <select
+                    className="form-select"
+                    value={doccatid}
+                    onChange={(e) => setDoccatid(e.target.value)}
+                  >
+                    <option value="">All Categories</option>
+                    {documentCategories?.map((cat) => (
+                      <option key={cat.id} value={cat.id}>
+                        {cat.title}
+                      </option>
+                    ))}
+                  </select>
+                </div>
                 <div className="col-md-2  d-flex">
                   <button
                     className="btn btn-success me-3"
@@ -142,16 +162,16 @@ const ManageDocType = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {leadSources.length === 0 ? (
+                      {documents.length === 0 ? (
                         <tr>
-                          <td colSpan="4" className="text-center">No Document Type found.</td>
+                          <td colSpan="6" className="text-center">No Document Type found.</td>
                         </tr>
                       ) : (
-                        leadSources.map((m, index) => (
+                        documents.map((m, index) => (
                           <tr key={m.id}>
-                            <td>{index + 1 + (currentPage - 1) * itemsPerPage}</td>
-                            <td>{m.LeadSourceTitle}</td>
-                            <td>{m.LeadSourceTitle}</td>
+                            <td>{index + 1 + (currentPage - 1) * limit}</td>
+                            <td>{m.documentCategoryTitle}</td>
+                            <td>{m.documentType}</td>
                             <td>
                               <span className={`badge ${m.status ? "bg-success-light text-success" : "bg-danger-light text-danger"}`}>
                                 {m.status ? "Active" : "Inactive"}
@@ -159,10 +179,10 @@ const ManageDocType = () => {
                             </td>
                             <td>
                               <div className="d-flex gap-2">
-                                <button className="btn btn-icon btn-view" onClick={() => { setSelectedLeadSource(m); setShowViewModal(true); }}>
+                                <button className="btn btn-icon btn-view" onClick={() => { setSelecteDocType(m); setShowViewModal(true); }}>
                                   <i className="bi bi-eye"></i>
                                 </button>
-                                <button className="btn btn-icon btn-edit" onClick={() => { setSelectedLeadSource(m); setShowEditOffcanvas(true); }}>
+                                <button className="btn btn-icon btn-edit" onClick={() => { setSelecteDocType(m); setShowEditOffcanvas(true); }}>
                                   <i className="bi bi-pencil-square"></i>
                                 </button>
                                 <button className="btn btn-icon btn-delete" onClick={() => handleDeleteClick(m.id)}>
@@ -187,8 +207,8 @@ const ManageDocType = () => {
             totalPages={totalPages || 1}
             onPageChange={setCurrentPage}
           />
-          {showViewModal && <ViewLeadSourceModal show={showViewModal} handleClose={() => setShowViewModal(false)} leadSource={selectedLeadSource} />}
-          {showEditOffcanvas && <EditLeadSourceOffcanvas show={showEditOffcanvas} handleClose={() => setShowEditOffcanvas(false)} leadSource={selectedLeadSource} onSave={handleSaveChanges} />}
+          {showViewModal && <ViewDocTypeModal show={showViewModal} handleClose={() => setShowViewModal(false)} docType={selectedDocType} />}
+          {showEditOffcanvas && <EditDocTypeOffcanvas show={showEditOffcanvas} handleClose={() => setShowEditOffcanvas(false)} docType={selectedDocType} onSave={handleSaveChanges} documentCategories={documentCategories} />}
           {showDeleteModal && (
             <DeleteConfirmationModal
               show={showDeleteModal}

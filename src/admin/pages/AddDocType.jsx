@@ -9,18 +9,20 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { createLeadSource } from "../../redux/actions/leadSourceAction";
+import { createDocument } from "../../redux/actions/docTypeAction";
+import { fetchDocumentCategories } from "../../redux/actions/docCategoryAction";
 
 const AddDocType = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
+  const { documentCategories, loading, totalPages } = useSelector(state => state.documentCategory);
   const [formData, setFormData] = useState({
-    title: "",
+    documentCategoryId: "",
+    documentType: "",
     status: "",
   });
   const [errors, setErrors] = useState({});
-  const { error } = useSelector((state) => state.leadSources || {});
 
   useEffect(() => {
     const handleResize = () => setIsSidebarOpen(window.innerWidth >= 992);
@@ -29,20 +31,26 @@ const AddDocType = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  useEffect(() => {
+    dispatch(fetchDocumentCategories());
+  }, [dispatch]);
+
   const handleToggleSidebar = () => setIsSidebarOpen((prev) => !prev);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev,   [name]: name === "status" ? Number(value) : value, }));
+    setFormData((prev) => ({ ...prev, [name]: name === "status" ? Number(value) : value, }));
     setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const validationErrors = {};
-    if (!formData.title.trim())
-      validationErrors.title = " Lead Source is required.";
-    if (!formData.status === "")
+     if (!formData.documentCategoryId.trim())
+      validationErrors.documentCategoryId = " Document Category is required.";
+    if (!formData.documentType.trim())
+      validationErrors.documentType = " Document Type is required.";
+    if (formData.status === "")
       validationErrors.status = "Status is required.";
 
     if (Object.keys(validationErrors).length > 0) {
@@ -50,9 +58,9 @@ const AddDocType = () => {
       return;
     }
     try {
-      const res = await dispatch(createLeadSource(formData));
-      if(res?.status){
-      navigate("/manage-document-type");
+      const res = await dispatch(createDocument(formData));
+      if (res?.status) {
+        navigate("/manage-document-type");
       }
     } catch (err) {
       console.log(err)
@@ -83,48 +91,45 @@ const AddDocType = () => {
 
           <div className="row">
             <div className="bg-white p-3 rounded shadow-sm card-header mb-4">
-              {error && (
-                <div className="">
-                
-                </div>
-              )}
-
               <form onSubmit={handleSubmit}>
                 <div className="row g-3">
 
-                     <div className="col-md-4">
+                  <div className="col-md-4">
                     <label className="form-label">
                       Document Category <span className="text-danger">*</span>
                     </label>
                     <select
-                      name="status"
-                      value={formData.status}
+                      name="documentCategoryId"
+                      value={formData.documentCategoryId}
                       onChange={handleChange}
                       className={`form-select ${errors.status ? "is-invalid" : ""}`}
                     >
-                      <option value="">Select Status</option>
-                      <option value="1">Active</option>
-                      <option value="0">Inactive</option>
+                      <option value="">Select Document Category</option>
+                      {documentCategories.map((doc) => (
+                        <option key={doc.id} value={doc.id}>
+                          {doc.title}
+                        </option>
+                      ))}
                     </select>
-                    {errors.status && (
-                      <div className="invalid-feedback">{errors.status}</div>
+                    {errors.documentCategoryId && (
+                      <div className="invalid-feedback">{errors.documentCategoryId}</div>
                     )}
                   </div>
 
                   <div className="col-md-4">
                     <label className="form-label">
-                      Document Type   <span className="text-danger">*</span>
+                      Document Type<span className="text-danger">*</span>
                     </label>
                     <input
                       type="text"
-                      name="title"
-                      value={formData.title}
+                      name="documentType"
+                      value={formData.documentType}
                       onChange={handleChange}
-                      className={`form-control ${errors.title ? "is-invalid" : ""}`}
+                      className={`form-control ${errors.documentType ? "is-invalid" : ""}`}
                       placeholder="Enter Document Category "
                     />
-                    {errors.title && (
-                      <div className="invalid-feedback">{errors.title}</div>
+                    {errors.documentType && (
+                      <div className="invalid-feedback">{errors.documentType}</div>
                     )}
                   </div>
 
