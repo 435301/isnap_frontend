@@ -1,5 +1,6 @@
 import axios from "axios";
 import BASE_URL from "../../config/config";
+import { toast } from "react-toastify";
 
 export const BUSINESS_LOGIN_REQUEST = "BUSINESS_LOGIN_REQUEST";
 export const BUSINESS_LOGIN_SUCCESS = "BUSINESS_LOGIN_SUCCESS";
@@ -41,6 +42,7 @@ export const businessLogin = (credentials) => async (dispatch) => {
       type: BUSINESS_LOGIN_FAILURE,
       payload: error.response?.data?.message || "Login failed",
     });
+    toast.error(error.response?.data?.message || "Login failed");
   }
 };
 

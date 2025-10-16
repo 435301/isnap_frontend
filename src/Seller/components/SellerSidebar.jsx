@@ -40,7 +40,7 @@ const SellerSidebar = ({ isOpen }) => {
 
   const handleLogout = () => {
     dispatch(logoutUser());
-    navigate("/login");
+    navigate("/seller/login");
   };
 
   return (

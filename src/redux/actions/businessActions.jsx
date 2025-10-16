@@ -16,6 +16,10 @@ export const ADD_REQUIRED_DOCUMENTS_FAILURE = "ADD_REQUIRED_DOCUMENTS_FAILURE";
 export const FETCH_BUSINESS_REQUEST_EXECUTIVE = "FETCH_BUSINESS_REQUEST_EXECUTIVE";
 export const FETCH_BUSINESS_SUCCESS_EXECUTIVE = "FETCH_BUSINESS_SUCCESS_EXECUTIVE";
 export const FETCH_BUSINESS_FAILURE_EXECUTIVE = "FETCH_BUSINESS_FAILURE_EXECUTIVE";
+export const APPROVE_MANAGER_REQUEST = "APPROVE_MANAGER_REQUEST";
+export const APPROVE_MANAGER_SUCCESS = "APPROVE_MANAGER_SUCCESS";
+export const APPROVE_MANAGER_FAILURE = "APPROVE_MANAGER_FAILURE";
+
 
 
 const getAuthHeaders = (isFormData = false) => {
@@ -270,4 +274,31 @@ export const fetchBusinessDetailsExecutive = (page = 1, limit, search = "", show
       });
     }
   };
+};
+
+
+export const approveByManager = (businessId) => async (dispatch) => {
+  try {
+    dispatch({ type: APPROVE_MANAGER_REQUEST });
+    const response = await axios.patch(`${BASE_URL}/salesManager/approveByManager`, { businessId, },getAuthHeaders(false));
+    if (response.data.status) {
+      dispatch({
+        type: APPROVE_MANAGER_SUCCESS,
+        payload: response.data.data,
+      });
+      toast.success(response?.data?.message);
+    } else {
+      dispatch({
+        type: APPROVE_MANAGER_FAILURE,
+        payload: response.data.message || "Approval failed",
+      });
+    }
+    return response.data;
+  } catch (error) {
+    dispatch({
+      type: APPROVE_MANAGER_FAILURE,
+      payload: error.response?.data?.message || error.message,
+    });
+    toast.error(error.response.data.message)
+  }
 };

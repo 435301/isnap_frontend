@@ -104,6 +104,12 @@ const Documents = ({ businessId,businessIdEdit }) => {
           </button>
         </div>
       </form>
+
+       <div className=" text-center">
+          <button type="submit" className="btn btn-success">
+            Create Seller
+          </button>
+        </div>
     </>
   );
 };

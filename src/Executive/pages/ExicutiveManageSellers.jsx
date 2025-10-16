@@ -1,24 +1,27 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Sidebar from "../components/ExecutiveSidebar";
 import Navbar from "../components/ExecutiveNavbar";
 import DeleteConfirmationModal from "../components/Modal/DeleteConfirmationModal";
 import EditBusinessModal from "../components/Modal/EditBusinessModal";
 import {
-  fetchBusinessDetails,
   deleteBusiness,
   clearBusinessSuccessMessage,
   updateBusiness,
   fetchBusinessDetailsExecutive,
+  approveByManager,
 } from "../../redux/actions/businessActions";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import PaginationComponent from "../../common/pagination";
+import { sendWelcomeEmail } from "../../redux/actions/emailAction";
+import ManagerDocumentView from "./ManagerDocument";
 
 const ManageSellers = () => {
+  const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
@@ -37,16 +40,12 @@ const ManageSellers = () => {
         ? "salesmanager"
         : "";
   const [roleType, setRoleType] = useState(derivedRoleType);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedSellerId, setSelectedSellerId] = useState(null);
   const dispatch = useDispatch();
   const {
-    businessDetailsSales = [],
-    loading = false,
-    successMessage = null,
-    totalPages = 1,
-  } = useSelector((state) => state.business || {});
+    businessDetailsSales = [], loading = false, successMessage = null, totalPages = 1, } = useSelector((state) => state.business || {});
 
-
-  // Handle window resize
   useEffect(() => {
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
@@ -117,6 +116,23 @@ const ManageSellers = () => {
         statusFilter === "" || String(seller.status) === statusFilter;
       return matchesSearch && matchesStatus;
     });
+
+  const handleApprove = async (businessId, email, name) => {
+    try {
+      const res = await dispatch(approveByManager(businessId));
+      if (res?.status) {
+        await dispatch(sendWelcomeEmail(name, email));
+      }
+    } catch (error) {
+      console.log('error', error);
+    }
+  };
+
+  const handleManagerDocuments = (id) => {
+    setSelectedSellerId(id);
+    setShowModal(true);
+  };
+
 
 
   return (
@@ -249,35 +265,51 @@ const ManageSellers = () => {
                               >
                                 <i className="bi bi-trash"></i>
                               </button>
-                              {/* Voice Button */}
-                              <div className="dropdown">
-                                <button
-                                  className="btn btn-icon btn-outline-secondary"
-                                  type="button"
-                                  data-bs-toggle="dropdown"
-                                  aria-expanded="false"
-                                >
-                                  <i className="bi bi-three-dots-vertical"></i>
-                                </button>
-                                <ul className="dropdown-menu">
-                                  <li>
-                                    <a className="dropdown-item" href="#">
-                                      Aprove
-                                    </a>
-                                  </li>
-                                  <li>
-                                    <a className="dropdown-item" href="#">
-                                      Rejected
-                                    </a>
-                                  </li>
-                                  <li>
-                                    <a className="dropdown-item" href="#">
-                                      Invoice
-                                    </a>
-                                  </li>
-                                </ul>
-                              </div>
-
+                              {storedUser?.roleName === "Sales Manager" && (
+                                <div className="dropdown">
+                                  <button
+                                    className="btn btn-icon btn-outline-secondary"
+                                    type="button"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false"
+                                  >
+                                    <i className="bi bi-three-dots-vertical"></i>
+                                  </button>
+                                  <ul className="dropdown-menu">
+                                    <li>
+                                      {seller.isSalesManagerApprove === 1 ? (
+                                        <button className="dropdown-item text-success" disabled>
+                                          Approved
+                                        </button>
+                                      ) : (
+                                        <button
+                                          className="dropdown-item"
+                                          onClick={() =>
+                                            handleApprove(seller.id, seller.regdEmail, seller.sellerName)
+                                          }
+                                        >
+                                          Approve
+                                        </button>
+                                      )}
+                                    </li>
+                                    <li>
+                                      <button className="dropdown-item" >
+                                        Reject
+                                      </button>
+                                    </li>
+                                    <li>
+                                      <button className="dropdown-item" >
+                                        Invoice
+                                      </button>
+                                    </li>
+                                    <li>
+                                      <button className="dropdown-item" onClick={() => handleManagerDocuments(seller.id)}>
+                                        Documents
+                                      </button>
+                                    </li>
+                                  </ul>
+                                </div>
+                              )}
                             </div>
                           </td>
                         </tr>
@@ -314,6 +346,11 @@ const ManageSellers = () => {
       />
 
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
+
+      {showModal && (
+        <ManagerDocumentView sellerId={selectedSellerId} show={showModal} onClose={() => setShowModal(false)}
+        />
+      )}
     </div>
   );
 };

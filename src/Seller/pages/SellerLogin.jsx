@@ -18,7 +18,7 @@ const SellerLogin = () => {
 
   const [errors, setErrors] = useState({});
   const [showForgot, setShowForgot] = useState(false);
-  const [forgotStep, setForgotStep] = useState(1); 
+  const [forgotStep, setForgotStep] = useState(1);
   const [forgotData, setForgotData] = useState({
     emailOrMobile: "",
     otp: "",
@@ -39,29 +39,15 @@ const SellerLogin = () => {
   } = useSelector((state) => state.sellerAuth);
   console.log('seller', seller)
 
-    useEffect(() => {
-        if (seller?.mouStatus === 1) {
-          navigate("/seller/dashboard");
-        } else {
-          navigate("/seller/mou-1");
-      }
-  }, [token, seller, navigate]);
+  //   useEffect(() => {
+  //       if (seller?.mouStatus === 1) {
+  //         navigate("/seller/dashboard");
+  //       } else {
+  //         navigate("/seller/mou-1");
+  //     }
+  // }, [token, seller, navigate]);
 
-//   useEffect(() => {
-//   const handleNavigation = async () => {
-//     if (seller) {
-//       const ipAddress = await getIpAddress();
-//       dispatch(updateMouStatus(seller.id, seller.mouStatus, ipAddress));
-//       if (seller?.mouStatus === 1) {
-//         navigate("/seller/dashboard");
-//       } else {
-//         navigate("/seller/mou-1");
-//       }
-//     }
-//   };
 
-//   handleNavigation();
-// }, [token, seller, navigate, dispatch]);
 
 
   // --- FORM VALIDATION ---
@@ -77,15 +63,20 @@ const SellerLogin = () => {
     e.preventDefault();
     const validationErrors = validateLoginForm(formData);
     setErrors(validationErrors);
-    if (Object.keys(validationErrors).length === 0) {
-      dispatch(
-        businessLogin({
-          identifier: formData.emailOrMobile,
-          password: formData.password,
-        })
-      );
+   if (Object.keys(validationErrors).length === 0) {
+    const res = dispatch(
+      businessLogin({
+        identifier: formData.emailOrMobile,
+        password: formData.password,
+      })
+    );
+
+    if (res?.seller?.mouStatus === 0) {
+      navigate("/seller/mou-1");
+    } else {
+      navigate("/seller/dashboard");
     }
-     
+  }
   };
 
   // --- FORGOT PASSWORD HANDLERS ---

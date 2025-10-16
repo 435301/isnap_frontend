@@ -111,6 +111,7 @@ import InvoicePage from './Accounts/pages/InvoicePage';
 import AccountsChangePassword from './Accounts/pages/AccountsChangePassword';
 import ExecutiveEditSeller from "./Executive/pages/ExecutiveEditSeller.jsx";
 import ExecutiveViewSeller from "./Executive/pages/ExecutiveViewSeller.jsx";
+import ManagerDocumentView from "./Executive/pages/ManagerDocument.jsx";
 
 
 function App() {
@@ -232,6 +233,7 @@ function App() {
         <Route path="/executive/change-password" element={<ExicutiveChangePassword />} />
         <Route path="/executive/latest-updates" element={<ExecutiveLastestUpdates />} />
         <Route path="/executive/manage-updates" element={<ExecutiveManageUpdates />} />
+
         {/* Accounts Routes */}
         <Route path="/accounts/dashboard" element={<AccountsDashboard />} />
         <Route path="/accounts/invoice-notification" element={<InvoiceNotification />} />

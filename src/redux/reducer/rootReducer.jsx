@@ -36,6 +36,7 @@ import { wingsReducer } from "./wingReducer";
 import sellerAuthReducer from "./sellerAuthReducer";
 import documentCategoryReducer from "./docCategoryReducer";
 import { documentReducer } from "./docTypeReducer";
+import emailReducer from "./emailReducer";
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -74,10 +75,13 @@ const rootReducer = combineReducers({
   latestUpdates: latestUpdatesReducer,
   mouStatus: mouStatusReducer,
   mou: mouStatusReducer,
-  wings:wingsReducer,
+  wings: wingsReducer,
   sellerAuth: sellerAuthReducer,
-  documentCategory:documentCategoryReducer,
-  documents:documentReducer
+  documentCategory: documentCategoryReducer,
+  documents: documentReducer,
+  managerApproval: businessReducer,
+  email: emailReducer,
+  documentApproval: mouStatusReducer,
 });
 
 

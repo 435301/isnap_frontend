@@ -13,6 +13,9 @@ import {
   FETCH_BUSINESS_REQUEST_EXECUTIVE,
   FETCH_BUSINESS_SUCCESS_EXECUTIVE,
   FETCH_BUSINESS_FAILURE_EXECUTIVE,
+   APPROVE_MANAGER_REQUEST,
+  APPROVE_MANAGER_SUCCESS,
+  APPROVE_MANAGER_FAILURE,
 } from "../actions/businessActions";
 
 const initialState = {
@@ -26,6 +29,7 @@ const initialState = {
   total: 0,
   limit: 10,
     addedDocuments: null,
+     approveStatus: null,
 };
 
 export default function businessReducer(state = initialState, action) {
@@ -99,8 +103,18 @@ export default function businessReducer(state = initialState, action) {
         total: action.payload.total,
          limit: action.payload.limit,
       };
-
     case FETCH_BUSINESS_FAILURE_EXECUTIVE:
+      return { ...state, loading: false, error: action.payload };
+       case APPROVE_MANAGER_REQUEST:
+      return { ...state, loading: true, error: null };
+    case APPROVE_MANAGER_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        approveStatus: action.payload.managerApproveStatus,
+        error: null,
+      };
+    case APPROVE_MANAGER_FAILURE:
       return { ...state, loading: false, error: action.payload };
     default:
       return state;
