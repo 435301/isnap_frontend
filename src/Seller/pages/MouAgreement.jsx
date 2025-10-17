@@ -10,6 +10,7 @@ import DocumentUploadForm from "../components/DocumentUploadForm";
 import DigitalMarketingAgreement from "../components/DigitalMarketingAgreement";
 import LogisticsAgreement from "../components/LogisticsAgreement";
 import MarketPlaceAgreement from "../components/MarketPlaceAgreement";
+import { mailToSalesDepartment } from "../../redux/actions/emailAction";
 
 const Agreement = () => {
   const dispatch = useDispatch();
@@ -70,7 +71,6 @@ const Agreement = () => {
 
 const handleUpload = async (formData, doc) => {
   await dispatch(uploadDocument(formData));
-
   // Optional: update the local documents state to show uploaded file immediately
   const uploadedFile = uploadedDocument?.file;
   if (uploadedFile) {
@@ -79,6 +79,12 @@ const handleUpload = async (formData, doc) => {
     );
   }
 };
+
+const handleCreateDocuments=()=>{
+   dispatch(mailToSalesDepartment(seller.id));
+};
+
+
   return (
     <div>
       {/* Header with Logo */}
@@ -199,7 +205,7 @@ const handleUpload = async (formData, doc) => {
           {/* Docs Tab */}
           {activeTab === "docs" && (
             <div>
-              <DocumentUploadForm  documents={documents} onUpload={handleUpload}/>
+              <DocumentUploadForm  documents={documents} onUpload={handleUpload} onSubmit={handleCreateDocuments}/>
             </div>
 
           )}

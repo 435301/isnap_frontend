@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { toast } from "react-toastify";
 
 
-const DocumentUploadForm = ({ documents = [], onUpload }) => {
+const DocumentUploadForm = ({ documents = [], onUpload , onSubmit}) => {
     // Group documents by their category
     const groupedDocs = documents.reduce((acc, doc) => {
         const category = doc.documentCategoryTitle;
@@ -87,6 +87,7 @@ const DocumentUploadForm = ({ documents = [], onUpload }) => {
                 <button
                     type="submit"
                     className="btn btn-success px-5 me-2"
+                     onClick={onSubmit}
                 >
                     Submit
                 </button>
