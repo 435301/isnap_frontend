@@ -2,11 +2,14 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addRequiredDocuments } from "../../redux/actions/businessActions";
 import { fetchDocuments } from "../../redux/actions/docTypeAction";
+import { approveMailToSeller, mailToSalesManager } from "../../redux/actions/emailAction";
+import { useNavigate } from "react-router-dom";
 
-const Documents = ({ businessId,businessIdEdit }) => {
+const Documents = ({ businessId, businessIdEdit }) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { documents } = useSelector((state) => state.documents);
-  console.log('businessIdEdit',businessIdEdit)
+  console.log('businessIdEdit', businessIdEdit)
   const [selectedCategories, setSelectedCategories] = useState([]);
 
   useEffect(() => {
@@ -52,6 +55,13 @@ const Documents = ({ businessId,businessIdEdit }) => {
     } catch (err) {
       console.error(err);
     }
+  };
+
+  const handleCreateSeller = () => {
+    const res = dispatch(mailToSalesManager(businessId));
+    if (res.status === true) {
+      navigate('/executive/manage-seller');
+    };
   };
 
   return (
@@ -105,11 +115,11 @@ const Documents = ({ businessId,businessIdEdit }) => {
         </div>
       </form>
 
-       <div className=" text-center">
-          <button type="submit" className="btn btn-success">
-            Create Seller
-          </button>
-        </div>
+      <div className=" text-center">
+        <button type="submit" className="btn btn-success" onClick={handleCreateSeller}>
+          Create Seller
+        </button>
+      </div>
     </>
   );
 };
