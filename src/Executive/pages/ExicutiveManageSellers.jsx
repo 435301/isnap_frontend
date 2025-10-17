@@ -17,7 +17,7 @@ import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import PaginationComponent from "../../common/pagination";
-import { sendWelcomeEmail } from "../../redux/actions/emailAction";
+import { approveMailToSeller, rejectMailToSeller, sendWelcomeEmail } from "../../redux/actions/emailAction";
 import ManagerDocumentView from "./ManagerDocument";
 
 const ManageSellers = () => {
@@ -33,6 +33,7 @@ const ManageSellers = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedBusiness, setSelectedBusiness] = useState(null);
   const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
+  console.log('storedUser', storedUser);
   const derivedRoleType =
     storedUser?.roleName === "Sales Executive"
       ? "salesexecutive"
@@ -133,7 +134,14 @@ const ManageSellers = () => {
     setShowModal(true);
   };
 
+ const handledocumentApprove = ()=>{
+  dispatch(approveMailToSeller(storedUser?.id));
+ };
 
+
+ const rejectDocumentMail = ()=>{
+  dispatch(rejectMailToSeller(storedUser?.id));
+ };
 
   return (
     <div className="container-fluid position-relative bg-white d-flex p-0">
@@ -348,7 +356,7 @@ const ManageSellers = () => {
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
 
       {showModal && (
-        <ManagerDocumentView sellerId={selectedSellerId} show={showModal} onClose={() => setShowModal(false)}
+        <ManagerDocumentView sellerId={selectedSellerId} show={showModal}  onApprove={handledocumentApprove}  onReject = {rejectDocumentMail} onClose={() => setShowModal(false) }
         />
       )}
     </div>

@@ -5,7 +5,7 @@ import BASE_URL from "../../config/config";
 import { toast } from "react-toastify";
 import "../assets/css/reject.css";
 
-const ManagerDocumentView = ({ sellerId, show, onClose }) => {
+const ManagerDocumentView = ({ sellerId, show, onClose ,onApprove, onReject}) => {
   const dispatch = useDispatch();
   const { loading, documents, error } = useSelector((state) => state.mou);
   const [showPrompt, setShowPrompt] = useState(false);
@@ -30,6 +30,7 @@ const ManagerDocumentView = ({ sellerId, show, onClose }) => {
 
   const handleAccept = async () => {
     const res = await dispatch(acceptDocuments(sellerId));
+    onApprove();
   };
 
   const handleRejectConfirm = async () => {
@@ -40,6 +41,7 @@ const ManagerDocumentView = ({ sellerId, show, onClose }) => {
     await dispatch(rejectDocuments(sellerId, reason));
     setShowPrompt(false);
     setReason("");
+    onReject();
   };
 
   const handleReject = () => {
