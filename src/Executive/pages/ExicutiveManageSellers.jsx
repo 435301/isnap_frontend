@@ -17,8 +17,9 @@ import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import PaginationComponent from "../../common/pagination";
-import { approveMailToSeller, rejectMailToSeller, sendWelcomeEmail } from "../../redux/actions/emailAction";
+import { approveMailToSeller, mailToRequestInvoice, rejectMailToSeller, sendWelcomeEmail } from "../../redux/actions/emailAction";
 import ManagerDocumentView from "./ManagerDocument";
+import { requestInvoice } from "../../redux/actions/invoiceAction";
 
 const ManageSellers = () => {
   const navigate = useNavigate();
@@ -47,6 +48,7 @@ const ManageSellers = () => {
   const {
     businessDetailsSales = [], loading = false, successMessage = null, totalPages = 1, } = useSelector((state) => state.business || {});
 
+    console.log('businessDetailsSales', businessDetailsSales);
   useEffect(() => {
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
@@ -123,6 +125,17 @@ const ManageSellers = () => {
       const res = await dispatch(approveByManager(businessId));
       if (res?.status) {
         await dispatch(sendWelcomeEmail(name, email));
+      }
+    } catch (error) {
+      console.log('error', error);
+    }
+  };
+
+    const handleInvoice = async (businessId) => {
+     try {
+    const res =dispatch(requestInvoice(businessId));
+      if (res?.status) {
+        await dispatch(mailToRequestInvoice(businessId));
       }
     } catch (error) {
       console.log('error', error);
@@ -300,13 +313,13 @@ const ManageSellers = () => {
                                         </button>
                                       )}
                                     </li>
-                                    <li>
+                                    {/* <li>
                                       <button className="dropdown-item" >
                                         Reject
                                       </button>
-                                    </li>
+                                    </li> */}
                                     <li>
-                                      <button className="dropdown-item" >
+                                      <button className="dropdown-item" onClick={()=>handleInvoice(seller.id)} >
                                         Invoice
                                       </button>
                                     </li>

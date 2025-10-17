@@ -37,6 +37,7 @@ import sellerAuthReducer from "./sellerAuthReducer";
 import documentCategoryReducer from "./docCategoryReducer";
 import { documentReducer } from "./docTypeReducer";
 import emailReducer from "./emailReducer";
+import { invoiceReducer } from "./invoiceReducer";
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -82,7 +83,8 @@ const rootReducer = combineReducers({
   managerApproval: businessReducer,
   email: emailReducer,
   documentApproval: mouStatusReducer,
-  categories:businessReducer
+  categories:businessReducer, 
+  invoices:invoiceReducer
 });
 
 

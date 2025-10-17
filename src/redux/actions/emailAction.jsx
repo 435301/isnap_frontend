@@ -81,3 +81,6 @@ export const approveMailToSeller = (businessId) =>
 
 export const rejectMailToSeller = (businessId) =>
   sendEmail("/email/rejectMailToSeller", businessId);
+
+export const mailToRequestInvoice = (businessId) =>
+  sendEmail("/email/mailToRequestInvoice", businessId);
