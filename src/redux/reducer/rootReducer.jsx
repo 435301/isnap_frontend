@@ -82,6 +82,7 @@ const rootReducer = combineReducers({
   managerApproval: businessReducer,
   email: emailReducer,
   documentApproval: mouStatusReducer,
+  categories:businessReducer
 });
 
 

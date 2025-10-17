@@ -13,6 +13,17 @@ export const CLEAR_BUSINESS_SUCCESS_MESSAGE = "CLEAR_BUSINESS_SUCCESS_MESSAGE";
 export const ADD_REQUIRED_DOCUMENTS_REQUEST = "ADD_REQUIRED_DOCUMENTS_REQUEST";
 export const ADD_REQUIRED_DOCUMENTS_SUCCESS = "ADD_REQUIRED_DOCUMENTS_SUCCESS";
 export const ADD_REQUIRED_DOCUMENTS_FAILURE = "ADD_REQUIRED_DOCUMENTS_FAILURE";
+export const FETCH_BUSINESS_DOCUMENTS_REQUEST = "FETCH_BUSINESS_DOCUMENTS_REQUEST";
+export const FETCH_BUSINESS_DOCUMENTS_SUCCESS = "FETCH_BUSINESS_DOCUMENTS_SUCCESS";
+export const FETCH_BUSINESS_DOCUMENTS_FAILURE = "FETCH_BUSINESS_DOCUMENTS_FAILURE";
+
+export const UPDATE_REQUIRED_DOCUMENTS_REQUEST = "UPDATE_REQUIRED_DOCUMENTS_REQUEST";
+export const UPDATE_REQUIRED_DOCUMENTS_SUCCESS = "UPDATE_REQUIRED_DOCUMENTS_SUCCESS";
+export const UPDATE_REQUIRED_DOCUMENTS_FAILURE = "UPDATE_REQUIRED_DOCUMENTS_FAILURE";
+
+export const DELETE_REQUIRED_DOCUMENTS_REQUEST = "DELETE_REQUIRED_DOCUMENTS_REQUEST";
+export const DELETE_REQUIRED_DOCUMENTS_SUCCESS = "DELETE_REQUIRED_DOCUMENTS_SUCCESS";
+export const DELETE_REQUIRED_DOCUMENTS_FAILURE = "DELETE_REQUIRED_DOCUMENTS_FAILURE";
 export const FETCH_BUSINESS_REQUEST_EXECUTIVE = "FETCH_BUSINESS_REQUEST_EXECUTIVE";
 export const FETCH_BUSINESS_SUCCESS_EXECUTIVE = "FETCH_BUSINESS_SUCCESS_EXECUTIVE";
 export const FETCH_BUSINESS_FAILURE_EXECUTIVE = "FETCH_BUSINESS_FAILURE_EXECUTIVE";
@@ -220,6 +231,42 @@ export const addRequiredDocuments = (payload) => async (dispatch) => {
   }
 };
 
+export const fetchBusinessDocuments = (businessId) => async (dispatch) => {
+  try {
+    dispatch({ type: FETCH_BUSINESS_DOCUMENTS_REQUEST });
+    const response = await axios.post(`${BASE_URL}/businessDetails/getDocumentsList`, { businessId }, getAuthHeaders());
+    dispatch({
+      type: FETCH_BUSINESS_DOCUMENTS_SUCCESS,
+      payload: response.data.data.categories || [],
+    });
+  } catch (error) {
+    dispatch({
+      type: FETCH_BUSINESS_DOCUMENTS_FAILURE,
+      payload: error.response?.data?.message || "Failed to fetch documents",
+    });
+  }
+};
+
+
+export const updateRequiredDocuments = (payload) => async (dispatch) => {
+  dispatch({ type: UPDATE_REQUIRED_DOCUMENTS_REQUEST });
+  try {
+    const response = await axios.post(`${BASE_URL}/businessDetails/updateRequiredDocuments`, payload,  getAuthHeaders());
+    dispatch({
+      type: UPDATE_REQUIRED_DOCUMENTS_SUCCESS,
+      payload: response.data,
+    });
+    toast.success(response.data?.message);
+    return response.data;
+  } catch (error) {
+    dispatch({                            
+      type: UPDATE_REQUIRED_DOCUMENTS_FAILURE,
+      payload:  error.response?.data?.message,
+    });
+    toast.error( error.response?.data?.message);
+  }
+};
+
 
 export const fetchBusinessDetailsExecutive = (page = 1, limit, search = "", showStatus = "", roleType = "") => {
   return async (dispatch) => {
@@ -300,5 +347,26 @@ export const approveByManager = (businessId) => async (dispatch) => {
       payload: error.response?.data?.message || error.message,
     });
     toast.error(error.response.data.message)
+  }
+};
+
+export const deleteRequiredDocuments = (businessId, documentCategoryId) => async (dispatch) => {
+  try {
+    dispatch({ type: DELETE_REQUIRED_DOCUMENTS_REQUEST });
+    const response = await axios.delete(
+      `${BASE_URL}/businessDetails/deleteRequiredDocuments/${businessId}/${documentCategoryId}`,  getAuthHeaders(true)
+    );
+    dispatch({
+      type: DELETE_REQUIRED_DOCUMENTS_SUCCESS,
+      payload: response.data.message || "Required document deleted successfully",
+    });
+    toast.success(response.data.message);
+  } catch (error) {
+    dispatch({
+      type: DELETE_REQUIRED_DOCUMENTS_FAILURE,
+      payload: error.response?.data?.message || "Failed to delete required documents",
+    });
+
+    toast.error(error.response?.data?.message);
   }
 };

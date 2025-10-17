@@ -13,9 +13,18 @@ import {
   FETCH_BUSINESS_REQUEST_EXECUTIVE,
   FETCH_BUSINESS_SUCCESS_EXECUTIVE,
   FETCH_BUSINESS_FAILURE_EXECUTIVE,
-   APPROVE_MANAGER_REQUEST,
+  APPROVE_MANAGER_REQUEST,
   APPROVE_MANAGER_SUCCESS,
   APPROVE_MANAGER_FAILURE,
+  FETCH_BUSINESS_DOCUMENTS_REQUEST,
+  FETCH_BUSINESS_DOCUMENTS_SUCCESS,
+  FETCH_BUSINESS_DOCUMENTS_FAILURE,
+  UPDATE_REQUIRED_DOCUMENTS_REQUEST,
+  UPDATE_REQUIRED_DOCUMENTS_SUCCESS,
+  UPDATE_REQUIRED_DOCUMENTS_FAILURE,
+  DELETE_REQUIRED_DOCUMENTS_REQUEST,
+  DELETE_REQUIRED_DOCUMENTS_SUCCESS,
+  DELETE_REQUIRED_DOCUMENTS_FAILURE,
 } from "../actions/businessActions";
 
 const initialState = {
@@ -28,8 +37,9 @@ const initialState = {
   totalPages: 1,
   total: 0,
   limit: 10,
-    addedDocuments: null,
-     approveStatus: null,
+  addedDocuments: null,
+  approveStatus: null,
+  categories: [],
 };
 
 export default function businessReducer(state = initialState, action) {
@@ -45,7 +55,7 @@ export default function businessReducer(state = initialState, action) {
         currentPage: action.payload.currentPage,
         totalPages: action.payload.totalPages,
         total: action.payload.total,
-         limit: action.payload.limit,
+        limit: action.payload.limit,
       };
 
     case FETCH_BUSINESS_FAILURE:
@@ -78,9 +88,10 @@ export default function businessReducer(state = initialState, action) {
 
     case CLEAR_BUSINESS_SUCCESS_MESSAGE:
       return { ...state, successMessage: null };
- case ADD_REQUIRED_DOCUMENTS_REQUEST:
+    case ADD_REQUIRED_DOCUMENTS_REQUEST:
       return {
-        ...state,  loading: true, success: false, error: null, };
+        ...state, loading: true, success: false, error: null,
+      };
 
     case ADD_REQUIRED_DOCUMENTS_SUCCESS:
       return {
@@ -88,9 +99,22 @@ export default function businessReducer(state = initialState, action) {
       };
     case ADD_REQUIRED_DOCUMENTS_FAILURE:
       return {
-        ...state, loading: false,  success: false, error: action.payload,
+        ...state, loading: false, success: false, error: action.payload,
       };
-      case FETCH_BUSINESS_REQUEST_EXECUTIVE:
+    case FETCH_BUSINESS_DOCUMENTS_REQUEST:
+    case UPDATE_REQUIRED_DOCUMENTS_REQUEST:
+    case FETCH_BUSINESS_DOCUMENTS_SUCCESS:
+      return { ...state, loading: false, categories: action.payload, };
+    case UPDATE_REQUIRED_DOCUMENTS_SUCCESS:
+    case FETCH_BUSINESS_DOCUMENTS_FAILURE:
+    case UPDATE_REQUIRED_DOCUMENTS_FAILURE:
+    case DELETE_REQUIRED_DOCUMENTS_REQUEST:
+      return { ...state, loading: true, success: "", error: null };
+    case DELETE_REQUIRED_DOCUMENTS_SUCCESS:
+      return { ...state, loading: false, success: action.payload };
+    case DELETE_REQUIRED_DOCUMENTS_FAILURE:
+      return { ...state, loading: false, error: action.payload };
+    case FETCH_BUSINESS_REQUEST_EXECUTIVE:
       return { ...state, loading: true, error: null };
 
     case FETCH_BUSINESS_SUCCESS_EXECUTIVE:
@@ -101,11 +125,11 @@ export default function businessReducer(state = initialState, action) {
         currentPage: action.payload.currentPage,
         totalPages: action.payload.totalPages,
         total: action.payload.total,
-         limit: action.payload.limit,
+        limit: action.payload.limit,
       };
     case FETCH_BUSINESS_FAILURE_EXECUTIVE:
       return { ...state, loading: false, error: action.payload };
-       case APPROVE_MANAGER_REQUEST:
+    case APPROVE_MANAGER_REQUEST:
       return { ...state, loading: true, error: null };
     case APPROVE_MANAGER_SUCCESS:
       return {
