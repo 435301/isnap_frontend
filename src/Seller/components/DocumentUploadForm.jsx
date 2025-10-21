@@ -35,7 +35,7 @@ const DocumentUploadForm = ({ documents = [], onUpload , onSubmit}) => {
         <div className="tab-pane active">
             <h5>Documents</h5>
             {Object.entries(groupedDocs).map(([category, docs]) => (
-                <div key={category} className="mt-4">
+                <div key={category} className="mt-4 w-50 mx-auto">
                     <h6 className="text-success">{category}</h6>
                     <div className="ms-3">
                         {docs.map((doc) => (
@@ -69,7 +69,7 @@ const DocumentUploadForm = ({ documents = [], onUpload , onSubmit}) => {
 
                                     {!doc.file && (
                                         <div className="ms-3">
-                                            <button type="submit" className="btn btn-success">
+                                            <button type="submit" className="btn btn-success mt-4">
                                                 Upload
                                             </button>
                                         </div>
@@ -86,7 +86,7 @@ const DocumentUploadForm = ({ documents = [], onUpload , onSubmit}) => {
             <div className="col-lg-12 text-center mt-4">
                 <button
                     type="submit"
-                    className="btn btn-success px-5 me-2"
+                    className="btn btn-success px-5 me-2 mb-4"
                      onClick={onSubmit}
                 >
                     Submit
