@@ -9,7 +9,7 @@ const SellerNavbar = ({ onToggleSidebar }) => {
       </a>
       <div className="nav-item d-none d-lg-flex ms-3">
         <h4 className="page-title fs-18 fw-bold mb-0">
-          Welcome to, <span className="text-success">Richlabz Seller Login</span>
+          Welcome to, <span className="text-success">Isnap Seller Login</span>
         </h4>
       </div>
       <div className="navbar-nav align-items-center ms-auto d-flex gap-3">
