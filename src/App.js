@@ -237,7 +237,7 @@ function App() {
         {/* Accounts Routes */}
         <Route path="/accounts/dashboard" element={<AccountsDashboard />} />
         <Route path="/accounts/invoice-notification" element={<InvoiceNotification />} />
-        <Route path="/accounts/create-invoice" element={<Taxinvoice />} />
+        <Route path="/accounts/create-invoice/:id" element={<Taxinvoice />} />
         <Route path="/accounts/invoice" element={<AccountsInvoice />} />
         <Route path="/accounts/invoice-list" element={<InvoicePage />} />
         <Route path="/accounts/change-password" element={<AccountsChangePassword />} />

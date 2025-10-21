@@ -61,6 +61,7 @@ const mouStatusReducer = (state = initialState, action) => {
         aContentPhotographys: action.payload.aContentPhotographys || [],
         storePhotographys: action.payload.storePhotographys || [],
         socialMediaContentPhotographys: action.payload.socialMediaContentPhotographys || [],
+        keyAccountCommissions:action.payload.keyAccountCommissions || [],
         error: null,
       };
     case FETCH_MOU_FAILURE:

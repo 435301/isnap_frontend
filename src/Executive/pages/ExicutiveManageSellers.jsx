@@ -134,9 +134,9 @@ const ManageSellers = () => {
     const handleInvoice = async (businessId) => {
      try {
     const res =dispatch(requestInvoice(businessId));
-      if (res?.status) {
+      // if (res?.status) {
         await dispatch(mailToRequestInvoice(businessId));
-      }
+      // }
     } catch (error) {
       console.log('error', error);
     }

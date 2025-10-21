@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import logo from "../../admin/assets/admin/images/logo.png";
 import "bootstrap-icons/font/bootstrap-icons.css";
+import { logoutUser } from "../../redux/actions/authAction";
+import { useDispatch } from "react-redux";
 
 const AccountsSidebar = ({ isOpen }) => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const location = useLocation();
   const [activeDropdown, setActiveDropdown] = useState(null);
 
@@ -12,7 +16,7 @@ const AccountsSidebar = ({ isOpen }) => {
     const dropdownRoutes = {
       invoice: [
         "/accounts/invoice-notification",
-        "/accounts/create-invoice",
+        "/accounts/create-invoice/:id",
       ],
     };
 
@@ -27,7 +31,7 @@ const AccountsSidebar = ({ isOpen }) => {
     setActiveDropdown(activeDropdown === dropdown ? null : dropdown);
   };
 
-  // ✅ Determine active links
+  //  Determine active links
   const isLinkActive = (paths) => {
     if (Array.isArray(paths)) {
       return paths.some((path) => location.pathname.startsWith(path))
@@ -38,6 +42,11 @@ const AccountsSidebar = ({ isOpen }) => {
   };
 
   const isDropdownActive = (dropdown) => activeDropdown === dropdown;
+
+    const handleLogout = () => {
+      dispatch(logoutUser());
+      navigate("/login");
+    };
 
   return (
     <div className={`sidebar pb-3 ${isOpen ? "sidebar-open" : "sidebar-closed"}`}>
@@ -83,12 +92,12 @@ const AccountsSidebar = ({ isOpen }) => {
               >
                 Invoice Notifications
               </Link>
-              <Link
+              {/* <Link
                 to="/accounts/create-invoice"
                 className={`dropdown-item ${isLinkActive("/accounts/create-invoice")}`}
               >
                 Create Invoice
-              </Link>
+              </Link> */}
             </div>
           </div>
 
@@ -103,8 +112,8 @@ const AccountsSidebar = ({ isOpen }) => {
 
           {/* Logout */}
           <Link
-            to="/logout"
-            className={`nav-item nav-link text-danger ${isLinkActive("/logout")}`}
+            className={`nav-item nav-link text-danger ${isLinkActive("/login")}`}
+             onClick={handleLogout}
           >
             <i className="bi bi-box-arrow-right me-2"></i>
             {isOpen && <span>Logout</span>}

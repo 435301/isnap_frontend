@@ -3,10 +3,24 @@ import Sidebar from "../components/AccountsSidebar";
 import Navbar from "../components/AccountsNavbar";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "bootstrap-icons/font/bootstrap-icons.css";
+import { fetchBusinessDetailsExecutive } from "../../redux/actions/businessActions";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const InvoiceNotifications = () => {
+  const navigate = useNavigate();
+  const accountantUser = localStorage.getItem("user");
+  const roleType = accountantUser ? JSON.parse(accountantUser).roleName : null;
+  console.log('roleType', roleType)
+  const dispatch = useDispatch();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const { businessDetailsSales =[]} = useSelector((state) => state.business); 
+  console.log('businessDetails', businessDetailsSales)
+
+useEffect(() => {
+  dispatch(fetchBusinessDetailsExecutive(1, "", "", 1, roleType));
+}, [dispatch, roleType]);
 
   // Handle sidebar toggle
   const handleToggleSidebar = () => {
@@ -24,39 +38,43 @@ const InvoiceNotifications = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // ✅ Invoice notification data
-  const notifications = [
-    {
-      id: 1,
-      type: "success",
-      message: "Invoice #1234 has been successfully sent to the client.",
-      time: "10 Oct 2025, 09:30 AM",
-    },
-    {
-      id: 2,
-      type: "warning",
-      message: "Invoice #1235 is pending approval from manager.",
-      time: "11 Oct 2025, 11:15 AM",
-    },
-    {
-      id: 3,
-      type: "danger",
-      message: "Invoice #1236 was rejected due to missing details.",
-      time: "12 Oct 2025, 03:45 PM",
-    },
-    {
-      id: 4,
-      type: "success",
-      message: "Invoice #1237 has been approved and sent.",
-      time: "13 Oct 2025, 10:20 AM",
-    },
-  ];
+    // Convert business details → notification format
+  const notifications =
+    businessDetailsSales?.map((biz) => {
+      let type = "warning";
+      let message = "";
+      let icon = "bi-receipt";
 
-  const renderNotification = (item) => (
-    <div
-      className="bg-white p-3 rounded border mb-2"
-      key={item.id}
-    >
+     if (biz.requestForInvoice === 1) {
+      type = "success";
+      message = `Invoice for "${biz.businessName}" has been requested by Sales Manager.`;
+      icon = "bi-check-circle";
+    }
+    // No invoice requested yet
+    else if (biz.requestForInvoice === 0) {
+      type = "secondary";
+      message = `No invoice requested for "${biz.businessName}" yet.`;
+      icon = "bi-dash-circle";
+    }
+    else {
+      message = `No active invoice for "${biz.businessName}".`;
+    }
+      return {
+        id: biz.id,
+        type,
+        icon,
+        message,
+        time: new Date(biz.updatedAt).toLocaleString(),
+      };
+    }) || [];
+
+     const handleCreateInvoice = (businessId) => {
+    navigate(`/accounts/create-invoice/${businessId}`);
+  };
+
+
+   const renderNotification = (item) => (
+    <div className="bg-white p-3 rounded border mb-2 shadow-sm" key={item.id}>
       <div className="d-flex justify-content-between align-items-start">
         <div className="d-flex">
           <div
@@ -69,16 +87,25 @@ const InvoiceNotifications = () => {
             }`}
             style={{ width: 40, height: 40 }}
           >
-            <i className="bi bi-receipt text-white"></i>
+            <i className={`bi ${item.icon} text-white`}></i>
           </div>
           <div>
             <p className="mb-1 small fw-semibold text-dark">{item.message}</p>
             <p className="small mb-0 text-muted">{item.time}</p>
           </div>
         </div>
+         {item.type === "success" && (
+          <button
+            className="btn btn-sm btn-primary ms-3"
+            onClick={() => handleCreateInvoice(item.id)}
+          >
+            Create Invoice
+          </button>
+        )}
       </div>
     </div>
   );
+
 
   return (
     <div className="container-fluid position-relative bg-white d-flex p-0">

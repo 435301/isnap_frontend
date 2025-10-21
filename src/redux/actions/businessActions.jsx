@@ -46,7 +46,7 @@ const getAuthHeaders = (isFormData = false) => {
 };
 
 // Fetch businesses list
-export const fetchBusinessDetails = (page=1 , limit , search = "", showStatus = "") => {
+export const fetchBusinessDetails = (page = 1, limit, search = "", showStatus = "") => {
   return async (dispatch) => {
     dispatch({ type: FETCH_BUSINESS_REQUEST });
     try {
@@ -58,7 +58,7 @@ export const fetchBusinessDetails = (page=1 , limit , search = "", showStatus = 
 
       if (response.data.status) {
         const {
-          businessDetails = [], totalPages = 1,currentPage = 1,total = 0, limit = 10,} = response.data.data || {};
+          businessDetails = [], totalPages = 1, currentPage = 1, total = 0, limit = 10, } = response.data.data || {};
         const mappedBusinesses = businessDetails.map((biz) => ({
           id: biz.id,
           businessName: biz.businessName,
@@ -78,7 +78,7 @@ export const fetchBusinessDetails = (page=1 , limit , search = "", showStatus = 
 
         dispatch({
           type: FETCH_BUSINESS_SUCCESS,
-          payload: { businesses: mappedBusinesses, currentPage, totalPages, limit},
+          payload: { businesses: mappedBusinesses, currentPage, totalPages, limit },
         });
       } else {
         dispatch({
@@ -152,8 +152,8 @@ export const createBusiness = (businessData) => async (dispatch) => {
 
     if (response.data.status) {
       dispatch({ type: CREATE_BUSINESS_SUCCESS, payload: response.data.data || {} });
-     dispatch(fetchBusinessDetails());
-     toast.success(response.data.message || "Business created successfully!");
+      dispatch(fetchBusinessDetails());
+      toast.success(response.data.message || "Business created successfully!");
       return response.data;
     } else {
       dispatch({ type: BUSINESS_ERROR, payload: response.data.message });
@@ -181,8 +181,8 @@ export const updateBusiness = (businessData) => async (dispatch) => {
 
     if (response.data.status) {
       dispatch({ type: UPDATE_BUSINESS_SUCCESS, payload: response.data.data || {} });
-     dispatch(fetchBusinessDetails());
-     toast.success(response.data.message || "Business updated successfully!");
+      dispatch(fetchBusinessDetails());
+      toast.success(response.data.message || "Business updated successfully!");
       return response.data;
     } else {
       dispatch({ type: BUSINESS_ERROR, payload: response.data.message });
@@ -198,10 +198,10 @@ export const updateBusiness = (businessData) => async (dispatch) => {
 // Delete business
 export const deleteBusiness = (id) => async (dispatch) => {
   try {
-   const response =  await axios.delete(`${BASE_URL}/businessDetails/delete/${id}`, getAuthHeaders());
+    const response = await axios.delete(`${BASE_URL}/businessDetails/delete/${id}`, getAuthHeaders());
     dispatch({ type: DELETE_BUSINESS_SUCCESS, payload: id });
-     dispatch(fetchBusinessDetails());
-     toast.success(response?.data?.message || "Business deleted successfully!");
+    dispatch(fetchBusinessDetails());
+    toast.success(response?.data?.message || "Business deleted successfully!");
   } catch (error) {
     dispatch({ type: BUSINESS_ERROR, payload: error.response?.data?.message || error.message });
     throw error;
@@ -214,7 +214,7 @@ export const clearBusinessSuccessMessage = () => ({ type: CLEAR_BUSINESS_SUCCESS
 export const addRequiredDocuments = (payload) => async (dispatch) => {
   dispatch({ type: ADD_REQUIRED_DOCUMENTS_REQUEST });
   try {
-    const { data } = await axios.post(`${BASE_URL}/businessDetails/requiredDocuments`, payload,  getAuthHeaders());
+    const { data } = await axios.post(`${BASE_URL}/businessDetails/requiredDocuments`, payload, getAuthHeaders());
     dispatch({
       type: ADD_REQUIRED_DOCUMENTS_SUCCESS,
       payload: data,
@@ -225,9 +225,9 @@ export const addRequiredDocuments = (payload) => async (dispatch) => {
   } catch (error) {
     dispatch({
       type: ADD_REQUIRED_DOCUMENTS_FAILURE,
-      payload:  error.response?.data?.message,
+      payload: error.response?.data?.message,
     });
-    toast.error( error.response?.data?.message);
+    toast.error(error.response?.data?.message);
   }
 };
 
@@ -251,7 +251,7 @@ export const fetchBusinessDocuments = (businessId) => async (dispatch) => {
 export const updateRequiredDocuments = (payload) => async (dispatch) => {
   dispatch({ type: UPDATE_REQUIRED_DOCUMENTS_REQUEST });
   try {
-    const response = await axios.post(`${BASE_URL}/businessDetails/updateRequiredDocuments`, payload,  getAuthHeaders());
+    const response = await axios.post(`${BASE_URL}/businessDetails/updateRequiredDocuments`, payload, getAuthHeaders());
     dispatch({
       type: UPDATE_REQUIRED_DOCUMENTS_SUCCESS,
       payload: response.data,
@@ -259,11 +259,11 @@ export const updateRequiredDocuments = (payload) => async (dispatch) => {
     toast.success(response.data?.message);
     return response.data;
   } catch (error) {
-    dispatch({                            
+    dispatch({
       type: UPDATE_REQUIRED_DOCUMENTS_FAILURE,
-      payload:  error.response?.data?.message,
+      payload: error.response?.data?.message,
     });
-    toast.error( error.response?.data?.message);
+    toast.error(error.response?.data?.message);
   }
 };
 
@@ -288,6 +288,20 @@ export const fetchBusinessDetailsExecutive = (page = 1, limit, search = "", show
         } = response.data.data || {};
 
         const mappedBusinesses = businessDetails.map((biz) => ({
+          // id: biz.id,
+          // businessName: biz.businessName,
+          // sellerName: biz.sellerName,
+          // regdEmail: biz.regdEmail,
+          // regdMobile: biz.regdMobile,
+          // spocName: biz.spocName,
+          // spocMobile: biz.spocMobile,
+          // stateName: biz.stateName,
+          // cityName: biz.cityName,
+          // gstNumber: biz.gstNumber,
+          // referredBy: biz.referredBy,
+          // address: biz.address,
+          // businessLogo: biz.businessLogo,
+          // status: biz.status,
           id: biz.id,
           businessName: biz.businessName,
           sellerName: biz.sellerName,
@@ -295,13 +309,27 @@ export const fetchBusinessDetailsExecutive = (page = 1, limit, search = "", show
           regdMobile: biz.regdMobile,
           spocName: biz.spocName,
           spocMobile: biz.spocMobile,
+          stateId: biz.stateId,
           stateName: biz.stateName,
           cityName: biz.cityName,
           gstNumber: biz.gstNumber,
           referredBy: biz.referredBy,
           address: biz.address,
           businessLogo: biz.businessLogo,
+          mouStatus: biz.mouSatus,
+          mouAcceptedOn: biz.mouAcceptedOn,
+          ipAddress: biz.ipAddress,
+          documentStatus: biz.documentStatus,
+          documentRejectedBy: biz.documentRejectedBy,
+          documentRejectedReason: biz.documentRejectedReason,
+          requestForInvoice: biz.requestForInvoice,
+          isSalesManagerApprove: biz.isSalesManagerApprove,
           status: biz.status,
+          createdAt: biz.createdAt,
+          createdBy: biz.createdBy,
+          updatedAt: biz.updatedAt,
+          updatedBy: biz.updatedBy,
+          trash: biz.trash,
         }));
 
         dispatch({
@@ -327,7 +355,7 @@ export const fetchBusinessDetailsExecutive = (page = 1, limit, search = "", show
 export const approveByManager = (businessId) => async (dispatch) => {
   try {
     dispatch({ type: APPROVE_MANAGER_REQUEST });
-    const response = await axios.patch(`${BASE_URL}/salesManager/approveByManager`, { businessId, },getAuthHeaders(false));
+    const response = await axios.patch(`${BASE_URL}/salesManager/approveByManager`, { businessId, }, getAuthHeaders(false));
     if (response.data.status) {
       dispatch({
         type: APPROVE_MANAGER_SUCCESS,
@@ -354,7 +382,7 @@ export const deleteRequiredDocuments = (businessId, documentCategoryId) => async
   try {
     dispatch({ type: DELETE_REQUIRED_DOCUMENTS_REQUEST });
     const response = await axios.delete(
-      `${BASE_URL}/businessDetails/deleteRequiredDocuments/${businessId}/${documentCategoryId}`,  getAuthHeaders(true)
+      `${BASE_URL}/businessDetails/deleteRequiredDocuments/${businessId}/${documentCategoryId}`, getAuthHeaders(true)
     );
     dispatch({
       type: DELETE_REQUIRED_DOCUMENTS_SUCCESS,
