@@ -48,7 +48,7 @@ const ManageSellers = () => {
   const {
     businessDetailsSales = [], loading = false, successMessage = null, totalPages = 1, } = useSelector((state) => state.business || {});
 
-    console.log('businessDetailsSales', businessDetailsSales);
+  console.log('businessDetailsSales', businessDetailsSales);
   useEffect(() => {
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
@@ -131,11 +131,11 @@ const ManageSellers = () => {
     }
   };
 
-    const handleInvoice = async (businessId) => {
-     try {
-    const res =dispatch(requestInvoice(businessId));
+  const handleInvoice = async (businessId) => {
+    try {
+      const res = dispatch(requestInvoice(businessId));
       // if (res?.status) {
-        await dispatch(mailToRequestInvoice(businessId));
+      await dispatch(mailToRequestInvoice(businessId));
       // }
     } catch (error) {
       console.log('error', error);
@@ -147,14 +147,14 @@ const ManageSellers = () => {
     setShowModal(true);
   };
 
- const handledocumentApprove = ()=>{
-  dispatch(approveMailToSeller(selectedSellerId));
- };
+  const handledocumentApprove = () => {
+    dispatch(approveMailToSeller(selectedSellerId));
+  };
 
 
- const rejectDocumentMail = ()=>{
-  dispatch(rejectMailToSeller(selectedSellerId));
- };
+  const rejectDocumentMail = () => {
+    dispatch(rejectMailToSeller(selectedSellerId));
+  };
 
   return (
     <div className="container-fluid position-relative bg-white d-flex p-0">
@@ -319,9 +319,16 @@ const ManageSellers = () => {
                                       </button>
                                     </li> */}
                                     <li>
-                                      <button className="dropdown-item" onClick={()=>handleInvoice(seller.id)} >
-                                        Invoice
-                                      </button>
+                                      {seller.requestForInvoice === 1 ? (
+                                        <button className="dropdown-item text-success" disabled>
+                                            Invoice Requested
+                                        </button>
+                                      ) : (
+                                        <button className="dropdown-item" onClick={() => handleInvoice(seller.id)} disabled>
+                                          Request for Invoice
+                                        </button>
+                                      )
+                                      }
                                     </li>
                                     <li>
                                       <button className="dropdown-item" onClick={() => handleManagerDocuments(seller.id)}>
@@ -369,7 +376,7 @@ const ManageSellers = () => {
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
 
       {showModal && (
-        <ManagerDocumentView businessId={selectedSellerId} show={showModal}  onApprove={handledocumentApprove}  onReject = {rejectDocumentMail} onClose={() => setShowModal(false) }
+        <ManagerDocumentView businessId={selectedSellerId} show={showModal} onApprove={handledocumentApprove} onReject={rejectDocumentMail} onClose={() => setShowModal(false)}
         />
       )}
     </div>
