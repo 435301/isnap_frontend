@@ -126,107 +126,91 @@ const MarketPlaceAgreement = ({
                                     </thead>
                                     <tbody>
                                         {/* BUSINESS LAUNCH */}
-                                        <tr>
-                                            <td>BUSINESS LAUNCH</td>
-                                            <td>
-                                                {serviceTypes.length > 0 ? (
-                                                    serviceTypes.map((item) => (
+
+                                        {serviceTypes.length > 0 && (
+                                            <tr>
+                                                <td>BUSINESS LAUNCH</td>
+                                                <td>
+                                                    {serviceTypes.map((item) => (
                                                         <div key={item.id}>
                                                             {item.serviceTypeName} – ₹{item.offerPrice}
                                                             <br />
                                                             <small>Bill Cycle: {item.billCycleTitle}</small>
                                                         </div>
-                                                    ))
-                                                ) : (
-                                                    <div>—</div>
-                                                )}
-                                            </td>
-                                            <td>{serviceTypes[0]?.billCycleTitle || "—"}</td>
-
-                                        </tr>
+                                                    ))}
+                                                </td>
+                                                <td>{serviceTypes[0]?.billCycleTitle || "—"}</td>
+                                            </tr>
+                                        )}
 
                                         {/* PRODUCT LISTINGS */}
-                                        <tr>
-                                            <td>PRODUCT LISTINGS</td>
-                                            <td>
-                                                {mouList.length > 0 ? (
-                                                    mouList.map((item) => (
+                                        {mouList.length > 0 && (
+                                            <tr>
+                                                <td>PRODUCT LISTINGS</td>
+                                                <td>
+                                                    {mouList.map((item) => (
                                                         <div key={item.id}>
                                                             ₹{item.offerPrice}/SKU ({item.noOfSkus} SKUs) – {item.serviceTypeName}
                                                             <br />
                                                             Total: ₹{item.totalPrice}
                                                         </div>
-                                                    ))
-                                                ) : (
-                                                    <div>—</div>
-                                                )}
-                                            </td>
-                                            <td>{mouList[0]?.billCycleTitle || "—"}</td>
-                                        </tr>
+                                                    ))}
+                                                </td>
+                                                <td>{mouList[0]?.billCycleTitle || "—"}</td>
+                                            </tr>
+                                        )}
 
                                         {/* KEY ACCOUNT MANAGEMENT */}
-                                        <tr>
-                                            <td>KEY ACCOUNT MANAGEMENT</td>
-                                            <td colSpan="2">
-                                                WE PROVIDE TWO PRICING OPTIONS
-                                                <br />
-                                                1. PERCENTAGE (%) OF THE MERCHANDISE VALUE (ON MARKETPLACE TRANSACTIONS),
-                                                ALONG WITH A CAUTION DEPOSIT OF ₹29000 EACH ACCOUNT (REFUNDABLE).
-                                                <br />
-                                                <table className="table table-bordered mt-2">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>COMMISSION TITLE</th>
-                                                            <th>PERCENTAGE (%)</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        {commissionPricings.length > 0 ? (
-                                                            commissionPricings.flatMap((pricing) =>
+                                        {commissionPricings.length > 0 && (
+                                            <tr>
+                                                <td>KEY ACCOUNT MANAGEMENT</td>
+                                                <td colSpan="2">
+                                                    WE PROVIDE TWO PRICING OPTIONS
+                                                    <br />
+                                                    1. PERCENTAGE (%) OF THE MERCHANDISE VALUE (ON MARKETPLACE TRANSACTIONS),
+                                                    ALONG WITH A CAUTION DEPOSIT OF ₹29000 EACH ACCOUNT (REFUNDABLE).
+                                                    <br />
+                                                    <table className="table table-bordered mt-2">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>COMMISSION TITLE</th>
+                                                                <th>PERCENTAGE (%)</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {commissionPricings.flatMap((pricing) =>
                                                                 pricing.commissions.map((commission) => (
                                                                     <tr key={commission.id}>
                                                                         <td>{commission.commissionTitle}</td>
                                                                         <td>{commission.offerPercentage}%</td>
                                                                     </tr>
                                                                 ))
-                                                            )
-                                                        ) : (
-                                                            <tr>
-                                                                <td colSpan="2" className="text-center">
-                                                                    No Commissions Found
-                                                                </td>
-                                                            </tr>
-                                                        )}
-                                                    </tbody>
-                                                </table>
-                                            </td>
-                                        </tr>
-
+                                                            )}
+                                                        </tbody>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        )}
                                         {/* KEY ACCOUNT MANAGEMENT */}
-                                        <tr>
-                                            <td>KEY ACCOUNT SUBSCRIPTION</td>
-                                            <td>
-                                                {keyAccountSubscriptions?.length > 0 ? (
-                                                    keyAccountSubscriptions?.map((item) => (
+                                        {keyAccountSubscriptions?.length > 0 && (
+                                            <tr>
+                                                <td>KEY ACCOUNT SUBSCRIPTION</td>
+                                                <td>
+                                                    {keyAccountSubscriptions.map((item) => (
                                                         <div key={item.id}>
                                                             {item.serviceTypeName} – ₹{item.offerPrice}
                                                         </div>
-                                                    ))
-                                                ) : (
-                                                    <div>—</div>
-                                                )}
-                                            </td>
-
-                                        </tr>
+                                                    ))}
+                                                </td>
+                                            </tr>
+                                        )}
 
                                         {/* DIGITAL MARKETING */}
                                         {digitalMarketing && digitalMarketing.offerPrice && (
                                             <tr>
                                                 <td>DIGITAL MARKETING</td>
                                                 <td>
-                                                    {digitalMarketing.digitalMarketingServiceNames
-                                                        ?.map((s) => s.name)
-                                                        .join(", ")}
+                                                    {digitalMarketing.digitalMarketingServiceNames?.map((s) => s.name).join(", ")}
                                                     <br />
                                                     ₹{digitalMarketing.offerPrice}
                                                 </td>
@@ -235,150 +219,115 @@ const MarketPlaceAgreement = ({
                                         )}
 
                                         {/* PRODUCT PHOTOGRAPHY */}
-                                        <tr>
-                                            <td>PRODUCT PHOTOGRAPHY</td>
-                                            <td>
-                                                {productPhotographys?.length > 0 ? (
-                                                    productPhotographys.map((item) => (
+                                        {productPhotographys?.length > 0 && (
+                                            <tr>
+                                                <td>PRODUCT PHOTOGRAPHY</td>
+                                                <td>
+                                                    {productPhotographys.map((item) => (
                                                         <div key={item.id}>
                                                             {item.activityName} – {item.qty} × ₹{item.offerPrice} = ₹{item.totalPrice}
                                                         </div>
-                                                    ))
-                                                ) : (
-                                                    <div>—</div>
-                                                )}
-                                            </td>
-                                            <td>{productPhotographys?.length > 0 ? (
-                                                productPhotographys.map((item) => (
-                                                    <div key={item.id}>
-                                                        {item.billCycleTitle}
-                                                    </div>
-                                                ))
-                                            ) : (
-                                                <div>—</div>
-                                            )}</td>
-                                        </tr>
+                                                    ))}
+                                                </td>
+                                                <td>
+                                                    {productPhotographys.map((item) => (
+                                                        <div key={item.id}>{item.billCycleTitle}</div>
+                                                    ))}
+                                                </td>
+                                            </tr>
+                                        )}
 
                                         {/* lifeStylePhotographys PHOTOGRAPHY */}
-                                        <tr>
-                                            <td>LIFESTYLE PHOTOGRAPHY PHOTOGRAPHY</td>
-                                            <td>
-                                                {lifeStylePhotographys?.length > 0 ? (
-                                                    lifeStylePhotographys.map((item) => (
+                                        {lifeStylePhotographys?.length > 0 && (
+                                            <tr>
+                                                <td>LIFESTYLE PHOTOGRAPHY</td>
+                                                <td>
+                                                    {lifeStylePhotographys.map((item) => (
                                                         <div key={item.id}>
                                                             {item.activityName} – {item.qty} × ₹{item.offerPrice} = ₹{item.totalPrice}
                                                         </div>
-                                                    ))
-                                                ) : (
-                                                    <div>—</div>
-                                                )}
-                                            </td>
-                                            <td>{lifeStylePhotographys?.length > 0 ? (
-                                                lifeStylePhotographys.map((item) => (
-                                                    <div key={item.id}>
-                                                        {item.billCycleTitle}
-                                                    </div>
-                                                ))
-                                            ) : (
-                                                <div>—</div>
-                                            )}</td>
-                                        </tr>
+                                                    ))}
+                                                </td>
+                                                <td>
+                                                    {lifeStylePhotographys.map((item) => (
+                                                        <div key={item.id}>{item.billCycleTitle}</div>
+                                                    ))}
+                                                </td>
+                                            </tr>
+                                        )}
                                         {/* MODAL PHOTOGRAPHY */}
-                                        <tr>
-                                            <td>MODAL PHOTOGRAPHY</td>
-                                            <td>
-                                                {modelPhotographys?.length > 0 ? (
-                                                    modelPhotographys.map((item) => (
+                                        {modelPhotographys?.length > 0 && (
+                                            <tr>
+                                                <td>MODEL PHOTOGRAPHY</td>
+                                                <td>
+                                                    {modelPhotographys.map((item) => (
                                                         <div key={item.id}>
                                                             {item.activityName} – {item.qty} × ₹{item.offerPrice} = ₹{item.totalPrice}
                                                         </div>
-                                                    ))
-                                                ) : (
-                                                    <div>—</div>
-                                                )}
-                                            </td>
-                                            <td>{modelPhotographys?.length > 0 ? (
-                                                modelPhotographys.map((item) => (
-                                                    <div key={item.id}>
-                                                        {item.billCycleTitle}
-                                                    </div>
-                                                ))
-                                            ) : (
-                                                <div>—</div>
-                                            )}</td>
-                                        </tr>
-                                        {/* A CONTENT PHOTOGRAPHY */}
-                                        <tr>
-                                            <td>A+ CONTENT PHOTOGRAPHY</td>
-                                            <td>
-                                                {aContentPhotographys?.length > 0 ? (
-                                                    aContentPhotographys.map((item) => (
-                                                        <div key={item.id}>
-                                                            {item.activityName} – {item.qty} × ₹{item.offerPrice} = ₹{item.totalPrice}
-                                                        </div>
-                                                    ))
-                                                ) : (
-                                                    <div>—</div>
-                                                )}
-                                            </td>
-                                            <td>{aContentPhotographys?.length > 0 ? (
-                                                aContentPhotographys.map((item) => (
-                                                    <div key={item.id}>
-                                                        {item.billCycleTitle}
-                                                    </div>
-                                                ))
-                                            ) : (
-                                                <div>—</div>
-                                            )}</td>
-                                        </tr>
-                                        {/* STORE PHOTOGRAPHY */}
-                                        <tr>
-                                            <td>STORE PHOTOGRAPHY</td>
-                                            <td>
-                                                {storePhotographys?.length > 0 ? (
-                                                    storePhotographys.map((item) => (
-                                                        <div key={item.id}>
-                                                            {item.activityName} – {item.qty} × ₹{item.offerPrice} = ₹{item.totalPrice}
-                                                        </div>
-                                                    ))
-                                                ) : (
-                                                    <div>—</div>
-                                                )}
-                                            </td>
-                                            <td>{storePhotographys?.length > 0 ? (
-                                                storePhotographys.map((item) => (
-                                                    <div key={item.id}>
-                                                        {item.billCycleTitle}
-                                                    </div>
-                                                ))
-                                            ) : (
-                                                <div>—</div>
-                                            )}</td>
-                                        </tr>
+                                                    ))}
+                                                </td>
+                                                <td>
+                                                    {modelPhotographys.map((item) => (
+                                                        <div key={item.id}>{item.billCycleTitle}</div>
+                                                    ))}
+                                                </td>
+                                            </tr>
+                                        )}
 
-                                        <tr>
-                                            <td>SOCIAL MEDIA CONTENT PHOTOGRAPHY</td>
-                                            <td>
-                                                {socialMediaContentPhotographys?.length > 0 ? (
-                                                    socialMediaContentPhotographys.map((item) => (
+                                        {/* A CONTENT PHOTOGRAPHY */}
+                                        {aContentPhotographys?.length > 0 && (
+                                            <tr>
+                                                <td>A+ CONTENT PHOTOGRAPHY</td>
+                                                <td>
+                                                    {aContentPhotographys.map((item) => (
                                                         <div key={item.id}>
                                                             {item.activityName} – {item.qty} × ₹{item.offerPrice} = ₹{item.totalPrice}
                                                         </div>
-                                                    ))
-                                                ) : (
-                                                    <div>—</div>
-                                                )}
-                                            </td>
-                                            <td>{socialMediaContentPhotographys?.length > 0 ? (
-                                                socialMediaContentPhotographys.map((item) => (
-                                                    <div key={item.id}>
-                                                        {item.billCycleTitle}
-                                                    </div>
-                                                ))
-                                            ) : (
-                                                <div>—</div>
-                                            )}</td>
-                                        </tr>
+                                                    ))}
+                                                </td>
+                                                <td>
+                                                    {aContentPhotographys.map((item) => (
+                                                        <div key={item.id}>{item.billCycleTitle}</div>
+                                                    ))}
+                                                </td>
+                                            </tr>
+                                        )}
+                                        {/* STORE PHOTOGRAPHY */}
+                                        {storePhotographys?.length > 0 && (
+                                            <tr>
+                                                <td>STORE PHOTOGRAPHY</td>
+                                                <td>
+                                                    {storePhotographys.map((item) => (
+                                                        <div key={item.id}>
+                                                            {item.activityName} – {item.qty} × ₹{item.offerPrice} = ₹{item.totalPrice}
+                                                        </div>
+                                                    ))}
+                                                </td>
+                                                <td>
+                                                    {storePhotographys.map((item) => (
+                                                        <div key={item.id}>{item.billCycleTitle}</div>
+                                                    ))}
+                                                </td>
+                                            </tr>
+                                        )}
+                                        {/* SOCIAL MEDIA CONTENT PHOTOGRAPHY */}
+                                        {socialMediaContentPhotographys?.length > 0 && (
+                                            <tr>
+                                                <td>SOCIAL MEDIA CONTENT PHOTOGRAPHY</td>
+                                                <td>
+                                                    {socialMediaContentPhotographys.map((item) => (
+                                                        <div key={item.id}>
+                                                            {item.activityName} – {item.qty} × ₹{item.offerPrice} = ₹{item.totalPrice}
+                                                        </div>
+                                                    ))}
+                                                </td>
+                                                <td>
+                                                    {socialMediaContentPhotographys.map((item) => (
+                                                        <div key={item.id}>{item.billCycleTitle}</div>
+                                                    ))}
+                                                </td>
+                                            </tr>
+                                        )}
                                     </tbody>
                                 </table>
 
