@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import Sidebar from "../components/ExecutiveSidebar";   // ✅ Sidebar from SellerSidebar
-import Navbar from "../components/ExecutiveNavbar";     // ✅ Navbar from SellerNavbar
+import Sidebar from "../components/ExecutiveSidebar";   
+import Navbar from "../components/ExecutiveNavbar";   
 import DashboardCards from "../components/DashboardCards";
 import TaskStatistics from "../components/TaskStatistics";
 
@@ -57,9 +57,9 @@ const SellerDashboard = () => {
           <div className="row mx-1 me-3">
             <DashboardCards />
           </div>
-          <div className="row">
+          {/* <div className="row">
             <TaskStatistics />
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

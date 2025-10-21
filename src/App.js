@@ -92,7 +92,7 @@ import AddDocCatgeory from "./admin/pages/AddDocumentCatgeory.jsx";
 import ManageDocType from "./admin/pages/ManageDocType.jsx";
 import AddDocType from "./admin/pages/AddDocType.jsx";
 // Exicutive
-import ExecutiveDashboard from "./Executive/pages/ExecutiveDashboard.js";
+import ExecutiveDashboard from "./Executive/pages/ExecutiveDashboard.jsx";
 import ExicutiveManageSellers from "./Executive/pages/ExicutiveManageSellers.jsx";
 import ExicutiveCreateSellers from "./Executive/pages/ExicutiveCreateSellers.jsx";
 import ExicutiveCreateLead from "./Executive/pages/ExicutiveCreateLead.jsx";

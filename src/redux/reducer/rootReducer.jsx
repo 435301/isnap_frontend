@@ -38,6 +38,7 @@ import documentCategoryReducer from "./docCategoryReducer";
 import { documentReducer } from "./docTypeReducer";
 import emailReducer from "./emailReducer";
 import { invoiceReducer } from "./invoiceReducer";
+import ExecutiveDashboardReducer from "./executiveDashboardReducer";
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -84,7 +85,8 @@ const rootReducer = combineReducers({
   email: emailReducer,
   documentApproval: mouStatusReducer,
   categories:businessReducer, 
-  invoices:invoiceReducer
+  invoices:invoiceReducer,
+  executiveDashboard:ExecutiveDashboardReducer,
 });
 
 

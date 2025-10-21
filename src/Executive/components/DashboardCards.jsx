@@ -1,28 +1,37 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchSalesManagerDashboard } from "../../redux/actions/executiceDashboardAction";
 
 const DashboardCards = () => {
+    const dispatch = useDispatch();
+    const { dashboardData, loading, error } = useSelector((state) => state.executiveDashboard);
+
+    useEffect(() => {
+        dispatch(fetchSalesManagerDashboard());
+    }, [dispatch]);
+
     const cardData = {
         tasks: [
-            { count: 40, label: "Total Tasks", color: "bg-danger" },
-            { count: 20, label: "New Tasks", color: "bg-primary" },
-            { count: 15, label: "In Progress Tasks", color: "bg-warning" },
-            { count: 5, label: "Completed Tasks", color: "bg-success" },
-            { count: 5, label: "Delay Tasks", color: "bg-danger" },
-            { count: 20, label: "Today Follow Ups", color: "bg-primary" },
-            { count: 15, label: "Today Completed", color: "bg-warning" },
-            { count: 5, label: "Today Rejected", color: "bg-success" },
+            { count: dashboardData?.pendingApprovals, label: "Pending Approvals", color: "bg-danger" },
+            { count: dashboardData?.completedApprovals, label: "Completed Approvals", color: "bg-primary" },
+            // { count: 15, label: "In Progress Tasks", color: "bg-warning" },
+            // { count: 5, label: "Completed Tasks", color: "bg-success" },
+            // { count: 5, label: "Delay Tasks", color: "bg-danger" },
+            // { count: 20, label: "Today Follow Ups", color: "bg-primary" },
+            // { count: 15, label: "Today Completed", color: "bg-warning" },
+            // { count: 5, label: "Today Rejected", color: "bg-success" },
         ],
-        leads: [
-            { count: 40, label: "Total Leads", color: "bg-danger" },
-            { count: 20, label: "New Leads", color: "bg-primary" },
-            { count: 15, label: "In Progress Leads", color: "bg-warning" },
-            { count: 5, label: "Completed Leads", color: "bg-success" },
-            { count: 40, label: "Total Rejected", color: "bg-danger" },
-            { count: 20, label: "Today Follow Ups", color: "bg-primary" },
-            { count: 15, label: "Today Completed", color: "bg-warning" },
-            { count: 5, label: "Today Rejected", color: "bg-success" },
-        ],
-    };
+
+    }; // leads: [
+    //     { count: 40, label: "Total Leads", color: "bg-danger" },
+    //     { count: 20, label: "New Leads", color: "bg-primary" },
+    //     { count: 15, label: "In Progress Leads", color: "bg-warning" },
+    //     { count: 5, label: "Completed Leads", color: "bg-success" },
+    //     { count: 40, label: "Total Rejected", color: "bg-danger" },
+    //     { count: 20, label: "Today Follow Ups", color: "bg-primary" },
+    //     { count: 15, label: "Today Completed", color: "bg-warning" },
+    //     { count: 5, label: "Today Rejected", color: "bg-success" },
+    // ],
 
     const renderCards = (section) =>
         section.map((item, index) => (
@@ -42,14 +51,14 @@ const DashboardCards = () => {
     return (
         <>
             <div className="row bg-white mb-3 py-3">
-                <h6 className="fw-bold mb-3">Tasks Status</h6>
+                <h6 className="fw-bold mb-3"> Approvals</h6>
 
                 {renderCards(cardData.tasks)}</div>
 
 
-            <div className="row bg-white mb-3 py-3">
+            {/* <div className="row bg-white mb-3 py-3">
                 <h6 className="fw-bold mb-3">Leads Status</h6>
-                {renderCards(cardData.leads)}</div>
+                {renderCards(cardData.leads)}</div> */}
         </>
     );
 };
