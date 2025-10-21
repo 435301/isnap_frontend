@@ -5,7 +5,7 @@ import BASE_URL from "../../config/config";
 import { toast } from "react-toastify";
 import "../assets/css/reject.css";
 
-const ManagerDocumentView = ({ businessId, show, onClose ,onApprove, onReject}) => {
+const ManagerDocumentView = ({ businessId, show, onClose, onApprove, onReject }) => {
   const dispatch = useDispatch();
   const { loading, documents, error } = useSelector((state) => state.mou);
   const [showPrompt, setShowPrompt] = useState(false);
@@ -19,8 +19,16 @@ const ManagerDocumentView = ({ businessId, show, onClose ,onApprove, onReject}) 
 
   if (!show) return null; // Don’t render when modal is closed
 
+  // Remove duplicate documentTypeId entries
+  const uniqueDocuments = documents.filter(
+    (doc, index, self) =>
+      index === self.findIndex(
+        (d) => d.documentTypeId === doc.documentTypeId && d.documentCategoryId === doc.documentCategoryId
+      )
+  );
+
   // Group documents by category
-  const groupedDocs = documents.reduce((acc, doc) => {
+  const groupedDocs = uniqueDocuments.reduce((acc, doc) => {
     const category = doc.documentCategoryTitle;
     if (!acc[category]) acc[category] = [];
     acc[category].push(doc);
@@ -30,7 +38,7 @@ const ManagerDocumentView = ({ businessId, show, onClose ,onApprove, onReject}) 
 
   const handleAccept = async () => {
     const res = await dispatch(acceptDocuments(businessId));
-    console.log('res',res)
+    console.log('res', res)
     onApprove();
   };
 
@@ -134,7 +142,7 @@ const ManagerDocumentView = ({ businessId, show, onClose ,onApprove, onReject}) 
                           placeholder="Enter reason..."
                           value={reason}
                           onChange={(e) => setReason(e.target.value)}
-                          rows={5} 
+                          rows={5}
                         ></textarea>
                         <div className="mt-3 text-end">
                           <button
