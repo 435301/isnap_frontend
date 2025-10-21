@@ -5,17 +5,17 @@ import BASE_URL from "../../config/config";
 import { toast } from "react-toastify";
 import "../assets/css/reject.css";
 
-const ManagerDocumentView = ({ sellerId, show, onClose ,onApprove, onReject}) => {
+const ManagerDocumentView = ({ businessId, show, onClose ,onApprove, onReject}) => {
   const dispatch = useDispatch();
   const { loading, documents, error } = useSelector((state) => state.mou);
   const [showPrompt, setShowPrompt] = useState(false);
   const [reason, setReason] = useState("");
 
   useEffect(() => {
-    if (show && sellerId) {
-      dispatch(fetchRequiredDocuments(sellerId));
+    if (show && businessId) {
+      dispatch(fetchRequiredDocuments(businessId));
     }
-  }, [dispatch, sellerId, show]);
+  }, [dispatch, businessId, show]);
 
   if (!show) return null; // Don’t render when modal is closed
 
@@ -29,7 +29,8 @@ const ManagerDocumentView = ({ sellerId, show, onClose ,onApprove, onReject}) =>
 
 
   const handleAccept = async () => {
-    const res = await dispatch(acceptDocuments(sellerId));
+    const res = await dispatch(acceptDocuments(businessId));
+    console.log('res',res)
     onApprove();
   };
 
@@ -38,7 +39,7 @@ const ManagerDocumentView = ({ sellerId, show, onClose ,onApprove, onReject}) =>
       toast.warn("Please enter a reason");
       return;
     }
-    await dispatch(rejectDocuments(sellerId, reason));
+    await dispatch(rejectDocuments(businessId, reason));
     setShowPrompt(false);
     setReason("");
     onReject();

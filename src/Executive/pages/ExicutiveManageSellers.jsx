@@ -148,12 +148,12 @@ const ManageSellers = () => {
   };
 
  const handledocumentApprove = ()=>{
-  dispatch(approveMailToSeller(storedUser?.id));
+  dispatch(approveMailToSeller(selectedSellerId));
  };
 
 
  const rejectDocumentMail = ()=>{
-  dispatch(rejectMailToSeller(storedUser?.id));
+  dispatch(rejectMailToSeller(selectedSellerId));
  };
 
   return (
@@ -369,7 +369,7 @@ const ManageSellers = () => {
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
 
       {showModal && (
-        <ManagerDocumentView sellerId={selectedSellerId} show={showModal}  onApprove={handledocumentApprove}  onReject = {rejectDocumentMail} onClose={() => setShowModal(false) }
+        <ManagerDocumentView businessId={selectedSellerId} show={showModal}  onApprove={handledocumentApprove}  onReject = {rejectDocumentMail} onClose={() => setShowModal(false) }
         />
       )}
     </div>

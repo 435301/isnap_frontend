@@ -47,6 +47,9 @@ const Login = () => {
       else if (user.roleName === "Sales Executive") {
         navigate("/executive/dashboard");
       }
+      else if (user.roleName === "Accountant") {
+        navigate("/accounts/dashboard");
+      }
     }
   }, [token, user, navigate]);
 
