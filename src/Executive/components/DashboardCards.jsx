@@ -41,8 +41,8 @@ const DashboardCards = () => {
                         <i className="bi bi-grid text-white"></i>
                     </div>
                     <div>
-                        <h5 className="mb-0 fw-bold">{item.count.toString().padStart(2, "0")}</h5>
-                        <small className="text-muted">{item.label}</small>
+                        <h5 className="mb-0 fw-bold">{item?.count?.toString().padStart(2, "0")}</h5>
+                        <small className="text-muted">{item?.label}</small>
                     </div>
                 </div>
             </div>
