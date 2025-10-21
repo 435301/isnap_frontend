@@ -112,6 +112,7 @@ const AccountsSidebar = ({ isOpen }) => {
 
           {/* Logout */}
           <Link
+          to={"/login"}
             className={`nav-item nav-link text-danger ${isLinkActive("/login")}`}
              onClick={handleLogout}
           >
