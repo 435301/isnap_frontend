@@ -18,6 +18,9 @@ import {
   REJECT_DOCUMENTS_REQUEST,
   REJECT_DOCUMENTS_SUCCESS,
   REJECT_DOCUMENTS_FAIL,
+   PARTIAL_DOCUMENTS_REQUEST,
+  PARTIAL_DOCUMENTS_SUCCESS,
+  PARTIAL_DOCUMENTS_FAILURE
 } from "../actions/mouAction";
 
 const initialState = {
@@ -34,6 +37,7 @@ const initialState = {
   documentStatus: null,
   success: false,
   message: null,
+    partialDocsResult: null,
 };
 
 const mouStatusReducer = (state = initialState, action) => {
@@ -107,6 +111,16 @@ const mouStatusReducer = (state = initialState, action) => {
         documentStatus: action.payload.data?.documentStatus,
       };
     case REJECT_DOCUMENTS_FAIL:
+      return { ...state, loading: false, error: action.payload };
+      case PARTIAL_DOCUMENTS_REQUEST:
+      return { ...state, loading: true, error: null};
+    case PARTIAL_DOCUMENTS_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        partialDocsResult: action.payload,
+      };
+    case PARTIAL_DOCUMENTS_FAILURE:
       return { ...state, loading: false, error: action.payload };
     default:
       return state;

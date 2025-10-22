@@ -30,7 +30,10 @@ export const ACCEPT_DOCUMENTS_FAIL = "ACCEPT_DOCUMENTS_FAIL";
 export const REJECT_DOCUMENTS_REQUEST = "REJECT_DOCUMENTS_REQUEST";
 export const REJECT_DOCUMENTS_SUCCESS = "REJECT_DOCUMENTS_SUCCESS";
 export const REJECT_DOCUMENTS_FAIL = "REJECT_DOCUMENTS_FAIL";
-
+// partial  Document Approval Actions
+export const PARTIAL_DOCUMENTS_REQUEST = "PARTIAL_DOCUMENTS_REQUEST";
+export const PARTIAL_DOCUMENTS_SUCCESS = "PARTIAL_DOCUMENTS_SUCCESS";
+export const PARTIAL_DOCUMENTS_FAILURE = "PARTIAL_DOCUMENTS_FAILURE";
 
 
 export const updateMouStatus = (id, mouStatus,ipAddress) => async (dispatch) => {
@@ -173,5 +176,23 @@ export const rejectDocuments = (businessId, reason) => async (dispatch) => {
         error.response?.data?.message || error.message || "Failed to reject documents",
     });
     toast.error(error.response?.data?.message || "Failed to reject documents");
+  }
+};
+
+export const partialDocumentsAction = (businessId, documentIds,reason) => async (dispatch) => {
+  dispatch({ type: PARTIAL_DOCUMENTS_REQUEST });
+  try {
+    const response = await axios.patch(`${BASE_URL}/salesManager/partialDocuments`, { businessId, documentIds,reason}, getAuthHeaders(false)  );
+    dispatch({
+      type: PARTIAL_DOCUMENTS_SUCCESS,
+      payload: response.data.data,
+    });
+    toast.success(response.data.message || "Documents partially approved successfully");
+  } catch (error) {
+    dispatch({
+      type: PARTIAL_DOCUMENTS_FAILURE,
+      payload: error.response?.data?.message || error.message,
+    });
+    toast.error(error.response?.data?.message || "Failed to partially approve documents");
   }
 };
