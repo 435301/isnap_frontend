@@ -70,10 +70,10 @@ const CreateServicesActivities = () => {
           isValid = false;
         }
       } else {
-        if (activity.price === "" || isNaN(Number(activity.price)) || Number(activity.price) < 0) {
-          tempErrors[`price${index}`] = "Price must be 0 or greater";
-          isValid = false;
-        }
+        // if (activity.price === "" || isNaN(Number(activity.price)) || Number(activity.price) < 0) {
+        //   tempErrors[`price${index}`] = "Price must be 0 or greater";
+        //   isValid = false;
+        // }
       }
     });
 
