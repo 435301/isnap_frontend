@@ -5,12 +5,16 @@ import {
   UPLOAD_INVOICE_REQUEST,
   UPLOAD_INVOICE_SUCCESS,
   UPLOAD_INVOICE_FAILURE,
+   CREATE_INVOICE_REQUEST,
+  CREATE_INVOICE_SUCCESS,
+  CREATE_INVOICE_FAILURE,
 } from "../actions/invoiceAction";
 
 const initialState = {
   loading: false,
   requestInvoiceData: null,
   uploadInvoiceData: null,
+   invoiceData: null,
   error: null,
 };
 
@@ -29,7 +33,12 @@ export const invoiceReducer = (state = initialState, action) => {
     case REQUEST_INVOICE_FAILURE:
     case UPLOAD_INVOICE_FAILURE:
       return { ...state, loading: false, error: action.payload };
-
+ case CREATE_INVOICE_REQUEST:
+      return {  ...state, loading: true,error: null};
+    case CREATE_INVOICE_SUCCESS:
+      return { ...state, loading: false, invoiceData: action.payload, };
+    case CREATE_INVOICE_FAILURE:
+      return { ...state, loading: false,error: action.payload,};
     default:
       return state;
   }

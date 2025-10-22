@@ -45,7 +45,7 @@ const Login = () => {
         navigate("/executive/dashboard");
       }
       else if (user.roleName === "Sales Executive") {
-        navigate("/executive/dashboard");
+        navigate("/executive/exe/dashboard");
       }
       else if (user.roleName === "Accountant") {
         navigate("/accounts/dashboard");

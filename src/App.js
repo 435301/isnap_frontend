@@ -112,6 +112,7 @@ import AccountsChangePassword from './Accounts/pages/AccountsChangePassword';
 import ExecutiveEditSeller from "./Executive/pages/ExecutiveEditSeller.jsx";
 import ExecutiveViewSeller from "./Executive/pages/ExecutiveViewSeller.jsx";
 import ManagerDocumentView from "./Executive/pages/ManagerDocument.jsx";
+import SellerExeDashboard from "./Executive/pages/ExecutiveExeDashboard.jsx";
 
 
 function App() {
@@ -222,6 +223,7 @@ function App() {
 
         {/* Executive Routes */}
         <Route path="/executive/dashboard" element={<ExecutiveDashboard />} />
+        <Route path="/executive/exe/dashboard" element={<SellerExeDashboard />} />
         <Route path="/executive/manage-seller" element={<ExicutiveManageSellers />} />
         <Route path="/executive/create-seller" element={<ExicutiveCreateSellers />} />
         <Route path="/executive/edit-seller/:id" element={<ExecutiveEditSeller />} />
