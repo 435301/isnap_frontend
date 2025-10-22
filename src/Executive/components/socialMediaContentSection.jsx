@@ -26,7 +26,7 @@ const PhotographySocialSection = ({
     );
     console.log('socialMediaPhotographyList', socialMediaPhotographyList)
     const serviceOptions = activities
-        .filter((act) => act.serviceCategoryId === 3 && act.subServiceId === 9)  //soacial media content subservice id = 9 , serviceCategory = 3
+        .filter((act) => act.serviceCategoryId === 3 && act.subServiceId === 6)  //soacial media content subservice id = 9 , serviceCategory = 3
         .map((act) => ({ value: act.id, label: act.activityName }));
     const [errors, setErrors] = useState({});
     const [showDeleteModal, setShowDeleteModal] = useState(false);

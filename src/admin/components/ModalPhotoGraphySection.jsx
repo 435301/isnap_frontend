@@ -76,7 +76,7 @@ const ModelPhotographySection = ({
     //     .filter((act) => act.serviceCategoryId === 3 && act.subServiceId === 6)
     //     .map((act) => ({ value: act.id, label: act.activityName }));
 
-    const serviceOptions = modelActivities.map((act) => ({
+    const serviceOptions = modelActivities.filter((act) => act.serviceCategoryId === 3 && act.subServiceId === 3).map((act) => ({
         value: act.id,
         label: act.activityName,
         malePrice: act.malePrice,

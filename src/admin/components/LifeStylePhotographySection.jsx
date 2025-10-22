@@ -28,10 +28,10 @@ const LifestylePhotographySection = ({
     );
     const { totalPriceData } = useSelector((state) => state.productPhotography);
     console.log('lifestylePhotographyList', lifestylePhotographyList)
-    const serviceOptions = lifestyleActivities.map((act) => ({
+    const serviceOptions = lifestyleActivities.filter((act) => Number(act.serviceCategoryId) === 3 && Number(act.subServiceId) === 2).map((act) => ({
         value: act.id,
         label: act.activityName,
-          price: act.price,
+        price: act.price,
     }));
 
     const [errors, setErrors] = useState({});
@@ -140,7 +140,7 @@ const LifestylePhotographySection = ({
         if (!formData.quantity) newErrors.quantity = "Quantity is required";
         if (!formData.serviceActivities) newErrors.serviceActivities = "Service Activity is required";
         // if (!formData.offerPrice)
-            // newErrors.offerPrice = "Offer Price is required";
+        // newErrors.offerPrice = "Offer Price is required";
         if (formData.offerPrice && formData.actualPrice && Number(formData.offerPrice) > Number(formData.actualPrice)) { newErrors.offerPrice = "Offer Price should not exceed Actual Price"; }
         if (!formData.billingCycle) newErrors.billingCycle = "Billing Cycle is required";
         if (!formData.taskDays || formData.taskDays <= 0)
@@ -224,124 +224,124 @@ const LifestylePhotographySection = ({
                 >
                     <div className="accordion-body">
                         <form onSubmit={handleSubmit}>
-                        {/* Form Fields */}
-                        <div className="row g-3 mb-3 align-items-center">
-                            <div className="col-md-4">
-                                <label className="form-label">
-                                    Service Activities <span className="text-danger">*</span>
-                                </label>
-                                <select
-                                    className="form-select"
-                                    name="serviceActivities"
-                                    value={formData.serviceActivities}
-                                    onChange={handleChange}
+                            {/* Form Fields */}
+                            <div className="row g-3 mb-3 align-items-center">
+                                <div className="col-md-4">
+                                    <label className="form-label">
+                                        Service Activities <span className="text-danger">*</span>
+                                    </label>
+                                    <select
+                                        className="form-select"
+                                        name="serviceActivities"
+                                        value={formData.serviceActivities}
+                                        onChange={handleChange}
+                                    >
+                                        <option value="">Select Service Activity<span className='text-danger'> *</span></option>
+                                        {serviceOptions.map((option) => (
+                                            <option key={option.value} value={option.value}>
+                                                {option.label}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    {errors.serviceActivities && <div className="text-danger small">{errors.serviceActivities}</div>}
+                                </div>
+                                <div className="col-md-2">
+                                    <label className="form-label">Quantity<span className='text-danger'> *</span></label>
+                                    <input
+                                        type="number"
+                                        placeholder="567"
+                                        className="form-control"
+                                        name="quantity"
+                                        value={formData?.quantity}
+                                        onChange={handleChange}
+                                    />
+                                    {errors.quantity && <div className="text-danger small">{errors.quantity}</div>}
+                                </div>
+
+                                <div className="col-md-2">
+                                    <label className="form-label">Actual Price<span className='text-danger'> *</span></label>
+                                    <input
+                                        type="number"
+                                        className="form-control"
+                                        placeholder="567"
+                                        name="actualPrice"
+                                        value={formData?.actualPrice}
+                                        onChange={handleChange}
+                                        disabled
+                                    />
+                                </div>
+
+
+                                <div className="col-md-2">
+                                    <label className="form-label">Offer Price<span className='text-danger'> *</span></label>
+                                    <input
+                                        type="number"
+                                        placeholder="467"
+                                        className="form-control"
+                                        name="offerPrice"
+                                        value={formData.offerPrice}
+                                        onChange={handleChange}
+                                    />
+                                    {errors.offerPrice && <div className="text-danger small">{errors.offerPrice}</div>}
+                                </div>
+
+                                <div className="col-md-2">
+                                    <label className="form-label">Total Price<span className='text-danger'> *</span></label>
+                                    <input
+                                        type="number"
+                                        placeholder="567"
+                                        className="form-control"
+                                        name="totalPrice"
+                                        value={formData.totalPrice}
+                                        onChange={handleChange}
+                                        disabled
+                                    />
+                                </div>
+                                <div className="col-md-2">
+                                    <label className="form-label">Billing Cycle<span className="text-danger">*</span></label>
+                                    <select
+                                        className="form-select"
+                                        name="billingCycle"
+                                        value={formData.billingCycle}
+                                        onChange={handleChange}
+                                    >
+                                        <option value="">Select Billing Cycle</option>
+                                        {billing.map((cycle) => (
+                                            <option key={cycle.id} value={cycle.id}>
+                                                {cycle.title}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    {errors.billingCycle && (<div className="text-danger small">{errors.billingCycle}</div>)}
+                                </div>
+                                <div className="col-md-2">
+                                    <label className="form-label">Task Completion Days<span className='text-danger'> *</span></label>
+                                    <input
+                                        type="number"
+                                        className="form-control"
+                                        placeholder="No. of days"
+                                        name="taskDays"
+                                        value={formData?.taskDays}
+                                        onChange={handleChange}
+                                    />
+                                    {errors.taskDays && <div className="text-danger small">{errors.taskDays}</div>}
+                                </div>
+                            </div>
+
+                            {/* Buttons */}
+                            <div className="col-md-12 d-flex justify-content-end mt-3 mb-3">
+                                <button
+                                    type="button"
+                                    className="btn btn-outline-secondary px-5 me-2"
+                                    onClick={resetForm}
                                 >
-                                    <option value="">Select Service Activity<span className='text-danger'> *</span></option>
-                                    {serviceOptions.map((option) => (
-                                        <option key={option.value} value={option.value}>
-                                            {option.label}
-                                        </option>
-                                    ))}
-                                </select>
-                                {errors.serviceActivities && <div className="text-danger small">{errors.serviceActivities}</div>}
+                                    Reset
+                                </button>
+                                <button type="button" onClick={handleSubmit} className="btn btn-success px-5">
+                                    Save
+                                </button>
                             </div>
-                            <div className="col-md-2">
-                                <label className="form-label">Quantity<span className='text-danger'> *</span></label>
-                                <input
-                                    type="number"
-                                    placeholder="567"
-                                    className="form-control"
-                                    name="quantity"
-                                    value={formData?.quantity}
-                                    onChange={handleChange}
-                                />
-                                {errors.quantity && <div className="text-danger small">{errors.quantity}</div>}
-                            </div>
-
-                            <div className="col-md-2">
-                                <label className="form-label">Actual Price<span className='text-danger'> *</span></label>
-                                <input
-                                    type="number"
-                                    className="form-control"
-                                    placeholder="567"
-                                    name="actualPrice"
-                                    value={formData?.actualPrice}
-                                    onChange={handleChange}
-                                    disabled
-                                />
-                            </div>
-
-
-                            <div className="col-md-2">
-                                <label className="form-label">Offer Price<span className='text-danger'> *</span></label>
-                                <input
-                                    type="number"
-                                    placeholder="467"
-                                    className="form-control"
-                                    name="offerPrice"
-                                    value={formData.offerPrice}
-                                    onChange={handleChange}
-                                />
-                                {errors.offerPrice && <div className="text-danger small">{errors.offerPrice}</div>}
-                            </div>
-
-                            <div className="col-md-2">
-                                <label className="form-label">Total Price<span className='text-danger'> *</span></label>
-                                <input
-                                    type="number"
-                                    placeholder="567"
-                                    className="form-control"
-                                    name="totalPrice"
-                                    value={formData.totalPrice}
-                                    onChange={handleChange}
-                                    disabled
-                                />
-                            </div>
-                            <div className="col-md-2">
-                                <label className="form-label">Billing Cycle<span className="text-danger">*</span></label>
-                                <select
-                                    className="form-select"
-                                    name="billingCycle"
-                                    value={formData.billingCycle}
-                                    onChange={handleChange}
-                                >
-                                    <option value="">Select Billing Cycle</option>
-                                    {billing.map((cycle) => (
-                                        <option key={cycle.id} value={cycle.id}>
-                                            {cycle.title}
-                                        </option>
-                                    ))}
-                                </select>
-                                {errors.billingCycle && (<div className="text-danger small">{errors.billingCycle}</div>)}
-                            </div>
-                            <div className="col-md-2">
-                                <label className="form-label">Task Completion Days<span className='text-danger'> *</span></label>
-                                <input
-                                    type="number"
-                                    className="form-control"
-                                    placeholder="No. of days"
-                                    name="taskDays"
-                                    value={formData?.taskDays}
-                                    onChange={handleChange}
-                                />
-                                {errors.taskDays && <div className="text-danger small">{errors.taskDays}</div>}
-                            </div>
-                        </div>
-
-                        {/* Buttons */}
-                        <div className="col-md-12 d-flex justify-content-end mt-3 mb-3">
-                            <button
-                                type="button"
-                                className="btn btn-outline-secondary px-5 me-2"
-                                onClick={resetForm}
-                            >
-                                Reset
-                            </button>
-                            <button type="button" onClick={handleSubmit} className="btn btn-success px-5">
-                                Save
-                            </button>
-                        </div>
-                         </form> 
+                        </form>
 
                         {/* Table */}
                         <div className="table-responsive mb-3">
@@ -396,7 +396,7 @@ const LifestylePhotographySection = ({
                             </table>
                         </div>
                         <DeleteConfirmationModal show={showDeleteModal} handleClose={() => setShowDeleteModal(false)} handleConfirm={handleDelete} />
-                   </div>
+                    </div>
                 </div>
             </div>
         </div>

@@ -23,7 +23,7 @@ const PhotographyStoreSection = ({
   const billing = useSelector((state) => state.billing.billingCycles || []);
   const { activities } = useSelector((state) => state.serviceActivity);
   const serviceOptions = activities
-    .filter((act) => act.serviceCategoryId === 3 && act.subServiceId === 8)
+    .filter((act) => act.serviceCategoryId === 3 && act.subServiceId === 5)
     .map((act) => ({ value: act.id, label: act.activityName }));
   const { storePhotographyList } = useSelector((state) => state.storePhotography)
   const [formData, setFormData] = useState({

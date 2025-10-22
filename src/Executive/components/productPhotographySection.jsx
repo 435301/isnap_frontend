@@ -33,7 +33,7 @@ const ProductPhotographySection = ({
         taskDays: 0,
     });
     const [errors, setErrors] = useState({});
-    const serviceOptions = activities.filter((act) => act.serviceCategoryId === 3 && act.subServiceId === 10).map((act) => ({ value: act.id, label: act.activityName, }));
+    const serviceOptions = activities.filter((act) => act.serviceCategoryId === 3 && act.subServiceId === 1).map((act) => ({ value: act.id, label: act.activityName, }));
     const { totalPriceData } = useSelector((state) => state.productPhotography);
 
     useEffect(() => {

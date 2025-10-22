@@ -15,10 +15,10 @@ export const fetchLifestyleActivities = () => async (dispatch) => {
   dispatch({ type: FETCH_LIFESTYLE_ACTIVITIES_REQUEST });
   try {
     const body = {
-      page: 1,
+      page: "",
       search: "",
-      serviceCategoryId: "3",
-      subServiceId: "5",
+      serviceCategoryId: "",
+      subServiceId: "",
       showStatus: "",
     };
 
@@ -41,10 +41,10 @@ export const fetchModelActivities = () => async (dispatch) => {
   dispatch({ type: FETCH_MODEL_ACTIVITIES_REQUEST });
   try {
     const body = {
-      page: 1,
+      page: "",
       search: "",
-      serviceCategoryId: "3",
-      subServiceId: "6",
+      serviceCategoryId: "",
+      subServiceId: "",
       showStatus: "",
     };
 

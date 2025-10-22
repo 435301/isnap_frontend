@@ -25,8 +25,8 @@ const getAuthHeaders = () => {
 
 // Fetch service activities
 export const fetchServiceActivities = (
-  page = 1,
-  limit = 10,
+  page = "",
+  limit = "",
   search = "",
   showStatus = "",
   serviceCategoryId = "",

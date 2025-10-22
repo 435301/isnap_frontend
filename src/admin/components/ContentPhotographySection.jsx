@@ -26,7 +26,7 @@ const PhotographyAplusAccordion = ({
     const { totalPriceData } = useSelector((state) => state.productPhotography);
     console.log('aContentPhotographyList', aContentPhotographyList)
     const serviceOptions = activities
-        .filter((act) => act.serviceCategoryId === 3 && act.subServiceId === 13)
+        .filter((act) => act.serviceCategoryId === 3 && act.subServiceId === 4)
         .map((act) => ({ value: act.id, label: act.activityName }));
     const [errors, setErrors] = useState({});
     const [showDeleteModal, setShowDeleteModal] = useState(false);

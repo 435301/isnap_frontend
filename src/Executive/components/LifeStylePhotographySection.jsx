@@ -28,7 +28,7 @@ const LifestylePhotographySection = ({
     );
     const { totalPriceData } = useSelector((state) => state.productPhotography);
     console.log('lifestylePhotographyList', lifestylePhotographyList)
-    const serviceOptions = lifestyleActivities.map((act) => ({
+    const serviceOptions = lifestyleActivities.filter((act) => act.serviceCategoryId === 3 && act.subServiceId === 2).map((act) => ({
         value: act.id,
         label: act.activityName,
           price: act.price,
