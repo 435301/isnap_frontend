@@ -53,7 +53,6 @@ const ManageBilling = () => {
 
   // Fetch billing cycles
   useEffect(() => {
-    console.log("Fetching billing cycles with:", { currentPage, searchTerm, statusFilter });
     dispatch(fetchBillingCycles(currentPage, itemsPerPage, searchTerm, statusFilter));
   }, [dispatch, currentPage, searchTerm, statusFilter]);
 
@@ -194,6 +193,7 @@ const ManageBilling = () => {
                         <th>S.No</th>
                         <th>Title</th>
                         <th>Status</th>
+                        <th>Duration</th>
                         <th>Action</th>
                       </tr>
                     </thead>
@@ -219,6 +219,7 @@ const ManageBilling = () => {
                                 {billing?.status ? "Active" : "Inactive"}
                               </span>
                             </td>
+                          <td>{Number(billing?.durationRequired) === 1 ? "Required" : "Not Required"}</td>
                             <td>
                               <div className="d-flex gap-2">
                                 <button

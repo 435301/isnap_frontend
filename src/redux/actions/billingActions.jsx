@@ -31,6 +31,7 @@ export const fetchBillingCycles = (page = 1, limit = 10, search = "", showStatus
         id: b.id,
         title: b.billCycleTitle || "",
         status: Number(b.status),
+        durationRequired: Number(b.durationRequired),
         createdAt: b.createdAt,
         updatedAt: b.updatedAt,
       }));
@@ -45,7 +46,7 @@ export const fetchBillingCycles = (page = 1, limit = 10, search = "", showStatus
 
 export const createBillingCycle = (data) => async (dispatch) => {
   try {
-    const payload = { title: data.title || data.billCycleTitle, status: Number(data.status) };
+    const payload = { title: data.title || data.billCycleTitle, status: Number(data.status), durationRequired: Number(data.durationRequired) };
     const response = await axios.post(`${BASE_URL}/billCycle/create`, payload, getAuthHeaders());
     if (response.data.status) {
       dispatch({ type: CREATE_BILLING_SUCCESS, payload: response.data.data });
@@ -59,7 +60,7 @@ export const createBillingCycle = (data) => async (dispatch) => {
 
 export const updateBillingCycle = (billingData) => async (dispatch) => {
   try {
-    const payload = { title: billingData.title, status: Number(billingData.status) };
+    const payload = { title: billingData.title, status: Number(billingData.status), durationRequired: Number(billingData.durationRequired) };
     const response = await axios.put(`${BASE_URL}/billCycle/update/${billingData.id}`, payload, getAuthHeaders());
 
     if (response.data.status) {

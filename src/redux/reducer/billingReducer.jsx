@@ -22,7 +22,8 @@ const normalizeBilling = (billing) => billing ? ({
   id: billing.id,
   title: billing.title || billing.billCycleTitle || "",
   status: billing.status ?? 0,
-}) : { id: 0, title: "", status: 0 };
+  durationRequired: billing.durationRequired ?? 0,
+}) : { id: 0, title: "", status: 0 ,durationRequired:0};
 
 const billingReducer = (state = initialState, action) => {
   switch (action.type) {

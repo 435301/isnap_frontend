@@ -10,6 +10,7 @@ const EditBillingOffcanvas = ({
   const [formData, setFormData] = useState({
     id: "",
     title: "",
+    durationRequired: 0,
     status: 1,
   });
   const [errors, setErrors] = useState({}); // For client-side validation
@@ -22,6 +23,7 @@ const EditBillingOffcanvas = ({
         id: selectedBilling.id || "",
         title: selectedBilling.title || "",
         status: selectedBilling.status ?? 1,
+        durationRequired: selectedBilling.durationRequired ?? 0,
       });
     }
   }, [selectedBilling]);
@@ -112,6 +114,18 @@ const EditBillingOffcanvas = ({
             >
               <option value={1}>Active</option>
               <option value={0}>Inactive</option>
+            </Form.Select>
+          </Form.Group>
+
+           <Form.Group className="mb-3">
+            <Form.Label>Duration Required</Form.Label>
+            <Form.Select
+              name="durationRequired"
+              value={formData.durationRequired}
+              onChange={handleChange}
+            >
+              <option value={1}>Required</option>
+              <option value={0}>Not Required</option>
             </Form.Select>
           </Form.Group>
 

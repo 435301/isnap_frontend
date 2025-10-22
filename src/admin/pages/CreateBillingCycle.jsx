@@ -13,6 +13,7 @@ const BillingCycle = () => {
   const [formData, setFormData] = useState({
     billCycleTitle: "",
     status: "1",
+    durationRequired:""
   });
   const [errors, setErrors] = useState({});
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -42,6 +43,7 @@ const BillingCycle = () => {
     const newErrors = {};
     if (!formData.billCycleTitle.trim()) newErrors.billCycleTitle = "Title is required";
     if (!formData.status) newErrors.status = "Status is required";
+    if (!formData.durationRequired) newErrors.durationRequired = "Duration is required";
     return newErrors;
   };
 
@@ -129,6 +131,24 @@ const BillingCycle = () => {
                       <option value={0}>Inactive</option>
                     </select>
                     {errors.status && <div className="invalid-feedback">{errors.status}</div>}
+
+                  </div>
+
+                    <div className="col-md-3">
+                    <label className="form-label">
+                      Duration Required <span className="text-danger">*</span>
+                    </label>
+                    <select
+                      name="durationRequired"
+                      value={formData.durationRequired} // formData.status is already 1 by default
+                      onChange={handleChange}
+                      className={`form-select ${errors.durationRequired ? "is-invalid" : ""}`}
+                    >
+                      <option value="">Select Duration</option>
+                      <option value={1}>Required</option>
+                      <option value={0}>Not Required</option>
+                    </select>
+                    {errors.durationRequired && <div className="invalid-feedback">{errors.durationRequired}</div>}
 
                   </div>
 
