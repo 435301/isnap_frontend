@@ -12,8 +12,8 @@ const ExecutiveDashboardCards = () => {
 
     const cardData = {
         tasks: [
-            { count: dashboardData?.pendingApprovals, label: "Pending Approvals", color: "bg-danger" },
-            { count: dashboardData?.completedApprovals, label: "Completed Approvals", color: "bg-primary" },
+           { count: 40, label: "Total Tasks", color: "bg-danger" },
+            { count: 20, label: "New Tasks", color: "bg-primary" },
             { count: 15, label: "In Progress Tasks", color: "bg-warning" },
             { count: 5, label: "Completed Tasks", color: "bg-success" },
             { count: 5, label: "Delay Tasks", color: "bg-danger" },
