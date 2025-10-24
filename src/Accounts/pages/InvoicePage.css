@@ -5,8 +5,9 @@
   padding: 20px 12px;
   background: #fff;
   width: 210mm;
-  min-height: 297mm;
+  /* min-height: 297mm; */
   margin: auto;
+  align-items: center;
 }
 
 .invoice-header {

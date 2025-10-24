@@ -113,6 +113,7 @@ import ExecutiveEditSeller from "./Executive/pages/ExecutiveEditSeller.jsx";
 import ExecutiveViewSeller from "./Executive/pages/ExecutiveViewSeller.jsx";
 import ManagerDocumentView from "./Executive/pages/ManagerDocument.jsx";
 import SellerExeDashboard from "./Executive/pages/ExecutiveExeDashboard.jsx";
+import SellerInvoiceList from "./Seller/pages/sellerInvoiceList.jsx";
 
 
 function App() {
@@ -219,6 +220,7 @@ function App() {
         <Route path="/seller/task" element={<SellerRoute><TaskStatus /></SellerRoute>} />
         <Route path="/seller/task-summary" element={<SellerRoute><TaskSummarySellar /></SellerRoute>} />
         <Route path="/seller/invoice-seller" element={<SellerRoute><SellerInvoicePage /></SellerRoute>} />
+        <Route path="/seller/invoice-seller-list" element={<SellerRoute><SellerInvoiceList /></SellerRoute>} />
 
 
         {/* Executive Routes */}
@@ -241,7 +243,7 @@ function App() {
         <Route path="/accounts/invoice-notification" element={<InvoiceNotification />} />
         <Route path="/accounts/create-invoice/:id" element={<Taxinvoice />} />
         <Route path="/accounts/invoice" element={<AccountsInvoice />} />
-        <Route path="/accounts/invoice-list" element={<InvoicePage />} />
+        <Route path="/accounts/invoice/:invoiceNumber" element={<InvoicePage />} />
         <Route path="/accounts/change-password" element={<AccountsChangePassword />} />
 
 

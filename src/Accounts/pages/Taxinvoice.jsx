@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "../components/AccountsSidebar";
 import Navbar from "../components/AccountsNavbar";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchMouDetails } from "../../redux/actions/mouAction";
+import { toast } from "react-toastify";
+import { createInvoice } from "../../redux/actions/invoiceAction";
 
 const VoicePage = () => {
+  const navigate = useNavigate();
   const businessId = useParams().id;
   console.log('businessId', businessId)
   const dispatch = useDispatch();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false); 
-    const {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const {
     mouList,
     serviceTypes,
     commissionPricings,
@@ -24,7 +27,10 @@ const VoicePage = () => {
     storePhotographys,
     socialMediaContentPhotographys,
   } = useSelector((state) => state.mou);
-   const [selectedServices, setSelectedServices] = useState([]);
+  const [selectedServices, setSelectedServices] = useState([]);
+  const [selectAll, setSelectAll] = useState(false);
+
+  const { loading, invoiceData } = useSelector((state) => state.invoices);
 
 
   useEffect(() => {
@@ -34,28 +40,31 @@ const VoicePage = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  useEffect(()=>{
+  useEffect(() => {
     dispatch(fetchMouDetails(businessId));
-  },[dispatch]);
+  }, [dispatch]);
 
   // Flatten all services into separate rows
   const allServices = [
-    ...(mouList || []).map((s) => ({
-      id: `bl-${s.id}`,
+    ...(serviceTypes || []).map((s) => ({
+      checkboxId: `bl-${s.id}`,
+      mainServiceId: s.id,
       name: s.serviceTypeName,
       billCycle: s.billCycleTitle,
       price: s.offerPrice,
       source: "Business Launch",
     })),
-    ...(serviceTypes || []).map((s) => ({
-      id: `cl-${s.id}`,
+    ...(mouList || []).map((s) => ({
+      checkboxId: `cl-${s.id}`,
+      mainServiceId: s.id,
       name: s.serviceTypeName,
       billCycle: s.billCycleTitle,
       price: s.offerPrice,
       source: "Catalog Listing",
     })),
     ...(keyAccountSubscriptions || []).map((s) => ({
-      id: `ka-${s.id}`,
+      checkboxId: `ka-${s.id}`,
+      mainServiceId: s.id,
       name: s.serviceTypeName,
       billCycle: s.billCycleTitle,
       price: s.offerPrice,
@@ -63,7 +72,8 @@ const VoicePage = () => {
     })),
     ...(keyAccountCommissions || []).flatMap((s) => [
       {
-        id: `kac-security-${s.security.id}`,
+        checkboxId: `kac-security-${s.security.id}`,
+        mainServiceId: s.security.id,
         name: s.serviceTypeName,
         billCycle: "-",
         price: s.security.securityDeposit,
@@ -78,55 +88,62 @@ const VoicePage = () => {
       // })),
     ]),
     ...(lifeStylePhotographys || []).map((s) => ({
-      id: `ls-${s.id}`,
+      checkboxId: `ls-${s.id}`,
+      mainServiceId: s.id,
       name: s.activityName,
       billCycle: s.billCycleTitle,
       price: s.totalPrice,
-      source: "Lifestyle Photography",
+      source: "LifeStyle Photography",
     })),
     ...(digitalMarketing
       ? [
-          {
-            id: `dm-${digitalMarketing.id}`,
-            name: digitalMarketing.digitalMarketingServiceNames
-              .map((d) => d.name)
-              .join(", "),
-            billCycle: digitalMarketing.billCycleTitle,
-            price: digitalMarketing.offerPrice,
-            source: "Digital Marketing",
-          },
-        ]
+        {
+          checkboxId: `dm-${digitalMarketing.id}`,
+          mainServiceId: digitalMarketing.id,
+          name: digitalMarketing.digitalMarketingServiceNames
+            .map((d) => d.name)
+            .join(", "),
+          billCycle: digitalMarketing.billCycleTitle,
+          price: digitalMarketing.offerPrice,
+          source: "Digital Marketing",
+        },
+      ]
       : []),
     ...(productPhotographys || []).map((s) => ({
-      id: `pp-${s.id}`,
+      checkboxId: `pp-${s.id}`,
+      mainServiceId: s.id,
       name: s.activityName,
       billCycle: s.billCycleTitle,
       price: s.totalPrice,
       source: "Product Photography",
     })),
     ...(modelPhotographys || []).map((s) => ({
-      id: `mp-${s.id}`,
+      checkboxId: `mp-${s.id}`,
+      mainServiceId: s.id,
       name: s.activityName,
       billCycle: s.billCycleTitle,
       price: s.totalPrice,
       source: "Model Photography",
     })),
     ...(aContentPhotographys || []).map((s) => ({
-      id: `acp-${s.id}`,
+      checkboxId: `acp-${s.id}`,
+      mainServiceId: s.id,
       name: s.activityName,
       billCycle: s.billCycleTitle,
       price: s.totalPrice,
       source: "A Content Photography",
     })),
     ...(storePhotographys || []).map((s) => ({
-      id: `sp-${s.id}`,
+      checkboxId: `sp-${s.id}`,
+      mainServiceId: s.id,
       name: s.activityName,
       billCycle: s.billCycleTitle,
       price: s.totalPrice,
       source: "Store Photography",
     })),
     ...(socialMediaContentPhotographys || []).map((s) => ({
-      id: `smc-${s.id}`,
+      checkboxId: `smc-${s.id}`,
+      mainServiceId: s.id,
       name: s.activityName,
       billCycle: s.billCycleTitle,
       price: s.totalPrice,
@@ -135,15 +152,50 @@ const VoicePage = () => {
   ];
 
   const handleToggleSidebar = () => setIsSidebarOpen((prev) => !prev);
-  const handleCheckboxChange = (serviceId) => {
+
+  const handleCheckboxChange = (checkboxId) => {
     setSelectedServices((prev) =>
-      prev.includes(serviceId)
-        ? prev.filter((id) => id !== serviceId)
-        : [...prev, serviceId]
+      prev.includes(checkboxId)
+        ? prev.filter((id) => id !== checkboxId)
+        : [...prev, checkboxId]
     );
   };
 
-  // Services data
+  const handleSelectAll = () => {
+    if (selectAll) {
+      setSelectedServices([]);
+      setSelectAll(false);
+    } else {
+      setSelectedServices(allServices.map((s) => s.checkboxId));
+      setSelectAll(true);
+    }
+  };
+
+  //  Handle invoice creation
+  const handleCreateInvoice = async () => {
+    if (selectedServices.length === 0) {
+      toast.warning("Please select at least one service!");
+      return;
+    }
+
+    const selectedData = allServices.filter((s) => selectedServices.includes(s.checkboxId)).map((s) => ({
+      source: s.source,
+      mainServiceId: s.mainServiceId,
+      fromDate: new Date().toISOString().split("T")[0],
+      toDate: new Date(new Date().setMonth(new Date().getMonth() + 1))
+        .toISOString()
+        .split("T")[0],
+    }));
+
+    const payload = {
+      businessId: Number(businessId),
+      services: selectedData,
+    };
+    const response = await dispatch(createInvoice(payload));
+    if (response?.invoiceNumber) {
+      navigate(`/accounts/invoice/${response.invoiceNumber}`);
+    }
+  };
 
   return (
     <div className="container-fluid position-relative bg-white d-flex p-0">
@@ -187,24 +239,24 @@ const VoicePage = () => {
           <div className="bg-white p-3 rounded shadow-sm">
             <table className="table table-borderless">
               <thead>
-                <tr>
-                 <th className="fw-bold">Select</th>
+                <tr>  
+                  <th className="fw-bold">Select</th>
                   <th className="fw-bold">Service Name</th>
                   <th className="fw-bold">Bill Cycle</th>
                   <th className="fw-bold">Price</th>
                   <th className="fw-bold">Source</th>
                 </tr>
               </thead>
-             <tbody>
+              <tbody>
                 {allServices.length > 0 ? (
                   allServices.map((service) => (
-                    <tr key={service.id}>
+                    <tr key={service.checkboxId}>
                       <td>
                         <input
                           type="checkbox"
                           className="me-2"
-                          checked={selectedServices.includes(service.id)}
-                          onChange={() => handleCheckboxChange(service.id)}
+                          checked={selectedServices.includes(service.checkboxId)}
+                          onChange={() => handleCheckboxChange(service.checkboxId)}
                         />
                       </td>
                       <td>{service.name}</td>
@@ -220,12 +272,26 @@ const VoicePage = () => {
                     </td>
                   </tr>
                 )}
+
+                 <th>
+                    <input
+                      type="checkbox"
+                      className="me-2"
+                      checked={selectAll}
+                      onChange={handleSelectAll}
+                    />
+                    Select All
+                  </th>
               </tbody>
             </table>
             <div className="col-lg-12 text-left">
-              <a href="/accounts/pages/invoice.html" className="btn btn-success">
-                Create Invoice
-              </a>
+              <button
+                className="btn btn-success"
+                onClick={handleCreateInvoice}
+                disabled={loading}
+              >
+                {loading ? "Creating Invoice..." : "Create Invoice"}
+              </button>
             </div>
           </div>
         </div>

@@ -91,7 +91,7 @@ const SellerSidebar = ({ isOpen }) => {
           </div>
 
           <div className={`nav-item ${isLinkActive("/seller/invoice-seller")}`}>
-            <Link to="/seller/invoice-seller" className="nav-link">
+            <Link to="/seller/invoice-seller-list" className="nav-link">
               <i className="bi bi-file-earmark-text me-2"></i>
               {isOpen && <span>Invoice</span>}
             </Link>
