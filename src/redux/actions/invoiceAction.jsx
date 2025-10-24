@@ -24,6 +24,10 @@ export const FETCH_INVOICES_REQUEST = "FETCH_INVOICES_REQUEST";
 export const FETCH_INVOICES_SUCCESS = "FETCH_INVOICES_SUCCESS";
 export const FETCH_INVOICES_FAILURE = "FETCH_INVOICES_FAILURE";
 
+export const FETCH_INVOICES_REQUEST_ACCOUNTS = "FETCH_INVOICES_REQUEST_ACCOUNTS";
+export const FETCH_INVOICES_SUCCESS_ACCOUNTS = "FETCH_INVOICES_SUCCESS_ACCOUNTS";
+export const FETCH_INVOICES_FAILURE_ACCOUNTS = "FETCH_INVOICES_FAILURE_ACCOUNTS";
+
 
 export const requestInvoice = (businessId) => async (dispatch) => {
   try {
@@ -121,3 +125,21 @@ export const fetchInvoiceSeller = () => {
   };
 };
 
+
+export const fetchInvoiceAccounts = () => {
+  return async (dispatch) => {
+    dispatch({ type: FETCH_INVOICES_REQUEST_ACCOUNTS });
+    try {
+      const response = await axios.get(`${BASE_URL}/accountsManager/invoices`, getSellerAuthHeaders());
+      dispatch({
+        type: FETCH_INVOICES_SUCCESS_ACCOUNTS,
+        payload: response.data.data
+      });
+    } catch (error) {
+      dispatch({
+        type: FETCH_INVOICES_FAILURE_ACCOUNTS,
+        payload: error,
+      });
+    }
+  };
+};

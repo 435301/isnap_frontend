@@ -14,6 +14,9 @@ import {
   FETCH_INVOICES_REQUEST,
   FETCH_INVOICES_SUCCESS,
   FETCH_INVOICES_FAILURE,
+  FETCH_INVOICES_REQUEST_ACCOUNTS,
+  FETCH_INVOICES_SUCCESS_ACCOUNTS,
+  FETCH_INVOICES_FAILURE_ACCOUNTS,
 } from "../actions/invoiceAction";
 
 const initialState = {
@@ -25,6 +28,7 @@ const initialState = {
   services: [],
   error: null,
   invoiceSeller: [],
+  invoiceAccounts: [],
 };
 
 export const invoiceReducer = (state = initialState, action) => {
@@ -59,6 +63,12 @@ export const invoiceReducer = (state = initialState, action) => {
     case FETCH_INVOICES_SUCCESS:
       return { ...state, loading: false, invoiceSeller: action.payload };
     case FETCH_INVOICES_FAILURE:
+      return { ...state, loading: false, error: action.payload };
+    case FETCH_INVOICES_REQUEST_ACCOUNTS:
+      return { ...state, loading: true, error: null };
+    case FETCH_INVOICES_SUCCESS_ACCOUNTS:
+      return { ...state, loading: false, invoiceAccounts: action.payload };
+    case FETCH_INVOICES_FAILURE_ACCOUNTS:
       return { ...state, loading: false, error: action.payload };
     default:
       return state;

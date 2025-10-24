@@ -92,6 +92,12 @@ const AccountsSidebar = ({ isOpen }) => {
               >
                 Invoice Notifications
               </Link>
+               <Link
+                to="/accounts/invoice-list"
+                className={`dropdown-item ${isLinkActive("/accounts/invoice-list")}`}
+              >
+                Invoice List
+              </Link>
               {/* <Link
                 to="/accounts/create-invoice"
                 className={`dropdown-item ${isLinkActive("/accounts/create-invoice")}`}
