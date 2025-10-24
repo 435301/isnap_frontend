@@ -25,6 +25,9 @@ import {
   DELETE_REQUIRED_DOCUMENTS_REQUEST,
   DELETE_REQUIRED_DOCUMENTS_SUCCESS,
   DELETE_REQUIRED_DOCUMENTS_FAILURE,
+  UPLOAD_SELLER_PRODUCT_INFO_REQUEST,
+  UPLOAD_SELLER_PRODUCT_INFO_SUCCESS,
+  UPLOAD_SELLER_PRODUCT_INFO_FAILURE,
 } from "../actions/businessActions";
 
 const initialState = {
@@ -40,6 +43,7 @@ const initialState = {
   addedDocuments: null,
   approveStatus: null,
   categories: [],
+  sellerProductInfo: [],
 };
 
 export default function businessReducer(state = initialState, action) {
@@ -140,6 +144,12 @@ export default function businessReducer(state = initialState, action) {
       };
     case APPROVE_MANAGER_FAILURE:
       return { ...state, loading: false, error: action.payload };
+    case UPLOAD_SELLER_PRODUCT_INFO_REQUEST:
+      return { ...state, loading: true, error: null, };
+    case UPLOAD_SELLER_PRODUCT_INFO_SUCCESS:
+      return { ...state, loading: false, sellerProductInfo: action.payload, };
+    case UPLOAD_SELLER_PRODUCT_INFO_FAILURE:
+      return { ...state, loading: false, error: action.payload, };
     default:
       return state;
   }

@@ -31,6 +31,11 @@ export const APPROVE_MANAGER_REQUEST = "APPROVE_MANAGER_REQUEST";
 export const APPROVE_MANAGER_SUCCESS = "APPROVE_MANAGER_SUCCESS";
 export const APPROVE_MANAGER_FAILURE = "APPROVE_MANAGER_FAILURE";
 
+// sellerProductInfo
+export const UPLOAD_SELLER_PRODUCT_INFO_REQUEST = "UPLOAD_SELLER_PRODUCT_INFO_REQUEST";
+export const UPLOAD_SELLER_PRODUCT_INFO_SUCCESS = "UPLOAD_SELLER_PRODUCT_INFO_SUCCESS";
+export const UPLOAD_SELLER_PRODUCT_INFO_FAILURE = "UPLOAD_SELLER_PRODUCT_INFO_FAILURE";
+
 
 
 const getAuthHeaders = (isFormData = false) => {
@@ -396,5 +401,24 @@ export const deleteRequiredDocuments = (businessId, documentCategoryId) => async
     });
 
     toast.error(error.response?.data?.message);
+  }
+};
+
+export const uploadSellerProductInfo = (formData) => async (dispatch) => {
+  try {
+    dispatch({ type: UPLOAD_SELLER_PRODUCT_INFO_REQUEST });
+    const response = await axios.post( `${BASE_URL}/businessDetails/uploadSellerProductInfo`, formData, getAuthHeaders(true) );
+    dispatch({
+      type: UPLOAD_SELLER_PRODUCT_INFO_SUCCESS,
+      payload: response.data.data,
+    });
+    toast.success(response.data.message || "Seller product info uploaded successfully");
+  } catch (error) {
+    dispatch({
+      type: UPLOAD_SELLER_PRODUCT_INFO_FAILURE,
+      payload:
+        error.response?.data?.message || "Failed to upload seller product info",
+    });
+    toast.error( error.response?.data?.message || "Failed to upload seller product info" );
   }
 };

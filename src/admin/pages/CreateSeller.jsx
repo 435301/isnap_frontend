@@ -11,6 +11,7 @@ import Photography from "../components/Photography";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Documents from "../components/Documents"; // adjust path if needed
+import SellerProductUpload from "../components/SellerProductInfo";
 
 const CreateSeller = () => {
   const dispatch = useDispatch();
@@ -271,7 +272,7 @@ const CreateSeller = () => {
 
           <div className="bg-white rounded shadow-sm mb-3">
             <ul className="nav nav-tabs">
-              {["Business Details", "Marketplace Business", "Digital Marketing", "Photography", "Documents"].map(
+              {["Business Details", "Marketplace Business", "Digital Marketing", "Photography", "Documents", "ProductInfo"].map(
                 (tab) => (
                   <li className="nav-item" key={tab}>
                     <button
@@ -334,10 +335,14 @@ const CreateSeller = () => {
               />
             )}
             {activeTab === "Documents" &&
-             <Documents
-             businessId={businessId}
-             />}
+              <Documents
+                businessId={businessId}
+              />}
 
+            {activeTab === "ProductInfo" &&
+              <SellerProductUpload
+                businessId={businessId}
+              />}
           </div>
         </div>
       </div>

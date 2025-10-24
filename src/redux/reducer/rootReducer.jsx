@@ -88,6 +88,7 @@ const rootReducer = combineReducers({
   invoices:invoiceReducer,
   executiveDashboard:ExecutiveDashboardReducer,
   partialDocuments:mouStatusReducer,
+  sellerProductInfo: businessReducer,
 });
 
 
