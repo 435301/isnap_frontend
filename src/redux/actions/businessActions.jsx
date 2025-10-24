@@ -37,6 +37,10 @@ export const UPLOAD_SELLER_PRODUCT_INFO_SUCCESS = "UPLOAD_SELLER_PRODUCT_INFO_SU
 export const UPLOAD_SELLER_PRODUCT_INFO_FAILURE = "UPLOAD_SELLER_PRODUCT_INFO_FAILURE";
 
 
+export const FETCH_BUSINESS_DOCUMENTS_SUCCESS_SELLERINFO = "FETCH_BUSINESS_DOCUMENTS_SUCCESS_SELLERINFO";
+export const FETCH_BUSINESS_DOCUMENTS_FAILURE_SELLERINFO = "FETCH_BUSINESS_DOCUMENTS_FAILURE_SELLERINFO";
+
+export const CLEAR_SELLER_PRODUCT_INFO = "CLEAR_SELLER_PRODUCT_INFO";
 
 const getAuthHeaders = (isFormData = false) => {
   const token = localStorage.getItem("authToken");
@@ -253,6 +257,21 @@ export const fetchBusinessDocuments = (businessId) => async (dispatch) => {
 };
 
 
+export const fetchBusinessDocumentsSellerInfo = (businessId) => async (dispatch) => {
+  try {
+    const response = await axios.post(`${BASE_URL}/businessDetails/getDocumentsList`, { businessId }, getAuthHeaders());
+    dispatch({
+      type: FETCH_BUSINESS_DOCUMENTS_SUCCESS_SELLERINFO,
+      payload: response.data.data.sellerProductInfo || [],
+    });
+  } catch (error) {
+    dispatch({
+      type: FETCH_BUSINESS_DOCUMENTS_FAILURE_SELLERINFO,
+      payload: error.response?.data?.message || "Failed to fetch documents",
+    });
+  }
+};
+
 export const updateRequiredDocuments = (payload) => async (dispatch) => {
   dispatch({ type: UPDATE_REQUIRED_DOCUMENTS_REQUEST });
   try {
@@ -413,6 +432,7 @@ export const uploadSellerProductInfo = (formData) => async (dispatch) => {
       payload: response.data.data,
     });
     toast.success(response.data.message || "Seller product info uploaded successfully");
+    return response.data;
   } catch (error) {
     dispatch({
       type: UPLOAD_SELLER_PRODUCT_INFO_FAILURE,

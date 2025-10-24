@@ -28,6 +28,9 @@ import {
   UPLOAD_SELLER_PRODUCT_INFO_REQUEST,
   UPLOAD_SELLER_PRODUCT_INFO_SUCCESS,
   UPLOAD_SELLER_PRODUCT_INFO_FAILURE,
+  FETCH_BUSINESS_DOCUMENTS_SUCCESS_SELLERINFO,
+  FETCH_BUSINESS_DOCUMENTS_FAILURE_SELLERINFO,
+  CLEAR_SELLER_PRODUCT_INFO
 } from "../actions/businessActions";
 
 const initialState = {
@@ -109,8 +112,11 @@ export default function businessReducer(state = initialState, action) {
     case UPDATE_REQUIRED_DOCUMENTS_REQUEST:
     case FETCH_BUSINESS_DOCUMENTS_SUCCESS:
       return { ...state, loading: false, categories: action.payload, };
+        case FETCH_BUSINESS_DOCUMENTS_SUCCESS_SELLERINFO:
+      return { ...state, loading: false, sellerProductInfo: action.payload, };
     case UPDATE_REQUIRED_DOCUMENTS_SUCCESS:
     case FETCH_BUSINESS_DOCUMENTS_FAILURE:
+      case FETCH_BUSINESS_DOCUMENTS_FAILURE_SELLERINFO:
     case UPDATE_REQUIRED_DOCUMENTS_FAILURE:
     case DELETE_REQUIRED_DOCUMENTS_REQUEST:
       return { ...state, loading: true, success: "", error: null };
@@ -150,6 +156,8 @@ export default function businessReducer(state = initialState, action) {
       return { ...state, loading: false, sellerProductInfo: action.payload, };
     case UPLOAD_SELLER_PRODUCT_INFO_FAILURE:
       return { ...state, loading: false, error: action.payload, };
+      case CLEAR_SELLER_PRODUCT_INFO:
+  return { ...state, sellerProductInfo: [] };
     default:
       return state;
   }

@@ -1,23 +1,33 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { uploadSellerProductInfo } from "../../redux/actions/businessActions";
+import { CLEAR_SELLER_PRODUCT_INFO, fetchBusinessDocumentsSellerInfo, uploadSellerProductInfo } from "../../redux/actions/businessActions";
 import { toast } from "react-toastify";
 import BASE_URL from "../../config/config";
 
-const SellerProductUpload = ({ businessId}) => {
+const SellerProductUpload = ({ businessId, businessIdEdit}) => {
     console.log('businessId in SellerProductUpload:', businessId);
   const dispatch = useDispatch();
   const { loading, sellerProductInfo } = useSelector(
     (state) => state.sellerProductInfo
   );
-
+console.log('sellerProductInfo in SellerProductUpload:', sellerProductInfo);
   const [images, setImages] = useState([]);
   const [video, setVideo] = useState(null);
   const [link, setLink] = useState("");
   const [previewImages, setPreviewImages] = useState([]);
   const [previewVideo, setPreviewVideo] = useState(null);
 
+  useEffect(() => {
+  if (businessIdEdit) {
+    // EDIT MODE: fetch existing uploaded files
+    dispatch(fetchBusinessDocumentsSellerInfo(businessIdEdit));
+  } else {
+    // CREATE MODE: clear old files so we don't see leftover data
+    dispatch({ type: CLEAR_SELLER_PRODUCT_INFO });
+  }
+}, [dispatch, businessIdEdit]);
+  
   // Handle Image Change
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
@@ -58,6 +68,7 @@ const SellerProductUpload = ({ businessId}) => {
           </div>
 
           <div className="bg-white p-4 rounded shadow-sm">
+            {!businessIdEdit && (
             <form onSubmit={handleSubmit}>
               {/* Images Upload */}
               <div className="mb-3">
@@ -128,6 +139,7 @@ const SellerProductUpload = ({ businessId}) => {
                 </button>
               </div>
             </form>
+            )}
 
             {/* Display Uploaded Info */}
             <div className="mt-4">

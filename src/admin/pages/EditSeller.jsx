@@ -11,6 +11,7 @@ import { fetchBusinessDetailsById, updateBusiness } from "../../redux/actions/bu
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Documents from "../components/Documents";
+import SellerProductUpload from "../components/SellerProductInfo";
 
 const EditSeller = () => {
     const dispatch = useDispatch();
@@ -181,7 +182,7 @@ const EditSeller = () => {
                     </div>
                     <div className="bg-white rounded shadow-sm mb-3">
                         <ul className="nav nav-tabs">
-                            {["Business Details", "Marketplace Business", "Digital Marketing", "Photography","Documents"].map(
+                            {["Business Details", "Marketplace Business", "Digital Marketing", "Photography","Documents", "ProductInfo"].map(
                                 (tab) => (
                                     <li className="nav-item" key={tab}>
                                         <button
@@ -228,6 +229,10 @@ const EditSeller = () => {
                         )}
                         {activeTab === "Documents" &&
                             <Documents
+                                businessId={id} businessIdEdit={id}
+                            />}
+                            {activeTab === "ProductInfo" &&
+                            <SellerProductUpload
                                 businessId={id} businessIdEdit={id}
                             />}
                     </div>
