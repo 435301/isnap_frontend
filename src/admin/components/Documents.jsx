@@ -301,7 +301,7 @@ const Documents = ({ businessId, businessIdEdit }) => {
             <div className="mt-4">
           <h6 className="fw-bold mb-3">Uploaded Product Files</h6>
           {businessIdEdit && sellerProductInfo && sellerProductInfo.length > 0 ? (
-            <div className="row g-3">
+            <div className="row g-3 products">
               {sellerProductInfo.map((item) => (
                 <div className="col-md-3" key={item.id}>
                   <div className="card shadow-sm p-2 text-center">
