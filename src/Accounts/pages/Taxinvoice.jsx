@@ -29,6 +29,7 @@ const VoicePage = () => {
   } = useSelector((state) => state.mou);
   const [selectedServices, setSelectedServices] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
+  const [serviceDates, setServiceDates] = useState({});
 
   const { loading, invoiceData } = useSelector((state) => state.invoices);
 
@@ -52,6 +53,7 @@ const VoicePage = () => {
       name: s.serviceTypeName,
       billCycle: s.billCycleTitle,
       price: s.offerPrice,
+      durationRequired: s.durationRequired,
       source: "Business Launch",
     })),
     ...(mouList || []).map((s) => ({
@@ -60,6 +62,7 @@ const VoicePage = () => {
       name: s.serviceTypeName,
       billCycle: s.billCycleTitle,
       price: s.offerPrice,
+      durationRequired: s.durationRequired,
       source: "Catalog Listing",
     })),
     ...(keyAccountSubscriptions || []).map((s) => ({
@@ -68,6 +71,7 @@ const VoicePage = () => {
       name: s.serviceTypeName,
       billCycle: s.billCycleTitle,
       price: s.offerPrice,
+      durationRequired: s.durationRequired,
       source: "Key Account Subscription",
     })),
     ...(keyAccountCommissions || []).flatMap((s) => [
@@ -77,6 +81,7 @@ const VoicePage = () => {
         name: s.serviceTypeName,
         billCycle: "-",
         price: s.security.securityDeposit,
+        durationRequired: s.durationRequired,
         source: "Key Account Commission",
       },
       // ...(s.commissions || []).map((c) => ({
@@ -93,6 +98,7 @@ const VoicePage = () => {
       name: s.activityName,
       billCycle: s.billCycleTitle,
       price: s.totalPrice,
+      durationRequired: s.durationRequired,
       source: "LifeStyle Photography",
     })),
     ...(digitalMarketing
@@ -105,6 +111,7 @@ const VoicePage = () => {
             .join(", "),
           billCycle: digitalMarketing.billCycleTitle,
           price: digitalMarketing.offerPrice,
+          durationRequired: digitalMarketing.durationRequired,
           source: "Digital Marketing",
         },
       ]
@@ -115,6 +122,7 @@ const VoicePage = () => {
       name: s.activityName,
       billCycle: s.billCycleTitle,
       price: s.totalPrice,
+      durationRequired: s.durationRequired,
       source: "Product Photography",
     })),
     ...(modelPhotographys || []).map((s) => ({
@@ -123,6 +131,7 @@ const VoicePage = () => {
       name: s.activityName,
       billCycle: s.billCycleTitle,
       price: s.totalPrice,
+      durationRequired: s.durationRequired,
       source: "Model Photography",
     })),
     ...(aContentPhotographys || []).map((s) => ({
@@ -131,6 +140,7 @@ const VoicePage = () => {
       name: s.activityName,
       billCycle: s.billCycleTitle,
       price: s.totalPrice,
+      durationRequired: s.durationRequired,
       source: "A Content Photography",
     })),
     ...(storePhotographys || []).map((s) => ({
@@ -139,6 +149,7 @@ const VoicePage = () => {
       name: s.activityName,
       billCycle: s.billCycleTitle,
       price: s.totalPrice,
+      durationRequired: s.durationRequired,
       source: "Store Photography",
     })),
     ...(socialMediaContentPhotographys || []).map((s) => ({
@@ -147,6 +158,7 @@ const VoicePage = () => {
       name: s.activityName,
       billCycle: s.billCycleTitle,
       price: s.totalPrice,
+      durationRequired: s.durationRequired,
       source: "Social Media Content Photography",
     })),
   ];
@@ -178,14 +190,32 @@ const VoicePage = () => {
       return;
     }
 
-    const selectedData = allServices.filter((s) => selectedServices.includes(s.checkboxId)).map((s) => ({
-      source: s.source,
-      mainServiceId: s.mainServiceId,
-      fromDate: new Date().toISOString().split("T")[0],
-      toDate: new Date(new Date().setMonth(new Date().getMonth() + 1))
-        .toISOString()
-        .split("T")[0],
-    }));
+    // const selectedData = allServices.filter((s) => selectedServices.includes(s.checkboxId)).map((s) => ({
+    //   source: s.source,
+    //   mainServiceId: s.mainServiceId,
+    //   fromDate: new Date().toISOString().split("T")[0],
+    //   toDate: new Date(new Date().setMonth(new Date().getMonth() + 1))
+    //     .toISOString()
+    //     .split("T")[0],
+    // }));
+
+    const selectedData = allServices
+      .filter((s) => selectedServices.includes(s.checkboxId))
+      .map((s) => {
+        const serviceData = {
+          source: s.source,
+          mainServiceId: s.mainServiceId,
+        };
+        if (s.durationRequired === 1) {
+          serviceData.fromDate = new Date().toISOString().split("T")[0];
+          serviceData.toDate = new Date(
+            new Date().setMonth(new Date().getMonth() + 1)
+          )
+            .toISOString()
+            .split("T")[0];
+        }
+        return serviceData;
+      });
 
     const payload = {
       businessId: Number(businessId),
@@ -196,6 +226,26 @@ const VoicePage = () => {
       navigate(`/accounts/invoice/${response.invoiceNumber}`);
     }
   };
+
+  const handleDateChange = (checkboxId, fromDate, billCycleTitle) => {
+    let toDate = "";
+
+    if (billCycleTitle?.toLowerCase().includes("month")) {
+      const date = new Date(fromDate);
+      date.setMonth(date.getMonth() + 1);
+      toDate = date.toISOString().split("T")[0];
+    } else if (billCycleTitle?.toLowerCase().includes("year")) {
+      const date = new Date(fromDate);
+      date.setFullYear(date.getFullYear() + 1);
+      toDate = date.toISOString().split("T")[0];
+    }
+
+    setServiceDates((prev) => ({
+      ...prev,
+      [checkboxId]: { fromDate, toDate },
+    }));
+  };
+
 
   return (
     <div className="container-fluid position-relative bg-white d-flex p-0">
@@ -239,12 +289,14 @@ const VoicePage = () => {
           <div className="bg-white p-3 rounded shadow-sm">
             <table className="table table-borderless">
               <thead>
-                <tr>  
+                <tr>
                   <th className="fw-bold">Select</th>
                   <th className="fw-bold">Service Name</th>
                   <th className="fw-bold">Bill Cycle</th>
                   <th className="fw-bold">Price</th>
                   <th className="fw-bold">Source</th>
+                  <th>From Date</th>
+                  <th>To Date</th>
                 </tr>
               </thead>
               <tbody>
@@ -263,6 +315,37 @@ const VoicePage = () => {
                       <td>{service.billCycle || "N/A"}</td>
                       <td>{service.price || "0.00"}</td>
                       <td>{service.source}</td>
+                      {service.durationRequired === 1 ? (
+                        <>
+                          <td>
+                            <input
+                              type="date"
+                              className="form-control form-control-sm"
+                              value={serviceDates[service.checkboxId]?.fromDate || ""}
+                              onChange={(e) =>
+                                handleDateChange(
+                                  service.checkboxId,
+                                  e.target.value,
+                                  service.billCycle
+                                )
+                              }
+                            />
+                          </td>
+                          <td>
+                            <input
+                              type="date"
+                              className="form-control form-control-sm"
+                              value={serviceDates[service.checkboxId]?.toDate || ""}
+                              readOnly
+                            />
+                          </td>
+                        </>
+                      ) : (
+                        <>
+                          <td>-</td>
+                          <td>-</td>
+                        </>
+                      )}
                     </tr>
                   ))
                 ) : (
@@ -273,15 +356,15 @@ const VoicePage = () => {
                   </tr>
                 )}
 
-                 <th>
-                    <input
-                      type="checkbox"
-                      className="me-2"
-                      checked={selectAll}
-                      onChange={handleSelectAll}
-                    />
-                    Select All
-                  </th>
+                <th>
+                  <input
+                    type="checkbox"
+                    className="me-2"
+                    checked={selectAll}
+                    onChange={handleSelectAll}
+                  />
+                  Select All
+                </th>
               </tbody>
             </table>
             <div className="col-lg-12 text-left">

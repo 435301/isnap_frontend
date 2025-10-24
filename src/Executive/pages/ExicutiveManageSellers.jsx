@@ -324,7 +324,7 @@ const ManageSellers = () => {
                                             Invoice Requested
                                         </button>
                                       ) : (
-                                        <button className="dropdown-item" onClick={() => handleInvoice(seller.id)} disabled>
+                                        <button className="dropdown-item" onClick={() => handleInvoice(seller.id)}>
                                           Request for Invoice
                                         </button>
                                       )
