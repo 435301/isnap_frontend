@@ -272,7 +272,7 @@ const CreateSeller = () => {
 
           <div className="bg-white rounded shadow-sm mb-3">
             <ul className="nav nav-tabs">
-              {["Business Details", "Marketplace Business", "Digital Marketing", "Photography", "Documents", "ProductInfo"].map(
+              {["Business Details", "Marketplace Business", "Digital Marketing", "Photography", "Documents"].map(
                 (tab) => (
                   <li className="nav-item" key={tab}>
                     <button
@@ -336,11 +336,6 @@ const CreateSeller = () => {
             )}
             {activeTab === "Documents" &&
               <Documents
-                businessId={businessId}
-              />}
-
-            {activeTab === "ProductInfo" &&
-              <SellerProductUpload
                 businessId={businessId}
               />}
           </div>
