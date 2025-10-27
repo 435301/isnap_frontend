@@ -5,7 +5,8 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchMouDetails } from "../../redux/actions/mouAction";
 import { toast } from "react-toastify";
-import { createInvoice } from "../../redux/actions/invoiceAction";
+import { createInvoice, generateInvoice } from "../../redux/actions/invoiceAction";
+import BASE_URL from "../../config/config";
 
 const VoicePage = () => {
   const navigate = useNavigate();
@@ -189,16 +190,6 @@ const VoicePage = () => {
       toast.warning("Please select at least one service!");
       return;
     }
-
-    // const selectedData = allServices.filter((s) => selectedServices.includes(s.checkboxId)).map((s) => ({
-    //   source: s.source,
-    //   mainServiceId: s.mainServiceId,
-    //   fromDate: new Date().toISOString().split("T")[0],
-    //   toDate: new Date(new Date().setMonth(new Date().getMonth() + 1))
-    //     .toISOString()
-    //     .split("T")[0],
-    // }));
-
     const selectedData = allServices
       .filter((s) => selectedServices.includes(s.checkboxId))
       .map((s) => {
@@ -223,7 +214,10 @@ const VoicePage = () => {
     };
     const response = await dispatch(createInvoice(payload));
     if (response?.invoiceNumber) {
-      navigate(`/accounts/invoice/${response.invoiceNumber}`);
+       const res = await dispatch(generateInvoice(businessId, response?.invoiceNumber, 1));
+      // navigate(`/accounts/invoice/${response.invoiceNumber}`);
+      const fileUrl = `${BASE_URL}${res.invoiceFile}`;
+      window.open(fileUrl, "_blank"); 
     }
   };
 

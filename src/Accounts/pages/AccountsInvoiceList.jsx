@@ -1,10 +1,10 @@
 // pages/SellerInvoices.jsx
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchInvoiceAccounts, fetchInvoiceSeller } from "../../redux/actions/invoiceAction";
+import { fetchInvoiceAccounts, fetchInvoiceSeller, generateInvoice } from "../../redux/actions/invoiceAction";
 import BASE_URL from "../../config/config";
-import Sidebar from "../../admin/components/Sidebar";
-import { Navbar } from "react-bootstrap";
+import AccountsSidebar from "../components/AccountsSidebar";
+import SellerNavbar from "../components/AccountsNavbar";
 
 const AccountsInvoices = ({ businessId }) => {
   const dispatch = useDispatch();
@@ -27,6 +27,7 @@ const AccountsInvoices = ({ businessId }) => {
     };
     handleResize();
     window.addEventListener("resize", handleResize);
+
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
@@ -50,11 +51,25 @@ const AccountsInvoices = ({ businessId }) => {
       <span>Final</span>
     );
 
+const handleClearInvoice = async ( businessId, invoiceNumber, invoiceType) => {
+  try {
+    // We are re-sending the same file and invoiceNumber with type 2 (Final)
+    const res = await dispatch(generateInvoice(businessId, invoiceNumber, invoiceType));
+    if (res?.invoiceFile) {
+      dispatch(fetchInvoiceAccounts(businessId));
+      const fileUrl = `${BASE_URL}${res.invoiceFile}`;
+      window.open(fileUrl, "_blank"); // open final invoice PDF in new tab
+    } 
+  } catch (err) {
+    console.error("Error clearing invoice:", err);
+  }
+};
+
   return (
     <div className="container-fluid position-relative bg-white d-flex p-0">
-      <Sidebar isOpen={isSidebarOpen} />
+      <AccountsSidebar isOpen={isSidebarOpen} />
       <div className="content flex-grow-1">
-        <Navbar onToggleSidebar={handleToggleSidebar} />
+        <SellerNavbar onToggleSidebar={handleToggleSidebar} />
 
         <div className="container-fluid px-4 pt-3">
           {/* Header */}
@@ -115,10 +130,12 @@ const AccountsInvoices = ({ businessId }) => {
                       <th>Invoice Number</th>
                       <th>Type</th>
                       <th>Date</th>
-                      <th>File</th>
                       <th>Seller Name</th>
                       <th>Business Name</th>
                       <th>Seller Email</th>
+                      <th>File</th>
+                      <th>Action</th>
+
                     </tr>
                   </thead>
                   <tbody>
@@ -128,13 +145,17 @@ const AccountsInvoices = ({ businessId }) => {
                         <td>{inv.invoiceNumber}</td>
                         <td>{getInvoiceBadge(inv.invoiceType)}</td>
                         <td>{new Date(inv.createdAt).toLocaleString()}</td>
+
+                        <td>{inv.sellerName}</td>
+                        <td>{inv.businessName}</td>
+                        <td>{inv.email}</td>
                         <td>
                           {inv.invoiceFile ? (
                             <a
                               href={`${BASE_URL}${inv.invoiceFile}`}
                               target="_blank"
                               rel="noreferrer"
-                              className="btn btn-sm btn-success"
+                            // className="btn btn-sm btn-success"
                             >
                               View PDF
                             </a>
@@ -142,9 +163,14 @@ const AccountsInvoices = ({ businessId }) => {
                             <span className="text-muted">No File</span>
                           )}
                         </td>
-                        <td>{inv.sellerName}</td>
-                        <td>{inv.businessName}</td>
-                        <td>{inv.email}</td>
+                        <td>
+                          <button
+                            className="btn btn-xs btn-success"
+                            onClick={() => handleClearInvoice( inv.businessId, inv.invoiceNumber, 2)}
+                          >
+                            {inv.invoiceType === 2 ? "Cleared" : "Clear"}
+                          </button>
+                        </td>
                       </tr>
                     ))}
                   </tbody>

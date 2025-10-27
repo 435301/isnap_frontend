@@ -17,6 +17,7 @@ const AccountsSidebar = ({ isOpen }) => {
       invoice: [
         "/accounts/invoice-notification",
         "/accounts/create-invoice/:id",
+        "/accounts/invoice-list",
       ],
     };
 

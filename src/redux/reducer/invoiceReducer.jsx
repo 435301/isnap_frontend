@@ -17,6 +17,9 @@ import {
   FETCH_INVOICES_REQUEST_ACCOUNTS,
   FETCH_INVOICES_SUCCESS_ACCOUNTS,
   FETCH_INVOICES_FAILURE_ACCOUNTS,
+  GENERATE_INVOICE_REQUEST,
+  GENERATE_INVOICE_SUCCESS,
+  GENERATE_INVOICE_FAILURE,
 } from "../actions/invoiceAction";
 
 const initialState = {
@@ -29,6 +32,7 @@ const initialState = {
   error: null,
   invoiceSeller: [],
   invoiceAccounts: [],
+  generatedInvoice: null,
 };
 
 export const invoiceReducer = (state = initialState, action) => {
@@ -69,6 +73,12 @@ export const invoiceReducer = (state = initialState, action) => {
     case FETCH_INVOICES_SUCCESS_ACCOUNTS:
       return { ...state, loading: false, invoiceAccounts: action.payload };
     case FETCH_INVOICES_FAILURE_ACCOUNTS:
+      return { ...state, loading: false, error: action.payload };
+    case GENERATE_INVOICE_REQUEST:
+      return { ...state, loading: true, error: null };
+    case GENERATE_INVOICE_SUCCESS:
+      return { ...state, loading: false, generatedInvoice: action.payload };
+    case GENERATE_INVOICE_FAILURE:
       return { ...state, loading: false, error: action.payload };
     default:
       return state;

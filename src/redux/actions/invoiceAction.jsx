@@ -28,12 +28,16 @@ export const FETCH_INVOICES_REQUEST_ACCOUNTS = "FETCH_INVOICES_REQUEST_ACCOUNTS"
 export const FETCH_INVOICES_SUCCESS_ACCOUNTS = "FETCH_INVOICES_SUCCESS_ACCOUNTS";
 export const FETCH_INVOICES_FAILURE_ACCOUNTS = "FETCH_INVOICES_FAILURE_ACCOUNTS";
 
+export const GENERATE_INVOICE_REQUEST = "GENERATE_INVOICE_REQUEST";
+export const GENERATE_INVOICE_SUCCESS = "GENERATE_INVOICE_SUCCESS";
+export const GENERATE_INVOICE_FAILURE = "GENERATE_INVOICE_FAILURE";
+
 
 export const requestInvoice = (businessId, comments) => async (dispatch) => {
   try {
     dispatch({ type: REQUEST_INVOICE_REQUEST });
 
-    const { data } = await axios.patch(`${BASE_URL}/salesManager/requestForInvoice`, { businessId ,comments}, getAuthHeaders(false));
+    const { data } = await axios.patch(`${BASE_URL}/salesManager/requestForInvoice`, { businessId, comments }, getAuthHeaders(false));
     dispatch({ type: REQUEST_INVOICE_SUCCESS, payload: data.data });
     toast.success(data.message || "Requested for invoice successfully");
     return data.data;
@@ -74,7 +78,7 @@ export const createInvoice = (invoiceData) => async (dispatch) => {
         type: CREATE_INVOICE_SUCCESS,
         payload: response.data.data, // contains invoiceDate and invoiceNumber
       });
-      toast.success(response.data.message || "Invoice created successfully");
+      // toast.success(response.data.message || "Invoice created successfully");
     }
     return response.data.data;
   } catch (error) {
@@ -130,7 +134,7 @@ export const fetchInvoiceAccounts = () => {
   return async (dispatch) => {
     dispatch({ type: FETCH_INVOICES_REQUEST_ACCOUNTS });
     try {
-      const response = await axios.get(`${BASE_URL}/accountsManager/invoices`, getSellerAuthHeaders());
+      const response = await axios.get(`${BASE_URL}/accountsManager/invoices`, getAuthHeaders());
       dispatch({
         type: FETCH_INVOICES_SUCCESS_ACCOUNTS,
         payload: response.data.data
@@ -142,4 +146,26 @@ export const fetchInvoiceAccounts = () => {
       });
     }
   };
+};
+
+export const generateInvoice = (businessId, invoiceNumber, invoiceType) => async (dispatch) => {
+  try {
+    dispatch({ type: GENERATE_INVOICE_REQUEST });
+    const body = {
+      businessId,
+      invoiceNumber,
+      invoiceType,
+    };
+    const { data } = await axios.post(`${BASE_URL}/accountsManager/generateInvoice`, body, getAuthHeaders());
+
+    dispatch({ type: GENERATE_INVOICE_SUCCESS, payload: data.data });
+    toast.success(data.message || "Invoice generated successfully");
+    return data.data;
+  } catch (error) {
+    dispatch({
+      type: GENERATE_INVOICE_FAILURE,
+      payload: error.response?.data?.message || "Failed to generate invoice",
+    });
+    toast.error(error.response?.data?.message || "Failed to generate invoice");
+  }
 };
