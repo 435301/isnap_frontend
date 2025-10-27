@@ -33,6 +33,11 @@ const ManageSellers = () => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedBusiness, setSelectedBusiness] = useState(null);
+  const [showPrompt, setShowPrompt] = useState(false);
+  const [reason, setReason] = useState("");
+    const [selectedBusinessId, setSelectedBusinessId] = useState(null);
+
+
   const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
   console.log('storedUser', storedUser);
   const derivedRoleType =
@@ -131,16 +136,30 @@ const ManageSellers = () => {
     }
   };
 
-  const handleInvoice = async (businessId) => {
+
+     const handleOpenInvoicePrompt = (businessId) => {
+    setSelectedBusinessId(businessId);
+    setShowPrompt(true);
+  };
+  
+  const handleInvoice = async (businessId, comments) => {
+      if (!comments.trim()) {
+          toast.warn("Please enter a reason");
+          return;
+        }
     try {
-      const res = dispatch(requestInvoice(businessId));
+      const res = dispatch(requestInvoice(businessId, comments));
       // if (res?.status) {
       await dispatch(mailToRequestInvoice(businessId));
+       setShowPrompt(false);
+      setReason("");
       // }
     } catch (error) {
       console.log('error', error);
     }
   };
+
+
 
   const handleManagerDocuments = (id) => {
     setSelectedSellerId(id);
@@ -155,6 +174,8 @@ const ManageSellers = () => {
   const rejectDocumentMail = () => {
     dispatch(rejectMailToSeller(selectedSellerId));
   };
+
+  
 
   return (
     <div className="container-fluid position-relative bg-white d-flex p-0">
@@ -321,10 +342,10 @@ const ManageSellers = () => {
                                     <li>
                                       {seller.requestForInvoice === 1 ? (
                                         <button className="dropdown-item text-success" disabled>
-                                            Invoice Requested
+                                          Invoice Requested
                                         </button>
                                       ) : (
-                                        <button className="dropdown-item" onClick={() => handleInvoice(seller.id)}>
+                                        <button className="dropdown-item" onClick={() =>handleOpenInvoicePrompt(seller.id)}>
                                           Request for Invoice
                                         </button>
                                       )
@@ -347,7 +368,36 @@ const ManageSellers = () => {
                 )}
 
               </div>
-
+              {showPrompt && (
+                <div className="small-prompt-overlay">
+                  <div className="small-prompt-box">
+                    <h6 className="mb-2">Request for Invoice</h6>
+                    <textarea
+                      className="form-control form-control-sm"
+                      placeholder="Enter reason..."
+                      value={reason}
+                      onChange={(e) => setReason(e.target.value)}
+                      rows={5}
+                    ></textarea>
+                    <div className="mt-3 text-end">
+                      <button
+                        className="btn btn-light btn-sm me-2"
+                        onClick={() => setShowPrompt(false)}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        className="btn btn-danger btn-sm"
+                        onClick={() =>
+                          handleInvoice(selectedBusinessId, reason)
+                        }
+                      >
+                        Submit
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

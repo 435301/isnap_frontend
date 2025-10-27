@@ -29,11 +29,11 @@ export const FETCH_INVOICES_SUCCESS_ACCOUNTS = "FETCH_INVOICES_SUCCESS_ACCOUNTS"
 export const FETCH_INVOICES_FAILURE_ACCOUNTS = "FETCH_INVOICES_FAILURE_ACCOUNTS";
 
 
-export const requestInvoice = (businessId) => async (dispatch) => {
+export const requestInvoice = (businessId, comments) => async (dispatch) => {
   try {
     dispatch({ type: REQUEST_INVOICE_REQUEST });
 
-    const { data } = await axios.patch(`${BASE_URL}/salesManager/requestForInvoice`, { businessId }, getAuthHeaders(false));
+    const { data } = await axios.patch(`${BASE_URL}/salesManager/requestForInvoice`, { businessId ,comments}, getAuthHeaders(false));
     dispatch({ type: REQUEST_INVOICE_SUCCESS, payload: data.data });
     toast.success(data.message || "Requested for invoice successfully");
     return data.data;
