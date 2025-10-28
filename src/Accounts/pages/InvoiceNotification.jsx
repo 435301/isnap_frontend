@@ -15,12 +15,12 @@ const InvoiceNotifications = () => {
   const dispatch = useDispatch();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  const { businessDetailsSales =[]} = useSelector((state) => state.business); 
+  const { businessDetailsSales = [], loading } = useSelector((state) => state.business);
   console.log('businessDetails', businessDetailsSales)
 
-useEffect(() => {
-  dispatch(fetchBusinessDetailsExecutive(1, "", "", 1, roleType));
-}, [dispatch, roleType]);
+  useEffect(() => {
+    dispatch(fetchBusinessDetailsExecutive(1, "", "", 1, roleType));
+  }, [dispatch, roleType]);
 
   // Handle sidebar toggle
   const handleToggleSidebar = () => {
@@ -38,27 +38,27 @@ useEffect(() => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-    // Convert business details → notification format
+  // Convert business details → notification format
   const notifications =
     businessDetailsSales?.map((biz) => {
       let type = "warning";
       let message = "";
       let icon = "bi-receipt";
 
-     if (biz.requestForInvoice === 1) {
-      type = "success";
-      message = `Invoice for "${biz.businessName}" has been requested by Sales Manager.`;
-      icon = "bi-check-circle";
-    }
-    // No invoice requested yet
-    else if (biz.requestForInvoice === 0) {
-      type = "secondary";
-      message = `No invoice requested for "${biz.businessName}" yet.`;
-      icon = "bi-dash-circle";
-    }
-    else {
-      message = `No active invoice for "${biz.businessName}".`;
-    }
+      if (biz.requestForInvoice === 1) {
+        type = "success";
+        message = `Invoice for "${biz.businessName}" has been requested by Sales Manager.`;
+        icon = "bi-check-circle";
+      }
+      // No invoice requested yet
+      else if (biz.requestForInvoice === 0) {
+        type = "secondary";
+        message = `No invoice requested for "${biz.businessName}" yet.`;
+        icon = "bi-dash-circle";
+      }
+      else {
+        message = `No active invoice for "${biz.businessName}".`;
+      }
       return {
         id: biz.id,
         type,
@@ -68,23 +68,22 @@ useEffect(() => {
       };
     }) || [];
 
-     const handleCreateInvoice = (businessId) => {
+  const handleCreateInvoice = (businessId) => {
     navigate(`/accounts/create-invoice/${businessId}`);
   };
 
 
-   const renderNotification = (item) => (
+  const renderNotification = (item) => (
     <div className="bg-white p-3 rounded border mb-2 shadow-sm" key={item.id}>
       <div className="d-flex justify-content-between align-items-start">
         <div className="d-flex">
           <div
-            className={`d-flex align-items-center justify-content-center me-3 rounded-circle ${
-              item.type === "success"
+            className={`d-flex align-items-center justify-content-center me-3 rounded-circle ${item.type === "success"
                 ? "bg-success"
                 : item.type === "warning"
-                ? "bg-warning"
-                : "bg-danger"
-            }`}
+                  ? "bg-warning"
+                  : "bg-danger"
+              }`}
             style={{ width: 40, height: 40 }}
           >
             <i className={`bi ${item.icon} text-white`}></i>
@@ -94,7 +93,7 @@ useEffect(() => {
             <p className="small mb-0 text-muted">{item.time}</p>
           </div>
         </div>
-         {item.type === "success" && (
+        {item.type === "success" && (
           <button
             className="btn btn-sm btn-primary ms-3"
             onClick={() => handleCreateInvoice(item.id)}
@@ -120,7 +119,9 @@ useEffect(() => {
 
           {/* Notifications List */}
           <div className="bg-white p-3 rounded shadow-sm border">
-            {notifications.length > 0 ? (
+            {loading ? (
+              <p className="text-muted small mb-0">Loading notifications...</p>
+            ) : notifications.length > 0 ? (
               notifications.map((item) => renderNotification(item))
             ) : (
               <p className="text-muted small mb-0">No invoice notifications available.</p>

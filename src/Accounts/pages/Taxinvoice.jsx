@@ -46,6 +46,15 @@ const VoicePage = () => {
     dispatch(fetchMouDetails(businessId));
   }, [dispatch]);
 
+  useEffect(() => {
+  // Whenever mou data changes, preselect those with isInvoiceChecked = true
+  const preselected = allServices.filter((s) => s.isInvoiceChecked) .map((s) => s.checkboxId);
+  if (preselected.length > 0) {
+    setSelectedServices(preselected);
+  }
+}, [mouList, serviceTypes, keyAccountSubscriptions, keyAccountCommissions, digitalMarketing, productPhotographys, lifeStylePhotographys, modelPhotographys, aContentPhotographys, storePhotographys, socialMediaContentPhotographys]);
+
+
   // Flatten all services into separate rows
   const allServices = [
     ...(serviceTypes || []).map((s) => ({
@@ -56,6 +65,7 @@ const VoicePage = () => {
       price: s.offerPrice,
       durationRequired: s.durationRequired,
       source: "Business Launch",
+      isInvoiceChecked: s.isInvoiceChecked,
     })),
     ...(mouList || []).map((s) => ({
       checkboxId: `cl-${s.id}`,
@@ -65,6 +75,7 @@ const VoicePage = () => {
       price: s.offerPrice,
       durationRequired: s.durationRequired,
       source: "Catalog Listing",
+      isInvoiceChecked: s.isInvoiceChecked,
     })),
     ...(keyAccountSubscriptions || []).map((s) => ({
       checkboxId: `ka-${s.id}`,
@@ -74,6 +85,7 @@ const VoicePage = () => {
       price: s.offerPrice,
       durationRequired: s.durationRequired,
       source: "Key Account Subscription",
+      isInvoiceChecked: s.isInvoiceChecked,
     })),
     ...(keyAccountCommissions || []).flatMap((s) => [
       {
@@ -84,6 +96,7 @@ const VoicePage = () => {
         price: s.security.securityDeposit,
         durationRequired: s.durationRequired,
         source: "Key Account Commission",
+        isInvoiceChecked: s.isInvoiceChecked,
       },
       // ...(s.commissions || []).map((c) => ({
       //   id: `kac-commission-${c.id}`,
@@ -101,19 +114,21 @@ const VoicePage = () => {
       price: s.totalPrice,
       durationRequired: s.durationRequired,
       source: "LifeStyle Photography",
-    })),
-    ...(digitalMarketing
+      isInvoiceChecked: s.isInvoiceChecked,
+    })), 
+    ...(digitalMarketing && digitalMarketing?.id
       ? [
         {
-          checkboxId: `dm-${digitalMarketing.id}`,
-          mainServiceId: digitalMarketing.id,
-          name: digitalMarketing.digitalMarketingServiceNames
-            .map((d) => d.name)
-            .join(", "),
-          billCycle: digitalMarketing.billCycleTitle,
-          price: digitalMarketing.offerPrice,
-          durationRequired: digitalMarketing.durationRequired,
+          checkboxId: `dm-${digitalMarketing?.id}`,
+          mainServiceId: digitalMarketing?.id,
+          name: Array.isArray(digitalMarketing?.digitalMarketingServiceNames)
+          ? digitalMarketing.digitalMarketingServiceNames.map((d) => d.name).join(", ")
+          : "",
+          billCycle: digitalMarketing?.billCycleTitle,
+          price: digitalMarketing?.offerPrice,
+          durationRequired: digitalMarketing?.durationRequired,
           source: "Digital Marketing",
+          isInvoiceChecked: digitalMarketing?.isInvoiceChecked,
         },
       ]
       : []),
@@ -125,6 +140,7 @@ const VoicePage = () => {
       price: s.totalPrice,
       durationRequired: s.durationRequired,
       source: "Product Photography",
+      isInvoiceChecked: s.isInvoiceChecked,
     })),
     ...(modelPhotographys || []).map((s) => ({
       checkboxId: `mp-${s.id}`,
@@ -134,6 +150,7 @@ const VoicePage = () => {
       price: s.totalPrice,
       durationRequired: s.durationRequired,
       source: "Model Photography",
+      isInvoiceChecked: s.isInvoiceChecked,
     })),
     ...(aContentPhotographys || []).map((s) => ({
       checkboxId: `acp-${s.id}`,
@@ -143,6 +160,7 @@ const VoicePage = () => {
       price: s.totalPrice,
       durationRequired: s.durationRequired,
       source: "A Content Photography",
+      isInvoiceChecked: s.isInvoiceChecked,
     })),
     ...(storePhotographys || []).map((s) => ({
       checkboxId: `sp-${s.id}`,
@@ -152,6 +170,7 @@ const VoicePage = () => {
       price: s.totalPrice,
       durationRequired: s.durationRequired,
       source: "Store Photography",
+      isInvoiceChecked: s.isInvoiceChecked,
     })),
     ...(socialMediaContentPhotographys || []).map((s) => ({
       checkboxId: `smc-${s.id}`,
@@ -161,6 +180,7 @@ const VoicePage = () => {
       price: s.totalPrice,
       durationRequired: s.durationRequired,
       source: "Social Media Content Photography",
+      isInvoiceChecked: s.isInvoiceChecked,
     })),
   ];
 
