@@ -115,6 +115,7 @@ import ManagerDocumentView from "./Executive/pages/ManagerDocument.jsx";
 import SellerExeDashboard from "./Executive/pages/ExecutiveExeDashboard.jsx";
 import SellerInvoiceList from "./Seller/pages/sellerInvoiceList.jsx";
 import AccountsInvoices from "./Accounts/pages/AccountsInvoiceList.jsx";
+import SellerServicesList from "./Seller/pages/ServicesList.jsx";
 
 
 function App() {
@@ -222,6 +223,7 @@ function App() {
         <Route path="/seller/task-summary" element={<SellerRoute><TaskSummarySellar /></SellerRoute>} />
         <Route path="/seller/invoice-seller" element={<SellerRoute><SellerInvoicePage /></SellerRoute>} />
         <Route path="/seller/invoice-seller-list" element={<SellerRoute><SellerInvoiceList /></SellerRoute>} />
+        <Route path="/seller/services-seller-list" element={<SellerRoute><SellerServicesList /></SellerRoute>} />
 
 
         {/* Executive Routes */}

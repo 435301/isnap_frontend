@@ -82,7 +82,7 @@ const SellerSidebar = ({ isOpen }) => {
             {isOpen && <span>Products</span>}
           </Link>
 
-          {/* ✅ MOU Dropdown */}
+          {/*  MOU Dropdown */}
           <div className={`nav-item ${isLinkActive("/seller/mou-1")}`}>
             <Link to="/seller/mou-1" className="nav-link">
               <i className="bi bi-file-earmark-text me-2"></i>
@@ -90,10 +90,18 @@ const SellerSidebar = ({ isOpen }) => {
             </Link>
           </div>
 
+          {/*  Invoices Dropdown */}
           <div className={`nav-item ${isLinkActive("/seller/invoice-seller")}`}>
             <Link to="/seller/invoice-seller-list" className="nav-link">
               <i className="bi bi-file-earmark-text me-2"></i>
               {isOpen && <span>Invoice</span>}
+            </Link>
+          </div>
+          {/*  Services */}
+          <div className={`nav-item ${isLinkActive("/seller/services-seller")}`}>
+            <Link to="/seller/services-seller-list" className="nav-link">
+              <i className="bi bi-file-earmark-text me-2"></i>
+              {isOpen && <span>Services</span>}
             </Link>
           </div>
 
