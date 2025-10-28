@@ -297,48 +297,81 @@ const Documents = ({ businessId, businessIdEdit }) => {
         )}
 
         {/* Display Uploaded Info */}
-        {businessIdEdit && (
-            <div className="mt-4">
-          <h6 className="fw-bold mb-3">Uploaded Product Files</h6>
-          {businessIdEdit && sellerProductInfo && sellerProductInfo.length > 0 ? (
-            <div className="row g-3 products">
-              {sellerProductInfo.map((item) => (
+        {businessIdEdit && sellerProductInfo && sellerProductInfo.length > 0 ? (
+          <div className="row g-3 products">
+            {sellerProductInfo.map((item) => {
+              const fileUrl = `${BASE_URL}${item.file}`;
+
+              const handleDownload = async () => {
+                try {
+                  const response = await fetch(fileUrl);
+                  const blob = await response.blob();
+                  const url = window.URL.createObjectURL(blob);
+                  const a = document.createElement("a");
+                  a.href = url;
+                  a.download = item.file.split("/").pop(); // file name from URL
+                  document.body.appendChild(a);
+                  a.click();
+                  a.remove();
+                  window.URL.revokeObjectURL(url);
+                } catch (error) {
+                  console.error("Download failed:", error);
+                }
+              };
+
+              return (
                 <div className="col-md-3" key={item.id}>
                   <div className="card shadow-sm p-2 text-center">
                     {item.fileType === 1 && (
                       <img
-                        src={`${BASE_URL}${item.file}`}
+                        src={fileUrl}
                         alt="product"
-                        className="img-fluid rounded"
+                        className="img-fluid rounded mb-2"
+                        style={{ height: "150px", objectFit: "cover" }}
                       />
                     )}
+
                     {item.fileType === 2 && (
                       <video
                         controls
-                        src={`${BASE_URL}${item.file}`}
-                        className="img-fluid rounded"
+                        src={fileUrl}
+                        className="img-fluid rounded mb-2"
+                        style={{ height: "150px" }}
                       />
                     )}
+
                     {item.fileType === 3 && (
                       <a
                         href={item.file}
                         target="_blank"
                         rel="noreferrer"
-                        className="text-success"
+                        className="text-success d-block mb-2"
                       >
                         {item.file}
                       </a>
                     )}
+
+                    {/* Download Button */}
+                    {(item.fileType === 1 ||  item.fileType === 2) &&
+                      <div className="text-end">
+                        <button
+                          className="btn btn-outline-primary btn-sm"
+                          onClick={handleDownload}
+                        >
+                          <i className="bi bi-download me-1"></i>
+                        </button>
+                      </div>
+                    }
                   </div>
                 </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-muted">No product info uploaded yet.</p>
-          )}
-        </div>
+              );
+            })}
+          </div>
+        ) : (
+          <p className="text-muted">No product info uploaded yet.</p>
         )}
-      
+
+
       </div>
       {!businessIdEdit && (
         <div className=" text-center">
