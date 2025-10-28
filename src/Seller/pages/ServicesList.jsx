@@ -273,21 +273,20 @@ const SellerServicesList = () => {
                                                     <td>{service.price || "0.00"}</td>
                                                     <td>{service.source}</td>
                                                     <td>
-                                                        <button
-                
-                                                            className={`btn ${service.invoiceType === 1
-                                                                ? "btn-warning"
-                                                                : service.invoiceType === 2
-                                                                    ? "btn-success"
-                                                                    : "btn-secondary"
+                                                        <span
+                                                            className={`badge px-3 py-2 ${service.invoiceType === 1
+                                                                    ? "bg-warning text-dark"
+                                                                    : service.invoiceType === 2
+                                                                        ? "bg-success"
+                                                                        : "bg-secondary"
                                                                 }`}
                                                         >
                                                             {service.invoiceType === 1
-                                                                ? "Proforma"
+                                                                ? "Proforma Invoice"
                                                                 : service.invoiceType === 2
-                                                                    ? "Tax Invoice"
-                                                                    : "In progress"}
-                                                        </button>
+                                                                    ? "Final Invoice"
+                                                                    : "Awaiting Invoice"}
+                                                        </span>
                                                     </td>
                                                 </tr>
                                             ))
