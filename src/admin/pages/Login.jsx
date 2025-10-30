@@ -50,7 +50,10 @@ const Login = () => {
       else if (user.roleName === "Accountant") {
         navigate("/accounts/dashboard");
       }
+      else if (user.roleName === "Business Analytics Manager") {
+        navigate("/team/dashboard");
     }
+  }
   }, [token, user, navigate]);
 
   const handleChange = (e) => {

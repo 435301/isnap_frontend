@@ -21,13 +21,13 @@ export const AdminRoute = ({ children }) => {
 export const TeamRoute = ({ children }) => {
   const { token, user } = useSelector((state) => state.auth);
   console.log("TeamRoute - Token:", token, "User:", user); // Debug
-   if (!token || !isTokenValid(token)) {
-    //  Clear invalid token
-    localStorage.removeItem("authToken");
-    localStorage.removeItem("user");
-    return <Navigate to="/login" replace />;
-  };
-  if (user?.roleName !== "Team") return <h2>401 - Unauthorized</h2>;
+  //  if (!token || !isTokenValid(token)) {
+  //   //  Clear invalid token
+  //   localStorage.removeItem("teamToken");
+  //   localStorage.removeItem("team");
+  //   return <Navigate to="/team/login" replace />;
+  // };
+  // if (user?.roleName !== "Team") return <h2>401 - Unauthorized</h2>;
   return children;
 };
 

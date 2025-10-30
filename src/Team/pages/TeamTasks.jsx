@@ -3,6 +3,9 @@ import Sidebar from '../components/TeamSidebar';
 import Navbar from '../components/TeamNavbar';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import AssignTaskModal from '../components/AssignTaskModal';
+import MoveTaskModal from '../components/MoveTaskModal';
+import RejectTaskModal from '../components/RejectTaskModal';
 
 const TeamTasks = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -15,6 +18,10 @@ const TeamTasks = () => {
   const [selectedBucket, setSelectedBucket] = useState('To Do');
   const [rejectReasonType, setRejectReasonType] = useState('');
   const [rejectReasonText, setRejectReasonText] = useState('');
+  const [showAssignModal, setShowAssignModal] = useState(false);
+  const [assignTo, setAssignTo] = useState("");
+  const [assignComment, setAssignComment] = useState("");
+
 
   useEffect(() => {
     const handleResize = () => {
@@ -109,6 +116,7 @@ const TeamTasks = () => {
   };
 
   const TaskCard = ({ task, type }) => {
+
     const getCardClass = () => {
       if (task.title.includes('Amazon')) return 'bg-success-subtle text-success';
       if (task.title.includes('Flipkart')) return 'bg-warning-subtle text-warning';
@@ -128,6 +136,8 @@ const TeamTasks = () => {
           return 'btn btn-sm bg-secondary-subtles text-secondary px-3 fw-semibold'; // fallback gray
       }
     };
+
+
 
 
     return (
@@ -160,20 +170,27 @@ const TeamTasks = () => {
                 View Details
               </a>
             </li>
+            <li>
+              <button
+                className="dropdown-item"
+                onClick={() => {
+                  setSelectedTask(task);
+                  setShowAssignModal(true);
+                }}
+              >
+                Assign
+              </button>
+            </li>
+
           </ul>
         </div>
         <p className="text-muted small mb-3">{task.description}</p>
         <div className="row g-2 text-muted small mb-2">
-          <div className="col-4">
-            <strong className="border border-info rounded px-2 py-1 small d-block mb-2">Start Date</strong>
+
+          <div className="col-5">
+            <strong className="border border-danger rounded px-2 py-1 small d-block mb-2">Task Completion Days</strong>
             <div className="text-dark mt-1">
-              <i className="bi bi-calendar"></i> {task.startDate}
-            </div>
-          </div>
-          <div className="col-4">
-            <strong className="border border-danger rounded px-2 py-1 small d-block mb-2">Due Date</strong>
-            <div className="text-dark mt-1">
-              <i className="bi bi-calendar"></i> {task.dueDate}
+              <p>5</p>
             </div>
           </div>
           <div className="col-4">
@@ -219,7 +236,26 @@ const TeamTasks = () => {
       </div>
     );
   };
+  const handleAssignSubmit = (task, assignee, comment) => {
+    console.log("Task Assigned:", task?.title);
+    console.log("Assigned To:", assignee);
+    console.log("Comment:", comment);
+    setShowAssignModal(false);
+    setAssignTo("");
+    setAssignComment("");
+  };
 
+  const handleMoveSave = (task, bucket) => {
+    console.log("Moved Task:", task?.title, "➡️", bucket);
+    setShowModal(false);
+  };
+
+  const handleRejectSubmit = (task, reasonType, reasonText) => {
+    console.log("Rejected Task:", task?.title);
+    console.log("Reason Type:", reasonType);
+    console.log("Reason:", reasonText);
+    setShowRejectModal(false);
+  };
   return (
     <div className="container-fluid position-relative bg-white d-flex p-0">
       <Sidebar isOpen={isSidebarOpen} />
@@ -237,7 +273,7 @@ const TeamTasks = () => {
             <div className="bg-white p-3 rounded shadow-sm card-header mb-2">
               <div className="row g-2 align-items-center">
                 <div className="col-lg-8">
-                  <h5 className="form-title m-0">Manage Leads</h5>
+                  <h5 className="form-title m-0">Manage Tasks</h5>
                 </div>
                 <div className="col-md-4">
                   <select className="form-select">
@@ -304,38 +340,7 @@ const TeamTasks = () => {
               ))}
             </div>
           </div></div>
-        {showModal && (
-          <div className="modal fade show" style={{ display: 'block', backgroundColor: 'rgba(0, 0, 0, 0.5)' }} tabIndex="-1">
-            <div className="modal-dialog modal-dialog-centered">
-              <div className="modal-content">
-                <div className="modal-header">
-                  <h5 className="modal-title">Move Task</h5>
-                  <button type="button" className="btn-close" onClick={() => setShowModal(false)}></button>
-                </div>
-                <div className="modal-body">
-                  <form>
-                    <div className="mb-3">
-                      <label className="form-label">Task Name</label>
-                      <input type="text" className="form-control" value={selectedTask?.title || ''} readOnly />
-                    </div>
-                    <div className="mb-3">
-                      <label className="form-label">Bucket Name</label>
-                      <select className="form-select" value={selectedBucket} onChange={(e) => setSelectedBucket(e.target.value)}>
-                        <option>To Do</option>
-                        <option>In Progress</option>
-                        <option>Completed</option>
-                      </select>
-                    </div>
-                  </form>
-                </div>
-                <div className="modal-footer">
-                  <button className="btn btn-light" onClick={() => setShowModal(false)}>Cancel</button>
-                  <button className="btn btn-success">Save Changes</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+      
         {showRejectModal && (
           <div className="modal fade show" style={{ display: 'block', backgroundColor: 'rgba(0, 0, 0, 0.5)' }} tabIndex="-1">
             <div className="modal-dialog modal-dialog-centered">
@@ -389,6 +394,37 @@ const TeamTasks = () => {
             </div>
           </div>
         )}
+        <AssignTaskModal
+          show={showAssignModal}
+          onClose={() => setShowAssignModal(false)}
+          onSubmit={handleAssignSubmit}
+          selectedTask={selectedTask}
+          assignTo={assignTo}
+          setAssignTo={setAssignTo}
+          assignComment={assignComment}
+          setAssignComment={setAssignComment}
+        />
+
+        <MoveTaskModal
+          show={showModal}
+          onClose={() => setShowModal(false)}
+          selectedTask={selectedTask}
+          selectedBucket={selectedBucket}
+          setSelectedBucket={setSelectedBucket}
+          onSave={handleMoveSave}
+        />
+
+        <RejectTaskModal
+          show={showRejectModal}
+          onClose={() => setShowRejectModal(false)}
+          selectedTask={selectedTask}
+          rejectReasonType={rejectReasonType}
+          setRejectReasonType={setRejectReasonType}
+          rejectReasonText={rejectReasonText}
+          setRejectReasonText={setRejectReasonText}
+          onSubmit={handleRejectSubmit}
+        />
+
       </div>
     </div>
   );
