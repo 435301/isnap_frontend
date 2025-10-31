@@ -96,7 +96,7 @@ const SellerServicesList = () => {
                 durationRequired: s.durationRequired,
                 source: "Key Account Commission",
                 isInvoiceChecked: s.isInvoiceChecked,
-                invoiceType: s.invoiceType,
+                invoiceType: s.security.invoiceType,
 
             },
             // ...(s.commissions || []).map((c) => ({
@@ -265,6 +265,7 @@ const SellerServicesList = () => {
                                     <tbody>
                                         {filteredServices.length > 0 ? (
                                             filteredServices.map((service, index) => (
+                                            
                                                 console.log('service', service),
                                                 <tr key={service.checkboxId}>
                                                     <td>{index + 1}</td>
