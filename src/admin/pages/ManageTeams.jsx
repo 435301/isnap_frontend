@@ -27,8 +27,9 @@ const ManageTeams = () => {
   const dispatch = useDispatch();
   const { teams = [], loading, error, successMessage, errorMessage } = useSelector(state => state.teams || {});
   const { roles = [] } = useSelector(state => state.roles || {});
-  const {wings} = useSelector((state) => state.wings);
-  const {departments} = useSelector((state) => state.department);
+  const { wings } = useSelector((state) => state.wings);
+  const { departments } = useSelector((state) => state.department);
+  const { subDepartments } = useSelector((state) => state.subDepartments);
   console.log('wings', wings)
 
   // Fetch teams and roles on mount
@@ -74,7 +75,7 @@ const ManageTeams = () => {
   const handleSaveChanges = async updatedTeam => {
     try {
       await dispatch(updateTeam(updatedTeam));
-      dispatch(fetchTeams()); 
+      dispatch(fetchTeams());
       setShowEditModal(false);
       setSelectedTeam(null);
     } catch {
@@ -205,6 +206,7 @@ const ManageTeams = () => {
             wings={wings}
             departments={departments}
             teams={teams}
+            subDepartments={subDepartments}
           />
           <ViewTeamModal
             showViewModal={showViewModal}

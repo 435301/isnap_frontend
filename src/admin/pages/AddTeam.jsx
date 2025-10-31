@@ -15,6 +15,8 @@ const AddTeam = () => {
   const { teams } = useSelector((state) => state.teams);
   const { wings } = useSelector((state) => state.wings);
   const { departments } = useSelector((state) => state.department);
+  const { subDepartments } = useSelector((state) => state.subDepartments);
+
   console.log('teams', teams)
   useEffect(() => {
     dispatch(fetchTeams());
@@ -36,6 +38,7 @@ const AddTeam = () => {
     password: "",
     wingId: "",
     departmentId: "",
+    subDepartmentId:"",
     superior: 0,
   });
   const [errors, setErrors] = useState({});
@@ -170,6 +173,15 @@ const AddTeam = () => {
                       {departments.map(r => <option key={r.id} value={r.id}>{r.DepartmentName}</option>)}
                     </select>
                     {errors.departmentId && <div className="text-danger small">{errors.departmentId}</div>}
+                  </div>
+
+                   <div className="col-md-4">
+                    <label className="form-label">Sub Department</label>
+                    <select name="subDepartmentId" className="form-select" value={formData.subDepartmentId} onChange={handleChange}>
+                      <option value="">Select Department</option>
+                      {subDepartments.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
+                    </select>
+                    {errors.subDepartmentId && <div className="text-danger small">{errors.subDepartmentId}</div>}
                   </div>
 
                   {/* Role */}

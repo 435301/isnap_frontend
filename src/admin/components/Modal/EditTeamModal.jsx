@@ -3,9 +3,9 @@ import { Offcanvas, Button, Form } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import BASE_URL from "../../../config/config";
 
-const EditTeamOffcanvas = ({ show, handleClose, selectedTeam, handleSaveChanges, wings, departments,teams }) => {
+const EditTeamOffcanvas = ({ show, handleClose, selectedTeam, handleSaveChanges, wings, departments, teams, subDepartments }) => {
   const roles = useSelector((state) => state.roles.roles || []);
-  console.log('selectedTeam',selectedTeam)
+  console.log('selectedTeam', selectedTeam)
 
   const [form, setForm] = useState({
     employeeId: "",
@@ -19,6 +19,7 @@ const EditTeamOffcanvas = ({ show, handleClose, selectedTeam, handleSaveChanges,
     idProof: null,
     wingId: "",
     departmentId: "",
+    subDepartmentId:"",
     superior: 0,
   });
 
@@ -36,7 +37,8 @@ const EditTeamOffcanvas = ({ show, handleClose, selectedTeam, handleSaveChanges,
         idProof: null,
         wingId: selectedTeam.wingId || "",
         departmentId: selectedTeam.departmentId || "",
-       superior: selectedTeam.superiorId || 0,
+        subDepartmentId:selectedTeam.subDepartmentId || "",
+        superior: selectedTeam.superiorId || 0,
       });
     }
   }, [selectedTeam]);
@@ -141,6 +143,15 @@ const EditTeamOffcanvas = ({ show, handleClose, selectedTeam, handleSaveChanges,
             </Form.Select>
           </Form.Group>
 
+          <Form.Group className="mb-3">
+            <Form.Label>Sub Department</Form.Label>
+            <Form.Select name="subDepartmentId" value={form.subDepartmentId} onChange={handleChange}>
+              <option value="">Select Sub Department</option>
+              {subDepartments?.map((r) => (
+                <option key={r.id} value={r.id}>{r.name}</option>
+              ))}
+            </Form.Select>
+          </Form.Group>
 
           <Form.Group className="mb-3">
             <Form.Label>User Role<span className="text-danger"> *</span></Form.Label>
