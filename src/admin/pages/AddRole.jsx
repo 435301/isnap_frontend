@@ -162,6 +162,30 @@ const AddRole = () => {
                       <div className="invalid-feedback">{errors.departmentId}</div>
                     )}
                   </div>
+
+                     <div className="col-md-4">
+                    <label className="form-label">
+                     Sub Department
+                    </label>
+                    <select
+                      name="departmentId"
+                      value={formData.departmentId}
+                      onChange={handleChange}
+                      className={`form-select ${errors.departmentId ? "is-invalid" : ""}`}
+                    >
+                      <option value="">Select Sub Department</option>
+                      {departments.map((department) => (
+                        <option key={department?.id} value={department.id}>
+                          {department?.departmentName}
+                        </option>
+                      ))}
+
+                    </select>
+                    {errors.departmentId && (
+                      <div className="invalid-feedback">{errors.departmentId}</div>
+                    )}
+                  </div>
+                  
                   <div className="col-md-4">
                     <label className="form-label">
                       Role Title <span className="text-danger">*</span>

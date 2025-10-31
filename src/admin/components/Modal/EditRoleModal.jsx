@@ -94,7 +94,6 @@ const EditRoleModal = ({
                   className="form-select"
                   value={departmentId}
                   onChange={(e) => setDepartmentId(e.target.value)}
-                  required
                 >
                   <option value="">Select Department</option>
                   {departments.map((dept) => (

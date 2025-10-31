@@ -43,7 +43,7 @@ const Sidebar = ({ isOpen }) => {
       ],
       serviceTypes: ["/manage-service-types", "/manage-services", "/create-service-type", "/add-service", "/create-service-activities", "/manage-service-activities"],
       sellers: ["/manage-sellers", "/create-seller", "/view-seller"],
-      team: ["/manage-team", "/add-team", "/manage-roles", "/manage-departments", "create-department", "/add-role", "/latest-updates", "/manage-updates"],
+      team: ["/manage-team", "/add-team", "/manage-roles", "/manage-departments","/manage-sub-departments", "create-department", "/add-role", "/latest-updates", "/manage-updates"],
       tasks: ["/manage-task", "/create-task", "/rejected-tasks"],
       leads: ["/manage-leads", "/create-lead", "/view-lead"],
       notifications: ["/view-notifications", "/notification-settings"],
@@ -218,6 +218,7 @@ const Sidebar = ({ isOpen }) => {
             <div className={`dropdown-menu bg-transparent border-0 ${isDropdownActive("team") ? "show" : ""}`}>
               <Link to="/manage-wings" className={`dropdown-item ${isLinkActive("/manage-wings")}`}>Wings</Link>
               <Link to="/manage-departments" className={`dropdown-item ${isLinkActive("/manage-departments")}`}>Departments</Link>
+              <Link to="/manage-sub-departments" className={`dropdown-item ${isLinkActive("/manage-sub-departments")}`}>Sub Departments</Link>
               <Link to="/manage-roles" className={`dropdown-item ${isLinkActive("/manage-roles")}`}>Roles</Link>
               <Link to="/manage-roles-features" className={`dropdown-item ${isLinkActive("//manage-roles-features")}`}>Roles Features</Link>
 

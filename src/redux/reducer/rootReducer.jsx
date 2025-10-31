@@ -39,6 +39,7 @@ import { documentReducer } from "./docTypeReducer";
 import emailReducer from "./emailReducer";
 import { invoiceReducer } from "./invoiceReducer";
 import ExecutiveDashboardReducer from "./executiveDashboardReducer";
+import { subDepartmentReducer } from "./subDepartmentReducer";
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -91,6 +92,7 @@ const rootReducer = combineReducers({
   sellerProductInfo: businessReducer,
   invoiceAccounts:invoiceReducer,
   generateInvoice:invoiceReducer,
+  subDepartments: subDepartmentReducer,
 });
 
 

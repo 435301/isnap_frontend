@@ -116,6 +116,8 @@ import SellerExeDashboard from "./Executive/pages/ExecutiveExeDashboard.jsx";
 import SellerInvoiceList from "./Seller/pages/sellerInvoiceList.jsx";
 import AccountsInvoices from "./Accounts/pages/AccountsInvoiceList.jsx";
 import SellerServicesList from "./Seller/pages/ServicesList.jsx";
+import ManageSubDepartments from "./admin/pages/ManageSubDepartment.jsx";
+import AddSubDepartment from "./admin/pages/AddSubDepartment.jsx";
 
 
 function App() {
@@ -157,8 +159,10 @@ function App() {
         <Route path="/market-place-type" element={<AdminRoute><MarketplaceType /></AdminRoute>} />
         <Route path="/manage-wings" element={<AdminRoute><ManageWing /></AdminRoute>} />
         <Route path="/manage-departments" element={<AdminRoute><ManageDepartments /></AdminRoute>} />
+        <Route path="/manage-sub-departments" element={<AdminRoute><ManageSubDepartments /></AdminRoute>} />
         <Route path="/add-service" element={<AdminRoute><AddService /></AdminRoute>} />
         <Route path="/create-department" element={<AdminRoute><AddDepartment /></AdminRoute>} />
+        <Route path="/create-sub-department" element={<AdminRoute><AddSubDepartment/></AdminRoute>} />
         <Route path="/create-wing" element={<AdminRoute><AddWing /></AdminRoute>} />
         <Route path="/create-billing" element={<AdminRoute><CreateBillingCycle /></AdminRoute>} />
         <Route path="/manage-product-listing" element={<AdminRoute><ManageProductListing /></AdminRoute>} />
