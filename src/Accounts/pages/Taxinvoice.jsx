@@ -211,7 +211,7 @@ const VoicePage = () => {
       return;
     }
     const selectedData = allServices
-      .filter((s) => selectedServices.includes(s.checkboxId))
+      .filter((s) => selectedServices.includes(s.checkboxId)  && !s.isInvoiceChecked)
       .map((s) => {
         const serviceData = {
           source: s.source,
