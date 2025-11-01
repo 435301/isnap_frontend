@@ -50,7 +50,7 @@ const Login = () => {
       else if (user.roleName === "Accountant") {
         navigate("/accounts/dashboard");
       }
-      else if (user.roleName === "Business Analytics Manager") {
+      else if (user.roleName === "Marketplace Manager") {
         navigate("/team/dashboard");
     }
   }

@@ -9,7 +9,9 @@ const AssignTaskModal = ({
   setAssignTo,
   assignComment,
   setAssignComment,
+  executives,
 }) => {
+  console.log('executives', executives)
   if (!show) return null;
 
   return (
@@ -49,10 +51,7 @@ const AssignTaskModal = ({
                   onChange={(e) => setAssignTo(e.target.value)}
                 >
                   <option value="">Select Assignee</option>
-                  <option value="Ravi">Ravi</option>
-                  <option value="Priya">Priya</option>
-                  <option value="Arjun">Arjun</option>
-                  <option value="Sneha">Sneha</option>
+                 
                 </select>
               </div>
 

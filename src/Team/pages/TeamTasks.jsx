@@ -6,8 +6,11 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 import AssignTaskModal from '../components/AssignTaskModal';
 import MoveTaskModal from '../components/MoveTaskModal';
 import RejectTaskModal from '../components/RejectTaskModal';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchExecutives, fetchTasks } from '../../redux/actions/taskAction';
 
 const TeamTasks = () => {
+  const dispatch = useDispatch();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
@@ -21,8 +24,10 @@ const TeamTasks = () => {
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [assignTo, setAssignTo] = useState("");
   const [assignComment, setAssignComment] = useState("");
+  const [priorityFilter, setPriorityFilter] = useState("");
 
-
+  const { tasks = [],executives, updatedPriority, acceptedTask, loading, error } = useSelector((state) => state.tasks || {});
+console.log('executives',executives)
   useEffect(() => {
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
@@ -33,89 +38,29 @@ const TeamTasks = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  useEffect(() => {
+    dispatch(fetchTasks());
+    dispatch(fetchExecutives());
+  }, [dispatch]);
+
   const handleToggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
+  const todoTasks = tasks.filter((t) => t.workProgressStatus === 1);        // to do
+  const completedTasks = tasks.filter((t) => t.workProgressStatus === 3);   // completed 
+  const inProgressTasks = tasks.filter((t) => t.workProgressStatus === 2);  // in progress
+
+  // If API doesn’t have isPaid=2, you can derive inProgress by logic (optional)
   const taskData = {
-    todo: [
-      {
-        title: 'Product listing on Amazon',
-        description: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry...',
-        startDate: 'Jun 10, 2025',
-        dueDate: 'June 20, 2025',
-        seller: 'GVK Fashions',
-        priority: 'High',
-      },
-      {
-        title: 'Product listing on Flipkart',
-        description: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry...',
-        startDate: 'Jun 10, 2025',
-        dueDate: 'June 20, 2025',
-        seller: 'GVK Fashions',
-        priority: 'Medium',
-      },
-      {
-        title: 'Product listing on Myntra',
-        description: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry...',
-        startDate: 'Jun 10, 2025',
-        dueDate: 'June 20, 2025',
-        seller: 'GVK Fashions',
-        priority: 'Low',
-      },
-    ],
-    inProgress: [
-      {
-        title: 'Product listing on Flipkart',
-        description: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry...',
-        startDate: 'Jun 10, 2025',
-        dueDate: 'June 20, 2025',
-        seller: 'GVK Fashions',
-      },
-      {
-        title: 'Product listing on Myntra',
-        description: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry...',
-        startDate: 'Jun 10, 2025',
-        dueDate: 'June 20, 2025',
-        seller: 'GVK Fashions',
-      },
-      {
-        title: 'Product listing on Amazon',
-        description: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry...',
-        startDate: 'Jun 10, 2025',
-        dueDate: 'June 20, 2025',
-        seller: 'GVK Fashions',
-      },
-    ],
-    completed: [
-      {
-        title: 'Product listing on Myntra',
-        description: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry...',
-        startDate: 'Jun 10, 2025',
-        dueDate: 'June 20, 2025',
-        seller: 'GVK Fashions',
-        completedDate: '25-06-2025',
-      },
-      {
-        title: 'Product listing on Amazon',
-        description: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry...',
-        startDate: 'Jun 10, 2025',
-        dueDate: 'June 20, 2025',
-        seller: 'GVK Fashions',
-        completedDate: '25-06-2025',
-      },
-      {
-        title: 'Product listing on Flipkart',
-        description: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry...',
-        startDate: 'Jun 10, 2025',
-        dueDate: 'June 20, 2025',
-        seller: 'GVK Fashions',
-        completedDate: '25-06-2025',
-      },
-    ],
+    todo: todoTasks,
+    inProgress: inProgressTasks,
+    completed: completedTasks,
   };
 
+
   const TaskCard = ({ task, type }) => {
+    console.log('task', task)
 
     const getCardClass = () => {
       if (task.title.includes('Amazon')) return 'bg-success-subtle text-success';
@@ -190,7 +135,7 @@ const TeamTasks = () => {
           <div className="col-5">
             <strong className="border border-danger rounded px-2 py-1 small d-block mb-2">Task Completion Days</strong>
             <div className="text-dark mt-1">
-              <p>5</p>
+              <p>{task.dueDate}</p>
             </div>
           </div>
           <div className="col-4">
@@ -214,6 +159,19 @@ const TeamTasks = () => {
               <button className={getPriorityBtnClass(task.priority)}>
                 {task.priority}
               </button>)}
+            <select
+              className="form-select form-select-sm"
+              style={{ width: "auto" }}
+              value={task.priority}
+              onChange={(e) => {
+                console.log(`Priority changed for ${task.title}:`, e.target.value);
+                // You can dispatch an update action here if needed
+              }}
+            >
+              <option value="High">High</option>
+              <option value="Medium">Medium</option>
+              <option value="Low">Low</option>
+            </select>
             <div>
               <button
                 className="btn btn-sm bg-danger-subtle text-danger px-3 me-2"
@@ -288,7 +246,8 @@ const TeamTasks = () => {
 
 
           </div>
-          <div className="row  g-2 pt-4">
+          <div className="row g-2 pt-4">
+            {/* To Do Column */}
             <div className="col-md-4 task-column">
               <div className="pb-2 mb-2 d-flex align-items-center">
                 <h5 className="fw-bold d-inline me-2">To Do</h5>
@@ -296,10 +255,30 @@ const TeamTasks = () => {
                   {taskData.todo.length.toString().padStart(2, '0')}
                 </span>
               </div>
+
+              {loading && <p>Loading tasks...</p>}
+              {error && <p className="text-danger">{error}</p>}
               {taskData.todo.map((task, idx) => (
-                <TaskCard key={idx} task={task} type="todo" />
+                <TaskCard
+                  key={idx}
+                  task={{
+                    title: `${task.source}  ${task.serviceTypeName} ` || "Task",
+                    description: `${task.source} | Bill Cycle: ${task.billCycleTitle || "N/A"}`,
+                    startDate: task.createdAt
+                      ? new Date(task.createdAt).toLocaleDateString()
+                      : "-",
+                    dueDate: task.taskCompletionDays
+                      ? `${task.taskCompletionDays} days`
+                      : "-",
+                    seller: task.sellerName || "-",
+                    priority: task.priority === 0 ? "Low" : "High",
+                  }}
+                  type="todo"
+                />
               ))}
             </div>
+
+            {/* In Progress Column */}
             <div className="col-md-4 task-column">
               <div className="pb-2 mb-2 d-flex align-items-center">
                 <h5 className="fw-bold d-inline me-2">In Progress</h5>
@@ -308,92 +287,58 @@ const TeamTasks = () => {
                 </span>
               </div>
               {taskData.inProgress.map((task, idx) => (
-                <TaskCard key={idx} task={task} type="inProgress" />
+                <TaskCard
+                  key={idx}
+                  task={{
+                    title: `${task.source}  ${task.serviceTypeName} ` || "Task",
+                    description: `${task.source} | Bill Cycle: ${task.billCycleTitle || "N/A"}`,
+                    startDate: task.createdAt
+                      ? new Date(task.createdAt).toLocaleDateString()
+                      : "-",
+                    dueDate: task.taskCompletionDays
+                      ? `${task.taskCompletionDays} days`
+                      : "-",
+                    seller: task.sellerName || "-",
+                  }}
+                  type="inProgress"
+                />
               ))}
             </div>
+
+            {/* Completed Column */}
             <div className="col-md-4 task-column">
               <div className="pb-2 mb-2 d-flex align-items-center">
                 <h5 className="fw-bold d-inline me-2">Done</h5>
                 <span className="badge rounded-circle bg-success">
                   {taskData.completed.length.toString().padStart(2, '0')}
                 </span>
-
-                <select className="form-select form-select-sm bg-white w-auto ms-auto">
-                  <option value="">Select Month</option>
-                  <option value="jan">January</option>
-                  <option value="feb">February</option>
-                  <option value="mar">March</option>
-                  <option value="apr">April</option>
-                  <option value="may">May</option>
-                  <option value="jun">June</option>
-                  <option value="jul">July</option>
-                  <option value="aug">August</option>
-                  <option value="sep">September</option>
-                  <option value="oct">October</option>
-                  <option value="nov">November</option>
-                  <option value="dec">December</option>
-                </select>
               </div>
-
               {taskData.completed.map((task, idx) => (
-                <TaskCard key={idx} task={task} type="completed" />
+                <TaskCard
+                  key={idx}
+                  task={{
+                    title: `${task.source}  ${task.serviceTypeName} ` || "Task",
+                    description: `${task.source} | Bill Cycle: ${task.billCycleTitle || "N/A"}`,
+                    startDate: task.createdAt
+                      ? new Date(task.createdAt).toLocaleDateString()
+                      : "-",
+                    dueDate: task.taskCompletionDays
+                      ? `${task.taskCompletionDays} days`
+                      : "-",
+                    seller: task.sellerName || "-",
+                    completedDate: task.updatedAt
+                      ? new Date(task.updatedAt).toLocaleDateString()
+                      : "-",
+                  }}
+                  type="completed"
+                />
               ))}
             </div>
-          </div></div>
-      
-        {showRejectModal && (
-          <div className="modal fade show" style={{ display: 'block', backgroundColor: 'rgba(0, 0, 0, 0.5)' }} tabIndex="-1">
-            <div className="modal-dialog modal-dialog-centered">
-              <div className="modal-content">
-                <div className="modal-header">
-                  <h5 className="modal-title">Reject Task</h5>
-                  <button type="button" className="btn-close" onClick={() => setShowRejectModal(false)}></button>
-                </div>
-                <div className="modal-body">
-                  <form>
-                    <div className="mb-3">
-                      <label className="form-label">Task Name</label>
-                      <input type="text" className="form-control" value={selectedTask?.title || ''} readOnly />
-                    </div>
-                    <div className="mb-3">
-                      <label className="form-label">Select Reason Type</label>
-                      <select className="form-select" value={rejectReasonType} onChange={(e) => setRejectReasonType(e.target.value)}>
-                        <option value="">Select Reason</option>
-                        <option value="Workload">Workload</option>
-                        <option value="Unclear">Not Clear</option>
-                        <option value="Out of Scope">Out of Scope</option>
-                      </select>
-                    </div>
-                    <div className="mb-3">
-                      <label className="form-label">Enter Reason</label>
-                      <textarea
-                        className="form-control"
-                        rows="3"
-                        placeholder="Conflict with current high priority tasks"
-                        value={rejectReasonText}
-                        onChange={(e) => setRejectReasonText(e.target.value)}
-                      ></textarea>
-                    </div>
-                  </form>
-                </div>
-                <div className="modal-footer">
-                  <button className="btn btn-light" onClick={() => setShowRejectModal(false)}>Cancel</button>
-                  <button
-                    className="btn btn-success"
-                    onClick={() => {
-                      console.log('Rejected Task:', selectedTask?.title);
-                      console.log('Reason Type:', rejectReasonType);
-                      console.log('Reason:', rejectReasonText);
-                      setShowRejectModal(false);
-                    }}
-                  >
-                    Submit
-                  </button>
-                </div>
-              </div>
-            </div>
           </div>
-        )}
+
+        </div>
+
+
         <AssignTaskModal
           show={showAssignModal}
           onClose={() => setShowAssignModal(false)}
@@ -403,6 +348,7 @@ const TeamTasks = () => {
           setAssignTo={setAssignTo}
           assignComment={assignComment}
           setAssignComment={setAssignComment}
+          executives={executives}
         />
 
         <MoveTaskModal

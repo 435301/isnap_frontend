@@ -40,6 +40,7 @@ import emailReducer from "./emailReducer";
 import { invoiceReducer } from "./invoiceReducer";
 import ExecutiveDashboardReducer from "./executiveDashboardReducer";
 import { subDepartmentReducer } from "./subDepartmentReducer";
+import { tasksReducer } from "./taskReducer";
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -93,6 +94,7 @@ const rootReducer = combineReducers({
   invoiceAccounts:invoiceReducer,
   generateInvoice:invoiceReducer,
   subDepartments: subDepartmentReducer,
+  tasks:tasksReducer,
 });
 
 

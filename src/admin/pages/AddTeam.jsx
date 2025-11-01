@@ -7,6 +7,7 @@ import { fetchRoles } from "../../redux/actions/roleActions";
 import { createTeam, setSuccessMessage, setErrorMessage, fetchTeams } from "../../redux/actions/teamActions";
 import { fetchDepartments } from "../../redux/actions/departmentActions";
 import { fetchWings } from "../../redux/actions/wingAction";
+import { fetchSubDepartments } from "../../redux/actions/subDepartmentAction";
 
 const AddTeam = () => {
   const dispatch = useDispatch();
@@ -16,11 +17,13 @@ const AddTeam = () => {
   const { wings } = useSelector((state) => state.wings);
   const { departments } = useSelector((state) => state.department);
   const { subDepartments } = useSelector((state) => state.subDepartments);
+  console.log('')
 
   console.log('teams', teams)
   useEffect(() => {
     dispatch(fetchTeams());
     dispatch(fetchDepartments());
+    dispatch(fetchSubDepartments());
     dispatch(fetchWings());
   }, [dispatch]);
 
