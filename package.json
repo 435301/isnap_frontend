@@ -28,9 +28,9 @@
     "redux-thunk": "^3.1.0",
     "web-vitals": "^2.1.4"
   },
+  "proxy": "http://43.204.192.110:8080",
   "scripts": {
     "start": "react-scripts start",
-      "start-http": "set HTTPS=false&&npm start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
