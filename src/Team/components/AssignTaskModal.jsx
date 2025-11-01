@@ -51,7 +51,13 @@ const AssignTaskModal = ({
                   onChange={(e) => setAssignTo(e.target.value)}
                 >
                   <option value="">Select Assignee</option>
-                 
+                  {executives.map((executive) => {
+                    return (
+                      <option key={executive.id} value={executive.id}>
+                        {executive.name}
+                      </option>
+                    );
+                  })}
                 </select>
               </div>
 
