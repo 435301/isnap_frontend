@@ -34,7 +34,7 @@ const AssignTaskModal = ({
           <div className="modal-body">
             <form>
               <div className="mb-3">
-                <label className="form-label">Task Name</label>
+                <label className="form-label">Task Name<span className="text-danger"> *</span></label>
                 <input
                   type="text"
                   className="form-control"
@@ -44,7 +44,7 @@ const AssignTaskModal = ({
               </div>
 
               <div className="mb-3">
-                <label className="form-label">Assign To</label>
+                <label className="form-label">Assign To<span className="text-danger"> *</span></label>
                 <select
                   className="form-select"
                   value={assignTo}
@@ -62,7 +62,7 @@ const AssignTaskModal = ({
               </div>
 
               <div className="mb-3">
-                <label className="form-label">Comments</label>
+                <label className="form-label">Comments<span className="text-danger"> *</span></label>
                 <textarea
                   className="form-control"
                   rows="3"

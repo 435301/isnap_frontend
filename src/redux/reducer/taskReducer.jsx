@@ -14,6 +14,12 @@ import {
     REJECT_TASK_REQUEST,
     REJECT_TASK_SUCCESS,
     REJECT_TASK_FAILURE,
+    MOVE_TASK_REQUEST,
+    MOVE_TASK_SUCCESS,
+    MOVE_TASK_FAILURE,
+    ASSIGN_TASK_REQUEST,
+    ASSIGN_TASK_SUCCESS,
+    ASSIGN_TASK_FAILURE,
 } from "../actions/taskAction";
 
 const initialState = {
@@ -23,6 +29,8 @@ const initialState = {
     executives: [],
     updatedPriority: null,
     acceptedTask: null,
+    movedTask: null,
+    assignedTask: null,
 };
 
 export const tasksReducer = (state = initialState, action) => {
@@ -32,6 +40,8 @@ export const tasksReducer = (state = initialState, action) => {
         case UPDATE_PRIORITY_REQUEST:
         case ACCEPT_TASK_REQUEST:
         case REJECT_TASK_REQUEST:
+        case MOVE_TASK_REQUEST:
+        case ASSIGN_TASK_REQUEST:
             return {
                 ...state,
                 loading: true,
@@ -67,13 +77,41 @@ export const tasksReducer = (state = initialState, action) => {
                 ...state,
                 loading: false,
                 rejectedTask: action.payload,
-             
+
+            };
+        case MOVE_TASK_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                movedTask: action.payload,
+                tasks: state.tasks.map((t) =>
+                    t.taskId === action.payload.taskId
+                        ? { ...t, workProgressStatus: action.payload.workProgressStatus }
+                        : t
+                ),
+            };
+        case ASSIGN_TASK_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                assignedTask: action.payload,
+                tasks: state.tasks.map((t) =>
+                    t.taskId === action.payload.taskId
+                        ? {
+                            ...t,
+                            executiveId: action.payload.executiveId,
+                            assignedAt: action.payload.assignedAt,
+                        }
+                        : t
+                ),
             };
         case FETCH_MARKETPLACE_TASKS_FAILURE:
         case FETCH_EXECUTIVES_FAILURE:
         case UPDATE_PRIORITY_FAILURE:
         case ACCEPT_TASK_FAILURE:
         case REJECT_TASK_FAILURE:
+        case MOVE_TASK_FAILURE:
+        case ASSIGN_TASK_FAILURE:
             return {
                 ...state,
                 loading: false,

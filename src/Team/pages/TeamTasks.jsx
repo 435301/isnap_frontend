@@ -7,7 +7,7 @@ import AssignTaskModal from '../components/AssignTaskModal';
 import MoveTaskModal from '../components/MoveTaskModal';
 import RejectTaskModal from '../components/RejectTaskModal';
 import { useDispatch, useSelector } from 'react-redux';
-import { acceptTask, fetchExecutives, fetchTasks, rejectTask, updatePriority } from '../../redux/actions/taskAction';
+import { acceptTask, assignTask, fetchExecutives, fetchTasks, rejectTask, updatePriority } from '../../redux/actions/taskAction';
 import { toast } from 'react-toastify';
 
 const TeamTasks = () => {
@@ -145,6 +145,18 @@ const TeamTasks = () => {
               <i className="bi bi-person"></i> {task.seller}
             </div>
           </div>
+           <div className="col-4">
+            <strong className="border border-info rounded px-2 py-1 small d-block mb-2">Manager Name</strong>
+            <div className="text-dark mt-1">
+              <i className="bi bi-person"></i> {task.manager}
+            </div>
+          </div>
+           <div className="col-4">
+            <strong className="border border-info rounded px-2 py-1 small d-block mb-2">Assignee</strong>
+            <div className="text-dark mt-1">
+              <i className="bi bi-person"></i> {task.executive}
+            </div>
+          </div>
         </div>
         {type === 'completed' && (
           <div className="d-flex justify-content-between align-items-center mt-2">
@@ -206,14 +218,23 @@ const TeamTasks = () => {
       </div>
     );
   };
-  const handleAssignSubmit = (task, assignee, comment) => {
-    console.log("Task Assigned:", task?.title);
-    console.log("Assigned To:", assignee);
-    console.log("Comment:", comment);
-    setShowAssignModal(false);
-    setAssignTo("");
-    setAssignComment("");
-  };
+
+ const handleAssignSubmit = (selectedTask, assignee, comment) => {
+  if (!selectedTask || !assignee || !comment) {
+    toast.error("Please select a task and an assignee and mention the comments");
+    return;
+  }
+  dispatch(assignTask(selectedTask.id, assignee, comment || "No comment provided"))
+    .then(() => {
+      setShowAssignModal(false);
+      setAssignTo("");
+      setAssignComment("");
+    })
+    .catch((err) => {
+      console.error("Assign task failed:", err);
+    });
+};
+
 
   const handleMoveSave = (task, bucket) => {
     console.log("Moved Task:", task?.title, "➡️", bucket);
@@ -288,6 +309,8 @@ const handleRejectSubmit = (selectedTask, reasonText) => {
                       ? `${task.taskCompletionDays} days`
                       : "-",
                     seller: task.sellerName || "-",
+                    manager: task.managerName || "-",
+                    executive: task.executiveName || "-",
                     priority: task.priorityLabel || "Low", 
                   }}
                   type="todo"
@@ -317,6 +340,9 @@ const handleRejectSubmit = (selectedTask, reasonText) => {
                       ? `${task.taskCompletionDays} days`
                       : "-",
                     seller: task.sellerName || "-",
+                    manager: task.managerName || "-",
+                    executive: task.executiveName || "-",
+
                   }}
                   type="inProgress"
                 />
@@ -345,6 +371,8 @@ const handleRejectSubmit = (selectedTask, reasonText) => {
                       ? `${task.taskCompletionDays} days`
                       : "-",
                     seller: task.sellerName || "-",
+                    manager: task.managerName || "-",
+                    executive: task.executiveName || "-",
                     completedDate: task.updatedAt
                       ? new Date(task.updatedAt).toLocaleDateString()
                       : "-",

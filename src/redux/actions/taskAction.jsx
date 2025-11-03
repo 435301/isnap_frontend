@@ -26,11 +26,21 @@ export const REJECT_TASK_REQUEST = "REJECT_TASK_REQUEST";
 export const REJECT_TASK_SUCCESS = "REJECT_TASK_SUCCESS";
 export const REJECT_TASK_FAILURE = "REJECT_TASK_FAILURE";
 
+// Move Task
+export const MOVE_TASK_REQUEST = "MOVE_TASK_REQUEST";
+export const MOVE_TASK_SUCCESS = "MOVE_TASK_SUCCESS";
+export const MOVE_TASK_FAILURE = "MOVE_TASK_FAILURE";
+
+// Assign Task
+export const ASSIGN_TASK_REQUEST = "ASSIGN_TASK_REQUEST";
+export const ASSIGN_TASK_SUCCESS = "ASSIGN_TASK_SUCCESS";
+export const ASSIGN_TASK_FAILURE = "ASSIGN_TASK_FAILURE";
+
 
 export const fetchTasks = () => async (dispatch) => {
   try {
     dispatch({ type: FETCH_MARKETPLACE_TASKS_REQUEST });
-    const response = await axios.get( `${BASE_URL}/marketplaceManager/getTasks`, getAuthHeaders() );
+    const response = await axios.get(`${BASE_URL}/marketplaceManager/getTasks`, getAuthHeaders());
     dispatch({
       type: FETCH_MARKETPLACE_TASKS_SUCCESS,
       payload: response.data.data || [],
@@ -102,7 +112,7 @@ export const acceptTask = (taskId) => async (dispatch) => {
 export const rejectTask = (taskId, reason) => async (dispatch) => {
   try {
     dispatch({ type: REJECT_TASK_REQUEST });
-    const response = await axios.patch( `${BASE_URL}/marketplaceManager/rejectTask`, { taskId, reason }, getAuthHeaders() );
+    const response = await axios.patch(`${BASE_URL}/marketplaceManager/rejectTask`, { taskId, reason }, getAuthHeaders());
     dispatch({
       type: REJECT_TASK_SUCCESS,
       payload: response.data.data,
@@ -115,5 +125,42 @@ export const rejectTask = (taskId, reason) => async (dispatch) => {
       payload: message,
     });
     toast.error(message);
+  }
+};
+
+export const moveTask = (taskId, status) => async (dispatch) => {
+  try {
+    dispatch({ type: MOVE_TASK_REQUEST });
+    const response = await axios.patch(`${BASE_URL}/marketplaceManager/moveTask`, { taskId, status }, getAuthHeaders());
+    dispatch({
+      type: MOVE_TASK_SUCCESS,
+      payload: response.data.data,
+    });
+    toast.success(response.data.message);
+  } catch (error) {
+    dispatch({
+      type: MOVE_TASK_FAILURE,
+      payload: error.response?.data?.message,
+    });
+    toast.error(error.response?.data?.message);
+  }
+};
+
+export const assignTask = (taskId, executiveId, reason) => async (dispatch) => {
+  try {
+    dispatch({ type: ASSIGN_TASK_REQUEST });
+    const response = await axios.patch(`${BASE_URL}/marketplaceManager/assignTask`, { taskId, executiveId, reason }, getAuthHeaders());
+    dispatch({
+      type: ASSIGN_TASK_SUCCESS,
+      payload: response.data.data,
+    });
+    dispatch(fetchTasks());
+    toast.success(response.data.message);
+  } catch (error) {
+    dispatch({
+      type: ASSIGN_TASK_FAILURE,
+      payload: error.response?.data?.message,
+    });
+    toast.error(error.response?.data?.message);
   }
 };
