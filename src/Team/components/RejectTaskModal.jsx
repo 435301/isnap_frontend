@@ -4,8 +4,6 @@ const RejectTaskModal = ({
   show,
   onClose,
   selectedTask,
-  rejectReasonType,
-  setRejectReasonType,
   rejectReasonText,
   setRejectReasonText,
   onSubmit,
@@ -28,7 +26,7 @@ const RejectTaskModal = ({
           <div className="modal-body">
             <form>
               <div className="mb-3">
-                <label className="form-label">Task Name</label>
+                <label className="form-label">Task Name<span className="text-danger"> *</span></label>
                 <input
                   type="text"
                   className="form-control"
@@ -37,22 +35,9 @@ const RejectTaskModal = ({
                 />
               </div>
 
+            
               <div className="mb-3">
-                <label className="form-label">Select Reason Type</label>
-                <select
-                  className="form-select"
-                  value={rejectReasonType}
-                  onChange={(e) => setRejectReasonType(e.target.value)}
-                >
-                  <option value="">Select Reason</option>
-                  <option value="Workload">Workload</option>
-                  <option value="Unclear">Not Clear</option>
-                  <option value="Out of Scope">Out of Scope</option>
-                </select>
-              </div>
-
-              <div className="mb-3">
-                <label className="form-label">Enter Reason</label>
+                <label className="form-label">Enter Reason<span className="text-danger"> *</span></label>
                 <textarea
                   className="form-control"
                   rows="3"
@@ -71,7 +56,7 @@ const RejectTaskModal = ({
             <button
               className="btn btn-success"
               onClick={() =>
-                onSubmit(selectedTask, rejectReasonType, rejectReasonText)
+                onSubmit(selectedTask, rejectReasonText)
               }
             >
               Submit

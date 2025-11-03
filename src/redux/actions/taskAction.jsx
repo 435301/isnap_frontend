@@ -22,6 +22,9 @@ export const ACCEPT_TASK_REQUEST = "ACCEPT_TASK_REQUEST";
 export const ACCEPT_TASK_SUCCESS = "ACCEPT_TASK_SUCCESS";
 export const ACCEPT_TASK_FAILURE = "ACCEPT_TASK_FAILURE";
 
+export const REJECT_TASK_REQUEST = "REJECT_TASK_REQUEST";
+export const REJECT_TASK_SUCCESS = "REJECT_TASK_SUCCESS";
+export const REJECT_TASK_FAILURE = "REJECT_TASK_FAILURE";
 
 
 export const fetchTasks = () => async (dispatch) => {
@@ -59,12 +62,13 @@ export const fetchExecutives = () => async (dispatch) => {
 export const updatePriority = (taskId, priorityId) => async (dispatch) => {
   try {
     dispatch({ type: UPDATE_PRIORITY_REQUEST });
-    const response = await axios.post(
+    const response = await axios.patch(
       `${BASE_URL}/marketplaceManager/updatePriority`,
       { taskId, priorityId },
       getAuthHeaders()
     );
     dispatch({ type: UPDATE_PRIORITY_SUCCESS, payload: response.data.data });
+    dispatch(fetchTasks());
     toast.success(response.data.message);
   } catch (error) {
     dispatch({
@@ -79,7 +83,7 @@ export const updatePriority = (taskId, priorityId) => async (dispatch) => {
 export const acceptTask = (taskId) => async (dispatch) => {
   try {
     dispatch({ type: ACCEPT_TASK_REQUEST });
-    const response = await axios.post(
+    const response = await axios.patch(
       `${BASE_URL}/marketplaceManager/acceptTask`,
       { taskId },
       getAuthHeaders()
@@ -92,5 +96,24 @@ export const acceptTask = (taskId) => async (dispatch) => {
       payload: error.response?.data?.message || "Failed to accept task",
     });
     toast.error(error.response?.data?.message);
+  }
+};
+
+export const rejectTask = (taskId, reason) => async (dispatch) => {
+  try {
+    dispatch({ type: REJECT_TASK_REQUEST });
+    const response = await axios.patch( `${BASE_URL}/marketplaceManager/rejectTask`, { taskId, reason }, getAuthHeaders() );
+    dispatch({
+      type: REJECT_TASK_SUCCESS,
+      payload: response.data.data,
+    });
+    toast.success(response.data.message);
+  } catch (error) {
+    const message = error.response?.data?.message || "Failed to reject task";
+    dispatch({
+      type: REJECT_TASK_FAILURE,
+      payload: message,
+    });
+    toast.error(message);
   }
 };

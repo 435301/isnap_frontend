@@ -7,7 +7,8 @@ import AssignTaskModal from '../components/AssignTaskModal';
 import MoveTaskModal from '../components/MoveTaskModal';
 import RejectTaskModal from '../components/RejectTaskModal';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchExecutives, fetchTasks } from '../../redux/actions/taskAction';
+import { acceptTask, fetchExecutives, fetchTasks, rejectTask, updatePriority } from '../../redux/actions/taskAction';
+import { toast } from 'react-toastify';
 
 const TeamTasks = () => {
   const dispatch = useDispatch();
@@ -24,10 +25,9 @@ const TeamTasks = () => {
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [assignTo, setAssignTo] = useState("");
   const [assignComment, setAssignComment] = useState("");
-  const [priorityFilter, setPriorityFilter] = useState("");
 
-  const { tasks = [],executives, updatedPriority, acceptedTask, loading, error } = useSelector((state) => state.tasks || {});
-console.log('executives',executives)
+  const { tasks = [], executives, updatedPriority, acceptedTask, loading, error } = useSelector((state) => state.tasks || {});
+  console.log('executives', executives)
   useEffect(() => {
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
@@ -47,7 +47,7 @@ console.log('executives',executives)
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  const todoTasks = tasks.filter((t) => t.workProgressStatus === 1);        // to do
+  const todoTasks = tasks.filter((t) =>[1, 4, 5].includes(t.workProgressStatus));  // to do //accept // reject
   const completedTasks = tasks.filter((t) => t.workProgressStatus === 3);   // completed 
   const inProgressTasks = tasks.filter((t) => t.workProgressStatus === 2);  // in progress
 
@@ -60,7 +60,8 @@ console.log('executives',executives)
 
 
   const TaskCard = ({ task, type }) => {
-    console.log('task', task)
+    console.log('task', task);
+    const isDisabled = task.id === 0;
 
     const getCardClass = () => {
       if (task.title.includes('Amazon')) return 'bg-success-subtle text-success';
@@ -72,21 +73,21 @@ console.log('executives',executives)
     const getPriorityBtnClass = (priority) => {
       switch (priority?.toLowerCase()) {
         case 'high':
-          return 'btn btn-sm bg-danger-subtles text-danger px-3 fw-semibold';   // 🔴 High = red
+          return 'btn btn-sm bg-danger-subtles text-danger px-3 fw-semibold';   //  High = red
         case 'medium':
-          return 'btn btn-sm bg-success-subtles text-success px-3 fw-semibold'; // 🟡 Medium = yellow
+          return 'btn btn-sm bg-success-subtles text-success px-3 fw-semibold'; //  Medium = yellow
         case 'low':
-          return 'btn btn-sm bg-warning-subtles text-warning px-3 fw-semibold'; // 🟢 Low = green
+          return 'btn btn-sm bg-warning-subtles text-warning px-3 fw-semibold'; //  Low = green
         default:
           return 'btn btn-sm bg-secondary-subtles text-secondary px-3 fw-semibold'; // fallback gray
       }
     };
 
-
-
-
     return (
-      <div className="card task-card shadow-sm rounded-4 p-2 mb-3">
+      <div
+        className={`card task-card shadow-sm rounded-4 p-2 mb-3 ${isDisabled ? "opacity-50 pointer-events-none" : ""}`}
+        style={isDisabled ? { cursor: "not-allowed" } : {}}
+      >
         <div className="d-flex justify-content-between align-items-start">
           <span className={`px-2 py-1 mb-2 rounded fw-semibold ${getCardClass()}`}>
             {task.title}
@@ -155,17 +156,20 @@ console.log('executives',executives)
         )}
         {type === 'todo' && (
           <div className="d-flex gap-2 mt-2 justify-content-between align-items-center">
-            {task.priority && (
-              <button className={getPriorityBtnClass(task.priority)}>
-                {task.priority}
-              </button>)}
+           {task.priority && (
+  <button className={getPriorityBtnClass(task.priority)}>
+    {task.priority}
+  </button>
+)}
+
             <select
               className="form-select form-select-sm"
               style={{ width: "auto" }}
               value={task.priority}
               onChange={(e) => {
-                console.log(`Priority changed for ${task.title}:`, e.target.value);
-                // You can dispatch an update action here if needed
+                const newPriority = e.target.value;
+                const priorityIdMap = { High: 1, Medium: 2, Low: 3 };
+                dispatch(updatePriority(task.id, priorityIdMap[newPriority]));
               }}
             >
               <option value="High">High</option>
@@ -182,7 +186,15 @@ console.log('executives',executives)
               >
                 Reject
               </button>
-              <button className="btn btn-sm bg-success-subtle text-success px-3">Accept</button>
+              <button
+                className="btn btn-sm bg-success-subtle text-success px-3"
+                disabled={task.workProgressStatus === 2}
+                onClick={() => {
+                  if (task.workProgressStatus !== 2) dispatch(acceptTask(task.id));
+                }}
+              >
+                {task.workProgressStatus === 4 ? "Accepted" : "Accept"}
+              </button>
             </div>
           </div>
         )}
@@ -208,12 +220,16 @@ console.log('executives',executives)
     setShowModal(false);
   };
 
-  const handleRejectSubmit = (task, reasonType, reasonText) => {
-    console.log("Rejected Task:", task?.title);
-    console.log("Reason Type:", reasonType);
-    console.log("Reason:", reasonText);
-    setShowRejectModal(false);
-  };
+const handleRejectSubmit = (selectedTask, reasonText) => {
+  if ( !reasonText) {
+    toast.error("Please select a reason and enter details");
+    return;
+  }
+  const finalReason = ` ${reasonText}`;
+  dispatch(rejectTask(selectedTask.id, finalReason));
+  setShowRejectModal(false);
+  setRejectReasonText("");
+};
   return (
     <div className="container-fluid position-relative bg-white d-flex p-0">
       <Sidebar isOpen={isSidebarOpen} />
@@ -262,6 +278,7 @@ console.log('executives',executives)
                 <TaskCard
                   key={idx}
                   task={{
+                    id: task.taskId,
                     title: `${task.source}  ${task.serviceTypeName} ` || "Task",
                     description: `${task.source} | Bill Cycle: ${task.billCycleTitle || "N/A"}`,
                     startDate: task.createdAt
@@ -271,7 +288,7 @@ console.log('executives',executives)
                       ? `${task.taskCompletionDays} days`
                       : "-",
                     seller: task.sellerName || "-",
-                    priority: task.priority === 0 ? "Low" : "High",
+                    priority: task.priorityLabel || "Low", 
                   }}
                   type="todo"
                 />
@@ -290,6 +307,7 @@ console.log('executives',executives)
                 <TaskCard
                   key={idx}
                   task={{
+                    id: task.taskId,
                     title: `${task.source}  ${task.serviceTypeName} ` || "Task",
                     description: `${task.source} | Bill Cycle: ${task.billCycleTitle || "N/A"}`,
                     startDate: task.createdAt
@@ -317,6 +335,7 @@ console.log('executives',executives)
                 <TaskCard
                   key={idx}
                   task={{
+                    id: task.taskId,
                     title: `${task.source}  ${task.serviceTypeName} ` || "Task",
                     description: `${task.source} | Bill Cycle: ${task.billCycleTitle || "N/A"}`,
                     startDate: task.createdAt

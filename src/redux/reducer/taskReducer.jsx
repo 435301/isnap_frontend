@@ -11,6 +11,9 @@ import {
     ACCEPT_TASK_REQUEST,
     ACCEPT_TASK_SUCCESS,
     ACCEPT_TASK_FAILURE,
+    REJECT_TASK_REQUEST,
+    REJECT_TASK_SUCCESS,
+    REJECT_TASK_FAILURE,
 } from "../actions/taskAction";
 
 const initialState = {
@@ -28,6 +31,7 @@ export const tasksReducer = (state = initialState, action) => {
         case FETCH_EXECUTIVES_REQUEST:
         case UPDATE_PRIORITY_REQUEST:
         case ACCEPT_TASK_REQUEST:
+        case REJECT_TASK_REQUEST:
             return {
                 ...state,
                 loading: true,
@@ -44,14 +48,32 @@ export const tasksReducer = (state = initialState, action) => {
             return { ...state, loading: false, executives: action.payload };
 
         case UPDATE_PRIORITY_SUCCESS:
-            return { ...state, loading: false, updatedPriority: action.payload };
+            return {
+                ...state,
+                loading: false,
+                tasks: state.tasks.map((task) =>
+                    task.id === action.payload.taskId
+                        ? { ...task, priorityId: action.payload.priorityId, priorityLabel: action.payload.priorityLabel }
+                        : task
+                ),
+                updatedPriority: action.payload,
+            };
+
 
         case ACCEPT_TASK_SUCCESS:
             return { ...state, loading: false, acceptedTask: action.payload };
+        case REJECT_TASK_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                rejectedTask: action.payload,
+             
+            };
         case FETCH_MARKETPLACE_TASKS_FAILURE:
         case FETCH_EXECUTIVES_FAILURE:
         case UPDATE_PRIORITY_FAILURE:
         case ACCEPT_TASK_FAILURE:
+        case REJECT_TASK_FAILURE:
             return {
                 ...state,
                 loading: false,
