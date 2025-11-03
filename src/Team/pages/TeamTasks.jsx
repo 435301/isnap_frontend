@@ -7,7 +7,7 @@ import AssignTaskModal from '../components/AssignTaskModal';
 import MoveTaskModal from '../components/MoveTaskModal';
 import RejectTaskModal from '../components/RejectTaskModal';
 import { useDispatch, useSelector } from 'react-redux';
-import { acceptTask, assignTask, fetchExecutives, fetchTasks, rejectTask, updatePriority } from '../../redux/actions/taskAction';
+import { acceptTask, assignTask, fetchExecutives, fetchTasks, moveTask, rejectTask, updatePriority } from '../../redux/actions/taskAction';
 import { toast } from 'react-toastify';
 
 const TeamTasks = () => {
@@ -236,9 +236,21 @@ const TeamTasks = () => {
 };
 
 
-  const handleMoveSave = (task, bucket) => {
-    console.log("Moved Task:", task?.title, "➡️", bucket);
-    setShowModal(false);
+  const handleMoveSave = (selectedTask, bucket) => {
+   if (!selectedTask || !bucket ) {
+    toast.error("Please select a task and an bucket");
+    return;
+  }
+  dispatch(moveTask(selectedTask.id, bucket))
+    .then(() => {
+      setShowModal(false);
+      setSelectedTask("");
+      selectedBucket("");
+    })
+    .catch((err) => {
+      console.error("move task failed:", err);
+    });
+   
   };
 
 const handleRejectSubmit = (selectedTask, reasonText) => {

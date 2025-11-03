@@ -136,6 +136,7 @@ export const moveTask = (taskId, status) => async (dispatch) => {
       type: MOVE_TASK_SUCCESS,
       payload: response.data.data,
     });
+    dispatch(fetchTasks());
     toast.success(response.data.message);
   } catch (error) {
     dispatch({

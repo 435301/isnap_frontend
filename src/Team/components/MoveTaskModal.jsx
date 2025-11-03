@@ -26,7 +26,7 @@ const MoveTaskModal = ({
           <div className="modal-body">
             <form>
               <div className="mb-3">
-                <label className="form-label">Task Name</label>
+                <label className="form-label">Task Name<span className="text-danger"> *</span></label>
                 <input
                   type="text"
                   className="form-control"
@@ -35,15 +35,15 @@ const MoveTaskModal = ({
                 />
               </div>
               <div className="mb-3">
-                <label className="form-label">Bucket Name</label>
+                <label className="form-label">Bucket Name<span className="text-danger"> *</span></label>
                 <select
                   className="form-select"
                   value={selectedBucket}
                   onChange={(e) => setSelectedBucket(e.target.value)}
                 >
-                  <option>To Do</option>
-                  <option>In Progress</option>
-                  <option>Completed</option>
+                  <option value={1}>To Do</option>
+                  <option value={2}>In Progress</option>
+                  <option value={3}>Completed</option>
                 </select>
               </div>
             </form>
