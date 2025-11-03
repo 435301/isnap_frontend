@@ -7,11 +7,16 @@ import AssignTaskModal from '../components/AssignTaskModal';
 import MoveTaskModal from '../components/MoveTaskModal';
 import RejectTaskModal from '../components/RejectTaskModal';
 import { useDispatch, useSelector } from 'react-redux';
-import { acceptTask, assignTask, fetchExecutives, fetchTasks, moveTask, rejectTask, updatePriority } from '../../redux/actions/taskAction';
+import { acceptTask, assignTask, fetchDigitalMarketingMyTasks, fetchDigitalMarketingTasks, fetchExecutives, fetchPhotographyMyTasks, fetchPhotographyTasks, fetchTasks, fetchTasksExecutive, moveTask, rejectTask, updatePriority } from '../../redux/actions/taskAction';
 import { toast } from 'react-toastify';
 
 const TeamTasks = () => {
   const dispatch = useDispatch();
+  const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
+  console.log('storedUser', storedUser);
+  const subDeptName = storedUser.subDepartmentName
+  const roleName = storedUser.roleName
+  console.log('subDeptName', subDeptName, roleName)
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
@@ -26,7 +31,7 @@ const TeamTasks = () => {
   const [assignTo, setAssignTo] = useState("");
   const [assignComment, setAssignComment] = useState("");
 
-  const { tasks = [], executives, updatedPriority, acceptedTask, loading, error } = useSelector((state) => state.tasks || {});
+  const { tasks = [], executives, updatedPriority, acceptedTask, loading, error, myTasks, dmMyTasks, dmTasks,PhotographyTasks ,PhotographyMyTasks} = useSelector((state) => state.tasks || {});
   console.log('executives', executives)
   useEffect(() => {
     const handleResize = () => {
@@ -39,17 +44,50 @@ const TeamTasks = () => {
   }, []);
 
   useEffect(() => {
+      dispatch(fetchExecutives());
+    if (subDeptName === "Business Launch" || subDeptName === "Catalog Listing" || subDeptName ===  "Key Account Management" && roleName === "Executive" ) {
+      dispatch(fetchTasksExecutive());
+    }
+    else if ( roleName === "Digital Marketing Manager") {
+      dispatch(fetchDigitalMarketingTasks());
+    }
+    else if ( roleName === "Digital Marketing Executive") {
+      dispatch(fetchDigitalMarketingMyTasks());
+    }
+    else if ( roleName === "Photography Manager") {
+      dispatch(fetchPhotographyTasks());
+    }
+    else if ( roleName === "Photography Executive") {
+      dispatch(fetchPhotographyMyTasks());
+    }
+    else {
     dispatch(fetchTasks());
-    dispatch(fetchExecutives());
-  }, [dispatch]);
+    }
+  }, [dispatch, subDeptName, roleName]);
 
   const handleToggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  const todoTasks = tasks.filter((t) =>[1, 4, 5].includes(t.workProgressStatus));  // to do //accept // reject
-  const completedTasks = tasks.filter((t) => t.workProgressStatus === 3);   // completed 
-  const inProgressTasks = tasks.filter((t) => t.workProgressStatus === 2);  // in progress
+
+  let activeTasks = tasks;
+  if (subDeptName === "Business Launch" || subDeptName === "Catalog Listing" || subDeptName ===  "Key Account Management" && roleName === "Executive") {
+    activeTasks = myTasks;
+  } else if ( roleName === "Digital Marketing Executive") {
+    activeTasks = dmMyTasks;
+  } else if ( roleName === "Digital Marketing Manager") {
+    activeTasks = dmTasks;
+  }
+  else if ( roleName === "Photography Executive") {
+    activeTasks = PhotographyMyTasks;
+  } else if ( roleName === "Photography Manager") {
+    activeTasks = PhotographyTasks;
+  }
+
+
+  const todoTasks = activeTasks.filter((t) => [1, 4, 5].includes(t.workProgressStatus));  // to do //accept // reject
+  const completedTasks = activeTasks.filter((t) => t.workProgressStatus === 3);   // completed 
+  const inProgressTasks = activeTasks.filter((t) => t.workProgressStatus === 2);  // in progress
 
   // If API doesn’t have isPaid=2, you can derive inProgress by logic (optional)
   const taskData = {
@@ -62,6 +100,7 @@ const TeamTasks = () => {
   const TaskCard = ({ task, type }) => {
     console.log('task', task);
     const isDisabled = task.id === 0;
+    const isDisabledMoveToTask = task.workProgressStatus === 3;
 
     const getCardClass = () => {
       if (task.title.includes('Amazon')) return 'bg-success-subtle text-success';
@@ -107,6 +146,7 @@ const TeamTasks = () => {
                   setSelectedTask(task);
                   setShowModal(true);
                 }}
+                disabled={isDisabledMoveToTask}
               >
                 Move Task
               </button>
@@ -117,12 +157,14 @@ const TeamTasks = () => {
               </a>
             </li>
             <li>
+
               <button
                 className="dropdown-item"
                 onClick={() => {
                   setSelectedTask(task);
                   setShowAssignModal(true);
                 }}
+                disabled={roleName === "Executive" || roleName === "Digital Marketing Executive" || roleName === "Photography Executive"}
               >
                 Assign
               </button>
@@ -145,13 +187,13 @@ const TeamTasks = () => {
               <i className="bi bi-person"></i> {task.seller}
             </div>
           </div>
-           <div className="col-4">
+          <div className="col-4">
             <strong className="border border-info rounded px-2 py-1 small d-block mb-2">Manager Name</strong>
             <div className="text-dark mt-1">
               <i className="bi bi-person"></i> {task.manager}
             </div>
           </div>
-           <div className="col-4">
+          <div className="col-4">
             <strong className="border border-info rounded px-2 py-1 small d-block mb-2">Assignee</strong>
             <div className="text-dark mt-1">
               <i className="bi bi-person"></i> {task.executive}
@@ -168,11 +210,11 @@ const TeamTasks = () => {
         )}
         {type === 'todo' && (
           <div className="d-flex gap-2 mt-2 justify-content-between align-items-center">
-           {task.priority && (
-  <button className={getPriorityBtnClass(task.priority)}>
-    {task.priority}
-  </button>
-)}
+            {task.priority && (
+              <button className={getPriorityBtnClass(task.priority)}>
+                {task.priority}
+              </button>
+            )}
 
             <select
               className="form-select form-select-sm"
@@ -200,9 +242,9 @@ const TeamTasks = () => {
               </button>
               <button
                 className="btn btn-sm bg-success-subtle text-success px-3"
-                disabled={task.workProgressStatus === 2}
+                disabled={task.workProgressStatus === 4}
                 onClick={() => {
-                  if (task.workProgressStatus !== 2) dispatch(acceptTask(task.id));
+                  if (task.workProgressStatus !== 4) dispatch(acceptTask(task.id));
                 }}
               >
                 {task.workProgressStatus === 4 ? "Accepted" : "Accept"}
@@ -212,57 +254,66 @@ const TeamTasks = () => {
         )}
         {type === 'inProgress' && (
           <div className="text-end mt-2">
-            <button className="btn btn-sm  text-white px-3" style={{ backgroundColor: "#5CB17A" }}>Mark as Done</button>
+            <button className="btn btn-sm  text-white px-3" style={{ backgroundColor: "#5CB17A" }}  onClick={() => handleMarkAsDone(task)}>Mark as Done</button>
           </div>
         )}
       </div>
     );
   };
 
- const handleAssignSubmit = (selectedTask, assignee, comment) => {
-  if (!selectedTask || !assignee || !comment) {
-    toast.error("Please select a task and an assignee and mention the comments");
-    return;
-  }
-  dispatch(assignTask(selectedTask.id, assignee, comment || "No comment provided"))
-    .then(() => {
-      setShowAssignModal(false);
-      setAssignTo("");
-      setAssignComment("");
-    })
-    .catch((err) => {
-      console.error("Assign task failed:", err);
-    });
-};
+  const handleAssignSubmit = (selectedTask, assignee, comment) => {
+    if (!selectedTask || !assignee || !comment) {
+      toast.error("Please select a task and an assignee and mention the comments");
+      return;
+    }
+    dispatch(assignTask(selectedTask.id, assignee, comment || "No comment provided"))
+      .then(() => {
+        setShowAssignModal(false);
+        setAssignTo("");
+        setAssignComment("");
+      })
+      .catch((err) => {
+        console.error("Assign task failed:", err);
+      });
+  };
 
 
   const handleMoveSave = (selectedTask, bucket) => {
-   if (!selectedTask || !bucket ) {
-    toast.error("Please select a task and an bucket");
-    return;
-  }
-  dispatch(moveTask(selectedTask.id, bucket))
-    .then(() => {
-      setShowModal(false);
-      setSelectedTask("");
-      selectedBucket("");
-    })
-    .catch((err) => {
-      console.error("move task failed:", err);
-    });
-   
+    if (!selectedTask || !bucket) {
+      toast.error("Please select a task and an bucket");
+      return;
+    }
+    dispatch(moveTask(selectedTask.id, bucket))
+      .then(() => {
+        setShowModal(false);
+        setSelectedTask("");
+        selectedBucket("");
+      })
+      .catch((err) => {
+        console.error("move task failed:", err);
+      });
+
   };
 
-const handleRejectSubmit = (selectedTask, reasonText) => {
-  if ( !reasonText) {
-    toast.error("Please select a reason and enter details");
+  const handleMarkAsDone = (task) => {
+  if (!task || !task.id) {
+    toast.error("Invalid task selected");
     return;
   }
-  const finalReason = ` ${reasonText}`;
-  dispatch(rejectTask(selectedTask.id, finalReason));
-  setShowRejectModal(false);
-  setRejectReasonText("");
+  dispatch(moveTask(task.id, 3));
 };
+
+
+  const handleRejectSubmit = (selectedTask, reasonText) => {
+    if (!reasonText) {
+      toast.error("Please select a reason and enter details");
+      return;
+    }
+    const finalReason = ` ${reasonText}`;
+    dispatch(rejectTask(selectedTask.id, finalReason));
+    setShowRejectModal(false);
+    setRejectReasonText("");
+  };
   return (
     <div className="container-fluid position-relative bg-white d-flex p-0">
       <Sidebar isOpen={isSidebarOpen} />
@@ -312,7 +363,7 @@ const handleRejectSubmit = (selectedTask, reasonText) => {
                   key={idx}
                   task={{
                     id: task.taskId,
-                    title: `${task.source}  ${task.serviceTypeName} ` || "Task",
+                    title: `${task.source}:  ${task.serviceTypeName} ` || "Task",
                     description: `${task.source} | Bill Cycle: ${task.billCycleTitle || "N/A"}`,
                     startDate: task.createdAt
                       ? new Date(task.createdAt).toLocaleDateString()
@@ -323,7 +374,7 @@ const handleRejectSubmit = (selectedTask, reasonText) => {
                     seller: task.sellerName || "-",
                     manager: task.managerName || "-",
                     executive: task.executiveName || "-",
-                    priority: task.priorityLabel || "Low", 
+                    priority: task.priorityLabel || "Low",
                   }}
                   type="todo"
                 />
@@ -343,7 +394,7 @@ const handleRejectSubmit = (selectedTask, reasonText) => {
                   key={idx}
                   task={{
                     id: task.taskId,
-                    title: `${task.source}  ${task.serviceTypeName} ` || "Task",
+                    title: `${task.source}:  ${task.serviceTypeName} ` || "Task",
                     description: `${task.source} | Bill Cycle: ${task.billCycleTitle || "N/A"}`,
                     startDate: task.createdAt
                       ? new Date(task.createdAt).toLocaleDateString()
@@ -374,7 +425,7 @@ const handleRejectSubmit = (selectedTask, reasonText) => {
                   key={idx}
                   task={{
                     id: task.taskId,
-                    title: `${task.source}  ${task.serviceTypeName} ` || "Task",
+                    title: `${task.source}:  ${task.serviceTypeName} ` || "Task",
                     description: `${task.source} | Bill Cycle: ${task.billCycleTitle || "N/A"}`,
                     startDate: task.createdAt
                       ? new Date(task.createdAt).toLocaleDateString()
@@ -385,9 +436,10 @@ const handleRejectSubmit = (selectedTask, reasonText) => {
                     seller: task.sellerName || "-",
                     manager: task.managerName || "-",
                     executive: task.executiveName || "-",
-                    completedDate: task.updatedAt
-                      ? new Date(task.updatedAt).toLocaleDateString()
+                    completedDate: task.completedDate
+                      ? new Date(task.completedDate).toLocaleDateString()
                       : "-",
+                    workProgressStatus: task.workProgressStatus || ""
                   }}
                   type="completed"
                 />

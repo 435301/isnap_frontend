@@ -41,6 +41,7 @@ const MoveTaskModal = ({
                   value={selectedBucket}
                   onChange={(e) => setSelectedBucket(e.target.value)}
                 >
+                  <option value="">Select Bucket</option>
                   <option value={1}>To Do</option>
                   <option value={2}>In Progress</option>
                   <option value={3}>Completed</option>

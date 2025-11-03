@@ -44,7 +44,7 @@ const TeamSidebar = ({ isOpen }) => {
 
     const handleLogout = () => {
       dispatch(logoutUser());
-      navigate("/team/login");
+      navigate("/login");
     };
   
 

@@ -36,6 +36,26 @@ export const ASSIGN_TASK_REQUEST = "ASSIGN_TASK_REQUEST";
 export const ASSIGN_TASK_SUCCESS = "ASSIGN_TASK_SUCCESS";
 export const ASSIGN_TASK_FAILURE = "ASSIGN_TASK_FAILURE";
 
+export const FETCH_MY_TASKS_REQUEST = "FETCH_MY_TASKS_REQUEST";
+export const FETCH_MY_TASKS_SUCCESS = "FETCH_MY_TASKS_SUCCESS";
+export const FETCH_MY_TASKS_FAILURE = "FETCH_MY_TASKS_FAILURE";
+
+
+export const FETCH_DM_TASKS_REQUEST = "FETCH_DM_TASKS_REQUEST";
+export const FETCH_DM_TASKS_SUCCESS = "FETCH_DM_TASKS_SUCCESS";
+export const FETCH_DM_TASKS_FAILURE = "FETCH_DM_TASKS_FAILURE";
+
+export const FETCH_DM_MY_TASKS_REQUEST = "FETCH_DM_MY_TASKS_REQUEST";
+export const FETCH_DM_MY_TASKS_SUCCESS = "FETCH_DM_MY_TASKS_SUCCESS";
+export const FETCH_DM_MY_TASKS_FAILURE = "FETCH_DM_MY_TASKS_FAILURE";
+
+export const FETCH_PHOTOGRAPHY_TASKS_REQUEST = "FETCH_PHOTOGRAPHY_TASKS_REQUEST";
+export const FETCH_PHOTOGRAPHY_TASKS_SUCCESS = "FETCH_PHOTOGRAPHY_TASKS_SUCCESS";
+export const FETCH_PHOTOGRAPHY_TASKS_FAILURE = "FETCH_PHOTOGRAPHY_TASKS_FAILURE";
+
+export const FETCH_PHOTOGRAPHY_MY_TASKS_REQUEST = "FETCH_PHOTOGRAPHY_MY_TASKS_REQUEST";
+export const FETCH_PHOTOGRAPHY_MY_TASKS_SUCCESS = "FETCH_PHOTOGRAPHY_MY_TASKS_SUCCESS";
+export const FETCH_PHOTOGRAPHY_MY_TASKS_FAILURE = "FETCH_PHOTOGRAPHY_MY_TASKS_FAILURE";
 
 export const fetchTasks = () => async (dispatch) => {
   try {
@@ -79,6 +99,10 @@ export const updatePriority = (taskId, priorityId) => async (dispatch) => {
     );
     dispatch({ type: UPDATE_PRIORITY_SUCCESS, payload: response.data.data });
     dispatch(fetchTasks());
+    dispatch(fetchDigitalMarketingTasks());
+    dispatch(fetchDigitalMarketingMyTasks());
+    dispatch(fetchPhotographyMyTasks());
+    dispatch(fetchPhotographyTasks());
     toast.success(response.data.message);
   } catch (error) {
     dispatch({
@@ -137,6 +161,10 @@ export const moveTask = (taskId, status) => async (dispatch) => {
       payload: response.data.data,
     });
     dispatch(fetchTasks());
+    dispatch(fetchDigitalMarketingTasks());
+    dispatch(fetchDigitalMarketingMyTasks());
+    dispatch(fetchPhotographyMyTasks());
+    dispatch(fetchPhotographyTasks());
     toast.success(response.data.message);
   } catch (error) {
     dispatch({
@@ -156,6 +184,9 @@ export const assignTask = (taskId, executiveId, reason) => async (dispatch) => {
       payload: response.data.data,
     });
     dispatch(fetchTasks());
+    dispatch(fetchDigitalMarketingTasks());
+    dispatch(fetchPhotographyMyTasks());
+    dispatch(fetchPhotographyTasks());
     toast.success(response.data.message);
   } catch (error) {
     dispatch({
@@ -163,5 +194,92 @@ export const assignTask = (taskId, executiveId, reason) => async (dispatch) => {
       payload: error.response?.data?.message,
     });
     toast.error(error.response?.data?.message);
+  }
+};
+export const fetchTasksExecutive = () => async (dispatch) => {
+  try {
+    dispatch({ type: FETCH_MY_TASKS_REQUEST });
+    const response = await axios.get(`${BASE_URL}/marketplaceExecutive/getMyTasks`, getAuthHeaders());
+    dispatch({
+      type: FETCH_MY_TASKS_SUCCESS,
+      payload: response.data.data || [],
+    });
+  } catch (error) {
+    dispatch({
+      type: FETCH_MY_TASKS_FAILURE,
+      payload:
+        error.response?.data?.message || "Failed to fetch marketplace tasks",
+    });
+  }
+};
+
+export const fetchDigitalMarketingTasks = () => async (dispatch) => {
+  try {
+    dispatch({ type: FETCH_DM_TASKS_REQUEST });
+    const response = await axios.get(`${BASE_URL}/digitalMarketingTeam/getTasks`, getAuthHeaders());
+    dispatch({
+      type: FETCH_DM_TASKS_SUCCESS,
+      payload: response.data.data || [],
+    });
+  } catch (error) {
+    console.error("Error fetching DM tasks:", error);
+    dispatch({
+      type: FETCH_DM_TASKS_FAILURE,
+      payload: error.response?.data?.message || error.message,
+    });
+    toast.error(error.response?.data?.message || "Failed to load tasks");
+  }
+};
+
+//  Fetch logged-in executive's Digital Marketing tasks
+export const fetchDigitalMarketingMyTasks = () => async (dispatch) => {
+  try {
+    dispatch({ type: FETCH_DM_MY_TASKS_REQUEST });
+    const response = await axios.get(`${BASE_URL}/digitalMarketingTeam/getMyTasks`, getAuthHeaders());
+    dispatch({
+      type: FETCH_DM_MY_TASKS_SUCCESS,
+      payload: response.data.data || [],
+    });
+  } catch (error) {
+    console.error("Error fetching DM executive tasks:", error);
+    dispatch({
+      type: FETCH_DM_MY_TASKS_FAILURE,
+      payload: error.response?.data?.message || error.message,
+    });
+    toast.error(error.response?.data?.message || "Failed to load my tasks");
+  }
+};
+
+export const fetchPhotographyTasks = () => async (dispatch) => {
+  try {
+    dispatch({ type: FETCH_PHOTOGRAPHY_TASKS_REQUEST });
+    const response = await axios.get(`${BASE_URL}/photographyTeam/getTasks`, getAuthHeaders());
+    dispatch({
+      type: FETCH_PHOTOGRAPHY_TASKS_SUCCESS,
+      payload: response.data.data || [],
+    });
+  } catch (error) {
+    dispatch({
+      type: FETCH_PHOTOGRAPHY_TASKS_FAILURE,
+      payload: error.response?.data?.message || error.message,
+    });
+    toast.error(error.response?.data?.message || "Failed to fetch photography tasks");
+  }
+};
+
+export const fetchPhotographyMyTasks = () => async (dispatch) => {
+  try {
+    dispatch({ type: FETCH_PHOTOGRAPHY_MY_TASKS_REQUEST });
+    const response = await axios.get(`${BASE_URL}/photographyTeam/getMyTasks`, getAuthHeaders());
+    dispatch({
+      type: FETCH_PHOTOGRAPHY_MY_TASKS_SUCCESS,
+      payload: response.data.data || [],
+    });
+  } catch (error) {
+    dispatch({
+      type: FETCH_PHOTOGRAPHY_MY_TASKS_FAILURE,
+      payload: error.response?.data?.message || error.message,
+    });
+    toast.error(error.response?.data?.message || "Failed to fetch photography tasks");
   }
 };

@@ -50,10 +50,19 @@ const Login = () => {
       else if (user.roleName === "Accountant") {
         navigate("/accounts/dashboard");
       }
-      else if (user.roleName === "Marketplace Manager") {
+      else if (
+        user.roleName === "Marketplace Manager" ||
+        (user.roleName === "Executive" && user.subDepartmentName === "Business Launch") ||
+         (user.roleName === "Executive" && user.subDepartmentName === "Catalog Listing") ||
+          (user.roleName === "Executive" && user.subDepartmentName === "Key Account Management") ||
+        user.roleName === "Digital Marketing Manager" ||
+        user.roleName === "Digital Marketing Executive" ||
+        user.roleName === "Photography Manager" ||
+        user.roleName === "Photography Executive" 
+      ) {
         navigate("/team/dashboard");
+      }
     }
-  }
   }, [token, user, navigate]);
 
   const handleChange = (e) => {

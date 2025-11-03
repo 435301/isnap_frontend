@@ -20,6 +20,21 @@ import {
     ASSIGN_TASK_REQUEST,
     ASSIGN_TASK_SUCCESS,
     ASSIGN_TASK_FAILURE,
+    FETCH_MY_TASKS_REQUEST,
+    FETCH_MY_TASKS_SUCCESS,
+    FETCH_MY_TASKS_FAILURE,
+    FETCH_DM_TASKS_REQUEST,
+    FETCH_DM_TASKS_SUCCESS,
+    FETCH_DM_TASKS_FAILURE,
+    FETCH_DM_MY_TASKS_REQUEST,
+    FETCH_DM_MY_TASKS_SUCCESS,
+    FETCH_DM_MY_TASKS_FAILURE,
+    FETCH_PHOTOGRAPHY_TASKS_REQUEST,
+    FETCH_PHOTOGRAPHY_TASKS_SUCCESS,
+    FETCH_PHOTOGRAPHY_TASKS_FAILURE,
+    FETCH_PHOTOGRAPHY_MY_TASKS_REQUEST,
+    FETCH_PHOTOGRAPHY_MY_TASKS_SUCCESS,
+    FETCH_PHOTOGRAPHY_MY_TASKS_FAILURE,
 } from "../actions/taskAction";
 
 const initialState = {
@@ -31,6 +46,11 @@ const initialState = {
     acceptedTask: null,
     movedTask: null,
     assignedTask: null,
+    myTasks: [],
+    dmTasks: [],
+    dmMyTasks: [],
+    PhotographyTasks: [],
+    PhotographyMyTasks: [],
 };
 
 export const tasksReducer = (state = initialState, action) => {
@@ -42,6 +62,11 @@ export const tasksReducer = (state = initialState, action) => {
         case REJECT_TASK_REQUEST:
         case MOVE_TASK_REQUEST:
         case ASSIGN_TASK_REQUEST:
+        case FETCH_MY_TASKS_REQUEST:
+        case FETCH_DM_TASKS_REQUEST:
+        case FETCH_DM_MY_TASKS_REQUEST:
+        case FETCH_PHOTOGRAPHY_TASKS_REQUEST:
+        case FETCH_PHOTOGRAPHY_MY_TASKS_REQUEST:
             return {
                 ...state,
                 loading: true,
@@ -105,6 +130,16 @@ export const tasksReducer = (state = initialState, action) => {
                         : t
                 ),
             };
+        case FETCH_MY_TASKS_SUCCESS:
+            return { ...state, loading: false, myTasks: action.payload };
+        case FETCH_DM_TASKS_SUCCESS:
+            return { ...state, loading: false, dmTasks: action.payload };
+        case FETCH_DM_MY_TASKS_SUCCESS:
+            return { ...state, loading: false, dmMyTasks: action.payload };
+        case FETCH_PHOTOGRAPHY_TASKS_SUCCESS:
+            return { ...state, loading: false, PhotographyTasks: action.payload, error: null };
+        case FETCH_PHOTOGRAPHY_MY_TASKS_SUCCESS:
+            return { ...state, loading: false, PhotographyMyTasks: action.payload, error: null };
         case FETCH_MARKETPLACE_TASKS_FAILURE:
         case FETCH_EXECUTIVES_FAILURE:
         case UPDATE_PRIORITY_FAILURE:
@@ -112,6 +147,11 @@ export const tasksReducer = (state = initialState, action) => {
         case REJECT_TASK_FAILURE:
         case MOVE_TASK_FAILURE:
         case ASSIGN_TASK_FAILURE:
+        case FETCH_MY_TASKS_FAILURE:
+        case FETCH_DM_TASKS_FAILURE:
+        case FETCH_DM_MY_TASKS_FAILURE:
+        case FETCH_PHOTOGRAPHY_TASKS_FAILURE:
+        case FETCH_PHOTOGRAPHY_MY_TASKS_FAILURE:
             return {
                 ...state,
                 loading: false,

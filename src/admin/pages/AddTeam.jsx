@@ -41,7 +41,7 @@ const AddTeam = () => {
     password: "",
     wingId: "",
     departmentId: "",
-    subDepartmentId:"",
+    subDepartmentId:0,
     superior: 0,
   });
   const [errors, setErrors] = useState({});
