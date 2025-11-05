@@ -35,6 +35,12 @@ import {
     FETCH_PHOTOGRAPHY_MY_TASKS_REQUEST,
     FETCH_PHOTOGRAPHY_MY_TASKS_SUCCESS,
     FETCH_PHOTOGRAPHY_MY_TASKS_FAILURE,
+    SEND_TASK_COMMENTS_REQUEST,
+    SEND_TASK_COMMENTS_SUCCESS,
+    SEND_TASK_COMMENTS_FAILURE,
+    FETCH_TASK_HISTORY_REQUEST,
+    FETCH_TASK_HISTORY_SUCCESS,
+    FETCH_TASK_HISTORY_FAILURE,
 } from "../actions/taskAction";
 
 const initialState = {
@@ -51,6 +57,7 @@ const initialState = {
     dmMyTasks: [],
     PhotographyTasks: [],
     PhotographyMyTasks: [],
+    taskHistory: [],
 };
 
 export const tasksReducer = (state = initialState, action) => {
@@ -67,6 +74,8 @@ export const tasksReducer = (state = initialState, action) => {
         case FETCH_DM_MY_TASKS_REQUEST:
         case FETCH_PHOTOGRAPHY_TASKS_REQUEST:
         case FETCH_PHOTOGRAPHY_MY_TASKS_REQUEST:
+        case SEND_TASK_COMMENTS_REQUEST:
+        case FETCH_TASK_HISTORY_REQUEST:
             return {
                 ...state,
                 loading: true,
@@ -140,6 +149,10 @@ export const tasksReducer = (state = initialState, action) => {
             return { ...state, loading: false, PhotographyTasks: action.payload, error: null };
         case FETCH_PHOTOGRAPHY_MY_TASKS_SUCCESS:
             return { ...state, loading: false, PhotographyMyTasks: action.payload, error: null };
+        case SEND_TASK_COMMENTS_SUCCESS:
+            return { ...state, loading: false, error: null };
+        case FETCH_TASK_HISTORY_SUCCESS:
+            return { ...state, loading: false, taskHistory: action.payload };
         case FETCH_MARKETPLACE_TASKS_FAILURE:
         case FETCH_EXECUTIVES_FAILURE:
         case UPDATE_PRIORITY_FAILURE:
@@ -152,6 +165,8 @@ export const tasksReducer = (state = initialState, action) => {
         case FETCH_DM_MY_TASKS_FAILURE:
         case FETCH_PHOTOGRAPHY_TASKS_FAILURE:
         case FETCH_PHOTOGRAPHY_MY_TASKS_FAILURE:
+        case SEND_TASK_COMMENTS_FAILURE:
+        case FETCH_TASK_HISTORY_FAILURE:
             return {
                 ...state,
                 loading: false,

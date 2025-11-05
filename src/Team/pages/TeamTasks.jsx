@@ -9,9 +9,11 @@ import RejectTaskModal from '../components/RejectTaskModal';
 import { useDispatch, useSelector } from 'react-redux';
 import { acceptTask, assignTask, fetchDigitalMarketingMyTasks, fetchDigitalMarketingTasks, fetchExecutives, fetchPhotographyMyTasks, fetchPhotographyTasks, fetchTasks, fetchTasksExecutive, moveTask, rejectTask, updatePriority } from '../../redux/actions/taskAction';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 const TeamTasks = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
   console.log('storedUser', storedUser);
   const subDeptName = storedUser.subDepartmentName
@@ -31,7 +33,7 @@ const TeamTasks = () => {
   const [assignTo, setAssignTo] = useState("");
   const [assignComment, setAssignComment] = useState("");
 
-  const { tasks = [], executives, updatedPriority, acceptedTask, loading, error, myTasks, dmMyTasks, dmTasks,PhotographyTasks ,PhotographyMyTasks} = useSelector((state) => state.tasks || {});
+  const { tasks = [], executives, updatedPriority, acceptedTask, loading, error, myTasks, dmMyTasks, dmTasks, PhotographyTasks, PhotographyMyTasks } = useSelector((state) => state.tasks || {});
   console.log('executives', executives)
   useEffect(() => {
     const handleResize = () => {
@@ -44,24 +46,24 @@ const TeamTasks = () => {
   }, []);
 
   useEffect(() => {
-      dispatch(fetchExecutives());
-    if (subDeptName === "Business Launch" || subDeptName === "Catalog Listing" || subDeptName ===  "Key Account Management" && roleName === "Executive" ) {
+    dispatch(fetchExecutives());
+    if (subDeptName === "Business Launch" || subDeptName === "Catalog Listing" || subDeptName === "Key Account Management" && roleName === "Executive") {
       dispatch(fetchTasksExecutive());
     }
-    else if ( roleName === "Digital Marketing Manager") {
+    else if (roleName === "Digital Marketing Manager") {
       dispatch(fetchDigitalMarketingTasks());
     }
-    else if ( roleName === "Digital Marketing Executive") {
+    else if (roleName === "Digital Marketing Executive") {
       dispatch(fetchDigitalMarketingMyTasks());
     }
-    else if ( roleName === "Photography Manager") {
+    else if (roleName === "Photography Manager") {
       dispatch(fetchPhotographyTasks());
     }
-    else if ( roleName === "Photography Executive") {
+    else if (roleName === "Photography Executive") {
       dispatch(fetchPhotographyMyTasks());
     }
     else {
-    dispatch(fetchTasks());
+      dispatch(fetchTasks());
     }
   }, [dispatch, subDeptName, roleName]);
 
@@ -71,16 +73,16 @@ const TeamTasks = () => {
 
 
   let activeTasks = tasks;
-  if (subDeptName === "Business Launch" || subDeptName === "Catalog Listing" || subDeptName ===  "Key Account Management" && roleName === "Executive") {
+  if (subDeptName === "Business Launch" || subDeptName === "Catalog Listing" || subDeptName === "Key Account Management" && roleName === "Executive") {
     activeTasks = myTasks;
-  } else if ( roleName === "Digital Marketing Executive") {
+  } else if (roleName === "Digital Marketing Executive") {
     activeTasks = dmMyTasks;
-  } else if ( roleName === "Digital Marketing Manager") {
+  } else if (roleName === "Digital Marketing Manager") {
     activeTasks = dmTasks;
   }
-  else if ( roleName === "Photography Executive") {
+  else if (roleName === "Photography Executive") {
     activeTasks = PhotographyMyTasks;
-  } else if ( roleName === "Photography Manager") {
+  } else if (roleName === "Photography Manager") {
     activeTasks = PhotographyTasks;
   }
 
@@ -152,10 +154,16 @@ const TeamTasks = () => {
               </button>
             </li>
             <li>
-              <a className="dropdown-item" href={`/team/task-summary`}>
+              <button
+                className="dropdown-item"
+                onClick={() => {
+                  navigate("/team/task-summary", { state: { task } });
+                }}
+              >
                 View Details
-              </a>
+              </button>
             </li>
+
             <li>
 
               <button
@@ -254,7 +262,7 @@ const TeamTasks = () => {
         )}
         {type === 'inProgress' && (
           <div className="text-end mt-2">
-            <button className="btn btn-sm  text-white px-3" style={{ backgroundColor: "#5CB17A" }}  onClick={() => handleMarkAsDone(task)}>Mark as Done</button>
+            <button className="btn btn-sm  text-white px-3" style={{ backgroundColor: "#5CB17A" }} onClick={() => handleMarkAsDone(task)}>Mark as Done</button>
           </div>
         )}
       </div>
@@ -296,12 +304,12 @@ const TeamTasks = () => {
   };
 
   const handleMarkAsDone = (task) => {
-  if (!task || !task.id) {
-    toast.error("Invalid task selected");
-    return;
-  }
-  dispatch(moveTask(task.id, 3));
-};
+    if (!task || !task.id) {
+      toast.error("Invalid task selected");
+      return;
+    }
+    dispatch(moveTask(task.id, 3));
+  };
 
 
   const handleRejectSubmit = (selectedTask, reasonText) => {
@@ -346,7 +354,18 @@ const TeamTasks = () => {
 
 
           </div>
+            {/* {!loading && !error &&
+            taskData.todo.length === 0 &&
+            taskData.inProgress.length === 0 &&
+            taskData.completed.length === 0 && (
+              <div className="text-center py-5">
+                <i className="bi bi-clipboard-x text-secondary fs-1 mb-3"></i>
+                <h5 className="text-muted">No tasks assigned</h5>
+              </div>
+            )
+          } */}
           <div className="row g-2 pt-4">
+          
             {/* To Do Column */}
             <div className="col-md-4 task-column">
               <div className="pb-2 mb-2 d-flex align-items-center">
@@ -357,7 +376,6 @@ const TeamTasks = () => {
               </div>
 
               {loading && <p>Loading tasks...</p>}
-              {error && <p className="text-danger">{error}</p>}
               {taskData.todo.map((task, idx) => (
                 <TaskCard
                   key={idx}
@@ -375,6 +393,10 @@ const TeamTasks = () => {
                     manager: task.managerName || "-",
                     executive: task.executiveName || "-",
                     priority: task.priorityLabel || "Low",
+                    workProgressStatus: task.workProgressStatus || "",
+                    businessName: task.businessName || "",
+                    managerName: task.managerName || "",
+                    completedDate: task.completedDate || "",
                   }}
                   type="todo"
                 />
@@ -405,7 +427,10 @@ const TeamTasks = () => {
                     seller: task.sellerName || "-",
                     manager: task.managerName || "-",
                     executive: task.executiveName || "-",
-
+                    workProgressStatus: task.workProgressStatus || "",
+                    businessName: task.businessName || "",
+                    managerName: task.managerName || "",
+                    completedDate: task.completedDate || "",
                   }}
                   type="inProgress"
                 />
@@ -439,7 +464,10 @@ const TeamTasks = () => {
                     completedDate: task.completedDate
                       ? new Date(task.completedDate).toLocaleDateString()
                       : "-",
-                    workProgressStatus: task.workProgressStatus || ""
+                    workProgressStatus: task.workProgressStatus || "",
+                    businessName: task.businessName || "",
+                    managerName: task.managerName || "",
+                    completedDate: task.completedDate || "",
                   }}
                   type="completed"
                 />

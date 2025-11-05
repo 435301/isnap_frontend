@@ -57,6 +57,15 @@ export const FETCH_PHOTOGRAPHY_MY_TASKS_REQUEST = "FETCH_PHOTOGRAPHY_MY_TASKS_RE
 export const FETCH_PHOTOGRAPHY_MY_TASKS_SUCCESS = "FETCH_PHOTOGRAPHY_MY_TASKS_SUCCESS";
 export const FETCH_PHOTOGRAPHY_MY_TASKS_FAILURE = "FETCH_PHOTOGRAPHY_MY_TASKS_FAILURE";
 
+export const SEND_TASK_COMMENTS_REQUEST = "SEND_TASK_COMMENTS_REQUEST";
+export const SEND_TASK_COMMENTS_SUCCESS = "SEND_TASK_COMMENTS_SUCCESS";
+export const SEND_TASK_COMMENTS_FAILURE = "SEND_TASK_COMMENTS_FAILURE"; 
+
+export const FETCH_TASK_HISTORY_REQUEST = "FETCH_TASK_HISTORY_REQUEST";
+export const FETCH_TASK_HISTORY_SUCCESS = "FETCH_TASK_HISTORY_SUCCESS";
+export const FETCH_TASK_HISTORY_FAILURE = "FETCH_TASK_HISTORY_FAILURE";
+
+
 export const fetchTasks = () => async (dispatch) => {
   try {
     dispatch({ type: FETCH_MARKETPLACE_TASKS_REQUEST });
@@ -227,7 +236,6 @@ export const fetchDigitalMarketingTasks = () => async (dispatch) => {
       type: FETCH_DM_TASKS_FAILURE,
       payload: error.response?.data?.message || error.message,
     });
-    toast.error(error.response?.data?.message || "Failed to load tasks");
   }
 };
 
@@ -246,7 +254,6 @@ export const fetchDigitalMarketingMyTasks = () => async (dispatch) => {
       type: FETCH_DM_MY_TASKS_FAILURE,
       payload: error.response?.data?.message || error.message,
     });
-    toast.error(error.response?.data?.message || "Failed to load my tasks");
   }
 };
 
@@ -280,6 +287,40 @@ export const fetchPhotographyMyTasks = () => async (dispatch) => {
       type: FETCH_PHOTOGRAPHY_MY_TASKS_FAILURE,
       payload: error.response?.data?.message || error.message,
     });
-    toast.error(error.response?.data?.message || "Failed to fetch photography tasks");
+  }
+};
+
+export const sendTaskComments = (taskId, status, comments) => async (dispatch) => {
+  try {
+    dispatch({ type: SEND_TASK_COMMENTS_REQUEST });
+    const response = await axios.post( `${BASE_URL}/task/sendTaskComments`,  { taskId, status, comments },  getAuthHeaders());
+    dispatch({
+      type: SEND_TASK_COMMENTS_SUCCESS,
+      payload: response.data,
+    });
+    dispatch(fetchTaskHistory(taskId));
+    toast.success(response.data.message);
+  } catch (error) {
+    dispatch({
+      type: SEND_TASK_COMMENTS_FAILURE,
+      payload: error.response?.data?.message || "Failed to send comments",
+    });
+    toast.error(error.response?.data?.message || "Failed to send comments");
+  }
+};
+
+export const fetchTaskHistory = (taskId) => async (dispatch) => {
+  try {
+    dispatch({ type: FETCH_TASK_HISTORY_REQUEST });
+    const response = await axios.get( `${BASE_URL}/task/getTaskHistory/${taskId}`, getAuthHeaders());
+    dispatch({
+      type: FETCH_TASK_HISTORY_SUCCESS,
+      payload: response.data.data,
+    });
+  } catch (error) {
+    dispatch({
+      type: FETCH_TASK_HISTORY_FAILURE,
+      payload: error.response?.data?.message || "Failed to fetch task history",
+    });
   }
 };
