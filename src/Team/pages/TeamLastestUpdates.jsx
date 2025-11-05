@@ -3,13 +3,24 @@ import Sidebar from '../components/TeamSidebar';
 import Navbar from '../components/TeamNavbar';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
-
-// ✅ Import images
 import img1 from '../assets/images/img.png';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchLatestUpdates } from '../../redux/actions/latestUpdatesAction';
+import BASE_URL from '../../config/config';
+import "../assets/team.css";
 
 const TeamLastestUpdates = () => {
+  const dispatch = useDispatch();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+  const { latestUpdates } = useSelector(
+    (state) => state.latestUpdates
+  );
+
+  useEffect(() => {
+    dispatch(fetchLatestUpdates());
+  }, [dispatch]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -21,84 +32,76 @@ const TeamLastestUpdates = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const updates = [
-    {
-      id: 1,
-      iconBg: '#3B82F6',
-      title: 'Lead Follow-up Reminder',
-      lines: [
-        'Reminder: Please call and follow up with Lead XYZ Enterprises today and update the lead status.',
-        'Lead ABC Textiles is pending confirmation. Kindly conclude the discussion and update the lead status.',
-      ],
-      time: '10 Jan 2025, 10:00 am',
-    },
-    {
-      id: 2,
-      iconBg: '#10B981',
-      title: 'Urgent Task Completion',
-      lines: [
-        'Urgent: Task Product Upload for Flipkart – DEF Bookstore needs to be completed by EOD today.',
-        'Kindly prioritize and complete the pending SEO Optimization task for GHI Supermarket immediately.',
-      ],
-      time: '10 Jan 2025, 10:00 am',
-    },
-    {
-      id: 3,
-      iconBg: '#F59E0B',
-      title: 'Task Assignment Notification',
-      lines: [
-        'New Task Assigned: Listing Products for JKL Apparel. Please start and update the status in the system.',
-        'You have been assigned a new service task: Inventory Management for MNO Bookshop. Kindly acknowledge.',
-      ],
-      images: [img1, img1, img1, img1], // ✅ Using imported image
-      time: '10 Jan 2025, 10:00 am',
-    },
-    {
-      id: 4,
-      iconBg: '#EF4444',
-      title: 'New Skill Guide Available',
-      lines: [
-        'New Resource: Product Listing Best Practices – Access the guide here:',
-        '[https://example.com/listing-guide]',
-      ],
-      time: '10 Jan 2025, 10:00 am',
-    },
-  ];
-
   const renderCard = (update) => (
     <div className="bg-white p-3 rounded shadow-sm mb-3" key={update.id}>
       <div className="d-flex justify-content-between align-items-start">
         <div className="d-flex">
           <div
-            className="d-flex align-items-center justify-content-center me-3 rounded"
-            style={{width: 40,height: 40,backgroundColor: update.iconBg,}}>
+            className="d-flex align-items-center justify-content-center me-3 rounded icon-latest-updates"
+          >
             <i className="bi bi-person-fill text-white"></i>
           </div>
+
           <div>
             <h6 className="mb-2 fw-semibold">{update.title}</h6>
-            {update.lines.map((line, i) => (
-              <p key={i} className="text-muted small mb-1">
-                {line}
-              </p>
-            ))}
-            {update.images && (
+
+            <p className="text-muted small mb-1">{update.description}</p>
+
+            <p className="text-muted small mb-1"><strong>Update To: {update.roleName}</strong></p>
+
+            {/* Render file previews */}
+            {update.files && update.files.length > 0 && (
               <div className="d-flex mt-2 gap-2 flex-wrap">
-                {update.images.map((src, idx) => (
-                  <img
-                    key={idx}
-                    src={src}
-                    alt={`Update Img ${idx}`}
-                    className="rounded"
-                    width="70"
-                    height="45"
-                    style={{ objectFit: 'cover' }}
-                  />
-                ))}
+                {update.files.map((file) => {
+                  if (file.fileType === 1) {
+                    // Image
+                    return (
+                      <img
+                        key={file.id}
+                        src={`${BASE_URL}${file.file}`}
+                        alt="Update Img"
+                        className="rounded"
+                        width="70"
+                        height="45"
+                        style={{ objectFit: "cover" }}
+                      />
+                    );
+                  } else if (file.fileType === 2) {
+                    // PDF
+                    return (
+                      <a
+                        key={file.id}
+                        href={`${BASE_URL}${file.file}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary small"
+                      >
+                        View PDF
+                      </a>
+                    );
+                  } else if (file.fileType === 3) {
+                    // External link
+                    return (
+                      <a
+                        key={file.id}
+                        href={file.file}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-success small"
+                      >
+                        Open Link
+                      </a>
+                    );
+                  }
+                  return null;
+                })}
               </div>
             )}
           </div>
         </div>
-        <small className="text-muted">{update.time}</small>
+        <small className="text-muted">
+          {new Date(update.createdAt).toLocaleString()}
+        </small>
       </div>
     </div>
   );
@@ -132,7 +135,11 @@ const TeamLastestUpdates = () => {
           </div>
 
           {/* Render update cards */}
-          {updates.map(renderCard)}
+          {latestUpdates && latestUpdates.length > 0 ? (
+            latestUpdates.map(renderCard)
+          ) : (
+            <p className="text-muted text-center">No updates found.</p>
+          )}
         </div>
       </div>
     </div>
