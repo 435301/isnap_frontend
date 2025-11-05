@@ -127,7 +127,7 @@ const CreateLead = () => {
     try {
       const res = await dispatch(createLead(formData));
       if (res?.status) {
-        navigate("/manage-leads");
+        navigate("/executive/manage-leads");
       }
     } catch (err) {
       console.log(err);
@@ -366,7 +366,7 @@ const CreateLead = () => {
                     <button type="submit" className="btn btn-success me-2 px-4">
                       Submit
                     </button>
-                    <Link to="/manage-leads" className="btn btn-outline-secondary px-4">
+                    <Link to="/executive/manage-leads" className="btn btn-outline-secondary px-4">
                       Cancel
                     </Link>
                   </div>

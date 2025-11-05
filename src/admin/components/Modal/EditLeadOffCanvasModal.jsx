@@ -27,6 +27,8 @@ const EditLeadOffCanvasModal = ({
     leadDetails: "",
   });
 
+  console.log('selectedLead',selectedLead)
+
   useEffect(() => {
     if (selectedLead) {
     const date = selectedLead.followUpDate?.split("T")[0] || "";
@@ -44,7 +46,7 @@ const EditLeadOffCanvasModal = ({
         leadSourceId: selectedLead.leadSourceId || "",
         followUpDate: date || "",
         followUpTime: time || "",
-        teamId: selectedLead.teamId || "",
+        teamId: selectedLead.teamId || 0,
         leadStatusId: selectedLead.leadStatusId || "",
         leadDetails: selectedLead.leadDetails || "",
       });
@@ -59,7 +61,7 @@ const EditLeadOffCanvasModal = ({
   const handleSubmit = (e) => {
     e.preventDefault();
     // Pass updated data to parent
-    onSave({ ...selectedLead, ...formData });
+    onSave({ ...selectedLead, ...formData ,teamId: formData.teamId ? Number(formData.teamId) : 0,});
     handleClose();
   };
 

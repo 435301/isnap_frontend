@@ -118,6 +118,8 @@ import AccountsInvoices from "./Accounts/pages/AccountsInvoiceList.jsx";
 import SellerServicesList from "./Seller/pages/ServicesList.jsx";
 import ManageSubDepartments from "./admin/pages/ManageSubDepartment.jsx";
 import AddSubDepartment from "./admin/pages/AddSubDepartment.jsx";
+import LeadViewExecutive from "./Executive/components/Modal/ViewLeadExecutive.jsx";
+import ExecutiveViewLead from "./Executive/components/Modal/ViewLeadExecutive.jsx";
 
 
 function App() {
@@ -244,6 +246,8 @@ function App() {
         <Route path="/executive/change-password" element={<ExicutiveChangePassword />} />
         <Route path="/executive/latest-updates" element={<ExecutiveLastestUpdates />} />
         <Route path="/executive/manage-updates" element={<ExecutiveManageUpdates />} />
+        <Route path="/executive/view-lead/:id" element={<ExecutiveViewLead />} />
+
 
         {/* Accounts Routes */}
         <Route path="/accounts/dashboard" element={<AccountsDashboard />} />

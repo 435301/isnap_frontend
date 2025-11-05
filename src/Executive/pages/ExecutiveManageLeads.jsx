@@ -20,8 +20,8 @@ const ManageLeads = () => {
   const { businessTypes } = useSelector((state) => state.businessTypes);
   const { leadSources } = useSelector((state) => state.leadSources);
   const { leadStatus = [] } = useSelector((state) => state.leadStatus);
-  console.log('leadStatus',leadStatus)
   const { teams = [] } = useSelector(state => state.teams || {});
+  console.log('leadStatus', teams)
   const { mobileCheck } = useSelector((state) => state.leads);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -125,11 +125,11 @@ const ManageLeads = () => {
                 </div>
                 <div className="col-md-4"></div>
                 <div className="col-lg-6 text-end">
-                  <a to="/executive/create-lead" className="btn btn-new-lead"
-                    >
-                    <i className="bi bi-plus-circle me-1"></i>
+                  <Link to="/executive/create-lead" className="btn btn-new-lead"
+                  >
+                    <i className="bi bi-plus-circle me-1" ></i>
                     Add Lead
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -194,81 +194,81 @@ const ManageLeads = () => {
           <div className="row">
             <div className="bg-white p-3 rounded shadow-sm card-header mb-4">
               <div className="table-responsive">
-                  {loading ? (
+                {loading ? (
                   <p>Loading leads...</p>
                 ) : (
-                <table className="table align-middle table-striped table-hover">
-                  <thead className="table-light">
-                    <tr>
-                      <th>S.No</th>
-                      <th>Customer Name</th>
-                      <th>Mobile Number</th>
-                      <th>Lead Details</th>
-                      <th>Team Member</th>
-                      <th>Status</th>
-                      <th>Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                     {leads.length === 0 ? (
+                  <table className="table align-middle table-striped table-hover">
+                    <thead className="table-light">
+                      <tr>
+                        <th>S.No</th>
+                        <th>Customer Name</th>
+                        <th>Mobile Number</th>
+                        <th>Lead Details</th>
+                        <th>Team Member</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {leads.length === 0 ? (
                         <tr>
                           <td colSpan="4" className="text-center">No leads found.</td>
                         </tr>
                       ) : (
-                    leads.map((lead, index) => (
-                      <tr key={lead.id}>
-                        <td>{index + 1}</td>
-                        <td>{lead.customerName}</td>
-                        <td>{lead.customerMobile}</td>
-                        <td>{lead.leadDetails}</td>
-                        <td>{lead.teamName || "-"}</td>
-                        <td>
-                          <span
-                            className={
-                              lead.leadStatusTitle === 'New'
-                                ? 'text-primary'
-                                : lead.leadStatusTitle === 'Contacted'
-                                  ? 'text-warning'
-                                  : lead.leadStatusTitle === 'Closed'
-                                    ? 'text-danger'
-                                    : 'text-success'
-                            }
-                          >
-                            {lead.leadStatusTitle}
-                          </span>
-                        </td>
-                        <td>
-                          <div className="d-flex gap-2 align-items-center">
-                            <Link to={`/view-lead/${lead.id}`} className="btn btn-icon btn-view">
-                              <i className="bi bi-eye"></i>
-                            </Link>
-                            <button
-                              className="btn btn-icon btn-edit"
-                              onClick={() => {
-                                setselectedLead(lead);
-                                setShowEditOffcanvas(true);
-                              }}
-                            >
-                              <i className="bi bi-pencil-square"></i>
-                            </button>
-                            <button className="btn btn-icon btn-delete" onClick={() => handleDeleteClick(lead?.id)}>
-                              <i className="bi bi-trash"></i>
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                     ))
+                        leads.map((lead, index) => (
+                          <tr key={lead.id}>
+                            <td>{index + 1}</td>
+                            <td>{lead.customerName}</td>
+                            <td>{lead.customerMobile}</td>
+                            <td>{lead.leadDetails}</td>
+                            <td>{lead.teamName || "-"}</td>
+                            <td>
+                              <span
+                                className={
+                                  lead.leadStatusTitle === 'New'
+                                    ? 'text-primary'
+                                    : lead.leadStatusTitle === 'Contacted'
+                                      ? 'text-warning'
+                                      : lead.leadStatusTitle === 'Closed'
+                                        ? 'text-danger'
+                                        : 'text-success'
+                                }
+                              >
+                                {lead.leadStatusTitle}
+                              </span>
+                            </td>
+                            <td>
+                              <div className="d-flex gap-2 align-items-center">
+                                <Link to={`/executive/view-lead/${lead.id}`} className="btn btn-icon btn-view">
+                                  <i className="bi bi-eye"></i>
+                                </Link>
+                                <button
+                                  className="btn btn-icon btn-edit"
+                                  onClick={() => {
+                                    setselectedLead(lead);
+                                    setShowEditOffcanvas(true);
+                                  }}
+                                >
+                                  <i className="bi bi-pencil-square"></i>
+                                </button>
+                                <button className="btn btn-icon btn-delete" onClick={() => handleDeleteClick(lead?.id)}>
+                                  <i className="bi bi-trash"></i>
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))
                       )}
-                  </tbody>
-                </table>
-                 )}
+                    </tbody>
+                  </table>
+                )}
               </div>
             </div>
-             <PaginationComponent
-            currentPage={currentPage}
-            totalPages={totalPages || 1}
-            onPageChange={setCurrentPage}
-          />
+            <PaginationComponent
+              currentPage={currentPage}
+              totalPages={totalPages || 1}
+              onPageChange={setCurrentPage}
+            />
             {selectedLead && (
               <EditLeadOffCanvasModal
                 show={showEditOffcanvas}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import Sidebar from '../components/ExecutiveNavbar';
-import Navbar from '../components/ExecutiveSidebar';
+import Sidebar from '../components/ExecutiveSidebar';
+import Navbar from '../components/ExecutiveNavbar';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { Link, useNavigate } from "react-router-dom";
@@ -62,7 +62,7 @@ const LeadStatusPage = () => {
     try {
       const res = await dispatch(createLeadStatus(formData));
       if (res?.status) {
-        navigate("/manage-leads-status");
+        navigate("/executive/manage-leads-status");
       } else {
         console.warn("Lead status creation failed:", res?.message);
       }
@@ -148,6 +148,7 @@ const LeadStatusPage = () => {
                     <button type="reset" className="btn btn-outline-secondary px-4" onClick={() => {
                       setFormData({ title: "", status: "" });
                       setErrors({});
+                      navigate("/executive/manage-leads-status")
                     }}>
                       Cancel
                     </button>

@@ -116,7 +116,7 @@ const ManageLeads = () => {
                                 <div className="col-lg-6 text-end">
                                     <Link to="/executive/leads-status" className="btn btn-new-lead">
                                         <i className="bi bi-plus-circle me-1"></i>
-                                        Add Lead
+                                        Add Lead Status
                                     </Link>
                                 </div>
                             </div>

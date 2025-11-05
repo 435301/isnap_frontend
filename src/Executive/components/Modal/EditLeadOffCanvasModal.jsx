@@ -59,7 +59,7 @@ const EditLeadOffCanvasModal = ({
   const handleSubmit = (e) => {
     e.preventDefault();
     // Pass updated data to parent
-    onSave({ ...selectedLead, ...formData });
+    onSave({ ...selectedLead, ...formData ,teamId: formData.teamId ? Number(formData.teamId) : 0,});
     handleClose();
   };
 
