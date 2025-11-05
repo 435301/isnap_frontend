@@ -66,13 +66,13 @@ const TeamSidebar = ({ isOpen }) => {
             {isOpen && <span>Dashboard</span>}
           </Link>
 
-          <Link
+          {/* <Link
             to="/team/manage-leads"
             className={`nav-item nav-link ${isLinkActive("/team/manage-leads")}`}
           >
             <i className="bi bi-key me-2"></i>
             {isOpen && <span>Leads</span>}
-          </Link>
+          </Link> */}
 
           {/* Tasks Section */}
           <Link
