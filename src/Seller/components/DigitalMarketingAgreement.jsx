@@ -1,7 +1,7 @@
 // src/components/DigitalMarketingAgreement.js
 import React from "react";
 
-const DigitalMarketingAgreement = () => {
+const DigitalMarketingAgreement = ({ digitalMarketing }) => {
   return (
     <div className="col-lg-12">
       <h3 className="text-dark mb-4 text-center">
@@ -82,6 +82,30 @@ const DigitalMarketingAgreement = () => {
         <br />
         (Seal)
       </p>
+
+      <table className="table table-bordered">
+        <thead>
+          <tr>
+            <th> DIGITAL MARKETING SERVICES</th>
+            <th>PRICE IN INR / ACCOUNT</th>
+            <th>PAYMENT TERMS</th>
+          </tr>
+        </thead>
+        <tbody>
+          {/* DIGITAL MARKETING */}
+          {digitalMarketing && digitalMarketing.offerPrice && (
+            <tr>
+              <td>DIGITAL MARKETING</td>
+              <td>
+                {digitalMarketing.digitalMarketingServiceNames?.map((s) => s.name).join(", ")}
+                <br />
+                ₹{digitalMarketing.offerPrice}
+              </td>
+              <td>{digitalMarketing.billCycleTitle || "—"}</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
     </div>
   );
 };

@@ -22,7 +22,7 @@ export const BUSINESS_LOGOUT = "BUSINESS_LOGOUT";
 
 
 //  LOGIN
-export const businessLogin = (credentials) => async (dispatch) => {
+export const businessLogin = (credentials,navigate) => async (dispatch) => {
   try {
     dispatch({ type: BUSINESS_LOGIN_REQUEST });
 
@@ -36,6 +36,11 @@ export const businessLogin = (credentials) => async (dispatch) => {
       type: BUSINESS_LOGIN_SUCCESS,
       payload: { token, seller },
     });
+    if (seller?.mouStatus === 0) {
+      navigate("/seller/mou-1");
+    } else {
+      navigate("/seller/dashboard");
+    }
     return response.data;
   } catch (error) {
     dispatch({
@@ -43,8 +48,11 @@ export const businessLogin = (credentials) => async (dispatch) => {
       payload: error.response?.data?.message || "Login failed",
     });
     toast.error(error.response?.data?.message || "Login failed");
+    return null; 
   }
 };
+
+
 
 // FORGOT PASSWORD (OTP GENERATION)
 export const businessForgotPassword = (identifier) => async (dispatch) => {

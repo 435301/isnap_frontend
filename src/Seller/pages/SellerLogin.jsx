@@ -40,15 +40,12 @@ const SellerLogin = () => {
   console.log('seller', seller)
 
   //   useEffect(() => {
-  //       if (seller?.mouStatus === 1) {
+  //       if (seller.status && seller?.mouStatus === 1) {
   //         navigate("/seller/dashboard");
   //       } else {
   //         navigate("/seller/mou-1");
   //     }
   // }, [token, seller, navigate]);
-
-
-
 
   // --- FORM VALIDATION ---
   const validateLoginForm = (data) => {
@@ -63,20 +60,23 @@ const SellerLogin = () => {
     e.preventDefault();
     const validationErrors = validateLoginForm(formData);
     setErrors(validationErrors);
-   if (Object.keys(validationErrors).length === 0) {
-    const res = dispatch(
-      businessLogin({
-        identifier: formData.emailOrMobile,
-        password: formData.password,
-      })
-    );
-
-    if (res?.seller?.mouStatus === 0) {
-      navigate("/seller/mou-1");
-    } else {
-      navigate("/seller/dashboard");
+    if (Object.keys(validationErrors).length === 0) {
+      const res = dispatch(
+        businessLogin({
+          identifier: formData.emailOrMobile,
+          password: formData.password,
+        },navigate )
+        
+      );
+    
+    //  if (res?.seller) {
+    //   if (res.seller.mouStatus === 0) {
+    //     navigate("/seller/mou-1");
+    //   } else {
+    //     navigate("/seller/dashboard");
+    //   }
+    // }
     }
-  }
   };
 
   // --- FORGOT PASSWORD HANDLERS ---

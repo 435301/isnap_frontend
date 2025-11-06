@@ -11,6 +11,7 @@ import DigitalMarketingAgreement from "../components/DigitalMarketingAgreement";
 import LogisticsAgreement from "../components/LogisticsAgreement";
 import MarketPlaceAgreement from "../components/MarketPlaceAgreement";
 import { mailToSalesDepartment } from "../../redux/actions/emailAction";
+import PhotographyAgreement from "../components/PhotographyAgreement";
 
 const Agreement = () => {
   const dispatch = useDispatch();
@@ -33,7 +34,7 @@ const Agreement = () => {
   } = useSelector((state) => state.mou);
 
   const { loading, documents, total, documentsRejectedReason, error } = useSelector((state) => state.mou);
-  console.log('documents',documents);
+  console.log('documents', documents);
   const { uploadedDocument } = useSelector(state => state.mou);
 
   const padd = {
@@ -69,20 +70,21 @@ const Agreement = () => {
     }
   };
 
-const handleUpload = async (formData, doc) => {
-  await dispatch(uploadDocument(formData));
-  // Optional: update the local documents state to show uploaded file immediately
-  const uploadedFile = uploadedDocument?.file;
-  if (uploadedFile) {
-    const updatedDocs = documents.map((d) =>
-      d.id === doc.id ? { ...d, file: uploadedFile, status: 1 } : d
-    );
-  }
-};
+  const handleUpload = async (formData, doc) => {
+    await dispatch(uploadDocument(formData));
+    // Optional: update the local documents state to show uploaded file immediately
+    const uploadedFile = uploadedDocument?.file;
+    if (uploadedFile) {
+      const updatedDocs = documents.map((d) =>
+        d.id === doc.id ? { ...d, file: uploadedFile, status: 1 } : d
+      );
+    }
+  };
 
-const handleCreateDocuments=()=>{
-   dispatch(mailToSalesDepartment(seller.id));
-};
+  const handleCreateDocuments = () => {
+    dispatch(mailToSalesDepartment(seller.id));
+    navigate("/seller/dashboard");
+  };
 
 
   return (
@@ -128,54 +130,75 @@ const handleCreateDocuments=()=>{
               <div className="container-fluid  mt-4">
                 <div className="accordion" id="mouAccordion">
                   {/*    Digital Marketing */}
-                  <div className="accordion-item">
-                    <h2 className="accordion-header" id="headingMOU">
-                      <button
-                        className="accordion-button"
-                        type="button"
-                        data-bs-toggle="collapse"
-                        data-bs-target="#collapseMOU"
-                        aria-expanded="true"
-                        aria-controls="collapseMOU"
-                      >
-                        Digital Marketing
+                  {digitalMarketing && Object.keys(digitalMarketing).length > 0 && (
+                    <div className="accordion-item">
+                      <h2 className="accordion-header" id="headingMOU">
+                        <button
+                          className="accordion-button"
+                          type="button"
+                          data-bs-toggle="collapse"
+                          data-bs-target="#collapseMOU"
+                          aria-expanded="true"
+                          aria-controls="collapseMOU"
+                        >
+                          Digital Marketing
 
-                      </button>
-                    </h2>
-                    <div
-                      id="collapseMOU"
-                      className="accordion-collapse collapse show"
-                      aria-labelledby="headingMOU"
-                      data-bs-parent="#mouAccordion"
-                    >
-                      <div className="accordion-body">
-                        {/* Agreement Content */}
-                        <div className="container-fluid bg-white mt-3 py-3">
-                          <div className="row px-4">
-                            <DigitalMarketingAgreement />
+                        </button>
+                      </h2>
+                      <div
+                        id="collapseMOU"
+                        className="accordion-collapse collapse show"
+                        aria-labelledby="headingMOU"
+                        data-bs-parent="#mouAccordion"
+                      >
+                        <div className="accordion-body">
+                          {/* Agreement Content */}
+                          <div className="container-fluid bg-white mt-3 py-3">
+                            <div className="row px-4">
+                              <DigitalMarketingAgreement
+                                digitalMarketing={digitalMarketing}
+                              />
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
+                  )}
 
                   {/* Logistics */}
-                  <LogisticsAgreement />
+                  {/* <LogisticsAgreement /> */}
 
                   {/* Market Place */}
-                  <MarketPlaceAgreement
-                    mouList={mouList}
-                    serviceTypes={serviceTypes}
-                    commissionPricings={commissionPricings}
-                    digitalMarketing={digitalMarketing}
-                    productPhotographys={productPhotographys}
-                    keyAccountSubscriptions={keyAccountSubscriptions}
-                    lifeStylePhotographys={lifeStylePhotographys}
-                    modelPhotographys={modelPhotographys}
-                    aContentPhotographys={aContentPhotographys}
-                    storePhotographys={storePhotographys}
-                    socialMediaContentPhotographys={socialMediaContentPhotographys}
-                  />
+                  {(serviceTypes?.length > 0 ||
+                    mouList?.length > 0 ||
+                    keyAccountSubscriptions?.length > 0 ||
+                    commissionPricings?.length > 0) && (
+                      <MarketPlaceAgreement
+                        mouList={mouList}
+                        serviceTypes={serviceTypes}
+                        commissionPricings={commissionPricings}
+                        digitalMarketing={digitalMarketing}
+
+                      />
+                    )}
+
+                  {/* PhotographyAgreement */}
+                  {(productPhotographys?.length > 0 ||
+                    lifeStylePhotographys?.length > 0 ||
+                    modelPhotographys?.length > 0 ||
+                    aContentPhotographys?.length > 0 ||
+                    storePhotographys?.length > 0 ||
+                    socialMediaContentPhotographys?.length > 0) && (
+                      <PhotographyAgreement
+                        productPhotographys={productPhotographys}
+                        keyAccountSubscriptions={keyAccountSubscriptions}
+                        lifeStylePhotographys={lifeStylePhotographys}
+                        modelPhotographys={modelPhotographys}
+                        aContentPhotographys={aContentPhotographys}
+                        storePhotographys={storePhotographys}
+                        socialMediaContentPhotographys={socialMediaContentPhotographys}
+                      />
+                    )}
                 </div>
               </div>
               <div className="col-lg-12 text-center"> <div className="form-check form-check-inline mt-3">
@@ -205,7 +228,7 @@ const handleCreateDocuments=()=>{
           {/* Docs Tab */}
           {activeTab === "docs" && (
             <div>
-              <DocumentUploadForm  documents={documents} onUpload={handleUpload} onSubmit={handleCreateDocuments}/>
+              <DocumentUploadForm documents={documents} onUpload={handleUpload} onSubmit={handleCreateDocuments} />
             </div>
 
           )}
