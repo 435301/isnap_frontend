@@ -247,7 +247,7 @@ const ManageSellers = () => {
           {/* Table */}
           <div className="row">
             <div className="bg-white p-3 rounded shadow-sm card-header">
-              <div className="table-responsive">
+              <div className="table">
                 {loading ? (
                   <p>Loading sellers...</p>
                 ) : filteredSellers.length === 0 ? (
