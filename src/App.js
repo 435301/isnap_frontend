@@ -120,6 +120,7 @@ import ManageSubDepartments from "./admin/pages/ManageSubDepartment.jsx";
 import AddSubDepartment from "./admin/pages/AddSubDepartment.jsx";
 import LeadViewExecutive from "./Executive/components/Modal/ViewLeadExecutive.jsx";
 import ExecutiveViewLead from "./Executive/components/Modal/ViewLeadExecutive.jsx";
+import NotFound from "./common/404.jsx";
 
 
 function App() {
@@ -164,7 +165,7 @@ function App() {
         <Route path="/manage-sub-departments" element={<AdminRoute><ManageSubDepartments /></AdminRoute>} />
         <Route path="/add-service" element={<AdminRoute><AddService /></AdminRoute>} />
         <Route path="/create-department" element={<AdminRoute><AddDepartment /></AdminRoute>} />
-        <Route path="/create-sub-department" element={<AdminRoute><AddSubDepartment/></AdminRoute>} />
+        <Route path="/create-sub-department" element={<AdminRoute><AddSubDepartment /></AdminRoute>} />
         <Route path="/create-wing" element={<AdminRoute><AddWing /></AdminRoute>} />
         <Route path="/create-billing" element={<AdminRoute><CreateBillingCycle /></AdminRoute>} />
         <Route path="/manage-product-listing" element={<AdminRoute><ManageProductListing /></AdminRoute>} />
@@ -259,7 +260,7 @@ function App() {
         <Route path="/accounts/change-password" element={<AccountsChangePassword />} />
 
 
-
+        <Route path="*" element={<NotFound />} />
       </Routes>
       <ToastContainer position="top-right" autoClose={3000} />
 
