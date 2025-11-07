@@ -58,7 +58,7 @@ const TeamLastestUpdates = () => {
                     return (
                       <img
                         key={file.id}
-                        src={`${BASE_URL}/${file.file}`}
+                        src={`${BASE_URL}${file.file}`}
                         alt="Update Img"
                         className="rounded"
                         width="70"
@@ -71,7 +71,7 @@ const TeamLastestUpdates = () => {
                     return (
                       <a
                         key={file.id}
-                        href={`${BASE_URL}/${file.file}`}
+                        href={`${BASE_URL}${file.file}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-primary small"
