@@ -58,7 +58,8 @@ const TeamLastestUpdates = () => {
                     return (
                       <img
                         key={file.id}
-                        src={`${BASE_URL}${file.file}`}
+                        // src={`${BASE_URL}${file.file}`}
+                        src={"https://isnap-backend.duckdns.org/uploads/latest_update_files/1759319747152-th.jpg"}
                         alt="Update Img"
                         className="rounded"
                         width="70"
