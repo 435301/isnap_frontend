@@ -6,7 +6,7 @@ const ViewTeamModal = ({ showViewModal, setShowViewModal, selectedTeam }) => {
 
   if (!showViewModal || !selectedTeam) return null;
 
-  const API_BASE_URL = "http://143.110.244.33:8080";
+  const API_BASE_URL = "https://isnap-backend.duckdns.org";
 
   const resolveImageUrl = (path) => {
     if (!path) return null;

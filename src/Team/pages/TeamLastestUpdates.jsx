@@ -6,7 +6,7 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 import img1 from '../assets/images/img.png';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchLatestUpdates } from '../../redux/actions/latestUpdatesAction';
-import BASE_URL from '../../config/config';
+import BASE_URL, { getFullFileUrl } from '../../config/config';
 import "../assets/team.css";
 
 const TeamLastestUpdates = () => {
@@ -58,7 +58,8 @@ const TeamLastestUpdates = () => {
                     return (
                       <img
                         key={file.id}
-                        src={`${BASE_URL}${file.file}`}
+                        // src={`${BASE_URL}${file.file}`}
+                        src={getFullFileUrl(file.file)}
                         alt="Update Img"
                         className="rounded"
                         width="70"
