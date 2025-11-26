@@ -8,6 +8,7 @@ import { fetchTaskHistory, sendTaskComments } from '../../redux/actions/taskActi
 import { toast } from 'react-toastify';
 import { useLocation } from 'react-router-dom';
 import { getStatus } from '../../common/helper';
+import BASE_URL from '../../config/config';
 
 const TaskSummary = () => {
   const location = useLocation();
@@ -16,6 +17,7 @@ const TaskSummary = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [comments, setComments] = useState("");
+  const [selectedFile, setSelectedFile] = useState(null);
   // const [status, setStatus] = useState(task?.workProgressStatus || 2);
   const status = getStatus(task.workProgressStatus);
   const { taskHistory = [] } = useSelector((state) => state.tasks || {});
@@ -42,8 +44,9 @@ const TaskSummary = () => {
       toast.error("Please enter a comment before sending");
       return;
     }
-    dispatch(sendTaskComments(task.id, status.id, comments));
+    dispatch(sendTaskComments(task.id, status.id, comments, selectedFile));
     setComments("");
+    setSelectedFile(null);
   };
 
   const renderDiscussion = (item) => (
@@ -131,6 +134,11 @@ const TaskSummary = () => {
               <h6 className="mb-2 fw-semibold">Comment</h6>
               <textarea className="form-control mb-2" rows="3" placeholder="Enter Message" value={comments}
                 onChange={(e) => setComments(e.target.value)}></textarea >
+              <input
+                type="file"
+                className="form-control mb-2"
+                onChange={(e) => setSelectedFile(e.target.files[0])}
+              />
               <div className="text-end mt-3">
                 <button className="btn btn-success px-4" onClick={handleSendComments}>Send</button>
               </div>
@@ -166,6 +174,18 @@ const TaskSummary = () => {
                                 <span className="text-secondary">({item.role})</span>
                               </p>
                               <p className="small mb-1 text-secondary">{item.comments}</p>
+                              {item.file && (
+                                <p className="small mb-1">
+                                  <a
+                                    href={`${BASE_URL}/${item.file}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-primary text-decoration-underline"
+                                  >
+                                    View Attachment
+                                  </a>
+                                </p>
+                              )}
                               <p className="small text-muted mb-0">
                                 {new Date(item.createdAt).toLocaleString()}
                               </p>

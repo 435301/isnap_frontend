@@ -59,7 +59,7 @@ export const FETCH_PHOTOGRAPHY_MY_TASKS_FAILURE = "FETCH_PHOTOGRAPHY_MY_TASKS_FA
 
 export const SEND_TASK_COMMENTS_REQUEST = "SEND_TASK_COMMENTS_REQUEST";
 export const SEND_TASK_COMMENTS_SUCCESS = "SEND_TASK_COMMENTS_SUCCESS";
-export const SEND_TASK_COMMENTS_FAILURE = "SEND_TASK_COMMENTS_FAILURE"; 
+export const SEND_TASK_COMMENTS_FAILURE = "SEND_TASK_COMMENTS_FAILURE";
 
 export const FETCH_TASK_HISTORY_REQUEST = "FETCH_TASK_HISTORY_REQUEST";
 export const FETCH_TASK_HISTORY_SUCCESS = "FETCH_TASK_HISTORY_SUCCESS";
@@ -290,10 +290,18 @@ export const fetchPhotographyMyTasks = () => async (dispatch) => {
   }
 };
 
-export const sendTaskComments = (taskId, status, comments) => async (dispatch) => {
+export const sendTaskComments = (taskId, status, comments, file) => async (dispatch) => {
   try {
     dispatch({ type: SEND_TASK_COMMENTS_REQUEST });
-    const response = await axios.post( `${BASE_URL}/task/sendTaskComments`,  { taskId, status, comments },  getAuthHeaders());
+    const formData = new FormData();
+    formData.append("taskId", taskId);
+    formData.append("status", status);
+    formData.append("comments", comments);
+
+    if (file) {
+      formData.append("file", file);
+    }
+    const response = await axios.post(`${BASE_URL}/task/sendTaskComments`, formData, getAuthHeaders(true));
     dispatch({
       type: SEND_TASK_COMMENTS_SUCCESS,
       payload: response.data,
@@ -312,7 +320,7 @@ export const sendTaskComments = (taskId, status, comments) => async (dispatch) =
 export const fetchTaskHistory = (taskId) => async (dispatch) => {
   try {
     dispatch({ type: FETCH_TASK_HISTORY_REQUEST });
-    const response = await axios.get( `${BASE_URL}/task/getTaskHistory/${taskId}`, getAuthHeaders());
+    const response = await axios.get(`${BASE_URL}/task/getTaskHistory/${taskId}`, getAuthHeaders());
     dispatch({
       type: FETCH_TASK_HISTORY_SUCCESS,
       payload: response.data.data,

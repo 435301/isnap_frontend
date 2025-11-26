@@ -149,6 +149,17 @@ const TeamSidebar = ({ isOpen }) => {
             {isOpen && <span>Notification</span>}
           </Link>
 
+
+          <Link
+            to="/team/team-documents"
+            className={`nav-item nav-link ${isLinkActive(
+              "/team/team-documents"
+            )}`}
+          >
+            <i className="bi bi-bell me-2"></i>
+            {isOpen && <span>Documents</span>}
+          </Link>
+
           <Link
             to="/team/change-password"
             className={`nav-item nav-link ${isLinkActive(
