@@ -96,6 +96,16 @@ const TeamSidebar = ({ isOpen }) => {
             {isOpen && <span>Latest Updates</span>}
           </Link>
 
+            <Link
+            to="/team/manage-sellers"
+            className={`nav-item nav-link ${isLinkActive(
+              "/team/manage-sellers"
+            )}`}
+          >
+            <i className="bi bi-bell me-2"></i>
+            {isOpen && <span>Manage Sellers</span>}
+          </Link>
+
           {/* Reports Dropdown */}
           <div
             className={`nav-item dropdown ${

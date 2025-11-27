@@ -41,6 +41,7 @@ import { invoiceReducer } from "./invoiceReducer";
 import ExecutiveDashboardReducer from "./executiveDashboardReducer";
 import { subDepartmentReducer } from "./subDepartmentReducer";
 import { tasksReducer } from "./taskReducer";
+import { teamSellerReducer } from "./teamSellerReducer";
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -95,6 +96,7 @@ const rootReducer = combineReducers({
   generateInvoice:invoiceReducer,
   subDepartments: subDepartmentReducer,
   tasks:tasksReducer,
+  teamSeller: teamSellerReducer,
 });
 
 

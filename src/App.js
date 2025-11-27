@@ -121,6 +121,8 @@ import AddSubDepartment from "./admin/pages/AddSubDepartment.jsx";
 import LeadViewExecutive from "./Executive/components/Modal/ViewLeadExecutive.jsx";
 import ExecutiveViewLead from "./Executive/components/Modal/ViewLeadExecutive.jsx";
 import NotFound from "./common/404.jsx";
+import ManageSellersTeam from "./Team/pages/ManageSellers.jsx";
+import ViewSellerDetails from "./Team/pages/ViewSellerDetails.jsx";
 
 
 function App() {
@@ -212,6 +214,8 @@ function App() {
         <Route path="/team/dashboard" element={<TeamRoute><TeamDashboard /></TeamRoute>} />
         <Route path="/team/latest-updates" element={<TeamRoute><TeamLastestUpdates /></TeamRoute>} />
         <Route path="/team/manage-leads" element={<TeamRoute><TeamManageLeads /></TeamRoute>} />
+        <Route path="/team/manage-sellers" element={<TeamRoute><ManageSellersTeam /></TeamRoute>} />
+        <Route path="/team/view-seller/:id" element={<TeamRoute><ViewSellerDetails /></TeamRoute>} />
         <Route path="/team/team-tasks" element={<TeamRoute><TeamTasks /></TeamRoute>} />
         <Route path="/team/task-summary" element={<TeamRoute><TaskSummary /></TeamRoute>} />
         <Route path="/team/team-notification" element={<TeamRoute><TeamNotifications /></TeamRoute>} />
