@@ -21,10 +21,8 @@ const ManageSellersTeam = () => {
   const subDeptName = storedUser.subDepartmentName
   const roleName = storedUser.roleName
   const dispatch = useDispatch();
-  const { MarketManagerSellerList = [], loading = false, totalPages = 1, } = useSelector((state) => state.teamSeller || {});
-  
+  const { MarketManagerSellerList = [], loading , totalPages = 1, } = useSelector((state) => state.teamSeller || {});
 
-  console.log('role', subDeptName, roleName, MarketManagerSellerList)
   useEffect(() => {
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
@@ -36,42 +34,64 @@ const ManageSellersTeam = () => {
   }, []);
 
 
-  useEffect(() => {
-    const params = {
-      page: currentPage,
-      limit: itemsPerPage,
-      search: searchTerm,
-      showStatus: statusFilter,
-    };
-    const paramsMPExec = {
-      page: currentPage,
-      limit: itemsPerPage,
-      search: searchTerm,
-      showStatus: statusFilter,
-      source: "BusinessLaunch" || "CatalogListing" || "KeyAccountManagement"
-    }
-    if (roleName === "Marketplace Manager") {
-      dispatch(fetchMarketPlaceManagerSellerList(params));
-    } else if (subDeptName === "Business Launch" || subDeptName === "Catalog Listing" || subDeptName === "Key Account Management" && roleName === "Executive") {
-      dispatch(fetchMarketPlaceExecutivesSellerList(paramsMPExec));
-    } else if (roleName === "Digital Marketing Manager" && roleName === "Digital Marketing Executive") {
-      dispatch(fetchDigitalMarketingSellerList(params));
-    }
-    else if (roleName === "Photography Manager" && roleName === "Photography Executive") {
-      dispatch(fetchPhotographySellerList(params));
-    }
+ useEffect(() => {
+  const params = {
+    page: currentPage,
+    limit: itemsPerPage,
+    search: searchTerm.trim(),
+    showStatus: statusFilter === "" ? "" : Number(statusFilter),
+  };
 
-  }, [dispatch, subDeptName, roleName, currentPage, searchTerm, statusFilter]);
+  const paramsMPExec = {
+ ...params,
+    source: subDeptName, // Correct source value
+  };
+
+  if (roleName === "Marketplace Manager") {
+    dispatch(fetchMarketPlaceManagerSellerList(params));
+  } 
+  else if (
+    roleName === "Executive" &&
+    (
+      subDeptName === "Business Launch" ||
+      subDeptName === "Catalog Listing" ||
+      subDeptName === "Key Account Management"
+    )
+  ) {
+    dispatch(fetchMarketPlaceExecutivesSellerList(paramsMPExec));
+  }
+  else if (
+    roleName === "Digital Marketing Manager" ||
+    roleName === "Digital Marketing Executive"
+  ) {
+    dispatch(fetchDigitalMarketingSellerList(params));
+  }
+  else if (
+    roleName === "Photography Manager" ||
+    roleName === "Photography Executive"
+  ) {
+    dispatch(fetchPhotographySellerList(params));
+  }
+
+}, [dispatch, roleName, subDeptName, currentPage, searchTerm, statusFilter]);
+
 
   const handleToggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
-  const handleRefresh = () => {
-    setSearchTerm("");
-    setStatusFilter("");
-    setCurrentPage(1);
-    dispatch(fetchMarketPlaceManagerSellerList(1, itemsPerPage, "", ""));
-  };
+ const handleRefresh = () => {
+  setSearchTerm("");
+  setStatusFilter("");
+  setCurrentPage(1);
 
+  // const params = {
+  //   page: 1,
+  //   limit: itemsPerPage,
+  //   search: "",
+  //   showStatus: "",
+  // };
+
+  // dispatch(fetchMarketPlaceManagerSellerList(params));
+};
 
   return (
     <div className="container-fluid position-relative bg-white d-flex p-0">
@@ -114,7 +134,7 @@ const ManageSellersTeam = () => {
                   <select
                     className="form-select"
                     value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value)}
+                    onChange={(e) =>  setStatusFilter(e.target.value === "" ? "" : Number(e.target.value))}
                   >
                     <option value="">All</option>
                     <option value="1">Active</option>
@@ -142,7 +162,7 @@ const ManageSellersTeam = () => {
               <div className="table">
                 {loading ? (
                   <p>Loading sellers...</p>
-                ) : MarketManagerSellerList.length === 0 ? (
+                ) :!MarketManagerSellerList || MarketManagerSellerList?.length === 0 ? (
                   <p>No sellers found.</p>
                 ) : (
                   <table className="table align-middle table-striped table-hover">

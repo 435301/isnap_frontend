@@ -43,8 +43,6 @@ export const fetchMarketPlaceManagerSellerList =
                     type: FETCH_MP_MANAGER_SELLER_LIST_FAILURE,
                     payload: error.response?.data?.message || error.message,
                 });
-
-                toast.error(error.response?.data?.message || "Failed to fetch seller list");
             }
         };
 
@@ -67,8 +65,6 @@ export const fetchMarketPlaceExecutivesSellerList =
                     type: FETCH_MP_EXECUTIVES_SELLER_LIST_FAILURE,
                     payload: error.response?.data?.message || error.message,
                 });
-
-                toast.error(error.response?.data?.message || "Failed to fetch seller list");
             }
         };
 
@@ -88,8 +84,6 @@ export const fetchDigitalMarketingSellerList =
                     type: FETCH_DIGITAL_MARKETING_SELLER_LIST_FAILURE,
                     payload: error.response?.data?.message || error.message,
                 });
-
-                toast.error(error.response?.data?.message || "Failed to fetch seller list");
             }
         };
 
@@ -109,7 +103,6 @@ export const fetchPhotographySellerList =
                     type: FETCH_PHOTOGRAPHY_SELLER_LIST_FAILURE,
                     payload: error.response?.data?.message || error.message,
                 });
-                toast.error(error.response?.data?.message || "Failed to fetch seller list");
             }
         };
 
@@ -127,6 +120,5 @@ export const fetchPhotographySellerList =
                     type: FETCH__SELLER_DETAILST_FAILURE,
                     payload: error.response?.data?.message || error.message,
                 });
-                toast.error(error.response?.data?.message || "Failed to fetch seller list");
             }
         };
