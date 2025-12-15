@@ -11,15 +11,27 @@ import "react-toastify/dist/ReactToastify.css";
 import { createLeadSource } from "../../redux/actions/leadSourceAction";
 import { createDocument } from "../../redux/actions/docTypeAction";
 import { fetchDocumentCategories } from "../../redux/actions/docCategoryAction";
+import { fetchDepartments } from "../../redux/actions/departmentActions";
+import { Form } from "react-bootstrap";
+import SearchableSelectMulti from "../../components/searchableSelect";
 
 const AddDocType = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { documentCategories, loading, totalPages } = useSelector(state => state.documentCategory);
+  const { departments } = useSelector(state => state.department);
+  console.log('departments', departments)
+  const departmentOptions = departments.map(dep => ({
+    value: dep.id,
+    label: dep.departmentName
+  }));
+
+
   const [formData, setFormData] = useState({
     documentCategoryId: "",
     documentType: "",
+    source: [],
     status: "",
   });
   const [errors, setErrors] = useState({});
@@ -33,6 +45,7 @@ const AddDocType = () => {
 
   useEffect(() => {
     dispatch(fetchDocumentCategories());
+    dispatch(fetchDepartments());
   }, [dispatch]);
 
   const handleToggleSidebar = () => setIsSidebarOpen((prev) => !prev);
@@ -43,15 +56,27 @@ const AddDocType = () => {
     setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
+  const handleSourceChange = (id) => {
+    setFormData((prev) => ({
+      ...prev,
+      source: prev.source.includes(id)
+        ? prev.source.filter((item) => item !== id)
+        : [...prev.source, id],
+    }));
+  };
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const validationErrors = {};
-     if (!formData.documentCategoryId.trim())
+    if (!formData.documentCategoryId.trim())
       validationErrors.documentCategoryId = " Document Category is required.";
     if (!formData.documentType.trim())
       validationErrors.documentType = " Document Type is required.";
     if (formData.status === "")
       validationErrors.status = "Status is required.";
+    if (formData.source.length === 0)
+      validationErrors.source = "Please select at least one source.";
 
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
@@ -132,7 +157,6 @@ const AddDocType = () => {
                       <div className="invalid-feedback">{errors.documentType}</div>
                     )}
                   </div>
-
                   <div className="col-md-4">
                     <label className="form-label">
                       Status <span className="text-danger">*</span>
@@ -151,6 +175,30 @@ const AddDocType = () => {
                       <div className="invalid-feedback">{errors.status}</div>
                     )}
                   </div>
+
+
+                  <div className="col-md-4">
+                    <label className="form-label">
+                      Source <span className="text-danger">*</span>
+                    </label>
+                    <SearchableSelectMulti
+                      name="source"
+                      options={departmentOptions}
+                      value={formData.source}          // array of ids [1,2,3]
+                      placeholder="Select Departments"
+                      onChange={(ids) => {
+                        setFormData(prev => ({
+                          ...prev,
+                          source: ids
+                        }));
+                        setErrors(prev => ({ ...prev, source: "" }));
+                      }}
+                    />
+                    {errors.source && (
+                      <small className="text-danger">{errors.source}</small>
+                    )}
+                  </div>
+
 
                   <div className="col-md-12 d-flex justify-content-end mt-5 mb-4">
                     <button type="submit" className="btn btn-success px-4 me-2">

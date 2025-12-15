@@ -1,11 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { Button, Form, Offcanvas } from "react-bootstrap";
+import SearchableSelectMulti from "../../../components/searchableSelect";
 
-const EditDocTypeOffcanvas = ({ show, handleClose, docType, onSave, documentCategories }) => {
+const EditDocTypeOffcanvas = ({ show, handleClose, docType, onSave, documentCategories, departments }) => {
     console.log('docType', docType, documentCategories)
+    const departmentOptions = departments.map(dep => ({
+        value: dep.id,
+        label: dep.departmentName
+    }));
     const [formData, setFormData] = useState({
         documentCategoryId: "",
         documentType: "",
+        source: [],
         status: "",
     });
 
@@ -14,6 +20,7 @@ const EditDocTypeOffcanvas = ({ show, handleClose, docType, onSave, documentCate
             setFormData({
                 documentCategoryId: docType.documentCategoryId || "",
                 documentType: docType.documentType || "",
+                source: docType.source?.map(dep => dep.id) || [],
                 status: docType.status ? "Active" : "Inactive",
             });
         }
@@ -24,6 +31,7 @@ const EditDocTypeOffcanvas = ({ show, handleClose, docType, onSave, documentCate
             id: docType.id,
             documentCategoryId: formData.documentCategoryId,
             documentType: formData.documentType,
+            source: formData.source,
             status: formData.status === "Active" ? 1 : 0,
         };
         onSave(updated);
@@ -67,6 +75,25 @@ const EditDocTypeOffcanvas = ({ show, handleClose, docType, onSave, documentCate
                             onChange={(e) =>
                                 setFormData({ ...formData, documentType: e.target.value })
                             }
+                        />
+                    </Form.Group>
+
+                    <Form.Group className="mb-3">
+                        <label className="form-label">
+                            Source <span className="text-danger">*</span>
+                        </label>
+                        <SearchableSelectMulti
+                            name="source"
+                            options={departmentOptions}
+                            value={formData.source}          // array of ids [1,2,3]
+                            placeholder="Select Departments"
+                            onChange={(ids) => {
+                                setFormData(prev => ({
+                                    ...prev,
+                                    source: ids
+                                }));
+
+                            }}
                         />
                     </Form.Group>
 

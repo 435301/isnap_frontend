@@ -9,6 +9,7 @@ import { deleteDocument, fetchDocuments, updateDocument } from "../../redux/acti
 import EditDocTypeOffcanvas from "../components/Modal/EditDocTypeModal";
 import { fetchDocumentCategories } from "../../redux/actions/docCategoryAction";
 import ViewDocTypeModal from "../components/Modal/ViewDocTypeModal";
+import { fetchDepartments } from "../../redux/actions/departmentActions";
 
 const ManageDocType = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 992);
@@ -22,10 +23,11 @@ const ManageDocType = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [doccatid, setDoccatid] = useState("");
 
-
   const dispatch = useDispatch();
   const { documents, loading, error, totalPages, limit } = useSelector((state) => state.documents);
   const { documentCategories } = useSelector(state => state.documentCategory);
+  const { departments } = useSelector(state => state.department);
+  console.log('departments', departments)
   useEffect(() => {
     dispatch(fetchDocuments({
       search: searchTerm,
@@ -35,6 +37,7 @@ const ManageDocType = () => {
       documentCategoryId: doccatid
     }));
     dispatch(fetchDocumentCategories())
+    dispatch(fetchDepartments());
   }, [dispatch, currentPage, searchTerm, statusFilter, doccatid]);
 
   const handleToggleSidebar = () => setIsSidebarOpen((prev) => !prev);
@@ -42,8 +45,8 @@ const ManageDocType = () => {
     setSearchTerm("");
     setStatusFilter(null);
     setCurrentPage(1);
-     setDoccatid(""); 
-    dispatch(fetchDocuments({ search: "", page: "", showStatus: "", documentCategoryId: "" ,}));
+    setDoccatid("");
+    dispatch(fetchDocuments({ search: "", page: "", showStatus: "", documentCategoryId: "", }));
   };
   const handleStatusChange = (e) => {
     const value = e.target.value;
@@ -157,6 +160,7 @@ const ManageDocType = () => {
                         <th>#</th>
                         <th>Document Category</th>
                         <th>Document Type</th>
+                        <th>Source</th>
                         <th>Status</th>
                         <th>Actions</th>
                       </tr>
@@ -172,6 +176,12 @@ const ManageDocType = () => {
                             <td>{index + 1 + (currentPage - 1) * limit}</td>
                             <td>{m.documentCategoryTitle}</td>
                             <td>{m.documentType}</td>
+                            <td>
+                              {m.source?.length
+                                ? m.source.map(dep => dep.name).join(", ")
+                                : "-"}
+                            </td>
+
                             <td>
                               <span className={`badge ${m.status ? "bg-success-light text-success" : "bg-danger-light text-danger"}`}>
                                 {m.status ? "Active" : "Inactive"}
@@ -208,7 +218,7 @@ const ManageDocType = () => {
             onPageChange={setCurrentPage}
           />
           {showViewModal && <ViewDocTypeModal show={showViewModal} handleClose={() => setShowViewModal(false)} docType={selectedDocType} />}
-          {showEditOffcanvas && <EditDocTypeOffcanvas show={showEditOffcanvas} handleClose={() => setShowEditOffcanvas(false)} docType={selectedDocType} onSave={handleSaveChanges} documentCategories={documentCategories} />}
+          {showEditOffcanvas && <EditDocTypeOffcanvas show={showEditOffcanvas} handleClose={() => setShowEditOffcanvas(false)} docType={selectedDocType} onSave={handleSaveChanges} documentCategories={documentCategories}  departments={departments} />}
           {showDeleteModal && (
             <DeleteConfirmationModal
               show={showDeleteModal}
