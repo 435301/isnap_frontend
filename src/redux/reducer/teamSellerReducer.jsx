@@ -13,7 +13,13 @@ import {
     FETCH_PHOTOGRAPHY_SELLER_LIST_FAILURE,
     FETCH__SELLER_DETAILS_REQUEST,
     FETCH__SELLER_DETAILS_SUCCESS,
-    FETCH__SELLER_DETAILST_FAILURE
+    FETCH__SELLER_DETAILST_FAILURE,
+    FETCH_DM_SELLER_DETAILST_FAILURE,
+    FETCH_DM_SELLER_DETAILS_REQUEST,
+    FETCH_DM_SELLER_DETAILS_SUCCESS,
+    FETCH_PHOTOHRAPHY_SELLER_DETAILST_FAILURE,
+    FETCH_PHOTOHRAPHY_SELLER_DETAILS_REQUEST,
+    FETCH_PHOTOHRAPHY_SELLER_DETAILS_SUCCESS,
 } from "../actions/TeamSellerAction";
 
 
@@ -33,6 +39,8 @@ export const teamSellerReducer = (state = initialState, action) => {
         case FETCH_DIGITAL_MARKETING_SELLER_LIST_REQUEST:
         case FETCH_PHOTOGRAPHY_SELLER_LIST_REQUEST:
         case FETCH__SELLER_DETAILS_REQUEST:
+        case FETCH_DM_SELLER_DETAILS_REQUEST:
+        case FETCH_PHOTOHRAPHY_SELLER_DETAILS_REQUEST:
             return { ...state, loading: true, error: null, };
         case FETCH_MP_MANAGER_SELLER_LIST_SUCCESS:
         case FETCH_MP_EXECUTIVES_SELLER_LIST_SUCCESS:
@@ -45,6 +53,8 @@ export const teamSellerReducer = (state = initialState, action) => {
                 totalPages: action.payload.totalPages,
             };
         case FETCH__SELLER_DETAILS_SUCCESS:
+        case FETCH_DM_SELLER_DETAILS_SUCCESS:
+        case FETCH_PHOTOHRAPHY_SELLER_DETAILS_SUCCESS:
             return {
                 ...state, loading: false, sellerData: action.payload,
             };
@@ -54,6 +64,8 @@ export const teamSellerReducer = (state = initialState, action) => {
         case FETCH_PHOTOGRAPHY_SELLER_LIST_FAILURE:
             return { ...state, loading: false, error: action.payload, MarketManagerSellerList: [], };
         case FETCH__SELLER_DETAILST_FAILURE:
+        case FETCH_DM_SELLER_DETAILST_FAILURE:
+        case FETCH_PHOTOHRAPHY_SELLER_DETAILST_FAILURE:
             return { ...state, loading: false, error: action.payload, sellerData: {} };
         default:
             return state;

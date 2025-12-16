@@ -24,6 +24,14 @@ export const FETCH__SELLER_DETAILS_REQUEST = "FETCH__SELLER_DETAILS_REQUEST";
 export const FETCH__SELLER_DETAILS_SUCCESS = "FETCH__SELLER_DETAILS_SUCCESS";
 export const FETCH__SELLER_DETAILST_FAILURE = "FETCH__SELLER_DETAILST_FAILURE";
 
+export const FETCH_DM_SELLER_DETAILS_REQUEST = "FETCH_DM_SELLER_DETAILS_REQUEST";
+export const FETCH_DM_SELLER_DETAILS_SUCCESS = "FETCH_DM_SELLER_DETAILS_SUCCESS";
+export const FETCH_DM_SELLER_DETAILST_FAILURE = "FETCH_DM_SELLER_DETAILST_FAILURE";
+
+export const FETCH_PHOTOHRAPHY_SELLER_DETAILS_REQUEST = "FETCH_PHOTOHRAPHY_SELLER_DETAILS_REQUEST";
+export const FETCH_PHOTOHRAPHY_SELLER_DETAILS_SUCCESS = "FETCH_PHOTOHRAPHY_SELLER_DETAILS_SUCCESS";
+export const FETCH_PHOTOHRAPHY_SELLER_DETAILST_FAILURE = "FETCH_PHOTOHRAPHY_SELLER_DETAILST_FAILURE";
+
 export const fetchMarketPlaceManagerSellerList =
     (payload = { page: "", search: "", showStatus: "" }) =>
         async (dispatch) => {
@@ -106,19 +114,52 @@ export const fetchPhotographySellerList =
             }
         };
 
-        export const fetchAllSellersDetailsById = (id) =>  async (dispatch) => {
-            try {
-                dispatch({ type: FETCH__SELLER_DETAILS_REQUEST });
-                const response = await axios.get(
-                    `${BASE_URL}/marketplaceManager/getSellerById/${id}`, getAuthHeaders());
-                dispatch({
-                    type: FETCH__SELLER_DETAILS_SUCCESS,
-                    payload: response.data.data || {},
-                });
-            } catch (error) {
-                dispatch({
-                    type: FETCH__SELLER_DETAILST_FAILURE,
-                    payload: error.response?.data?.message || error.message,
-                });
-            }
-        };
+export const fetchMarketplaceSellersDetailsById = (id) => async (dispatch) => {
+    try {
+        dispatch({ type: FETCH__SELLER_DETAILS_REQUEST });
+        const response = await axios.get(
+            `${BASE_URL}/marketplaceManager/getSellerById/${id}`, getAuthHeaders());
+        dispatch({
+            type: FETCH__SELLER_DETAILS_SUCCESS,
+            payload: response.data.data || {},
+        });
+    } catch (error) {
+        dispatch({
+            type: FETCH__SELLER_DETAILST_FAILURE,
+            payload: error.response?.data?.message || error.message,
+        });
+    }
+};
+export const fetchDigitalMarketingSellersDetailsById = (id) => async (dispatch) => {
+    try {
+        dispatch({ type: FETCH_DM_SELLER_DETAILS_REQUEST });
+        const response = await axios.get(
+            `${BASE_URL}/digitalMarketingTeam/getSellerById/${id}`, getAuthHeaders());
+        dispatch({
+            type: FETCH_DM_SELLER_DETAILS_SUCCESS,
+            payload: response.data.data || {},
+        });
+    } catch (error) {
+        dispatch({
+            type: FETCH_DM_SELLER_DETAILST_FAILURE,
+            payload: error.response?.data?.message || error.message,
+        });
+    }
+};
+
+export const fetchPhotographySellersDetailsById = (id) => async (dispatch) => {
+    try {
+        dispatch({ type: FETCH_PHOTOHRAPHY_SELLER_DETAILST_FAILURE });
+        const response = await axios.get(
+            `${BASE_URL}/photographyTeam/getSellerById/${id}`, getAuthHeaders());
+        dispatch({
+            type: FETCH_PHOTOHRAPHY_SELLER_DETAILS_SUCCESS,
+            payload: response.data.data || {},
+        });
+    } catch (error) {
+        dispatch({
+            type: FETCH_PHOTOHRAPHY_SELLER_DETAILST_FAILURE,
+            payload: error.response?.data?.message || error.message,
+        });
+    }
+};
