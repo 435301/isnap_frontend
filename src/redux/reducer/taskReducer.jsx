@@ -41,6 +41,16 @@ import {
     FETCH_TASK_HISTORY_REQUEST,
     FETCH_TASK_HISTORY_SUCCESS,
     FETCH_TASK_HISTORY_FAILURE,
+    CREATE_TASK_REQUEST,
+    CREATE_TASK_SUCCESS,
+    CREATE_TASK_FAILURE,
+    PERSONAL_TASKS_REQUEST,
+    PERSONAL_TASKS_SUCCESS,
+    PERSONAL_TASKS_FAILURE,
+    PERSONAL_TASK_DETAILS_SUCCESS,
+    UPDATE_PERSONAL_TASK_PRIORITY_SUCCESS,
+    UPDATE_PERSONAL_TASK_STATUS_SUCCESS,
+    DELETE_PERSONAL_TASK_SUCCESS,
 } from "../actions/taskAction";
 
 const initialState = {
@@ -58,6 +68,9 @@ const initialState = {
     PhotographyTasks: [],
     PhotographyMyTasks: [],
     taskHistory: [],
+    personalTask: null,
+    personalTasks: [],
+    personalSelectedTasks: null
 };
 
 export const tasksReducer = (state = initialState, action) => {
@@ -76,6 +89,8 @@ export const tasksReducer = (state = initialState, action) => {
         case FETCH_PHOTOGRAPHY_MY_TASKS_REQUEST:
         case SEND_TASK_COMMENTS_REQUEST:
         case FETCH_TASK_HISTORY_REQUEST:
+        case CREATE_TASK_REQUEST:
+        case PERSONAL_TASKS_REQUEST:
             return {
                 ...state,
                 loading: true,
@@ -153,6 +168,47 @@ export const tasksReducer = (state = initialState, action) => {
             return { ...state, loading: false, error: null };
         case FETCH_TASK_HISTORY_SUCCESS:
             return { ...state, loading: false, taskHistory: action.payload };
+        case CREATE_TASK_SUCCESS:
+            return {
+                ...state, loading: false, success: true, personalTask: action.payload.data
+            };
+
+        case PERSONAL_TASKS_SUCCESS:
+            return { ...state, loading: false, personalTasks: action.payload };
+
+        case PERSONAL_TASK_DETAILS_SUCCESS:
+            return { ...state, loading: false, personalSelectedTasks: action.payload };
+
+        case UPDATE_PERSONAL_TASK_PRIORITY_SUCCESS:
+            return {
+                ...state,
+                personalTasks: state.personalTasks.map((task) =>
+                    task.id === action.payload.id
+                        ? { ...task, priority: action.payload.priority }
+                        : task
+                ),
+            };
+
+        case UPDATE_PERSONAL_TASK_STATUS_SUCCESS:
+            return {
+                ...state,
+                personalTasks: state.personalTasks.map((task) =>
+                    task.id === action.payload.id
+                        ? {
+                            ...task,
+                            workProgressStatus: action.payload.status,
+                            completedDate: action.payload.completedDate,
+                        }
+                        : task
+                ),
+            };
+
+        case DELETE_PERSONAL_TASK_SUCCESS:
+            return {
+                ...state,
+                personalTasks: state.personalTasks.filter((task) => task.id !== action.payload),
+            };
+
         case FETCH_MARKETPLACE_TASKS_FAILURE:
         case FETCH_EXECUTIVES_FAILURE:
         case UPDATE_PRIORITY_FAILURE:
@@ -167,6 +223,8 @@ export const tasksReducer = (state = initialState, action) => {
         case FETCH_PHOTOGRAPHY_MY_TASKS_FAILURE:
         case SEND_TASK_COMMENTS_FAILURE:
         case FETCH_TASK_HISTORY_FAILURE:
+        case CREATE_TASK_FAILURE:
+        case PERSONAL_TASKS_FAILURE:
             return {
                 ...state,
                 loading: false,

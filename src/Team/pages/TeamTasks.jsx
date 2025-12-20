@@ -7,9 +7,10 @@ import AssignTaskModal from '../components/AssignTaskModal';
 import MoveTaskModal from '../components/MoveTaskModal';
 import RejectTaskModal from '../components/RejectTaskModal';
 import { useDispatch, useSelector } from 'react-redux';
-import { acceptTask, assignTask, fetchDigitalMarketingMyTasks, fetchDigitalMarketingTasks, fetchExecutives, fetchPhotographyMyTasks, fetchPhotographyTasks, fetchTasks, fetchTasksExecutive, moveTask, rejectTask, updatePriority } from '../../redux/actions/taskAction';
+import { acceptTask, assignTask, fetchDigitalMarketingMyTasks, fetchDigitalMarketingTasks, fetchExecutives, fetchPersonalTasks, fetchPhotographyMyTasks, fetchPhotographyTasks, fetchTasks, fetchTasksExecutive, moveTask, rejectTask, updatePriority } from '../../redux/actions/taskAction';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import CreateTaskModal from '../components/CreateTaskModal';
 
 const TeamTasks = () => {
   const dispatch = useDispatch();
@@ -33,8 +34,13 @@ const TeamTasks = () => {
   const [assignTo, setAssignTo] = useState("");
   const [assignComment, setAssignComment] = useState("");
 
-  const { tasks = [], executives, updatedPriority, acceptedTask, loading, error, myTasks, dmMyTasks, dmTasks, PhotographyTasks, PhotographyMyTasks } = useSelector((state) => state.tasks || {});
-  console.log('executives', executives)
+  const [todoTab, setTodoTab] = useState("team");
+  const [progressTab, setProgressTab] = useState("team");
+  const [doneTab, setDoneTab] = useState("team");
+  const [taskCreateModal, setTaskCreateModal] = useState(false);
+
+  const { tasks = [], executives, updatedPriority, acceptedTask, loading, error, myTasks, dmMyTasks, dmTasks, PhotographyTasks, PhotographyMyTasks, personalTasks, personalSelectedTasks } = useSelector((state) => state.tasks || {});
+  console.log('personalTasks', personalTasks)
   useEffect(() => {
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
@@ -46,6 +52,7 @@ const TeamTasks = () => {
   }, []);
 
   useEffect(() => {
+
     dispatch(fetchExecutives());
     if (subDeptName === "Business Launch" || subDeptName === "Catalog Listing" || subDeptName === "Key Account Management" && roleName === "Executive") {
       dispatch(fetchTasksExecutive());
@@ -65,6 +72,8 @@ const TeamTasks = () => {
     else {
       dispatch(fetchTasks());
     }
+    dispatch(fetchPersonalTasks());
+
   }, [dispatch, subDeptName, roleName]);
 
   const handleToggleSidebar = () => {
@@ -86,10 +95,14 @@ const TeamTasks = () => {
     activeTasks = PhotographyTasks;
   }
 
+  const personalTaskList = personalTasks || [];
 
-  const todoTasks = activeTasks.filter((t) => [1, 4, 5].includes(t.workProgressStatus));  // to do //accept // reject
-  const completedTasks = activeTasks.filter((t) => t.workProgressStatus === 3);   // completed 
-  const inProgressTasks = activeTasks.filter((t) => t.workProgressStatus === 2);  // in progress
+  const getSourceTasks = (tab) =>
+    tab === "my" ? personalTaskList : activeTasks;
+
+  const todoTasks = getSourceTasks(todoTab).filter((t) => [1, 4, 5].includes(t.workProgressStatus));  // to do //accept // reject
+  const completedTasks = getSourceTasks(doneTab).filter((t) => t.workProgressStatus === 3);   // completed 
+  const inProgressTasks = getSourceTasks(progressTab).filter((t) => t.workProgressStatus === 2);  // in progress
 
   // If API doesn’t have isPaid=2, you can derive inProgress by logic (optional)
   const taskData = {
@@ -269,6 +282,58 @@ const TeamTasks = () => {
     );
   };
 
+  const PersonalTaskCard = ({ task, type }) => {
+    const priorityLabel =
+      task.priority === 1 ? "High" :
+        task.priority === 2 ? "Medium" : "Low";
+    return (
+      <div className="card shadow-sm rounded-4 p-3 mb-3 border-start border-4 border-primary">
+        <div className="d-flex justify-content-between align-items-center mb-2">
+          <h6 className="fw-semibold mb-0">
+            {task.serviceTypeName}
+          </h6>
+          <span className="badge bg-secondary">
+            {priorityLabel}
+          </span>
+        </div>
+
+        <p className="text-muted small mb-2">
+          {task.description}
+        </p>
+
+        <div className="row small text-muted mb-2">
+          <div className="col-6">
+            <strong>From:</strong> {task.fromDate}
+          </div>
+          <div className="col-6">
+            <strong>To:</strong> {task.toDate}
+          </div>
+        </div>
+
+        <div className="row small text-muted mb-2">
+          <div className="col-6">
+            <strong>Manager:</strong> {task.managerName || "-"}
+          </div>
+          <div className="col-6">
+            <strong>Executive:</strong> {task.executiveName || "-"}
+          </div>
+        </div>
+
+        {type === "completed" && (
+          <div className="text-end mt-2">
+            <span className="badge bg-success">
+              Completed on{" "}
+              {task.completedDate
+                ? new Date(task.completedDate).toLocaleDateString()
+                : "-"}
+            </span>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+
   const handleAssignSubmit = (selectedTask, assignee, comment) => {
     if (!selectedTask || !assignee || !comment) {
       toast.error("Please select a task and an assignee and mention the comments");
@@ -322,6 +387,10 @@ const TeamTasks = () => {
     setShowRejectModal(false);
     setRejectReasonText("");
   };
+
+    const  handleClose = ()=>{
+      setTaskCreateModal(false);
+    }
   return (
     <div className="container-fluid position-relative bg-white d-flex p-0">
       <Sidebar isOpen={isSidebarOpen} />
@@ -338,8 +407,11 @@ const TeamTasks = () => {
           <div className="row">
             <div className="bg-white p-3 rounded shadow-sm card-header mb-2">
               <div className="row g-2 align-items-center">
-                <div className="col-lg-8">
+                <div className="col-lg-6">
                   <h5 className="form-title m-0">Manage Tasks</h5>
+                </div>
+                <div className="col-lg-2">
+                  <button className="btn btn-success" onClick={() => setTaskCreateModal(true)}>+ Create Task</button>
                 </div>
                 <div className="col-md-4">
                   <select className="form-select">
@@ -354,7 +426,7 @@ const TeamTasks = () => {
 
 
           </div>
-            {/* {!loading && !error &&
+          {/* {!loading && !error &&
             taskData.todo.length === 0 &&
             taskData.inProgress.length === 0 &&
             taskData.completed.length === 0 && (
@@ -365,113 +437,166 @@ const TeamTasks = () => {
             )
           } */}
           <div className="row g-2 pt-4">
-          
+
             {/* To Do Column */}
             <div className="col-md-4 task-column">
               <div className="pb-2 mb-2 d-flex align-items-center">
+
+
                 <h5 className="fw-bold d-inline me-2">To Do</h5>
+                <div className="d-flex gap-2 mb-2">
+                  <button
+                    className={`btn btn-sm ${todoTab === "team" ? "btn-primary" : "btn-outline-primary"}`}
+                    onClick={() => setTodoTab("team")}
+                  >
+                    Team Tasks
+                  </button>
+                  <button
+                    className={`btn btn-sm ${todoTab === "my" ? "btn-primary" : "btn-outline-primary"}`}
+                    onClick={() => setTodoTab("my")}
+                  >
+                    My Tasks
+                  </button>
+                </div>
                 <span className="badge rounded-circle bg-warning text-dark">
                   {taskData.todo.length.toString().padStart(2, '0')}
                 </span>
               </div>
 
               {loading && <p>Loading tasks...</p>}
-              {taskData.todo.map((task, idx) => (
-                <TaskCard
-                  key={idx}
-                  task={{
-                    id: task.taskId,
-                    title: `${task.source}:  ${task.serviceTypeName} ` || "Task",
-                    description: `${task.source} | Bill Cycle: ${task.billCycleTitle || "N/A"}`,
-                    startDate: task.createdAt
-                      ? new Date(task.createdAt).toLocaleDateString()
-                      : "-",
-                    dueDate: task.taskCompletionDays
-                      ? `${task.taskCompletionDays} days`
-                      : "-",
-                    seller: task.sellerName || "-",
-                    manager: task.managerName || "-",
-                    executive: task.executiveName || "-",
-                    priority: task.priorityLabel || "Low",
-                    workProgressStatus: task.workProgressStatus || "",
-                    businessName: task.businessName || "",
-                    managerName: task.managerName || "",
-                    completedDate: task.completedDate || "",
-                  }}
-                  type="todo"
-                />
-              ))}
+              {taskData.todo.map((task, idx) =>
+                todoTab === "my" ? (
+                  <PersonalTaskCard key={idx} task={task} type="todo" />
+                ) : (
+                  <TaskCard
+                    key={idx}
+                    task={{
+                      id: task.taskId,
+                      title: `${task.source}: ${task.serviceTypeName}`,
+                      description: `${task.source} | Bill Cycle: ${task.billCycleTitle || "N/A"}`,
+                      startDate: task.createdAt
+                        ? new Date(task.createdAt).toLocaleDateString()
+                        : "-",
+                      dueDate: task.taskCompletionDays
+                        ? `${task.taskCompletionDays} days`
+                        : "-",
+                      seller: task.sellerName || "-",
+                      manager: task.managerName || "-",
+                      executive: task.executiveName || "-",
+                      priority: task.priorityLabel || "Low",
+                      workProgressStatus: task.workProgressStatus,
+                      completedDate: task.completedDate || "",
+                    }}
+                    type="todo"
+                  />
+                )
+              )}
+
             </div>
 
             {/* In Progress Column */}
             <div className="col-md-4 task-column">
               <div className="pb-2 mb-2 d-flex align-items-center">
                 <h5 className="fw-bold d-inline me-2">In Progress</h5>
+                <div className="d-flex gap-2 mb-2">
+                  <button
+                    className={`btn btn-sm ${progressTab === "team" ? "btn-primary" : "btn-outline-primary"}`}
+                    onClick={() => setProgressTab("team")}
+                  >
+                    Team Tasks
+                  </button>
+                  <button
+                    className={`btn btn-sm ${progressTab === "my" ? "btn-primary" : "btn-outline-primary"}`}
+                    onClick={() => setProgressTab("my")}
+                  >
+                    My Tasks
+                  </button>
+                </div>
+
                 <span className="badge rounded-circle bg-primary">
                   {taskData.inProgress.length.toString().padStart(2, '0')}
                 </span>
               </div>
-              {taskData.inProgress.map((task, idx) => (
-                <TaskCard
-                  key={idx}
-                  task={{
-                    id: task.taskId,
-                    title: `${task.source}:  ${task.serviceTypeName} ` || "Task",
-                    description: `${task.source} | Bill Cycle: ${task.billCycleTitle || "N/A"}`,
-                    startDate: task.createdAt
-                      ? new Date(task.createdAt).toLocaleDateString()
-                      : "-",
-                    dueDate: task.taskCompletionDays
-                      ? `${task.taskCompletionDays} days`
-                      : "-",
-                    seller: task.sellerName || "-",
-                    manager: task.managerName || "-",
-                    executive: task.executiveName || "-",
-                    workProgressStatus: task.workProgressStatus || "",
-                    businessName: task.businessName || "",
-                    managerName: task.managerName || "",
-                    completedDate: task.completedDate || "",
-                  }}
-                  type="inProgress"
-                />
-              ))}
+              {taskData.inProgress.map((task, idx) =>
+                progressTab === "my" ? (
+                  <PersonalTaskCard key={idx} task={task} type="inProgress" />
+                ) : (
+                  <TaskCard
+                    key={idx}
+                    task={{
+                      id: task.taskId,
+                      title: `${task.source}: ${task.serviceTypeName}`,
+                      description: `${task.source} | Bill Cycle: ${task.billCycleTitle || "N/A"}`,
+                      startDate: task.createdAt
+                        ? new Date(task.createdAt).toLocaleDateString()
+                        : "-",
+                      dueDate: task.taskCompletionDays
+                        ? `${task.taskCompletionDays} days`
+                        : "-",
+                      seller: task.sellerName || "-",
+                      manager: task.managerName || "-",
+                      executive: task.executiveName || "-",
+                      workProgressStatus: task.workProgressStatus,
+                    }}
+                    type="inProgress"
+                  />
+                )
+              )}
+
             </div>
 
             {/* Completed Column */}
             <div className="col-md-4 task-column">
               <div className="pb-2 mb-2 d-flex align-items-center">
                 <h5 className="fw-bold d-inline me-2">Done</h5>
+                <div className="d-flex gap-2 mb-2">
+                  <button
+                    className={`btn btn-sm ${doneTab === "team" ? "btn-success" : "btn-outline-success"}`}
+                    onClick={() => setDoneTab("team")}
+                  >
+                    Team Tasks
+                  </button>
+                  <button
+                    className={`btn btn-sm ${doneTab === "my" ? "btn-success" : "btn-outline-success"}`}
+                    onClick={() => setDoneTab("my")}
+                  >
+                    My Tasks
+                  </button>
+                </div>
+
                 <span className="badge rounded-circle bg-success">
                   {taskData.completed.length.toString().padStart(2, '0')}
                 </span>
               </div>
-              {taskData.completed.map((task, idx) => (
-                <TaskCard
-                  key={idx}
-                  task={{
-                    id: task.taskId,
-                    title: `${task.source}:  ${task.serviceTypeName} ` || "Task",
-                    description: `${task.source} | Bill Cycle: ${task.billCycleTitle || "N/A"}`,
-                    startDate: task.createdAt
-                      ? new Date(task.createdAt).toLocaleDateString()
-                      : "-",
-                    dueDate: task.taskCompletionDays
-                      ? `${task.taskCompletionDays} days`
-                      : "-",
-                    seller: task.sellerName || "-",
-                    manager: task.managerName || "-",
-                    executive: task.executiveName || "-",
-                    completedDate: task.completedDate
-                      ? new Date(task.completedDate).toLocaleDateString()
-                      : "-",
-                    workProgressStatus: task.workProgressStatus || "",
-                    businessName: task.businessName || "",
-                    managerName: task.managerName || "",
-                    completedDate: task.completedDate || "",
-                  }}
-                  type="completed"
-                />
-              ))}
+              {taskData.completed.map((task, idx) =>
+                doneTab === "my" ? (
+                  <PersonalTaskCard key={idx} task={task} type="completed" />
+                ) : (
+                  <TaskCard
+                    key={idx}
+                    task={{
+                      id: task.taskId,
+                      title: `${task.source}: ${task.serviceTypeName}`,
+                      description: `${task.source} | Bill Cycle: ${task.billCycleTitle || "N/A"}`,
+                      startDate: task.createdAt
+                        ? new Date(task.createdAt).toLocaleDateString()
+                        : "-",
+                      dueDate: task.taskCompletionDays
+                        ? `${task.taskCompletionDays} days`
+                        : "-",
+                      seller: task.sellerName || "-",
+                      manager: task.managerName || "-",
+                      executive: task.executiveName || "-",
+                      completedDate: task.completedDate
+                        ? new Date(task.completedDate).toLocaleDateString()
+                        : "-",
+                      workProgressStatus: task.workProgressStatus,
+                    }}
+                    type="completed"
+                  />
+                )
+              )}
+
             </div>
           </div>
 
@@ -510,6 +635,7 @@ const TeamTasks = () => {
           onSubmit={handleRejectSubmit}
         />
 
+        <CreateTaskModal show={taskCreateModal} onClose={handleClose} />
       </div>
     </div>
   );

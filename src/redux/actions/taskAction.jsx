@@ -65,6 +65,21 @@ export const FETCH_TASK_HISTORY_REQUEST = "FETCH_TASK_HISTORY_REQUEST";
 export const FETCH_TASK_HISTORY_SUCCESS = "FETCH_TASK_HISTORY_SUCCESS";
 export const FETCH_TASK_HISTORY_FAILURE = "FETCH_TASK_HISTORY_FAILURE";
 
+export const CREATE_TASK_REQUEST = "CREATE_TASK_REQUEST";
+export const CREATE_TASK_SUCCESS = "CREATE_TASK_SUCCESS";
+export const CREATE_TASK_FAILURE = "CREATE_TASK_FAILURE";
+
+export const PERSONAL_TASKS_REQUEST = "PERSONAL_TASKS_REQUEST";
+export const PERSONAL_TASKS_SUCCESS = "PERSONAL_TASKS_SUCCESS";
+export const PERSONAL_TASKS_FAILURE = "PERSONAL_TASKS_FAILURE";
+
+export const PERSONAL_TASK_DETAILS_SUCCESS = "PERSONAL_TASK_DETAILS_SUCCESS";
+
+export const UPDATE_PERSONAL_TASK_PRIORITY_SUCCESS = "UPDATE_PERSONAL_TASK_PRIORITY_SUCCESS";
+export const UPDATE_PERSONAL_TASK_STATUS_SUCCESS = "UPDATE_PERSONAL_TASK_STATUS_SUCCESS";
+
+export const DELETE_PERSONAL_TASK_SUCCESS = "DELETE_PERSONAL_TASK_SUCCESS";
+
 
 export const fetchTasks = () => async (dispatch) => {
   try {
@@ -331,4 +346,90 @@ export const fetchTaskHistory = (taskId) => async (dispatch) => {
       payload: error.response?.data?.message || "Failed to fetch task history",
     });
   }
+};
+
+export const createTask = (taskPayload) => {
+  return async (dispatch) => {
+    dispatch({ type: CREATE_TASK_REQUEST });
+    try {
+      const response = await axios.post(`${BASE_URL}/personalTask/create`, taskPayload, getAuthHeaders(false));
+      if (response.data.status) {
+        dispatch({ type: CREATE_TASK_SUCCESS, payload: response.data });
+      } else {
+        dispatch({ type: CREATE_TASK_FAILURE, payload: response.data.message });
+      }
+      toast.success(response.data.message);
+      dispatch(fetchPersonalTasks());
+    } catch (error) {
+      dispatch({
+        type: CREATE_TASK_FAILURE,
+        payload: error.response?.data?.message || error.message
+      });
+      toast.error(error.response?.data?.message || error.message);
+    }
+  };
+};
+
+// Get all personal tasks
+export const fetchPersonalTasks = () => async (dispatch) => {
+  dispatch({ type: PERSONAL_TASKS_REQUEST });
+  try {
+    const res = await axios.get(`${BASE_URL}/personalTask/getTasksList`, getAuthHeaders());
+    dispatch({
+      type: PERSONAL_TASKS_SUCCESS,
+      payload: res.data.data,
+    });
+  } catch (error) {
+    dispatch({
+      type: PERSONAL_TASKS_FAILURE,
+      payload: error.message,
+    });
+  }
+};
+
+// Get personal task by ID
+export const fetchPersonalTaskById = (id) => async (dispatch) => {
+  dispatch({ type: PERSONAL_TASKS_REQUEST });
+  try {
+    const res = await axios.get(`${BASE_URL}/personalTask/getTaskById/${id}`);
+    dispatch({
+      type: PERSONAL_TASK_DETAILS_SUCCESS,
+      payload: res.data.data,
+    });
+  } catch (error) {
+    dispatch({
+      type: PERSONAL_TASKS_FAILURE,
+      payload: error.message,
+    });
+  }
+};
+
+// Update priority
+export const updatePersonalTaskPriority = (id, priority) => async (dispatch) => {
+  await axios.put(`${BASE_URL}/personalTask/updatePriority/${id}`, { priority });
+  dispatch({
+    type: UPDATE_PERSONAL_TASK_PRIORITY_SUCCESS,
+    payload: { id, priority },
+  });
+};
+
+// Update status
+export const updatePersonalTaskStatus = (id, status, completedDate) => async (dispatch) => {
+  await axios.put(`${BASE_URL}/personalTask/updateStatus/${id}`, {
+    status,
+    completedDate,
+  });
+  dispatch({
+    type: UPDATE_PERSONAL_TASK_STATUS_SUCCESS,
+    payload: { id, status, completedDate },
+  });
+};
+
+// Delete task
+export const deletePersonalTask = (id) => async (dispatch) => {
+  await axios.delete(`${BASE_URL}/personalTask/deleteTask/${id}`);
+  dispatch({
+    type: DELETE_PERSONAL_TASK_SUCCESS,
+    payload: id,
+  });
 };
