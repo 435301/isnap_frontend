@@ -27,6 +27,10 @@ export const CHECK_MOBILE_REQUEST = "CHECK_MOBILE_REQUEST";
 export const CHECK_MOBILE_SUCCESS = "CHECK_MOBILE_SUCCESS";
 export const CHECK_MOBILE_FAILURE = "CHECK_MOBILE_FAILURE";
 
+export const FETCH_SALES_TEAM_LEADS_REQUEST = "FETCH_SALES_TEAM_LEADS_REQUEST";
+export const FETCH_SALES_TEAM_LEADS_SUCCESS = "FETCH_SALES_TEAM_LEADS_SUCCESS";
+export const FETCH_SALES_TEAM_LEADS_FAILURE = "FETCH_SALES_TEAM_LEADS_FAILURE";
+
 
 // List Leads
 export const fetchLeads = (payload = { search: "", page: 1, showStatus: "" }) => async (dispatch) => {
@@ -102,5 +106,16 @@ export const checkMobile = (mobileNumber) => async (dispatch) => {
     } catch (error) {
         dispatch({ type: CHECK_MOBILE_FAILURE, payload: error.message });
         toast.error(error.response.data.message);
+    }
+};
+
+// List Leads fro sales team
+export const fetchLeadsSalesTeam = (payload = { search: "", page: 1, showStatus: "" }) => async (dispatch) => {
+    dispatch({ type: FETCH_SALES_TEAM_LEADS_FAILURE });
+    try {
+        const res = await axios.post(`${BASE_URL}/lead/getLeads`, payload, getAuthHeaders());
+        dispatch({ type: FETCH_SALES_TEAM_LEADS_REQUEST, payload: res.data.data });
+    } catch (error) {
+        dispatch({ type: FETCH_SALES_TEAM_LEADS_SUCCESS, payload: error.message });
     }
 };

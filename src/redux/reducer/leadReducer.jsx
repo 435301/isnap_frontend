@@ -18,10 +18,14 @@ import {
     CHECK_MOBILE_REQUEST,
     CHECK_MOBILE_SUCCESS,
     CHECK_MOBILE_FAILURE,
+    FETCH_SALES_TEAM_LEADS_FAILURE,
+    FETCH_SALES_TEAM_LEADS_REQUEST,
+    FETCH_SALES_TEAM_LEADS_SUCCESS,
 } from "../actions/leadAction";
 
 const initialState = {
     leads: [],
+    SalesTeamLeads:[],
     total: 0,
     currentPage: 1,
     totalPages: 1,
@@ -39,6 +43,7 @@ export const leadReducer = (state = initialState, action) => {
         case DELETE_LEAD_REQUEST:
         case FETCH_LEAD_BY_ID_REQUEST:
         case CHECK_MOBILE_REQUEST:
+        case FETCH_SALES_TEAM_LEADS_REQUEST:
             return { ...state, loading: true, error: null };
 
         case FETCH_LEADS_SUCCESS:
@@ -49,7 +54,18 @@ export const leadReducer = (state = initialState, action) => {
                 total: action.payload.total,
                 currentPage: action.payload.currentPage,
                 totalPages: action.payload.totalPages,
-                limit:action.payload.limit,
+                limit: action.payload.limit,
+            };
+
+        case FETCH_SALES_TEAM_LEADS_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                SalesTeamLeads: action.payload.Leads || [],
+                total: action.payload.total,
+                currentPage: action.payload.currentPage,
+                totalPages: action.payload.totalPages,
+                limit: action.payload.limit,
             };
 
         case FETCH_LEADS_FAILURE:
@@ -58,6 +74,7 @@ export const leadReducer = (state = initialState, action) => {
         case DELETE_LEAD_FAILURE:
         case FETCH_LEAD_BY_ID_FAILURE:
         case CHECK_MOBILE_FAILURE:
+        case FETCH_SALES_TEAM_LEADS_FAILURE:
             return { ...state, loading: false, error: action.payload };
 
         case CREATE_LEAD_SUCCESS:

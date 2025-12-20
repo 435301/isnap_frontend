@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteLead, fetchLeads, updateLead } from '../../redux/actions/leadAction';
+import { deleteLead, fetchLeads, fetchLeadsSalesTeam, updateLead } from '../../redux/actions/leadAction';
 import { fetchLeadStatus } from '../../redux/actions/leadStatusAction';
 import EditLeadOffCanvasModal from '../components/Modal/EditLeadOffCanvasModal';
 import { fetchLeadSources } from '../../redux/actions/leadSourceAction';
@@ -16,12 +16,12 @@ import PaginationComponent from '../../common/pagination';
 
 const ManageLeads = () => {
   const dispatch = useDispatch();
-  const { leads = [], error, loading, totalPages, limit } = useSelector((state) => state.leads);
+  const { SalesTeamLeads = [], error, loading, totalPages, limit } = useSelector((state) => state.leads);
   const { businessTypes } = useSelector((state) => state.businessTypes);
   const { leadSources } = useSelector((state) => state.leadSources);
   const { leadStatus = [] } = useSelector((state) => state.leadStatus);
   const { teams = [] } = useSelector(state => state.teams || {});
-  console.log('leadStatus', teams)
+  console.log('SalesTeamLeads', SalesTeamLeads)
   const { mobileCheck } = useSelector((state) => state.leads);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -35,7 +35,7 @@ const ManageLeads = () => {
   const [statusFilter, setStatusFilter] = useState(null);
 
   useEffect(() => {
-    dispatch(fetchLeads({
+    dispatch(fetchLeadsSalesTeam({
       search: searchTerm,
       page: currentPage,
       limit: limit,
@@ -70,7 +70,7 @@ const ManageLeads = () => {
     setSearchTerm("");
     setStatusFilter(null);
     setCurrentPage(1);
-    dispatch(fetchLeads({ search: "", page: 1, showStatus: "" }));
+    dispatch(fetchLeadsSalesTeam({ search: "", page: 1, showStatus: "" }));
   };
 
 
@@ -210,12 +210,12 @@ const ManageLeads = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {leads.length === 0 ? (
+                      {SalesTeamLeads.length === 0 ? (
                         <tr>
                           <td colSpan="4" className="text-center">No leads found.</td>
                         </tr>
                       ) : (
-                        leads.map((lead, index) => (
+                        SalesTeamLeads.map((lead, index) => (
                           <tr key={lead.id}>
                             <td>{index + 1}</td>
                             <td>{lead.customerName}</td>
