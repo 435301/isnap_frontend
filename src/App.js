@@ -123,6 +123,7 @@ import ExecutiveViewLead from "./Executive/components/Modal/ViewLeadExecutive.js
 import NotFound from "./common/404.jsx";
 import ManageSellersTeam from "./Team/pages/ManageSellers.jsx";
 import ViewSellerDetails from "./Team/pages/ViewSellerDetails.jsx";
+import TaskSummaryPersonal from "./Team/pages/TaskSummaryPersonal.jsx";
 
 
 function App() {
@@ -218,6 +219,7 @@ function App() {
         <Route path="/team/view-seller/:id" element={<TeamRoute><ViewSellerDetails /></TeamRoute>} />
         <Route path="/team/team-tasks" element={<TeamRoute><TeamTasks /></TeamRoute>} />
         <Route path="/team/task-summary" element={<TeamRoute><TaskSummary /></TeamRoute>} />
+        <Route path="/team/my-task-summary/:id" element={<TeamRoute><TaskSummaryPersonal /></TeamRoute>} />
         <Route path="/team/team-notification" element={<TeamRoute><TeamNotifications /></TeamRoute>} />
         <Route path="/team/change-password" element={<TeamRoute><ChangePasswordTeam /></TeamRoute>} />
 

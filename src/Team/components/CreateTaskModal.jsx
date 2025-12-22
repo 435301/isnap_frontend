@@ -182,7 +182,7 @@ const CreateTaskModal = ({ show, onClose }) => {
             </Modal.Body>
 
             <Modal.Footer>
-                <button className="btn btn-secondary" onClick={handleClose}>
+                <button className="btn btn-light" onClick={handleClose}>
                     Cancel
                 </button>
                 <button className="btn btn-success" onClick={handleCreate}>

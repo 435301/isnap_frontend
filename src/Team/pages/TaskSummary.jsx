@@ -13,6 +13,7 @@ import BASE_URL from '../../config/config';
 const TaskSummary = () => {
   const location = useLocation();
   const task = location.state?.task;
+  console.log('task', task);
   const dispatch = useDispatch();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -118,13 +119,13 @@ const TaskSummary = () => {
               </div> */}
 
               <div className="small">
-                <div className='pb-2'><strong className="text-dark">Seller Name:</strong>{task.seller}</div>
-                <div className='pb-2'><strong className="text-dark">Business Name:</strong> {task.businessName}</div>
-                <div className='pb-2'><strong className="text-dark">Manager Name:</strong> {task.managerName}</div>
-                <div className='pb-2'><strong className="text-dark">Executive Name:</strong> {task.executive}</div>
-                <div className='pb-2'><strong className="text-dark">Start Date:</strong> {task.startDate}</div>
+                <div className='pb-2'><strong className="text-dark">Seller Name:</strong>{task.seller || "-"}</div>
+                <div className='pb-2'><strong className="text-dark">Business Name:</strong> {task.businessName || "-"}</div>
+                <div className='pb-2'><strong className="text-dark">Manager Name:</strong> {task.managerName || "-"}</div>
+                <div className='pb-2'><strong className="text-dark">Executive Name:</strong> {task.executive || "-"}</div>
+                <div className='pb-2'><strong className="text-dark">Start Date:</strong> {task.startDate || "-"}</div>
                 <div className='pb-2'><strong className="text-dark">End Date:</strong> {task.completedDate || "-"}</div>
-                <div className='pb-2'><strong className="text-dark">Task Completion Days:</strong> {task.dueDate}</div>
+                <div className='pb-2'><strong className="text-dark">Task Completion Days:</strong> {task.dueDate || "-"}</div>
                 <div className='pb-2'><strong className="text-dark">Status:</strong>  <span className={`badge ${status.class}`}>{status.label}</span></div>
               </div>
             </div>

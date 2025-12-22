@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Sidebar from '../components/TeamSidebar';
 import Navbar from '../components/TeamNavbar';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -7,10 +7,13 @@ import AssignTaskModal from '../components/AssignTaskModal';
 import MoveTaskModal from '../components/MoveTaskModal';
 import RejectTaskModal from '../components/RejectTaskModal';
 import { useDispatch, useSelector } from 'react-redux';
-import { acceptTask, assignTask, fetchDigitalMarketingMyTasks, fetchDigitalMarketingTasks, fetchExecutives, fetchPersonalTasks, fetchPhotographyMyTasks, fetchPhotographyTasks, fetchTasks, fetchTasksExecutive, moveTask, rejectTask, updatePriority } from '../../redux/actions/taskAction';
+import { acceptTask, assignTask, deletePersonalTask, fetchDigitalMarketingMyTasks, fetchDigitalMarketingTasks, fetchExecutives, fetchPersonalTasks, fetchPhotographyMyTasks, fetchPhotographyTasks, fetchTasks, fetchTasksExecutive, moveTask, rejectTask, updatePersonalTaskPriority, updatePersonalTaskStatus, updatePriority } from '../../redux/actions/taskAction';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import CreateTaskModal from '../components/CreateTaskModal';
+import formatDate, { formattedDate } from '../../components/FormatDate';
+import DeleteConfirmationModal from '../../admin/components/Modal/DeleteConfirmationModal';
+import moment from 'moment';
 
 const TeamTasks = () => {
   const dispatch = useDispatch();
@@ -33,11 +36,13 @@ const TeamTasks = () => {
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [assignTo, setAssignTo] = useState("");
   const [assignComment, setAssignComment] = useState("");
-
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [todoTab, setTodoTab] = useState("team");
   const [progressTab, setProgressTab] = useState("team");
   const [doneTab, setDoneTab] = useState("team");
   const [taskCreateModal, setTaskCreateModal] = useState(false);
+  const [isPersonalTask, setIsPersonalTask] = useState(false);
+  const [taskDelete, setTaskDelete] = useState(false);
 
   const { tasks = [], executives, updatedPriority, acceptedTask, loading, error, myTasks, dmMyTasks, dmTasks, PhotographyTasks, PhotographyMyTasks, personalTasks, personalSelectedTasks } = useSelector((state) => state.tasks || {});
   console.log('personalTasks', personalTasks)
@@ -52,7 +57,6 @@ const TeamTasks = () => {
   }, []);
 
   useEffect(() => {
-
     dispatch(fetchExecutives());
     if (subDeptName === "Business Launch" || subDeptName === "Catalog Listing" || subDeptName === "Key Account Management" && roleName === "Executive") {
       dispatch(fetchTasksExecutive());
@@ -113,7 +117,7 @@ const TeamTasks = () => {
 
 
   const TaskCard = ({ task, type }) => {
-    console.log('task', task);
+    console.log('taskteam', task);
     const isDisabled = task.id === 0;
     const isDisabledMoveToTask = task.workProgressStatus === 3;
 
@@ -160,6 +164,7 @@ const TeamTasks = () => {
                 onClick={() => {
                   setSelectedTask(task);
                   setShowModal(true);
+                  setIsPersonalTask(false);
                 }}
                 disabled={isDisabledMoveToTask}
               >
@@ -226,7 +231,7 @@ const TeamTasks = () => {
             <span className="text-dark small">
               <i className="bi bi-calendar-check"></i> Completed Date
             </span>
-            <span className="btn btn-sm text-white px-3" style={{ backgroundColor: "#5CB17A" }}>{task.completedDate}</span>
+            <span className="btn btn-sm text-white px-3" style={{ backgroundColor: "#5CB17A" }}>{formattedDate(task.completedDate)}</span>
           </div>
         )}
         {type === 'todo' && (
@@ -275,7 +280,7 @@ const TeamTasks = () => {
         )}
         {type === 'inProgress' && (
           <div className="text-end mt-2">
-            <button className="btn btn-sm  text-white px-3" style={{ backgroundColor: "#5CB17A" }} onClick={() => handleMarkAsDone(task)}>Mark as Done</button>
+            <button className="btn btn-sm  text-white px-3" style={{ backgroundColor: "#5CB17A" }} onClick={() => handleMarkAsDone(task, false)}>Mark as Done</button>
           </div>
         )}
       </div>
@@ -283,23 +288,95 @@ const TeamTasks = () => {
   };
 
   const PersonalTaskCard = ({ task, type }) => {
-    const priorityLabel =
-      task.priority === 1 ? "High" :
-        task.priority === 2 ? "Medium" : "Low";
+    console.log("TASK OBJECT:", task);
+    const getPriorityBtnClass = (priority) => {
+      switch (priority?.toLowerCase()) {
+        case 'high':
+          return 'btn btn-sm bg-danger-subtles text-danger px-3 fw-semibold';   //  High = red
+        case 'medium':
+          return 'btn btn-sm bg-success-subtles text-success px-3 fw-semibold'; //  Medium = yellow
+        case 'low':
+          return 'btn btn-sm bg-warning-subtles text-warning px-3 fw-semibold'; //  Low = green
+        default:
+          return 'btn btn-sm bg-secondary-subtles text-secondary px-3 fw-semibold'; // fallback gray
+      }
+    };
+
+    const getCardClass = () => {
+      if (task.title.includes('Amazon')) return 'bg-success-subtle text-success';
+      if (task.title.includes('Flipkart')) return 'bg-warning-subtle text-warning';
+      if (task.title.includes('Myntra')) return 'bg-danger-subtle text-danger';
+      return 'bg-secondary-subtle text-secondary';
+    };
+
+    const getPriorityLabel = (priority) => {
+      if (priority === 1) return "High";
+      if (priority === 2) return "Medium";
+      if (priority === 3) return "Low";
+      return "Low";
+    };
     return (
-      <div className="card shadow-sm rounded-4 p-3 mb-3 border-start border-4 border-primary">
-        <div className="d-flex justify-content-between align-items-center mb-2">
-          <h6 className="fw-semibold mb-0">
-            {task.serviceTypeName}
+
+      <div className="card shadow-sm rounded-4 p-3 mb-3 border-start">
+        <div className="d-flex justify-content-between align-items-start mb-2">
+          <h6 className={`px-2 py-1 mb-2 rounded fw-semibold ${getCardClass()}`}>
+            {task.title}
           </h6>
-          <span className="badge bg-secondary">
-            {priorityLabel}
-          </span>
+
+          {/* Right side: Priority + Menu */}
+          <div className="d-flex align-items-center gap-2">
+            {/* Menu Icon */}
+            <i
+              className="bi bi-three-dots-vertical"
+              id={`personalTaskMenu-${task.id}`}
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+              style={{ cursor: "pointer" }}
+            ></i>
+
+            {/* Dropdown */}
+            <ul
+              className="dropdown-menu dropdown-menu-end"
+              aria-labelledby={`personalTaskMenu-${task.id}`}
+            >
+              <li>
+                <button
+                  className="dropdown-item"
+                  onClick={() => {
+                    setSelectedTask(task);
+                    setIsPersonalTask(true);
+                    setShowModal(true);
+                  }}
+                >
+                  Move Task
+                </button>
+              </li>
+
+              <li>
+                <button
+                  className="dropdown-item"
+                  onClick={() => {
+                    handleNavigate(task.id);
+                  }}
+                >
+                  View Details
+                </button>
+              </li>
+
+              {type !== "completed" && (
+                <li>
+                  <button
+                    className="dropdown-item text-danger"
+                    onClick={() => handleDeleteClick(task.id)}
+                  >
+                    Delete
+                  </button>
+                </li>
+              )}
+            </ul>
+          </div>
         </div>
 
-        <p className="text-muted small mb-2">
-          {task.description}
-        </p>
 
         <div className="row small text-muted mb-2">
           <div className="col-6">
@@ -312,27 +389,62 @@ const TeamTasks = () => {
 
         <div className="row small text-muted mb-2">
           <div className="col-6">
-            <strong>Manager:</strong> {task.managerName || "-"}
+            <strong>Manager:</strong> {task.manager || "-"}
           </div>
           <div className="col-6">
-            <strong>Executive:</strong> {task.executiveName || "-"}
+            <strong>Executive:</strong> {task.executive || "-"}
           </div>
-        </div>
 
-        {type === "completed" && (
-          <div className="text-end mt-2">
-            <span className="badge bg-success">
-              Completed on{" "}
-              {task.completedDate
-                ? new Date(task.completedDate).toLocaleDateString()
-                : "-"}
+        </div>
+        <p className="text-muted small mb-2 text-truncate">
+          <strong>Task Details: {task.description} </strong>
+        </p>
+
+        {type === 'completed' && (
+          <div className="d-flex justify-content-between align-items-center mt-2">
+            <span className="text-dark small">
+              <i className="bi bi-calendar-check"></i> Completed Date
             </span>
+            <span className="btn btn-sm text-white px-3" style={{ backgroundColor: "#5CB17A" }}>{formattedDate(task.completedDate)}</span>
+          </div>
+        )}
+
+        {type === 'todo' && (
+          <div className="d-flex gap-2 mt-2 justify-content-between align-items-center">
+            {task.priority && (
+              <button className={getPriorityBtnClass(getPriorityLabel(task.priority))}>
+                {getPriorityLabel(task.priority)}
+              </button>
+            )}
+
+            <select
+              className="form-select form-select-sm"
+              style={{ width: "auto" }}
+              value={getPriorityLabel(task.priority)}
+              onChange={(e) => {
+                const newPriority = e.target.value;
+                const priorityIdMap = { High: 1, Medium: 2, Low: 3 };
+                dispatch(updatePersonalTaskPriority(task.id, priorityIdMap[newPriority]));
+              }}
+            >
+              <option value="High">High</option>
+              <option value="Medium">Medium</option>
+              <option value="Low">Low</option>
+            </select>
+            <div>
+
+            </div>
+          </div>
+        )}
+        {type === 'inProgress' && (
+          <div className="text-end mt-2">
+            <button className="btn btn-sm  text-white px-3" style={{ backgroundColor: "#5CB17A" }} onClick={() => handleMarkAsDone(task, true)}>Mark as Done</button>
           </div>
         )}
       </div>
+
     );
   };
-
 
   const handleAssignSubmit = (selectedTask, assignee, comment) => {
     if (!selectedTask || !assignee || !comment) {
@@ -350,30 +462,52 @@ const TeamTasks = () => {
       });
   };
 
-
   const handleMoveSave = (selectedTask, bucket) => {
     if (!selectedTask || !bucket) {
-      toast.error("Please select a task and an bucket");
+      toast.error("Please select a task and a bucket");
       return;
     }
-    dispatch(moveTask(selectedTask.id, bucket))
-      .then(() => {
-        setShowModal(false);
-        setSelectedTask("");
-        selectedBucket("");
-      })
-      .catch((err) => {
-        console.error("move task failed:", err);
-      });
 
+    const completedDate =
+      bucket === "Completed" ? new Date().toISOString() : null;
+
+    if (isPersonalTask) {
+      //  PERSONAL TASK MOVE
+      dispatch(
+        updatePersonalTaskStatus(selectedTask.id, bucket, completedDate)
+      ).then(() => {
+        setShowModal(false);
+        setSelectedTask(null);
+        setSelectedBucket("To Do");
+        setIsPersonalTask(false);
+      });
+    } else {
+      //  TEAM TASK MOVE (existing logic)
+      dispatch(moveTask(selectedTask.id, bucket))
+        .then(() => {
+          setShowModal(false);
+          setSelectedTask(null);
+          setSelectedBucket("");
+        })
+        .catch((err) => {
+          console.error("Move task failed:", err);
+        });
+    }
   };
 
-  const handleMarkAsDone = (task) => {
+  const handleMarkAsDone = (task, isPersonal = false) => {
+    console.log('taskid', task, isPersonal)
     if (!task || !task.id) {
       toast.error("Invalid task selected");
       return;
     }
-    dispatch(moveTask(task.id, 3));
+    const date = new Date().toISOString();
+    const completedDate = formatDate(date.split('T')[0]);
+    if (isPersonal) {
+      dispatch(updatePersonalTaskStatus(task.id, 3, completedDate));
+    } else {
+      dispatch(moveTask(task.id, 3));
+    }
   };
 
 
@@ -388,9 +522,24 @@ const TeamTasks = () => {
     setRejectReasonText("");
   };
 
-    const  handleClose = ()=>{
-      setTaskCreateModal(false);
-    }
+  const handleClose = () => {
+    setTaskCreateModal(false);
+  }
+
+  const handleDeleteClick = (id) => {
+    setTaskDelete(id);
+    setShowDeleteModal(true);
+  };
+
+  const handleDelete = async () => {
+    await dispatch(deletePersonalTask(taskDelete));
+    setShowDeleteModal(false);
+    setTaskDelete(null);
+  };
+
+  const handleNavigate = (id) => {
+    navigate(`/team/my-task-summary/${id}`);
+  }
   return (
     <div className="container-fluid position-relative bg-white d-flex p-0">
       <Sidebar isOpen={isSidebarOpen} />
@@ -440,11 +589,9 @@ const TeamTasks = () => {
 
             {/* To Do Column */}
             <div className="col-md-4 task-column">
-              <div className="pb-2 mb-2 d-flex align-items-center">
-
-
+              <div className="pb-2 mb-2 align-items-center">
                 <h5 className="fw-bold d-inline me-2">To Do</h5>
-                <div className="d-flex gap-2 mb-2">
+                <div className="d-flex gap-2 mb-2 mt-2">
                   <button
                     className={`btn btn-sm ${todoTab === "team" ? "btn-primary" : "btn-outline-primary"}`}
                     onClick={() => setTodoTab("team")}
@@ -457,16 +604,34 @@ const TeamTasks = () => {
                   >
                     My Tasks
                   </button>
-                </div>
-                <span className="badge rounded-circle bg-warning text-dark">
+                    <span className="badge rounded-circle bg-warning text-dark">
                   {taskData.todo.length.toString().padStart(2, '0')}
                 </span>
+                </div>
+              
               </div>
 
               {loading && <p>Loading tasks...</p>}
               {taskData.todo.map((task, idx) =>
                 todoTab === "my" ? (
-                  <PersonalTaskCard key={idx} task={task} type="todo" />
+                  <PersonalTaskCard key={idx}
+                    task={{
+                      id: task.id,
+                      title: ` ${task.serviceTypeName}`,
+                      description: `${task.description} `,
+                      fromDate: task.fromDate
+                        ? new Date(task.fromDate).toLocaleDateString()
+                        : "-",
+                      toDate: task.toDate
+                        ? new Date(task.toDate).toLocaleDateString()
+                        : "-",
+                      seller: task.sellerName || "-",
+                      manager: task.managerName || "-",
+                      executive: task.executiveName || "-",
+                      priority: task.priority || "Low",
+                      workProgressStatus: task.workProgressStatus,
+                      completedDate: task.completedDate || "",
+                    }} type="todo" />
                 ) : (
                   <TaskCard
                     key={idx}
@@ -483,7 +648,7 @@ const TeamTasks = () => {
                       seller: task.sellerName || "-",
                       manager: task.managerName || "-",
                       executive: task.executiveName || "-",
-                      priority: task.priorityLabel || "Low",
+                      priority: task.priority || "Low",
                       workProgressStatus: task.workProgressStatus,
                       completedDate: task.completedDate || "",
                     }}
@@ -496,9 +661,9 @@ const TeamTasks = () => {
 
             {/* In Progress Column */}
             <div className="col-md-4 task-column">
-              <div className="pb-2 mb-2 d-flex align-items-center">
+              <div className="pb-2 mb-2 align-items-center">
                 <h5 className="fw-bold d-inline me-2">In Progress</h5>
-                <div className="d-flex gap-2 mb-2">
+                <div className="d-flex gap-2 mb-2 mt-2">
                   <button
                     className={`btn btn-sm ${progressTab === "team" ? "btn-primary" : "btn-outline-primary"}`}
                     onClick={() => setProgressTab("team")}
@@ -511,15 +676,33 @@ const TeamTasks = () => {
                   >
                     My Tasks
                   </button>
-                </div>
-
-                <span className="badge rounded-circle bg-primary">
+                    <span className="badge rounded-circle bg-primary">
                   {taskData.inProgress.length.toString().padStart(2, '0')}
                 </span>
+                </div>
+
+              
               </div>
               {taskData.inProgress.map((task, idx) =>
                 progressTab === "my" ? (
-                  <PersonalTaskCard key={idx} task={task} type="inProgress" />
+                  <PersonalTaskCard key={idx}
+                    task={{
+                      id: task.id,
+                      title: ` ${task.serviceTypeName}`,
+                      description: `${task.description} `,
+                      fromDate: task.fromDate
+                        ? new Date(task.fromDate).toLocaleDateString()
+                        : "-",
+                      toDate: task.toDate
+                        ? new Date(task.toDate).toLocaleDateString()
+                        : "-",
+                      seller: task.sellerName || "-",
+                      manager: task.managerName || "-",
+                      executive: task.executiveName || "-",
+                      priority: task.priority || "Low",
+                      workProgressStatus: task.workProgressStatus,
+                      completedDate: task.completedDate || "",
+                    }} type="inProgress" />
                 ) : (
                   <TaskCard
                     key={idx}
@@ -547,30 +730,48 @@ const TeamTasks = () => {
 
             {/* Completed Column */}
             <div className="col-md-4 task-column">
-              <div className="pb-2 mb-2 d-flex align-items-center">
+              <div className="pb-2 mb-2 align-items-center">
                 <h5 className="fw-bold d-inline me-2">Done</h5>
-                <div className="d-flex gap-2 mb-2">
+                <div className="d-flex gap-2 mb-2 mt-2">
                   <button
-                    className={`btn btn-sm ${doneTab === "team" ? "btn-success" : "btn-outline-success"}`}
+                    className={`btn btn-sm ${doneTab === "team" ? "btn-primary" : "btn-outline-primary"}`}
                     onClick={() => setDoneTab("team")}
                   >
                     Team Tasks
                   </button>
                   <button
-                    className={`btn btn-sm ${doneTab === "my" ? "btn-success" : "btn-outline-success"}`}
+                    className={`btn btn-sm ${doneTab === "my" ? "btn-primary" : "btn-outline-primary"}`}
                     onClick={() => setDoneTab("my")}
                   >
                     My Tasks
                   </button>
-                </div>
-
-                <span className="badge rounded-circle bg-success">
+                    <span className="badge rounded-circle bg-success">
                   {taskData.completed.length.toString().padStart(2, '0')}
                 </span>
+                </div>
+
+              
               </div>
               {taskData.completed.map((task, idx) =>
                 doneTab === "my" ? (
-                  <PersonalTaskCard key={idx} task={task} type="completed" />
+                  <PersonalTaskCard key={idx}
+                    task={{
+                      id: task.id,
+                      title: ` ${task.serviceTypeName}`,
+                      description: `${task.description} `,
+                      fromDate: task.fromDate
+                        ? new Date(task.fromDate).toLocaleDateString()
+                        : "-",
+                      toDate: task.toDate
+                        ? new Date(task.toDate).toLocaleDateString()
+                        : "-",
+                      seller: task.sellerName || "-",
+                      manager: task.managerName || "-",
+                      executive: task.executiveName || "-",
+                      priority: task.priorityLabel || "Low",
+                      workProgressStatus: task.workProgressStatus,
+                      completedDate: task.completedDate || "",
+                    }} type="completed" />
                 ) : (
                   <TaskCard
                     key={idx}
@@ -636,6 +837,8 @@ const TeamTasks = () => {
         />
 
         <CreateTaskModal show={taskCreateModal} onClose={handleClose} />
+
+        <DeleteConfirmationModal show={showDeleteModal} handleClose={() => setShowDeleteModal(false)} handleConfirm={handleDelete} />
       </div>
     </div>
   );
