@@ -51,6 +51,12 @@ import {
     UPDATE_PERSONAL_TASK_PRIORITY_SUCCESS,
     UPDATE_PERSONAL_TASK_STATUS_SUCCESS,
     DELETE_PERSONAL_TASK_SUCCESS,
+    ADD_PERSONAL_TASK_DOCUMENT_REQUEST,
+    ADD_PERSONAL_TASK_DOCUMENT_SUCCESS,
+    ADD_PERSONAL_TASK_DOCUMENT_FAILURE,
+    DELETE_PERSONAL_TASK_DOCUMENT_REQUEST,
+    DELETE_PERSONAL_TASK_DOCUMENT_SUCCESS,
+    DELETE_PERSONAL_TASK_DOCUMENT_FAILURE,
 } from "../actions/taskAction";
 
 const initialState = {
@@ -91,6 +97,8 @@ export const tasksReducer = (state = initialState, action) => {
         case FETCH_TASK_HISTORY_REQUEST:
         case CREATE_TASK_REQUEST:
         case PERSONAL_TASKS_REQUEST:
+        case ADD_PERSONAL_TASK_DOCUMENT_REQUEST:
+        case DELETE_PERSONAL_TASK_DOCUMENT_REQUEST:
             return {
                 ...state,
                 loading: true,
@@ -209,6 +217,25 @@ export const tasksReducer = (state = initialState, action) => {
                 personalTasks: state.personalTasks.filter((task) => task.id !== action.payload),
             };
 
+        case ADD_PERSONAL_TASK_DOCUMENT_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                success: true,
+            };
+
+      
+    case DELETE_PERSONAL_TASK_DOCUMENT_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        personalSelectedTasks: {
+          ...state.personalSelectedTasks,
+          documents: state.personalSelectedTasks.documents.filter(
+            (doc) => doc.id !== action.payload
+          ),
+        },
+      };
         case FETCH_MARKETPLACE_TASKS_FAILURE:
         case FETCH_EXECUTIVES_FAILURE:
         case UPDATE_PRIORITY_FAILURE:
@@ -225,6 +252,8 @@ export const tasksReducer = (state = initialState, action) => {
         case FETCH_TASK_HISTORY_FAILURE:
         case CREATE_TASK_FAILURE:
         case PERSONAL_TASKS_FAILURE:
+        case ADD_PERSONAL_TASK_DOCUMENT_FAILURE:
+        case DELETE_PERSONAL_TASK_DOCUMENT_FAILURE:
             return {
                 ...state,
                 loading: false,

@@ -82,6 +82,14 @@ export const UPDATE_PERSONAL_TASK_STATUS_SUCCESS = "UPDATE_PERSONAL_TASK_STATUS_
 
 export const DELETE_PERSONAL_TASK_SUCCESS = "DELETE_PERSONAL_TASK_SUCCESS";
 
+export const ADD_PERSONAL_TASK_DOCUMENT_REQUEST = "ADD_PERSONAL_TASK_DOCUMENT_REQUEST";
+export const ADD_PERSONAL_TASK_DOCUMENT_SUCCESS = "ADD_PERSONAL_TASK_DOCUMENT_SUCCESS";
+export const ADD_PERSONAL_TASK_DOCUMENT_FAILURE = "ADD_PERSONAL_TASK_DOCUMENT_FAILURE";
+
+export const DELETE_PERSONAL_TASK_DOCUMENT_REQUEST = "DELETE_PERSONAL_TASK_DOCUMENT_REQUEST";
+export const DELETE_PERSONAL_TASK_DOCUMENT_SUCCESS = "DELETE_PERSONAL_TASK_DOCUMENT_SUCCESS";
+export const DELETE_PERSONAL_TASK_DOCUMENT_FAILURE = "DELETE_PERSONAL_TASK_DOCUMENT_FAILURE";
+
 
 export const fetchTasks = () => async (dispatch) => {
   try {
@@ -440,4 +448,47 @@ export const deletePersonalTask = (id) => async (dispatch) => {
     payload: id,
   });
    toast.success(res.data.message);
+};
+
+// Add document to personal task
+export const addPersonalTaskDocument = (taskId, file) => async (dispatch) => {
+  dispatch({ type: ADD_PERSONAL_TASK_DOCUMENT_REQUEST });
+  try {
+    const formData = new FormData();
+     formData.append("taskId", taskId);
+    formData.append("file", file);
+    const res = await axios.post(`${BASE_URL}/personalTask/addDocument`, formData, getAuthHeaders(true));
+    dispatch({
+      type: ADD_PERSONAL_TASK_DOCUMENT_SUCCESS,
+      payload: res.data.data,
+    });
+    toast.success(res.data.message);
+    dispatch(fetchPersonalTaskById(taskId));
+  } catch (error) {
+    dispatch({
+      type: ADD_PERSONAL_TASK_DOCUMENT_FAILURE,
+      payload: error.response?.data?.message || error.message
+    });
+    toast.error(error.response?.data?.message || error.message);
+  }
+};
+
+// Delete document from personal task
+export const deletePersonalTaskDocument = (documentId) => async (dispatch) => {
+  dispatch({ type: DELETE_PERSONAL_TASK_DOCUMENT_REQUEST });
+  try {
+    const res = await axios.delete(`${BASE_URL}/personalTask/deleteDocument/${documentId}`, getAuthHeaders());
+    dispatch({
+      type: DELETE_PERSONAL_TASK_DOCUMENT_SUCCESS,
+      payload:  documentId ,
+    });
+    toast.success(res.data.message);
+    dispatch(fetchPersonalTaskById(res.data.taskId));
+  } catch (error) {
+    dispatch({
+      type: DELETE_PERSONAL_TASK_DOCUMENT_FAILURE,
+      payload: error.response?.data?.message || error.message
+    });
+    toast.error(error.response?.data?.message || error.message);
+  }
 };
