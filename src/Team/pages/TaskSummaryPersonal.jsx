@@ -86,7 +86,7 @@ const TaskSummaryPersonal = () => {
               <div className='pb-2'><strong className="text-dark">Status:</strong>  <span className={`badge ${status?.class}`}>{status?.label}</span></div>
             </div>
 
-            <div className="bg-white p-3 rounded mb-4">
+            <div className="bg-white pt-3 rounded mb-4">
               <h5 className="mb-3 fw-semibold">Upload Document</h5>
               <input
                 type="file"
@@ -94,7 +94,7 @@ const TaskSummaryPersonal = () => {
                 onChange={(e) => setSelectedFile(e.target.files[0])}
               />
               <div className='text-end'>
-                <button className="btn btn-success mb-3 px-3" onClick={() => handleUpload(personalSelectedTasks?.id, selectedFile)} disabled={!selectedFile}>Upload</button>
+                <button className="btn btn-success mb-2 px-3" onClick={() => handleUpload(personalSelectedTasks?.id, selectedFile)} disabled={!selectedFile}>Upload</button>
               </div>
               {personalSelectedTasks?.documents.length > 0 && (
                 <div>

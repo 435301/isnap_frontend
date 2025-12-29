@@ -12,6 +12,7 @@ import { ToastContainer, toast } from "react-toastify";
 import BASE_URL from "../../config/config";
 import { fetchDepartments } from "../../redux/actions/departmentActions";
 import { fetchWings } from "../../redux/actions/wingAction";
+import PaginationComponent from "../../common/pagination";
 
 const ManageTeams = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 992);
@@ -23,9 +24,11 @@ const ManageTeams = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
   const [selectedTeam, setSelectedTeam] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
+  
 
   const dispatch = useDispatch();
-  const { teams = [], loading, error, successMessage, errorMessage } = useSelector(state => state.teams || {});
+  const { teams = [], loading, error, successMessage, errorMessage, totalPages } = useSelector(state => state.teams || {});
   const { roles = [] } = useSelector(state => state.roles || {});
   const { wings } = useSelector((state) => state.wings);
   const { departments } = useSelector((state) => state.department);
@@ -34,13 +37,13 @@ const ManageTeams = () => {
 
   // Fetch teams and roles on mount
   useEffect(() => {
-    dispatch(fetchTeams());
+    dispatch(fetchTeams({ search: searchTerm, page: currentPage }));
     if (!roles.length) {
       dispatch(fetchRoles());
     }
     dispatch(fetchDepartments());
     dispatch(fetchWings());
-  }, [dispatch]);
+  }, [dispatch, searchTerm, currentPage, roles.length]);
 
   // Toast messages
   useEffect(() => {
@@ -57,7 +60,7 @@ const ManageTeams = () => {
 
   // Sidebar toggle
   const handleToggleSidebar = () => setIsSidebarOpen(prev => !prev);
-  const handleRefresh = () => { setSearchTerm(""); setStatusFilter(""); dispatch(fetchTeams()); };
+  const handleRefresh = () => { setSearchTerm(""); setStatusFilter(""); dispatch(fetchTeams({ page: 1, search: "" })); };
 
   // Delete team
   const confirmDelete = async () => {
@@ -218,6 +221,11 @@ const ManageTeams = () => {
             show={showDeleteModal}
             handleClose={() => setShowDeleteModal(false)}
             handleConfirm={confirmDelete}
+          />
+          <PaginationComponent
+            currentPage={currentPage}
+            totalPages={totalPages || 1}
+            onPageChange={setCurrentPage}
           />
 
         </div>
