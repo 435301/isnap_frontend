@@ -4,22 +4,30 @@ import getAuthHeaders from "../../utils/auth";
 import { toast } from "react-toastify";
 
 // Fetch teams
-export const fetchTeams = () => async (dispatch, getState) => {
-  try {
-    dispatch({ type: "FETCH_TEAMS_REQUEST" });
-    const response = await axios.get(`${BASE_URL}/users`, getAuthHeaders(true));
-    const teamsArray = response.data.data.users || [];
-    dispatch({
-      type: "FETCH_TEAMS_SUCCESS",
-      payload: teamsArray,
-    });
-  } catch (error) {
-    dispatch({
-      type: "FETCH_TEAMS_FAILURE",
-      payload: error.response?.data?.msg || error.message,
-    });
-  }
-};
+export const fetchTeams =
+  ({ page = 1, search = "" } = {}) =>
+  async (dispatch) => {
+    try {
+      dispatch({ type: "FETCH_TEAMS_REQUEST" });
+      const response = await axios.get(
+        `${BASE_URL}/users?page=${page}&search=${search}`,
+        getAuthHeaders(true)
+      );
+      dispatch({
+        type: "FETCH_TEAMS_SUCCESS",
+        payload: {
+          teams: response.data.data.users || [],
+          totalPages: response.data.data.totalPages || 1,
+        },
+      });
+    } catch (error) {
+      dispatch({
+        type: "FETCH_TEAMS_FAILURE",
+        payload: error.response?.data?.msg || error.message,
+      });
+    }
+  };
+
 
 // Create team
 export const createTeam = (formData) => async (dispatch, getState) => {
