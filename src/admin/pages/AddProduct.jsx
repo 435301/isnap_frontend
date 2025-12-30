@@ -117,7 +117,9 @@ const AddProductListing = () => {
               <div className="row g-3">
                 {/* Seller */}
                 <div className="col-md-3">
-                  <label className="form-label">Seller *</label>
+                  <label className="form-label">
+                    Seller <span className="text-danger">*</span>
+                  </label>
                   <select
                     name="seller"
                     value={formData.seller}
@@ -134,7 +136,9 @@ const AddProductListing = () => {
 
                 {/* SKU */}
                 <div className="col-md-3">
-                  <label className="form-label">SKU *</label>
+                  <label className="form-label">
+                    SKU <span className="text-danger">*</span>
+                  </label>
                   <input
                     type="text"
                     name="sku"
@@ -148,7 +152,9 @@ const AddProductListing = () => {
 
                 {/* Product Title */}
                 <div className="col-md-3">
-                  <label className="form-label">Product Title *</label>
+                  <label className="form-label">
+                    Product Title <span className="text-danger">*</span>
+                  </label>
                   <input
                     type="text"
                     name="title"
@@ -162,7 +168,9 @@ const AddProductListing = () => {
 
                 {/* MRP */}
                 <div className="col-md-3">
-                  <label className="form-label">MRP *</label>
+                  <label className="form-label">
+                    MRP <span className="text-danger">*</span>
+                  </label>
                   <input
                     type="number"
                     name="mrp"
@@ -176,7 +184,9 @@ const AddProductListing = () => {
 
                 {/* Selling Price */}
                 <div className="col-md-3">
-                  <label className="form-label">Selling Price *</label>
+                  <label className="form-label">
+                    Selling Price <span className="text-danger">*</span>
+                  </label>
                   <input
                     type="number"
                     name="sellingPrice"
@@ -192,7 +202,9 @@ const AddProductListing = () => {
 
                 {/* Available Stock */}
                 <div className="col-md-3">
-                  <label className="form-label">Available Stock *</label>
+                  <label className="form-label">
+                    Available Stock <span className="text-danger">*</span>
+                  </label>
                   <input
                     type="number"
                     name="stock"
@@ -206,7 +218,9 @@ const AddProductListing = () => {
 
                 {/* Marketplace MULTI SELECT */}
                 <div className="col-md-3">
-                  <label className="form-label">Marketplace *</label>
+                  <label className="form-label">
+                    Marketplace <span className="text-danger">*</span>
+                  </label>
                   <Select
                     isMulti
                     options={marketplaceOptions}
@@ -229,7 +243,9 @@ const AddProductListing = () => {
 
                 {/* Status */}
                 <div className="col-md-3">
-                  <label className="form-label">Status *</label>
+                  <label className="form-label">
+                    Status <span className="text-danger">*</span>
+                  </label>
                   <select
                     name="status"
                     value={formData.status}
@@ -249,7 +265,7 @@ const AddProductListing = () => {
                   <button
                     type="button"
                     className="btn btn-outline-secondary px-4"
-                    onClick={() => navigate("/manage-productg")}
+                    onClick={() => navigate("/manage-products")}
                   >
                     Cancel
                   </button>

@@ -104,7 +104,7 @@ const BulkUpload = () => {
                 className="btn btn-outline-primary me-2"
                 onClick={handleDownloadSample}
               >
-                Download Sample File
+                Download Sample CSV
               </button>
               <Link to="/manage-products" className="btn btn-new-lead">
                 Manage Product
