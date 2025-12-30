@@ -18,6 +18,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import PaginationComponent from "../../common/pagination";
 
 const ManageProducts = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -118,8 +119,8 @@ const ManageProducts = () => {
                                 ? 259
                                 : 95
                             : isSidebarOpen
-                            ? 220
-                            : 0,
+                                ? 220
+                                : 0,
                     transition: "margin-left 0.3s ease",
                 }}
             >
@@ -158,7 +159,7 @@ const ManageProducts = () => {
                                     </select>
                                 </div>
                                 <div className="col-md-2 d-flex">
-                                 
+
                                     <button className="btn btn-success border-1" onClick={handleRefresh}>
                                         <i className="bi bi-arrow-clockwise"></i>
                                     </button>
@@ -171,7 +172,7 @@ const ManageProducts = () => {
                     <div className="row">
                         <div className="bg-white p-3 rounded shadow-sm card-header">
                             <div className="table-responsive">
-                               
+
                                 {loading ? (
                                     <p>Loading products...</p>
                                 ) : (
@@ -203,8 +204,8 @@ const ManageProducts = () => {
                                                         <td>
                                                             <span
                                                                 className={`badge ${Number(product?.status) === 1
-                                                                        ? "bg-success-light text-success"
-                                                                        : "bg-danger-light text-danger"
+                                                                    ? "bg-success-light text-success"
+                                                                    : "bg-danger-light text-danger"
                                                                     }`}
                                                             >
                                                                 {Number(product?.status) === 1 ? "Active" : "Inactive"}
@@ -250,47 +251,11 @@ const ManageProducts = () => {
                             </div>
 
                             {/* Pagination */}
-                            <div className="d-flex justify-content-end align-items-center mt-3">
-                                <nav>
-                                    <ul className="pagination custom-pagination mb-0">
-                                        <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
-                                            <button
-                                                className="page-link"
-                                                onClick={() => setCurrentPage(currentPage - 1)}
-                                            >
-                                                &lt;
-                                            </button>
-                                        </li>
-                                        {Array.from({ length: totalPages || 1 }, (_, i) => i + 1).map(
-                                            (page) => (
-                                                <li
-                                                    key={page}
-                                                    className={`page-item ${currentPage === page ? "active" : ""
-                                                        }`}
-                                                >
-                                                    <button
-                                                        className="page-link"
-                                                        onClick={() => setCurrentPage(page)}
-                                                    >
-                                                        {page}
-                                                    </button>
-                                                </li>
-                                            )
-                                        )}
-                                        <li
-                                            className={`page-item ${currentPage === totalPages ? "disabled" : ""
-                                                }`}
-                                        >
-                                            <button
-                                                className="page-link"
-                                                onClick={() => setCurrentPage(currentPage + 1)}
-                                            >
-                                                &gt;
-                                            </button>
-                                        </li>
-                                    </ul>
-                                </nav>
-                            </div>
+                            <PaginationComponent
+                                currentPage={currentPage}
+                                totalPages={totalPages || 1}
+                                onPageChange={setCurrentPage}
+                            />
 
                             {/* Modals */}
                             <EditProductModal

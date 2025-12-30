@@ -16,6 +16,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import PaginationComponent from "../../common/pagination";
 
 const ManageBilling = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -219,7 +220,7 @@ const ManageBilling = () => {
                                 {billing?.status ? "Active" : "Inactive"}
                               </span>
                             </td>
-                          <td>{Number(billing?.durationRequired) === 1 ? "Required" : "Not Required"}</td>
+                            <td>{Number(billing?.durationRequired) === 1 ? "Required" : "Not Required"}</td>
                             <td>
                               <div className="d-flex gap-2">
                                 <button
@@ -260,43 +261,11 @@ const ManageBilling = () => {
               </div>
 
               {/* Pagination */}
-              <div className="d-flex justify-content-end align-items-center mt-3">
-                <nav>
-                  <ul className="pagination custom-pagination mb-0">
-                    <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
-                      <button
-                        className="page-link"
-                        onClick={() => setCurrentPage(currentPage - 1)}
-                      >
-                        &lt;
-                      </button>
-                    </li>
-                    {Array.from({ length: totalPages || 1 }, (_, i) => i + 1).map((page) => (
-                      <li
-                        key={page}
-                        className={`page-item ${currentPage === page ? "active" : ""}`}
-                      >
-                        <button
-                          className="page-link"
-                          onClick={() => setCurrentPage(page)}
-                        >
-                          {page}
-                        </button>
-                      </li>
-                    ))}
-                    <li
-                      className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}
-                    >
-                      <button
-                        className="page-link"
-                        onClick={() => setCurrentPage(currentPage + 1)}
-                      >
-                        &gt;
-                      </button>
-                    </li>
-                  </ul>
-                </nav>
-              </div>
+              <PaginationComponent
+                currentPage={currentPage}
+                totalPages={totalPages || 1}
+                onPageChange={setCurrentPage}
+              />
 
               {/* Modals */}
               <EditBillingOffcanvas

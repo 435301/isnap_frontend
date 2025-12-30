@@ -15,6 +15,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import PaginationComponent from "../../common/pagination";
 
 const ManageState = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -26,10 +27,12 @@ const ManageState = () => {
   const [deleteId, setDeleteId] = useState(null);
   const [selectedState, setSelectedState] = useState(null);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
 
   const dispatch = useDispatch();
   const location = useLocation();
-  const { states = [], loading = false, error = null } = useSelector(
+  const { states = [], loading = false, error = null , totalPages} = useSelector(
     (state) => state.state || {}
   );
 
@@ -252,6 +255,12 @@ const ManageState = () => {
                   </table>
                 )}
               </div>
+
+              <PaginationComponent
+                currentPage={currentPage}
+                totalPages={totalPages || 1}
+                onPageChange={setCurrentPage}
+              />
 
               {/* Modals */}
               <EditStateModalBootstrap

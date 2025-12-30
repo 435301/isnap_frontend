@@ -9,6 +9,7 @@ import DeleteConfirmationModal from "../components/Modal/DeleteConfirmationModal
 import { fetchMarketTypes, deleteMarketType, updateMarketType, clearMarketTypeSuccessMessage } from "../../redux/actions/marketTypeActions";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import PaginationComponent from "../../common/pagination";
 
 const ManageMarketType = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 992);
@@ -161,25 +162,11 @@ const handleSaveChanges = async (updatedMarketType) => {
             </div>
           </div>
 
-          {/* Pagination */}
-          <div className="d-flex justify-content-end mt-3">
-            <nav>
-              <ul className="pagination custom-pagination mb-0">
-                <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
-                  <button className="page-link" onClick={() => setCurrentPage(currentPage - 1)}>&lt;</button>
-                </li>
-                {Array.from({ length: totalPages || 1 }, (_, i) => i + 1).map((page) => (
-                  <li key={page} className={`page-item ${currentPage === page ? "active" : ""}`}>
-                    <button className="page-link" onClick={() => setCurrentPage(page)}>{page}</button>
-                  </li>
-                ))}
-                <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
-                  <button className="page-link" onClick={() => setCurrentPage(currentPage + 1)}>&gt;</button>
-                </li>
-              </ul>
-            </nav>
-          </div>
-
+            <PaginationComponent
+            currentPage={currentPage}
+            totalPages={totalPages || 1}
+            onPageChange={setCurrentPage}
+          />
           {/* Modals */}
           {showViewModal && <ViewMarketTypeModal show={showViewModal} handleClose={() => setShowViewModal(false)} marketType={selectedMarketType} />}
           {showEditOffcanvas && <EditMarketTypeOffcanvas show={showEditOffcanvas} handleClose={() => setShowEditOffcanvas(false)} marketType={selectedMarketType} onSave={handleSaveChanges} />}
