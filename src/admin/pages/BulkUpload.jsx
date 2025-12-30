@@ -117,7 +117,7 @@ const BulkUpload = () => {
               <div className="row g-3">
                 {/* Seller */}
                 <div className="col-md-4">
-                  <label className="form-label">Seller *</label>
+                  <label className="form-label">Seller <span className="text-danger"> *</span></label>
                   <select
                     name="seller"
                     value={formData.seller}
@@ -136,7 +136,7 @@ const BulkUpload = () => {
 
                 {/* Marketplace */}
                 <div className="col-md-4">
-                  <label className="form-label">Marketplace *</label>
+                  <label className="form-label">Marketplace <span className="text-danger"> *</span></label>
                   <Select
                     isMulti
                     options={marketplaceOptions}
@@ -159,7 +159,7 @@ const BulkUpload = () => {
 
                 {/* File Upload */}
                 <div className="col-md-4">
-                  <label className="form-label">Upload File *</label>
+                  <label className="form-label">Upload File <span className="text-danger"> *</span></label>
                   <input
                     type="file"
                     name="file"
