@@ -5,6 +5,8 @@ import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import EditDigitalMarketModal from "../components/Modal/EditDigitalMarketModal";
 import ViewDigitalMarketModal from "../components/Modal/ViewDigitalMarketModal";
+import PaginationComponent from "../../common/pagination";
+
 import {
   fetchDigitalMarketById,
   updateDigitalMarket,
@@ -21,10 +23,17 @@ const ManageDigitalMarketPricing = () => {
   const [showViewModal, setShowViewModal] = useState(false);
   const [selectedMarket, setSelectedMarket] = useState(null);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
   const dispatch = useDispatch();
-  const { markets = [], loading = false, successMessage = null, error = null } =
-    useSelector((state) => state.digitalMarket || {});
+  const [totalPages, setTotalPages] = useState(0);
+
+  const {
+    markets = [],
+    loading = false,
+    successMessage = null,
+    error = null,
+  } = useSelector((state) => state.digitalMarket || {});
 
   // Handle window resize
   useEffect(() => {
@@ -81,8 +90,8 @@ const ManageDigitalMarketPricing = () => {
                 ? 259
                 : 95
               : isSidebarOpen
-                ? 220
-                : 0,
+              ? 220
+              : 0,
           transition: "margin-left 0.3s ease",
         }}
       >
@@ -93,7 +102,9 @@ const ManageDigitalMarketPricing = () => {
             <div className="bg-white p-3 rounded shadow-sm card-header">
               <div className="row g-2 align-items-center">
                 <div className="col-lg-6">
-                  <h5 className="form-title m-0">Manage Digital Market Pricing</h5>
+                  <h5 className="form-title m-0">
+                    Manage Digital Market Pricing
+                  </h5>
                 </div>
                 {/* <div className="col-lg-6 text-end">
                   <Link
@@ -177,6 +188,11 @@ const ManageDigitalMarketPricing = () => {
                 </table>
               </div>
 
+              <PaginationComponent
+                currentPage={currentPage}
+                totalPages={totalPages || 1}
+                onPageChange={setCurrentPage}
+              />
               {/* Modals */}
               <EditDigitalMarketModal
                 showEditModal={showEditModal}

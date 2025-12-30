@@ -6,6 +6,7 @@ import Navbar from "../components/Navbar";
 import EditServiceCategory from "../components/Modal/EditServiceCategory";
 import ViewServiceCategoryModal from "../components/Modal/ViewServiceCategoryModal";
 import DeleteConfirmationModal from "../components/Modal/DeleteConfirmationModal";
+import PaginationComponent from "../../common/pagination";
 
 import {
   fetchCategories,
@@ -32,8 +33,6 @@ const ManageServicesCategory = () => {
   const itemsPerPage = 10;
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
-
-
   useEffect(() => {
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
@@ -45,8 +44,8 @@ const ManageServicesCategory = () => {
     };
 
     handleResize(); // Run on load
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const handleToggleSidebar = () => {
@@ -64,7 +63,9 @@ const ManageServicesCategory = () => {
 
   // Fetch categories whenever filters or page change
   useEffect(() => {
-    dispatch(fetchCategories(currentPage, itemsPerPage, searchTerm, statusFilter));
+    dispatch(
+      fetchCategories(currentPage, itemsPerPage, searchTerm, statusFilter)
+    );
   }, [dispatch, currentPage, searchTerm, statusFilter]);
 
   // Toast notifications
@@ -93,7 +94,9 @@ const ManageServicesCategory = () => {
       await dispatch(deleteCategory(deleteId));
       setShowDeleteModal(false);
       setDeleteId(null);
-      dispatch(fetchCategories(currentPage, itemsPerPage, searchTerm, statusFilter));
+      dispatch(
+        fetchCategories(currentPage, itemsPerPage, searchTerm, statusFilter)
+      );
     } catch {
       toast.error("Failed to delete category.");
     }
@@ -105,9 +108,11 @@ const ManageServicesCategory = () => {
       await dispatch(updateCategory(updatedCategory));
       setShowEditModal(false);
       setSelectedCategory(null);
-      dispatch(fetchCategories(currentPage, itemsPerPage, searchTerm, statusFilter));
+      dispatch(
+        fetchCategories(currentPage, itemsPerPage, searchTerm, statusFilter)
+      );
     } catch (err) {
-      toast.error(err.message); // 
+      toast.error(err.message); //
     }
   };
 
@@ -123,9 +128,9 @@ const ManageServicesCategory = () => {
                 ? 259
                 : 95
               : isSidebarOpen
-                ? 220
-                : 0,
-          transition: 'margin-left 0.3s ease',
+              ? 220
+              : 0,
+          transition: "margin-left 0.3s ease",
         }}
       >
         <Navbar onToggleSidebar={handleToggleSidebar} />
@@ -140,7 +145,8 @@ const ManageServicesCategory = () => {
                 </div>
                 <div className="col-lg-6 text-end">
                   <Link to="/add-service" className="btn btn-new-lead">
-                    <i className="bi bi-plus-circle me-1"></i> Add Services Category
+                    <i className="bi bi-plus-circle me-1"></i> Add Services
+                    Category
                   </Link>
                 </div>
               </div>
@@ -170,8 +176,6 @@ const ManageServicesCategory = () => {
                     <option value="1">Active</option>
                     <option value="0">Inactive</option>
                   </select>
-
-
                 </div>
                 <div className="col-md-2 d-flex">
                   <button
@@ -180,7 +184,10 @@ const ManageServicesCategory = () => {
                   >
                     <i className="bi bi-search"></i>
                   </button>
-                  <button className="btn btn-light border-1" onClick={handleRefresh}>
+                  <button
+                    className="btn btn-light border-1"
+                    onClick={handleRefresh}
+                  >
                     <i className="bi bi-arrow-clockwise"></i>
                   </button>
                 </div>
@@ -194,7 +201,6 @@ const ManageServicesCategory = () => {
               <div className="table-responsive">
                 {loading ? (
                   <p>Loading categories...</p>
-
                 ) : categories.length === 0 ? (
                   <p>No categories found.</p>
                 ) : (
@@ -211,13 +217,18 @@ const ManageServicesCategory = () => {
                     <tbody>
                       {categories.map((cat, index) => (
                         <tr key={cat.id}>
-                          <td>{(currentPage - 1) * itemsPerPage + index + 1}</td>
+                          <td>
+                            {(currentPage - 1) * itemsPerPage + index + 1}
+                          </td>
                           <td>{cat.serviceCategoryName}</td>
                           <td>{cat.serviceCategoryCode}</td>
                           <td>
                             <span
-                              className={`badge ${cat.status ? "bg-success-light text-success" : "bg-danger-light text-danger"
-                                }`}
+                              className={`badge ${
+                                cat.status
+                                  ? "bg-success-light text-success"
+                                  : "bg-danger-light text-danger"
+                              }`}
                             >
                               {cat.status ? "Active" : "Inactive"}
                             </span>
@@ -262,47 +273,11 @@ const ManageServicesCategory = () => {
               </div>
 
               {/* Pagination */}
-              <div className="d-flex justify-content-end align-items-center mt-3">
-                <nav>
-                  <ul className="pagination custom-pagination mb-0">
-                    {/* Previous Button */}
-                    <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
-                      <button
-                        className="page-link"
-                        onClick={() => setCurrentPage(currentPage - 1)}
-                      >
-                        &lt;
-                      </button>
-                    </li>
-
-                    {/* Page Numbers */}
-                    {Array.from({ length: totalPages || 1 }, (_, i) => i + 1).map((page) => (
-                      <li
-                        key={page}
-                        className={`page-item ${currentPage === page ? "active" : ""}`}
-                      >
-                        <button
-                          className="page-link"
-                          onClick={() => setCurrentPage(page)}
-                        >
-                          {page}
-                        </button>
-                      </li>
-                    ))}
-
-                    {/* Next Button */}
-                    <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
-                      <button
-                        className="page-link"
-                        onClick={() => setCurrentPage(currentPage + 1)}
-                      >
-                        &gt;
-                      </button>
-                    </li>
-                  </ul>
-                </nav>
-              </div>
-
+              <PaginationComponent
+                currentPage={currentPage}
+                totalPages={totalPages || 1}
+                onPageChange={setCurrentPage}
+              />
 
               {/* Modals */}
               <EditServiceCategory
@@ -312,13 +287,11 @@ const ManageServicesCategory = () => {
                 handleSaveChanges={handleSaveChanges}
               />
 
-
               <ViewServiceCategoryModal
                 show={showViewModal}
                 handleClose={() => setShowViewModal(false)}
                 services={selectedCategory}
               />
-
             </div>
           </div>
         </div>
