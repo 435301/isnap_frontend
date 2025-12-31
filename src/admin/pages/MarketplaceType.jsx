@@ -88,7 +88,7 @@ const handleSaveChanges = async (updatedMarketType) => {
                   <input
                     type="text"
                     className="form-control border-0"
-                    placeholder="Search by Marketplace  Type"
+                    placeholder="Search by Marketplace Type"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />

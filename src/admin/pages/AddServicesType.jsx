@@ -19,6 +19,7 @@ const AddServiceType = () => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [formData, setFormData] = useState({
     marketPlaceId: "",
+    rawServiceTypeName:"",
     serviceTypeName: "",
     price: "",
     status: 1,
@@ -37,69 +38,76 @@ const AddServiceType = () => {
 
   const handleToggleSidebar = () => setIsSidebarOpen((prev) => !prev);
 
-  // const handleChange = (e) => {
-  //   const { name, value } = e.target;
-  //   setFormData((prev) => ({
-  //     ...prev,
-  //     [name]: name === "status" ? Number(value) : value,
-  //   }));
-  //   setErrors((prev) => ({ ...prev, [name]: "" }));
-  // };
+ const handleChange = (e) => {
+  const { name, value } = e.target;
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    if (name === "serviceTypeName") {
+  if (name === "serviceTypeName") {
+    setFormData((prev) => {
       const selectedMarketplace = marketTypes.find(
-        (mt) => mt.id === Number(formData.marketPlaceId)
+        (mt) => mt.id === Number(prev.marketPlaceId)
       );
-      setFormData((prev) => ({
+      return {
         ...prev,
+        rawServiceTypeName: value,
         serviceTypeName: selectedMarketplace
           ? `${value} (${selectedMarketplace.marketPlaceType})`
           : value,
-      }));
-    } else if (name === "marketPlaceId") {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: Number(value),
-        // Also update the serviceTypeName to reflect new marketplace
-        serviceTypeName: prev.serviceTypeName
-          ? `${prev.serviceTypeName.split(" (")[0]} (${marketTypes.find(mt => mt.id === Number(value))?.marketPlaceType || ""})`
-          : "",
-      }));
-    } else {
-      setFormData((prev) => ({ ...prev, [name]: name === "status" ? Number(value) : value }));
-    }
+      };
+    });
+  } else if (name === "marketPlaceId") {
+    const selectedMarketplace = marketTypes.find(mt => mt.id === Number(value));
+    setFormData((prev) => ({
+      ...prev,
+      [name]: Number(value),
+      serviceTypeName: prev.rawServiceTypeName
+        ? `${prev.rawServiceTypeName} (${selectedMarketplace?.marketPlaceType || ""})`
+        : "",
+    }));
+  } else {
+    setFormData((prev) => ({
+      ...prev,
+      [name]: name === "status" ? Number(value) : value,
+    }));
+  }
 
-    setErrors((prev) => ({ ...prev, [name]: "" }));
-  };
+  setErrors((prev) => ({ ...prev, [name]: "" }));
+};
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const validationErrors = {};
 
-    if (!formData.marketPlaceId) validationErrors.marketPlaceId = "Marketplace is required";
-    if (!formData.serviceTypeName.trim()) validationErrors.serviceTypeName = "Marketplace type  is required";
-    if (!formData.price || Number(formData.price) <= 0) validationErrors.price = "Price must be a positive number";
-    if (formData.status !== 1 && formData.status !== 0) validationErrors.status = "Status is required";
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  const validationErrors = {};
 
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      return;
-    }
+  if (!formData.marketPlaceId) validationErrors.marketPlaceId = "Marketplace is required";
+  if (!formData.rawServiceTypeName.trim()) validationErrors.serviceTypeName = "Marketplace type is required";
+  if (!formData.price || Number(formData.price) <= 0) validationErrors.price = "Price must be a positive number";
+  if (formData.status !== 1 && formData.status !== 0) validationErrors.status = "Status is required";
 
-    try {
-      await dispatch(createServiceType(formData));
-      setFormData({ marketPlaceId: "", serviceTypeName: "", price: "", status: 1 });
-      setErrors({});
-      toast.success("Marketplace added successfully!");
-      navigate("/manage-marketplace");
-    } catch (error) {
-      // Use toast for server-side error
-      toast.error(error.response?.data?.message || "Market Place already exists");
-    }
-  };
+  if (Object.keys(validationErrors).length > 0) {
+    setErrors(validationErrors);
+    return;
+  }
+
+  try {
+    await dispatch(createServiceType({
+      ...formData,
+      serviceTypeName: formData.serviceTypeName, // already includes marketplace type
+    }));
+    setFormData({
+      marketPlaceId: "",
+      rawServiceTypeName: "",
+      serviceTypeName: "",
+      price: "",
+      status: 1,
+    });
+    setErrors({});
+    toast.success("Marketplace added successfully!");
+    navigate("/manage-marketplace");
+  } catch (error) {
+    toast.error(error.response?.data?.message || "Marketplace already exists");
+  }
+};
+
 
   return (
     <div className="container-fluid position-relative bg-white d-flex p-0">
@@ -155,7 +163,7 @@ const AddServiceType = () => {
                     <input
                       type="text"
                       name="serviceTypeName"
-                      value={formData.serviceTypeName}
+                      value={formData.rawServiceTypeName}
                       onChange={handleChange}
                       className={`form-control ${errors.serviceTypeName ? "is-invalid" : ""}`}
                       placeholder="Enter Marketplace"
