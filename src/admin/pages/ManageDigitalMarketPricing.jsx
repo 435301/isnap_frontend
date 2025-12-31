@@ -141,7 +141,7 @@ const ManageDigitalMarketPricing = () => {
                       markets.map((m, index) => (
                         <tr key={m.id}>
                           <td>{index + 1}</td>
-                          <td>₹{m.price}</td>
+                          <td>₹{m.price || "-"}</td>
                           <td>
                             <span
                               className={`badge ${
