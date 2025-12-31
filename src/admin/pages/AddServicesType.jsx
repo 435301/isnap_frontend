@@ -124,7 +124,7 @@ const handleSubmit = async (e) => {
           <div className="row mb-2">
             <div className="bg-white p-3 rounded shadow-sm card-header d-flex justify-content-between align-items-center">
               <h5 className="form-title m-0">Add Marketplace</h5>
-              <Link to="/manage-services-type" className="btn btn-new-lead">
+              <Link to="/manage-marketplace" className="btn btn-new-lead">
                 Manage Marketplaces
               </Link>
             </div>
@@ -213,7 +213,7 @@ const handleSubmit = async (e) => {
                     <button
                       type="button"
                       className="btn btn-outline-secondary px-4"
-                      onClick={() => navigate("/manage-services-type")}
+                      onClick={() => navigate("/manage-marketplace")}
                     >
                       Cancel
                     </button>
