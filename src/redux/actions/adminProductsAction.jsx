@@ -1,6 +1,7 @@
 import axios from "axios";
 import BASE_URL from "../../config/config";
 import getAuthHeaders from "../../utils/auth";
+import { toast } from "react-toastify";
 
 // Sellers
 export const FETCH_SELLERS_REQUEST = "FETCH_SELLERS_REQUEST";
@@ -29,90 +30,97 @@ export const BULK_UPLOAD_FAILURE = "BULK_UPLOAD_FAILURE";
 
 
 export const fetchMarketPlaceSellers = () => async (dispatch) => {
-  dispatch({ type: FETCH_SELLERS_REQUEST });
-  try {
-    const res = await axios.get( `${BASE_URL}/product/getSellers`,  getAuthHeaders(false)
-    );
-    dispatch({
-      type: FETCH_SELLERS_SUCCESS,
-      payload: res.data.data.sellers,
-    });
-  } catch (error) {
-    dispatch({
-      type: FETCH_SELLERS_FAILURE,
-      payload: error.message,
-    });
-  }
+    dispatch({ type: FETCH_SELLERS_REQUEST });
+    try {
+        const res = await axios.get(`${BASE_URL}/product/getSellers`, getAuthHeaders(false)
+        );
+        dispatch({
+            type: FETCH_SELLERS_SUCCESS,
+            payload: res.data.data.sellers,
+        });
+    } catch (error) {
+        dispatch({
+            type: FETCH_SELLERS_FAILURE,
+            payload: error.message,
+        });
+    }
 };
 
 /* ================= GET PRODUCTS ================= */
-export const fetchAdminProducts =(filters) => async (dispatch) => {
+export const fetchAdminProducts = (filters) => async (dispatch) => {
     dispatch({ type: FETCH_PRODUCTS_REQUEST });
     try {
-      const res = await axios.post( `${BASE_URL}/product/getProducts`,  filters,  getAuthHeaders(false) );
-      dispatch({
-        type: FETCH_PRODUCTS_SUCCESS,
-        payload: res.data.data,
-      });
+        const res = await axios.post(`${BASE_URL}/product/getProducts`, filters, getAuthHeaders(false));
+        dispatch({
+            type: FETCH_PRODUCTS_SUCCESS,
+            payload: res.data.data,
+        });
     } catch (error) {
-      dispatch({
-        type: FETCH_PRODUCTS_FAILURE,
-        payload: error.message,
-      });
+        dispatch({
+            type: FETCH_PRODUCTS_FAILURE,
+            payload: error.message,
+        });
     }
-  };
+};
 
 /* ================= ADD PRODUCT ================= */
 export const addProduct = (payload) => async (dispatch) => {
-  dispatch({ type: ADD_PRODUCT_REQUEST });
-  try {
-    await axios.post( `${BASE_URL}/product/addProduct`, payload, getAuthHeaders(true) );
-    dispatch({ type: ADD_PRODUCT_SUCCESS });
-  } catch (error) {
-    dispatch({
-      type: ADD_PRODUCT_FAILURE,
-      payload: error.message,
-    });
-  }
+    dispatch({ type: ADD_PRODUCT_REQUEST });
+    try {
+        const res = await axios.post(`${BASE_URL}/product/addProduct`, payload, getAuthHeaders(true));
+        dispatch({ type: ADD_PRODUCT_SUCCESS });
+        toast.success(res.data.message);
+
+    } catch (error) {
+        dispatch({
+            type: ADD_PRODUCT_FAILURE,
+            payload: error.message,
+        });
+        toast.error(error.response.data.message);
+    }
 };
 
 /* ================= DELETE PRODUCT ================= */
 export const deleteProduct = (id) => async (dispatch) => {
-  dispatch({ type: DELETE_PRODUCT_REQUEST });
-  try {
-    await axios.delete( `${BASE_URL}/product/deleteProduct/${id}`,  getAuthHeaders(true) );
-    dispatch({
-      type: DELETE_PRODUCT_SUCCESS,
-      payload: id,
-    });
-  } catch (error) {
-    dispatch({
-      type: DELETE_PRODUCT_FAILURE,
-      payload: error.message,
-    });
-  }
+    dispatch({ type: DELETE_PRODUCT_REQUEST });
+    try {
+        const res = await axios.delete(`${BASE_URL}/product/deleteProduct/${id}`, getAuthHeaders(true));
+        dispatch({
+            type: DELETE_PRODUCT_SUCCESS,
+            payload: id,
+        });
+        toast.success(res.data.message);
+    } catch (error) {
+        dispatch({
+            type: DELETE_PRODUCT_FAILURE,
+            payload: error.message,
+        });
+        toast.error(error.response.data.message);
+    }
 };
 
 /* ================= BULK UPLOAD ================= */
 export const bulkUploadProducts =
-  ({ sellerId, marketPlaceId, file }) =>
-  async (dispatch) => {
-    dispatch({ type: BULK_UPLOAD_REQUEST });
-    try {
-      const formData = new FormData();
-      formData.append("sellerId", sellerId);
-      formData.append("marketPlaceId", marketPlaceId);
-      formData.append("file", file);
+    ({ sellerId, marketPlaceId, file }) =>
+        async (dispatch) => {
+            dispatch({ type: BULK_UPLOAD_REQUEST });
+            try {
+                const formData = new FormData();
+                formData.append("sellerId", sellerId);
+                formData.append("marketPlaceId", marketPlaceId);
+                formData.append("file", file);
 
-      const res = await axios.post( `${BASE_URL}/product/bulkUploadProducts`, formData, getAuthHeaders(true, "multipart/form-data"));
-      dispatch({
-        type: BULK_UPLOAD_SUCCESS,
-        payload: res.data.data,
-      });
-    } catch (error) {
-      dispatch({
-        type: BULK_UPLOAD_FAILURE,
-        payload: error.message,
-      });
-    }
-  };
+                const res = await axios.post(`${BASE_URL}/product/bulkUploadProducts`, formData, getAuthHeaders(true));
+                dispatch({
+                    type: BULK_UPLOAD_SUCCESS,
+                    payload: res.data.data,
+                });
+                toast.success(res.data.message);
+            } catch (error) {
+                dispatch({
+                    type: BULK_UPLOAD_FAILURE,
+                    payload: error.message,
+                });
+                toast.error(error.response.data.message);
+            }
+        };

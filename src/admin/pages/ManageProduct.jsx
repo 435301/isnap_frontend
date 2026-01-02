@@ -7,13 +7,14 @@ import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAdminProducts, fetchMarketPlaceSellers, fetchProducts } from "../../redux/actions/adminProductsAction";
 import { fetchServiceTypes } from "../../redux/actions/serviceTypeActions";
+import PaginationComponent from "../../common/pagination";
 
 const ManageProducts = () => {
   const dispatch = useDispatch();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const handleToggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
-  const { marketPlacesellers, products , loading , pagination} = useSelector((state) => state.adminProducts);
+  const { marketPlacesellers, products, loading, pagination } = useSelector((state) => state.adminProducts);
   const { serviceTypes } = useSelector(state => state.serviceType);
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -231,6 +232,11 @@ const ManageProducts = () => {
                 </table>
               </div>
             </div>
+            <PaginationComponent
+              currentPage={currentPage}
+              totalPages={pagination?.totalPages || 1}
+              onPageChange={setCurrentPage}
+            />
           </div>
         </div>
       </div>
