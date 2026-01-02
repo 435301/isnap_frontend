@@ -4,27 +4,34 @@ import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import Select from "react-select";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { fetchServiceTypes } from "../../redux/actions/serviceTypeActions";
+import { fetchMarketPlaceSellers } from "../../redux/actions/adminProductsAction";
+import { useDispatch, useSelector } from "react-redux";
 
 const BulkUpload = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+   const { serviceTypes } = useSelector(state => state.serviceType);
+  const serviceTypeOptions = serviceTypes?.map((item) => ({
+    label: item.serviceType,
+    value: item.id,
+  }));
+  const { marketPlacesellers } = useSelector((state) => state.adminProducts);
+  useEffect(() => {
+    dispatch(fetchServiceTypes());
+    dispatch(fetchMarketPlaceSellers());
+  }, [dispatch]);
 
   const [formData, setFormData] = useState({
-    seller: "",
-    marketplaces: [],
+    sellerId: "",
+    marketPlaceId: [],
     file: null,
   });
 
   const [errors, setErrors] = useState({});
 
-  const sellerOptions = ["Seller A", "Seller B", "Seller C"];
-  const marketplaceOptions = [
-    { value: "Amazon", label: "Amazon" },
-    { value: "Flipkart", label: "Flipkart" },
-    { value: "Meesho", label: "Meesho" },
-    { value: "JioMart", label: "JioMart" },
-  ];
 
   useEffect(() => {
     const handleResize = () => {
@@ -60,13 +67,6 @@ const BulkUpload = () => {
     setErrors(err);
 
     if (Object.keys(err).length === 0) {
-      alert(
-        `Bulk upload submitted!\nSeller: ${
-          formData.seller
-        }\nMarketplaces: ${formData.marketplaces.join(", ")}\nFile: ${
-          formData.file.name
-        }`
-      );
       setFormData({ seller: "", marketplaces: [], file: null });
     }
   };
@@ -125,9 +125,9 @@ const BulkUpload = () => {
                     className={`form-select ${errors.seller && "is-invalid"}`}
                   >
                     <option value="">Select Seller</option>
-                    {sellerOptions.map((s, idx) => (
-                      <option key={idx} value={s}>
-                        {s}
+                    {marketPlacesellers.map((s) => (
+                      <option key={s.id} value={s.id}>
+                        {s.businessName}
                       </option>
                     ))}
                   </select>
@@ -139,8 +139,8 @@ const BulkUpload = () => {
                   <label className="form-label">Marketplace <span className="text-danger"> *</span></label>
                   <Select
                     isMulti
-                    options={marketplaceOptions}
-                    value={marketplaceOptions.filter((option) =>
+                    options={serviceTypeOptions}
+                    value={serviceTypeOptions.filter((option) =>
                       formData.marketplaces.includes(option.value)
                     )}
                     onChange={(selected) =>
