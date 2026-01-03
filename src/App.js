@@ -61,6 +61,8 @@ import EditSeller from "./admin/pages/EditSeller";
 import LeadStatus from "./admin/pages/LeadStatus";
 import ManageLeadsStatus from "./admin/pages/ManageLeadsStatus";
 import Invoice from "./admin/pages/Invoice";
+import ManageSupport from "./admin/pages/ManageSupport";
+import AddSupport from "./admin/pages/AddSupport";
 
 // Team Pages
 import TeamDashboard from "./Team/pages/Dashboard";
@@ -81,6 +83,7 @@ import MouAgreement from "./Seller/pages/MouAgreement";
 import MouA2 from "./Seller/pages/MouA2";
 import MouA3 from "./Seller/pages/MouA3";
 import SellerInvoicePage from "./Seller/pages/SellerInvoicePage";
+import SellerMarketplaceServices from "./Seller/pages/SellerMarketplaceServices";
 
 import TaskSummarySellar from "./Seller/pages/TaskSummarySellar";
 import ManageBusinessType from "./admin/pages/ManageBusinessType.jsx";
@@ -95,6 +98,7 @@ import ManageDocCategory from "./admin/pages/ManageDocumentCategory.jsx";
 import AddDocCatgeory from "./admin/pages/AddDocumentCatgeory.jsx";
 import AddProduct from "./admin/pages/AddProduct.jsx";
 import ManageProduct from "./admin/pages/ManageProduct.jsx";
+import OrderDetails from "./admin/pages/OrderDetails.jsx";
 
 import ManageDocType from "./admin/pages/ManageDocType.jsx";
 import AddDocType from "./admin/pages/AddDocType.jsx";
@@ -120,6 +124,12 @@ import ExecutiveEditSeller from "./Executive/pages/ExecutiveEditSeller.jsx";
 import ExecutiveViewSeller from "./Executive/pages/ExecutiveViewSeller.jsx";
 import ManagerDocumentView from "./Executive/pages/ManagerDocument.jsx";
 import SellerExeDashboard from "./Executive/pages/ExecutiveExeDashboard.jsx";
+import SellerAddProduct from "./Seller/pages/SellerAddProduct.jsx";
+import SellerManageProduct from "./Seller/pages/SellerManageProduct";
+import SellerBulkUpload from "./Seller/pages/SellerBulkUpload.jsx";
+import SellerManageReports from "./Seller/pages/SellerManageReports.jsx";
+import SellerMarketplace from "./Seller/pages/SellerMarketplace.jsx";
+
 import SellerInvoiceList from "./Seller/pages/sellerInvoiceList.jsx";
 import AccountsInvoices from "./Accounts/pages/AccountsInvoiceList.jsx";
 import SellerServicesList from "./Seller/pages/ServicesList.jsx";
@@ -133,6 +143,10 @@ import ViewSellerDetails from "./Team/pages/ViewSellerDetails.jsx";
 import TaskSummaryPersonal from "./Team/pages/TaskSummaryPersonal.jsx";
 import BulkUpload from "./admin/pages/BulkUpload.jsx";
 import ManageReports from "./admin/pages/ManageReports.jsx";
+import ManageOrders from "./admin/pages/ManageOrders.jsx";
+import AddOrders from "./admin/pages/AddOrders.jsx";
+import ManageSubOrders from "./admin/pages/ManageSubOrders.jsx";
+import AddSubOrders from "./admin/pages/AddSubOrders.jsx";
 
 function App() {
   return (
@@ -228,6 +242,64 @@ function App() {
           element={
             <AdminRoute>
               <ManageServicesType />
+            </AdminRoute>
+          }
+        />
+        {/* new order */}
+        <Route
+          path="/manage-orders"
+          element={
+            <AdminRoute>
+              <ManageOrders />
+            </AdminRoute>
+          }
+        />
+        {/* new order */}
+        <Route
+          path="/support"
+          element={
+            <AdminRoute>
+              <ManageSupport />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/add-support"
+          element={
+            <AdminRoute>
+              <AddSupport />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/add-orders"
+          element={
+            <AdminRoute>
+              <AddOrders />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/order-details"
+          element={
+            <AdminRoute>
+              <OrderDetails />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/manage-sub-orders"
+          element={
+            <AdminRoute>
+              <ManageSubOrders />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/add-sub-orders"
+          element={
+            <AdminRoute>
+              <AddSubOrders />
             </AdminRoute>
           }
         />
@@ -740,6 +812,55 @@ function App() {
           element={
             <SellerRoute>
               <AddProducts />
+            </SellerRoute>
+          }
+        />
+        <Route
+          path="/seller/manage-product"
+          element={
+            <SellerRoute>
+              <SellerManageProduct />
+            </SellerRoute>
+          }
+        />
+        <Route
+          path="/seller/bulk-upload"
+          element={
+            <SellerRoute>
+              <SellerBulkUpload />
+            </SellerRoute>
+          }
+        />
+        <Route
+          path="/seller/reports"
+          element={
+            <SellerRoute>
+              <SellerManageReports />
+            </SellerRoute>
+          }
+        />
+        <Route
+          path="/seller/marketplace-report"
+          element={
+            <SellerRoute>
+              <SellerMarketplace />
+            </SellerRoute>
+          }
+        />
+
+        <Route
+          path="/seller/marketplace-services"
+          element={
+            <SellerRoute>
+              <SellerMarketplaceServices />
+            </SellerRoute>
+          }
+        />
+        <Route
+          path="/seller/add-product"
+          element={
+            <SellerRoute>
+              <SellerAddProduct />
             </SellerRoute>
           }
         />

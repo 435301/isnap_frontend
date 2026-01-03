@@ -63,6 +63,14 @@ const Sidebar = ({ isOpen }) => {
       tasks: ["/manage-task", "/create-task", "/rejected-tasks"],
       leads: ["/manage-leads", "/create-lead", "/view-lead"],
       notifications: ["/view-notifications", "/notification-settings"],
+      orders: [
+        "/add-orders",
+        "/add-sub-orders",
+        "/manage-orders",
+        "/manage-sub-orders",
+        "/order-details",
+      ],
+
       products: [
         "/add-product",
         "/manage-products",
@@ -108,6 +116,9 @@ const Sidebar = ({ isOpen }) => {
       "products",
       "notifications",
       "change-password",
+      "support",
+      "add-support",
+
       "logout",
     ],
     Team: ["dashboard", "leads", "tasks", "change-password", "logout"],
@@ -548,6 +559,42 @@ const Sidebar = ({ isOpen }) => {
               </Link>
             </div>
           </div>
+          {/* Orders */}
+          <div
+            className={`nav-item dropdown ${
+              isDropdownActive("orders") ? "show" : ""
+            }`}
+          >
+            <a
+              href="#!"
+              className={`nav-link dropdown-toggle ${
+                isDropdownActive("orders") ? "active" : ""
+              }`}
+              onClick={() => handleDropdownToggle("orders")}
+            >
+              <i className="bi bi-receipt me-2"></i>
+              {isOpen && <span>Orders</span>}
+            </a>
+
+            <div
+              className={`dropdown-menu bg-transparent border-0 ${
+                isDropdownActive("orders") ? "show" : ""
+              }`}
+            >
+              {[
+                { path: "/manage-orders", label: "Orders" },
+                { path: "/manage-sub-orders", label: "Sub Orders" },
+              ].map((item) => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={`dropdown-item ${isLinkActive(item.path)}`}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </div>
+          </div>
 
           {/* Notifications */}
           <div
@@ -588,7 +635,16 @@ const Sidebar = ({ isOpen }) => {
               </Link>
             </div>
           </div>
-
+          {/* Support */}
+          {menusToShow.includes("support") && (
+            <Link
+              to="/support"
+              className={`nav-item nav-link ${isLinkActive("/support")}`}
+            >
+              <i className="bi bi-headset me-2"></i>
+              {isOpen && <span>Support</span>}
+            </Link>
+          )}
           {/* Change Password */}
           {menusToShow.includes("change-password") && (
             <Link
