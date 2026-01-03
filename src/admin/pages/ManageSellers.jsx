@@ -240,11 +240,11 @@ const ManageSellers = () => {
                                 <i className="bi bi-trash"></i>
                               </button>
                               {/* Voice Button */}
-                              <Link to="/in-voice">
+                              {/* <Link to="/in-voice">
                                 <button className="btn btn-icon btn-voice">
                                   <i className="bi bi-mic"></i>
                                 </button>
-                              </Link>
+                              </Link> */}
 
                             </div>
                           </td>

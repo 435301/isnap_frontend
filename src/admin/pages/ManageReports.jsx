@@ -1,50 +1,43 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchMarketPlaceSellers, fetchReports } from "../../redux/actions/adminProductsAction";
+import { fetchServiceTypes } from "../../redux/actions/serviceTypeActions";
+import "../assets/admin/css/style.css";
 
 const ManageProducts = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-
   const handleToggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+  const { marketPlacesellers, reports, loading, pagination } = useSelector((state) => state.adminProducts);
+  const { serviceTypes } = useSelector(state => state.serviceType);
 
-  const [selectedProducts, setSelectedProducts] = useState([]);
-  const handleCheckboxChange = (id) => {
-    setSelectedProducts((prev) =>
-      prev.includes(id) ? prev.filter((pid) => pid !== id) : [...prev, id]
-    );
-  };
+  const [currentPage, setCurrentPage] = useState(1);
+  const [marketPlaceId, setMarketPlaceId] = useState("");
+  const [sellerId, setSellerId] = useState("");
 
-  // Example static data
-  const skuData = [
-    {
-      id: 1,
-      seller: "John Doe",
-      marketplace: "Amazon",
-      activeSkus: 120,
-      inactiveSkus: 30,
-      totalSkus: 150,
-    },
-    {
-      id: 2,
-      seller: "Jane Smith",
-      marketplace: "Flipkart",
-      activeSkus: 80,
-      inactiveSkus: 20,
-      totalSkus: 100,
-    },
-    {
-      id: 3,
-      seller: "Mike Johnson",
-      marketplace: "Snapdeal",
-      activeSkus: 45,
-      inactiveSkus: 15,
-      totalSkus: 60,
-    },
-  ];
+  useEffect(() => {
+    dispatch(fetchReports({
+      sellerId: sellerId,
+      marketPlaceId: marketPlaceId,
+      page: currentPage
+    }));
+    dispatch(fetchMarketPlaceSellers());
+    dispatch(fetchServiceTypes());
+  }, [dispatch, sellerId, marketPlaceId, currentPage]);
+
+
+  const handleRefresh = () => {
+    setCurrentPage(1);
+    setMarketPlaceId("");
+    setSellerId("");
+  }
 
   return (
     <div className="container-fluid d-flex p-0">
@@ -58,8 +51,8 @@ const ManageProducts = () => {
                 ? 259
                 : 95
               : isSidebarOpen
-              ? 220
-              : 0,
+                ? 220
+                : 0,
           transition: "margin-left 0.3s ease",
         }}
       >
@@ -76,16 +69,28 @@ const ManageProducts = () => {
                 </div>
 
                 <div className="col-lg-8 d-flex align-items-center">
-                  <select className="form-select me-2">
+                  <select className="form-select me-2"
+                    onChange={(e) => {
+                      setSellerId(e.target.value);
+                      setCurrentPage(1);
+                    }}
+                    value={sellerId}>
                     <option value="">Select Seller</option>
-                    <option value="seller1">Seller 1</option>
-                    <option value="seller2">Seller 2</option>
+                    {marketPlacesellers?.map((seller) => (
+                      <option key={seller.id} value={seller.id}>{seller?.businessName}</option>
+                    ))}
                   </select>
 
-                  <select className="form-select me-2">
+                  <select className="form-select me-2"
+                    onChange={(e) => {
+                      setMarketPlaceId(e.target.value);
+                      setCurrentPage(1);
+                    }}
+                    value={marketPlaceId}>
                     <option value="">Select Marketplace</option>
-                    <option value="marketplace1">Marketplace 1</option>
-                    <option value="marketplace2">Marketplace 2</option>
+                    {serviceTypes?.map((service) => (
+                      <option key={service.id} value={service.id}>{service.serviceType}</option>
+                    ))}
                   </select>
                 </div>
 
@@ -93,7 +98,7 @@ const ManageProducts = () => {
                   <button className="btn btn-success text-white me-3">
                     <i className="bi bi-search"></i>
                   </button>
-                  <button className="btn btn-light border">
+                  <button className="btn btn-light border" onClick={handleRefresh}>
                     <i className="bi bi-arrow-clockwise"></i>
                   </button>
                 </div>
@@ -120,45 +125,58 @@ const ManageProducts = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {skuData.map((item, index) => (
-                      <tr key={item.id}>
-                        <td>{index + 1}</td>
-                        <td>{item.seller}</td>
-                        <td>{item.marketplace}</td>
-                        <td>
-                          <Link
-                            to="/manage-products"
-                            className="text-decoration-none"
-                          >
-                            <span className="badge bg-success cursor-pointer">
+                    {loading ? (
+                      <tr>
+                        <td colSpan="10" className="text-center">Loading...</td>
+                      </tr>
+                    ) : reports.length > 0 ? (
+                      reports.map((item, index) => (
+                        <tr key={item.id}>
+                          <td>{index + 1}</td>
+                          <td>{item.businessName}</td>
+                          <td>{item.marketPlaceName}</td>
+                          <td>
+                            <span
+                              className="badge bg-success cursor-pointer"
+                              onClick={() =>
+                                navigate(
+                                  `/manage-products?sellerId=${item?.sellerId}&status=1&marketPlaceId=${item?.marketPlaceId}`
+                                )
+                              }
+                            >
                               {item.activeSkus}
                             </span>
-                          </Link>
-                        </td>
+                          </td>
 
-                        <td>
-                          <Link
-                            to="/manage-products"
-                            className="text-decoration-none"
-                          >
-                            <span className="badge bg-warning text-dark cursor-pointer">
-                              {item.inactiveSkus}
-                            </span>
-                          </Link>
-                        </td>
+                          <td>
+                              <span className="badge bg-warning text-dark cursor-pointer"
+                               onClick={() =>
+                                navigate(
+                                  `/manage-products?sellerId=${item?.sellerId}&status=0&marketPlaceId=${item?.marketPlaceId}`
+                                )
+                              }>
+                                {item.inactiveSkus}
+                              </span>
+                          </td>
 
-                        <td>
-                          <Link
-                            to="/manage-products"
-                            className="text-decoration-none"
-                          >
-                            <span className="badge bg-primary cursor-pointer">
-                              {item.totalSkus}
-                            </span>
-                          </Link>
+                          <td>
+                              <span className="badge bg-primary cursor-pointer"  onClick={() =>
+                                navigate(
+                                  `/manage-products?sellerId=${item?.sellerId}&marketPlaceId=${item?.marketPlaceId}`
+                                )
+                              }>
+                                {item.totalSkus}
+                              </span>
+                          </td>
+                        </tr>
+                      ))) : (
+                      <tr>
+                        <td colSpan="10" className="text-center">
+                          No reports found.
                         </td>
                       </tr>
-                    ))}
+                    )
+                    }
                   </tbody>
                 </table>
               </div>

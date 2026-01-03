@@ -207,7 +207,7 @@ const ManageState = () => {
                       {filteredStates.map((st, index) => (
                         <tr key={st.id}>
                           <td>{index + 1}</td>
-                          <td>{st.stateName}</td>
+                          <td>{st.stateName || "-"}</td>
                           <td>
                             <span
                               className={`badge ${st.stateStatus

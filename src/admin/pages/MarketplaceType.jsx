@@ -88,7 +88,7 @@ const handleSaveChanges = async (updatedMarketType) => {
                   <input
                     type="text"
                     className="form-control border-0"
-                    placeholder="Search by Marketplace  Type"
+                    placeholder="Search by Marketplace Type"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
@@ -138,7 +138,7 @@ const handleSaveChanges = async (updatedMarketType) => {
                       {marketTypes.map((m, index) => (
                         <tr key={m.id}>
                           <td>{index + 1 + (currentPage - 1) * itemsPerPage}</td>
-                          <td>{m.marketTypeName}</td>
+                          <td>{m.marketTypeName || "-"}</td>
                           <td><span className={`badge ${m.status ? "bg-success-light text-success" : "bg-danger-light text-danger"}`}>{m.status ? "Active" : "Inactive"}</span></td>
                           <td>
                             <div className="d-flex gap-2">

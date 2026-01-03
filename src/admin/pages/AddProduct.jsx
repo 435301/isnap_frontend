@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
@@ -8,32 +8,39 @@ import Select from "react-select";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { fetchServiceTypes } from "../../redux/actions/serviceTypeActions";
+import { addProduct, fetchMarketPlaceSellers } from "../../redux/actions/adminProductsAction";
 
 const AddProductListing = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const { serviceTypes } = useSelector(state => state.serviceType);
+  const serviceTypeOptions = serviceTypes?.map((item) => ({
+    label: item.serviceType,
+    value: item.id,
+  }));
+  const { marketPlacesellers } = useSelector((state) => state.adminProducts);
+  useEffect(() => {
+    dispatch(fetchServiceTypes());
+    dispatch(fetchMarketPlaceSellers());
+  }, [dispatch]);
+
   const [formData, setFormData] = useState({
-    seller: "",
+    sellerId: "",
     sku: "",
-    title: "",
+    productTitle: "",
     mrp: "",
     sellingPrice: "",
-    stock: "",
-    marketplaces: [],
-    status: "Active",
+    availableStock: "",
+    marketPlaceIds: [],
+    status: "",
   });
 
   const [errors, setErrors] = useState({});
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
-  const marketplaceOptions = [
-    { value: "Amazon", label: "Amazon" },
-    { value: "Flipkart", label: "Flipkart" },
-    { value: "Meesho", label: "Meesho" },
-    { value: "JioMart", label: "JioMart" },
-  ];
 
   useEffect(() => {
     const handleResize = () => {
@@ -49,20 +56,20 @@ const AddProductListing = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: name === "sellerId" ? Number(value) : value, }));
     setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
   const validate = () => {
     const err = {};
-    if (!formData.seller) err.seller = "Seller is required";
+    if (!formData.sellerId || formData.sellerId === 0) err.sellerId = "Seller is required";
     if (!formData.sku) err.sku = "SKU is required";
-    if (!formData.title) err.title = "Product title is required";
+    if (!formData.productTitle) err.productTitle = "Product title is required";
     if (!formData.mrp) err.mrp = "MRP is required";
     if (!formData.sellingPrice) err.sellingPrice = "Selling price is required";
-    if (!formData.stock) err.stock = "Available stock is required";
-    if (formData.marketplaces.length === 0)
-      err.marketplaces = "Select at least one marketplace";
+    if (!formData.availableStock) err.availableStock = "Available stock is required";
+    if (formData.marketPlaceIds.length === 0)
+      err.marketPlaceIds = "Select at least one marketplace";
     if (!formData.status) err.status = "Status is required";
     return err;
   };
@@ -74,18 +81,21 @@ const AddProductListing = () => {
 
     if (Object.keys(validationErrors).length === 0) {
       const payload = {
-        ...formData,
-        mrp: Number(formData.mrp),
-        sellingPrice: Number(formData.sellingPrice),
-        stock: Number(formData.stock),
-        status: formData.status === "Active" ? 1 : 0,
-      };
+        "sellerId": 16,
+        "sku": "SKU123",
+        "productTitle": "iPhone 15",
+        "marketPlaceIds": [6, 2],
+        "mrp": 80000,
+        "sellingPrice": 75000,
+        "availableStock": 10,
+        "status": 1
+      }
 
       try {
-        await dispatch(createProduct(payload));
-        navigate("/manage-product-listing");
+        await dispatch(addProduct(payload));
+        navigate("/manage-products");
       } catch (err) {
-        setErrors({ form: "Failed to create product" });
+        setErrors({ errors });
       }
     }
   };
@@ -115,23 +125,64 @@ const AddProductListing = () => {
                 <div className="alert alert-danger">{errors.form}</div>
               )}
               <div className="row g-3">
+                  {/* Marketplace MULTI SELECT */}
+                <div className="col-md-3">
+                  <label className="form-label">
+                    Marketplace <span className="text-danger">*</span>
+                  </label>
+                  <Select
+                    isMulti
+                    options={serviceTypeOptions}
+                    value={serviceTypeOptions?.filter((opt) =>
+                      formData.marketPlaceIds?.includes(opt.value)
+                    )}
+                    onChange={(selected) =>
+                      setFormData({
+                        ...formData,
+                        marketPlaceIds: selected.map((s) => s.value),
+                      })
+                    }
+                  />
+                  {errors.marketPlaceIds && (
+                    <div className="text-danger mt-1">
+                      {errors.marketPlaceIds}
+                    </div>
+                  )}
+                </div>
+
                 {/* Seller */}
                 <div className="col-md-3">
                   <label className="form-label">
                     Seller <span className="text-danger">*</span>
                   </label>
                   <select
-                    name="seller"
-                    value={formData.seller}
+                    name="sellerId"
+                    value={formData.sellerId}
                     onChange={handleChange}
-                    className={`form-select ${errors.seller && "is-invalid"}`}
+                    className={`form-select ${errors.sellerId && "is-invalid"}`}
                   >
                     <option value="">Select Seller</option>
-                    <option value="Seller A">Seller A</option>
-                    <option value="Seller B">Seller B</option>
-                    <option value="Seller C">Seller C</option>
+                    {marketPlacesellers?.map((seller) => (
+                      <option key={seller?.id} value={seller?.id}>{seller?.businessName}</option>
+                    ))}
                   </select>
-                  <div className="invalid-feedback">{errors.seller}</div>
+                  <div className="invalid-feedback">{errors.sellerId}</div>
+                </div>
+
+   {/* Product Title */}
+                <div className="col-md-3">
+                  <label className="form-label">
+                    Product Title <span className="text-danger">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="productTitle"
+                    value={formData.productTitle}
+                    onChange={handleChange}
+                    className={`form-control ${errors.productTitle && "is-invalid"}`}
+                    placeholder="Enter Product Title"
+                  />
+                  <div className="invalid-feedback">{errors.productTitle}</div>
                 </div>
 
                 {/* SKU */}
@@ -149,21 +200,21 @@ const AddProductListing = () => {
                   />
                   <div className="invalid-feedback">{errors.sku}</div>
                 </div>
-
-                {/* Product Title */}
+                
+                  {/* Available Stock */}
                 <div className="col-md-3">
                   <label className="form-label">
-                    Product Title <span className="text-danger">*</span>
+                    Available Stock <span className="text-danger">*</span>
                   </label>
                   <input
-                    type="text"
-                    name="title"
-                    value={formData.title}
+                    type="number"
+                    name="availableStock"
+                    value={formData.availableStock}
                     onChange={handleChange}
-                    className={`form-control ${errors.title && "is-invalid"}`}
-                    placeholder="Enter Product Title"
+                    className={`form-control ${errors.availableStock && "is-invalid"}`}
+                    placeholder="Enter Stock"
                   />
-                  <div className="invalid-feedback">{errors.title}</div>
+                  <div className="invalid-feedback">{errors.availableStock}</div>
                 </div>
 
                 {/* MRP */}
@@ -192,55 +243,15 @@ const AddProductListing = () => {
                     name="sellingPrice"
                     value={formData.sellingPrice}
                     onChange={handleChange}
-                    className={`form-control ${
-                      errors.sellingPrice && "is-invalid"
-                    }`}
+                    className={`form-control ${errors.sellingPrice && "is-invalid"
+                      }`}
                     placeholder="Enter Selling Price"
                   />
                   <div className="invalid-feedback">{errors.sellingPrice}</div>
                 </div>
 
-                {/* Available Stock */}
-                <div className="col-md-3">
-                  <label className="form-label">
-                    Available Stock <span className="text-danger">*</span>
-                  </label>
-                  <input
-                    type="number"
-                    name="stock"
-                    value={formData.stock}
-                    onChange={handleChange}
-                    className={`form-control ${errors.stock && "is-invalid"}`}
-                    placeholder="Enter Stock"
-                  />
-                  <div className="invalid-feedback">{errors.stock}</div>
-                </div>
-
-                {/* Marketplace MULTI SELECT */}
-                <div className="col-md-3">
-                  <label className="form-label">
-                    Marketplace <span className="text-danger">*</span>
-                  </label>
-                  <Select
-                    isMulti
-                    options={marketplaceOptions}
-                    value={marketplaceOptions.filter((option) =>
-                      formData.marketplaces.includes(option.value)
-                    )}
-                    onChange={(selected) =>
-                      setFormData({
-                        ...formData,
-                        marketplaces: selected.map((s) => s.value),
-                      })
-                    }
-                  />
-                  {errors.marketplaces && (
-                    <div className="text-danger mt-1">
-                      {errors.marketplaces}
-                    </div>
-                  )}
-                </div>
-
+              
+              
                 {/* Status */}
                 <div className="col-md-3">
                   <label className="form-label">
@@ -252,6 +263,7 @@ const AddProductListing = () => {
                     onChange={handleChange}
                     className="form-select"
                   >
+                    <option value="">Select Status</option>
                     <option value="Active">Active</option>
                     <option value="Inactive">Inactive</option>
                   </select>

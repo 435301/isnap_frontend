@@ -4,27 +4,33 @@ import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import Select from "react-select";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { fetchServiceTypes } from "../../redux/actions/serviceTypeActions";
+import { bulkUploadProducts, fetchMarketPlaceSellers } from "../../redux/actions/adminProductsAction";
+import { useDispatch, useSelector } from "react-redux";
 
 const BulkUpload = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const { serviceTypes } = useSelector(state => state.serviceType);
+  const serviceTypeOptions = serviceTypes?.map((item) => ({
+    label: item.serviceType,
+    value: item.id,
+  }));
+  const { marketPlacesellers } = useSelector((state) => state.adminProducts);
+  useEffect(() => {
+    dispatch(fetchServiceTypes());
+    dispatch(fetchMarketPlaceSellers());
+  }, [dispatch]);
 
   const [formData, setFormData] = useState({
-    seller: "",
-    marketplaces: [],
+    sellerId: "",
+    marketPlaceId: [],
     file: null,
   });
 
   const [errors, setErrors] = useState({});
-
-  const sellerOptions = ["Seller A", "Seller B", "Seller C"];
-  const marketplaceOptions = [
-    { value: "Amazon", label: "Amazon" },
-    { value: "Flipkart", label: "Flipkart" },
-    { value: "Meesho", label: "Meesho" },
-    { value: "JioMart", label: "JioMart" },
-  ];
 
   useEffect(() => {
     const handleResize = () => {
@@ -50,31 +56,30 @@ const BulkUpload = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
     const err = {};
-    if (!formData.seller) err.seller = "Select a seller";
-    if (formData.marketplaces.length === 0)
-      err.marketplaces = "Select at least one marketplace";
+    if (!formData.sellerId) err.sellerId = "Select a seller";
+    if (formData.marketPlaceId.length === 0)
+      err.marketPlaceId = "Select at least one marketplace";
     if (!formData.file) err.file = "Please upload a file";
-
     setErrors(err);
-
     if (Object.keys(err).length === 0) {
-      alert(
-        `Bulk upload submitted!\nSeller: ${
-          formData.seller
-        }\nMarketplaces: ${formData.marketplaces.join(", ")}\nFile: ${
-          formData.file.name
-        }`
-      );
-      setFormData({ seller: "", marketplaces: [], file: null });
+      try {
+        dispatch(bulkUploadProducts({
+          sellerId: formData.sellerId,
+          marketPlaceId: formData.marketPlaceId,
+          file: formData.file,
+        }));
+        navigate("/manage-products");
+      } catch (err) {
+        console.log(err);
+      }
+      setFormData({ sellerId: "", marketPlaceId: [], file: null });
     }
   };
 
   // Function to download sample CSV file
   const handleDownloadSample = () => {
-    const sampleData =
-      "Seller,Title,SKU,MRP,SellingPrice,Stock,Marketplace,Status\nSeller A,Product 1,SKU001,1000,900,50,Amazon,Active\nSeller B,Product 2,SKU002,1500,1200,30,Flipkart,Inactive";
+    const sampleData = "sku,product_title,mrp,selling_price,available_stock,status\nSKU1234,realme ,10000,9000,11,1\nSKU12345,redmi,9000,9000,10,1";
     const blob = new Blob([sampleData], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -117,49 +122,49 @@ const BulkUpload = () => {
               <div className="row g-3">
                 {/* Seller */}
                 <div className="col-md-4">
-                  <label className="form-label">Seller *</label>
+                  <label className="form-label">Seller <span className="text-danger"> *</span></label>
                   <select
-                    name="seller"
-                    value={formData.seller}
+                    name="sellerId"
+                    value={formData.sellerId}
                     onChange={handleChange}
-                    className={`form-select ${errors.seller && "is-invalid"}`}
+                    className={`form-select ${errors.sellerId && "is-invalid"}`}
                   >
                     <option value="">Select Seller</option>
-                    {sellerOptions.map((s, idx) => (
-                      <option key={idx} value={s}>
-                        {s}
+                    {marketPlacesellers.map((s) => (
+                      <option key={s.id} value={s.id}>
+                        {s.businessName}
                       </option>
                     ))}
                   </select>
-                  <div className="invalid-feedback">{errors.seller}</div>
+                  <div className="invalid-feedback">{errors.sellerId}</div>
                 </div>
 
                 {/* Marketplace */}
                 <div className="col-md-4">
-                  <label className="form-label">Marketplace *</label>
+                  <label className="form-label">Marketplace <span className="text-danger"> *</span></label>
                   <Select
                     isMulti
-                    options={marketplaceOptions}
-                    value={marketplaceOptions.filter((option) =>
-                      formData.marketplaces.includes(option.value)
+                    options={serviceTypeOptions}
+                    value={serviceTypeOptions.filter((option) =>
+                      formData.marketPlaceId.includes(option.value)
                     )}
                     onChange={(selected) =>
                       setFormData({
                         ...formData,
-                        marketplaces: selected.map((s) => s.value),
+                        marketPlaceId: selected.map((s) => s.value),
                       })
                     }
                   />
-                  {errors.marketplaces && (
+                  {errors.marketPlaceId && (
                     <div className="text-danger mt-1">
-                      {errors.marketplaces}
+                      {errors.marketPlaceId}
                     </div>
                   )}
                 </div>
 
                 {/* File Upload */}
                 <div className="col-md-4">
-                  <label className="form-label">Upload File *</label>
+                  <label className="form-label">Upload File <span className="text-danger"> *</span></label>
                   <input
                     type="file"
                     name="file"

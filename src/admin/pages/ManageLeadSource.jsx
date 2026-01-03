@@ -149,7 +149,7 @@ const ManageLeadSource = () => {
                         leadSources.map((m, index) => (
                           <tr key={m.id}>
                             <td>{index + 1 + (currentPage - 1) * itemsPerPage}</td>
-                            <td>{m.LeadSourceTitle}</td>
+                            <td>{m.LeadSourceTitle || "-"}</td>
                             <td>
                               <span className={`badge ${m.status ? "bg-success-light text-success" : "bg-danger-light text-danger"}`}>
                                 {m.status ? "Active" : "Inactive"}

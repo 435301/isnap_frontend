@@ -2158,6 +2158,7 @@ dl {
   background-color: #5c636a;
   border-color: #545b62;
 }
+<<<<<<< HEAD
 .status-card {
   background: #ffffff;
   border-radius: 12px;
@@ -2221,3 +2222,9 @@ dl {
   border: 0;
   width: 100%;
 }
+=======
+
+.cursor-pointer{
+  cursor: pointer;
+}
+>>>>>>> de367982d55383f19fd5b702afed6eb2ffa6ab81

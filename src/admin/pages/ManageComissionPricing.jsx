@@ -214,8 +214,8 @@ const ManageCommissionPricing = () => {
                       filteredCommissions.map((commission, index) => (
                         <tr key={commission.id}>
                           <td>{(currentPage - 1) * itemsPerPage + index + 1}</td>
-                          <td>{commission.title}</td>
-                          <td>{commission.percentage}%</td>
+                          <td>{commission.title || "-"}</td>
+                          <td>{commission.percentage || "0"}%</td>
                           <td>
                             <span
                               className={`badge ${commission.status === 1
