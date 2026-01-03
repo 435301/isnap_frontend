@@ -18,6 +18,11 @@ export const ADD_PRODUCT_REQUEST = "ADD_PRODUCT_REQUEST";
 export const ADD_PRODUCT_SUCCESS = "ADD_PRODUCT_SUCCESS";
 export const ADD_PRODUCT_FAILURE = "ADD_PRODUCT_FAILURE";
 
+// Edit Product
+export const EDIT_PRODUCT_REQUEST = "EDIT_PRODUCT_REQUEST";
+export const EDIT_PRODUCT_SUCCESS = "EDIT_PRODUCT_SUCCESS";
+export const EDIT_PRODUCT_FAILURE = "EDIT_PRODUCT_FAILURE";
+
 // Delete Product
 export const DELETE_PRODUCT_REQUEST = "DELETE_PRODUCT_REQUEST";
 export const DELETE_PRODUCT_SUCCESS = "DELETE_PRODUCT_SUCCESS";
@@ -27,6 +32,20 @@ export const DELETE_PRODUCT_FAILURE = "DELETE_PRODUCT_FAILURE";
 export const BULK_UPLOAD_REQUEST = "BULK_UPLOAD_REQUEST";
 export const BULK_UPLOAD_SUCCESS = "BULK_UPLOAD_SUCCESS";
 export const BULK_UPLOAD_FAILURE = "BULK_UPLOAD_FAILURE";
+//reports
+export const FETCH_REPORTS_REQUEST = "FETCH_REPORTS_REQUEST";
+export const FETCH_REPORTS_SUCCESS = "FETCH_REPORTS_SUCCESS";
+export const FETCH_REPORTS_FAILURE = "FETCH_REPORTS_FAILURE";
+
+//bulk status update 
+export const BULK_STATUS_UPDATE_REQUEST = "BULK_STATUS_UPDATE_REQUEST";
+export const BULK_STATUS_UPDATE_SUCCESS = "BULK_STATUS_UPDATE_SUCCESS";
+export const BULK_STATUS_UPDATE_FAILURE = "BULK_STATUS_UPDATE_FAILURE";
+
+//bulk delete 
+export const BULK_DELETE_REQUEST = "BULK_DELETE_REQUEST";
+export const BULK_DELETE_SUCCESS = "BULK_DELETE_SUCCESS";
+export const BULK_DELETE_FAILURE = "BULK_DELETE_FAILURE";
 
 
 export const fetchMarketPlaceSellers = () => async (dispatch) => {
@@ -80,6 +99,23 @@ export const addProduct = (payload) => async (dispatch) => {
     }
 };
 
+/* ================= EDIT PRODUCT ================= */
+export const editProduct = (id) => async (dispatch) => {
+    dispatch({ type: EDIT_PRODUCT_REQUEST });
+    try {
+        const res = await axios.post(`${BASE_URL}/product/updateProduct/${id}`, getAuthHeaders(true));
+        dispatch({ type: EDIT_PRODUCT_SUCCESS });
+        toast.success(res.data.message);
+
+    } catch (error) {
+        dispatch({
+            type: EDIT_PRODUCT_FAILURE,
+            payload: error.message,
+        });
+        toast.error(error.response.data.message);
+    }
+};
+
 /* ================= DELETE PRODUCT ================= */
 export const deleteProduct = (id) => async (dispatch) => {
     dispatch({ type: DELETE_PRODUCT_REQUEST });
@@ -124,3 +160,58 @@ export const bulkUploadProducts =
                 toast.error(error.response.data.message);
             }
         };
+
+
+export const fetchReports = (payload) => async (dispatch) => {
+    dispatch({ type: FETCH_REPORTS_FAILURE });
+    try {
+        const res = await axios.post(`${BASE_URL}/product/getProductReports`, payload, getAuthHeaders(false));
+        dispatch({
+            type: FETCH_REPORTS_SUCCESS,
+            payload: res.data.data,
+        });
+    } catch (error) {
+        dispatch({
+            type: FETCH_REPORTS_FAILURE,
+            payload: error.message
+        });
+    }
+}
+
+
+export const bulkStatusUpdate = (payload) => async (dispatch) => {
+    dispatch({ type: BULK_STATUS_UPDATE_REQUEST });
+    try {
+        const res = await axios.patch(`${BASE_URL}/product/bulkUpdateProductStatus`, payload, getAuthHeaders(false));
+        dispatch({
+            type: BULK_STATUS_UPDATE_SUCCESS,
+            payload: res.data.data,
+        });
+        toast.success(res.data.message)
+    } catch (error) {
+        dispatch({
+            type: BULK_STATUS_UPDATE_FAILURE,
+            payload: error.message
+        });
+
+    }
+}
+
+
+export const bulkDelete = (ids) => async (dispatch) => {
+    dispatch({ type: BULK_DELETE_REQUEST });
+    try {
+        const res = await axios.patch(`${BASE_URL}/product/bulkDeleteProducts`, ids, getAuthHeaders(false));
+        dispatch({
+            type: BULK_DELETE_SUCCESS,
+            payload: res.data.data,
+        });
+        toast.success(res.data.message);
+    } catch (error) {
+        dispatch({
+            type: BULK_DELETE_FAILURE,
+            payload: error.message
+        });
+        //  toast.error(error.response.data.message);
+    }
+}

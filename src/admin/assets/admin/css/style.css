@@ -2158,3 +2158,7 @@ dl {
   background-color: #5c636a;
   border-color: #545b62;
 }
+
+.cursor-pointer{
+  cursor: pointer;
+}

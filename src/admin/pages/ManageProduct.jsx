@@ -3,11 +3,13 @@ import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchAdminProducts, fetchMarketPlaceSellers, fetchProducts } from "../../redux/actions/adminProductsAction";
+import { bulkDelete, bulkStatusUpdate, fetchAdminProducts, fetchMarketPlaceSellers, fetchProducts } from "../../redux/actions/adminProductsAction";
 import { fetchServiceTypes } from "../../redux/actions/serviceTypeActions";
 import PaginationComponent from "../../common/pagination";
+import { toast } from "react-toastify";
+import DeleteConfirmationModal from "../components/Modal/DeleteConfirmationModal";
 
 const ManageProducts = () => {
   const dispatch = useDispatch();
@@ -21,14 +23,29 @@ const ManageProducts = () => {
   const [statusFilter, setStatusFilter] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [marketPlaceId, setMarketPlaceId] = useState("");
-  const [sellerId, setSellerId] = useState("")
+  const [sellerId, setSellerId] = useState("");
+  const [searchParams] = useSearchParams();
+  const [isInitialized, setIsInitialized] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [deleteId, setDeleteId] = useState(null);
 
-  console.log('poo', products)
   useEffect(() => {
+    const sellerIdFromUrl = searchParams.get("sellerId");
+    const statusFromUrl = searchParams.get("status");
+    const marketPlaceIdFromUrl = searchParams.get("marketPlaceId");
+    if (sellerIdFromUrl) setSellerId(Number(sellerIdFromUrl));
+    if (statusFromUrl !== null) setStatusFilter(statusFromUrl);
+    if (marketPlaceIdFromUrl) setMarketPlaceId(marketPlaceIdFromUrl);
+    setCurrentPage(1);
+    setIsInitialized(true);
+  }, [searchParams]);
+
+  useEffect(() => {
+     if (!isInitialized) return;
     dispatch(fetchMarketPlaceSellers());
     dispatch(fetchServiceTypes());
     dispatch(fetchAdminProducts({ page: currentPage, search: searchTerm, marketPlaceId, sellerId, status: statusFilter }));
-  }, [dispatch, currentPage, statusFilter, searchTerm, marketPlaceId, sellerId]);
+  }, [dispatch, currentPage, statusFilter, searchTerm, marketPlaceId, sellerId, isInitialized]);
 
   const handleCheckboxChange = (id) => {
     setSelectedProducts((prev) =>
@@ -44,6 +61,55 @@ const ManageProducts = () => {
     setStatusFilter("");
     setSelectedProducts([]);
   }
+
+const handleBulkStatusUpdate = (status) => {
+  if (selectedProducts.length === 0) {
+    toast.warn("Please select at least one product");
+    return;
+  }
+  const payload = {
+    ids: selectedProducts,
+    status, // 1 = Active, 0 = Inactive
+  };
+
+  dispatch(bulkStatusUpdate(payload)).then(() => {
+    setSelectedProducts([]);
+    dispatch(
+      fetchAdminProducts({
+        page: currentPage,
+        search: searchTerm,
+        marketPlaceId,
+        sellerId,
+        status: statusFilter,
+      })
+    );
+  });
+};
+
+const handleDeleteClick = (id) => {
+    setDeleteId(id);
+    setShowDeleteModal(true);
+  };
+
+const handleBulkDelete = () => {
+  if (selectedProducts.length === 0) {
+    alert("Please select at least one product");
+    return;
+  }
+  dispatch(bulkDelete({ ids: selectedProducts })).then(() => {
+    setSelectedProducts([]);
+    setShowDeleteModal(false);
+    dispatch(
+      fetchAdminProducts({
+        page: currentPage,
+        search: searchTerm,
+        marketPlaceId,
+        sellerId,
+        status: statusFilter,
+      })
+    );
+  });
+};
 
   return (
     <div className="container-fluid d-flex p-0">
@@ -147,13 +213,13 @@ const ManageProducts = () => {
               {/* Second Row: Action Buttons */}
               <div className="row g-2 align-items-center mb-3">
                 <div className="col text-end">
-                  <button className="mp-btn mp-btn-active me-2">
+                  <button className="mp-btn mp-btn-active me-2"  onClick={() => handleBulkStatusUpdate(1)}>
                     <i className="bi bi-check-circle me-1"></i> Active
                   </button>
-                  <button className="mp-btn mp-btn-inactive me-2">
+                  <button className="mp-btn mp-btn-inactive me-2"  onClick={() => handleBulkStatusUpdate(0)}>
                     <i className="bi bi-x-circle me-1"></i> Inactive
                   </button>
-                  <button className="mp-btn mp-btn-delete me-2">
+                  <button className="mp-btn mp-btn-delete me-2" onClick={handleDeleteClick}>
                     <i className="bi bi-trash me-1"></i> Delete
                   </button>
                 </div>
@@ -180,7 +246,7 @@ const ManageProducts = () => {
                       </th>
                       <th>S.No</th>
                       <th>Marketplace</th>
-                      <th>Seller Name</th>
+                      <th>Seller</th>
                       <th>Product Title</th>
                       <th>Available Stock</th>
                       <th>MRP</th>
@@ -208,13 +274,13 @@ const ManageProducts = () => {
                           <td>
                             {product.marketPlaceName}
                           </td>
-                          <td>{product.sellerName}</td>
+                          <td>{product.businessName}</td>
                           <td>{product.productTitle}</td>
                           <td>{product.availableStock}</td>
                           <td>₹{product.mrp}</td>
                           <td>₹{product.sellingPrice}</td>
-                          <td>
-                            {product.status === 1 ? "Active" : "Inactive"}
+                          <td >
+                            <span className={`badge ${product.status ? "bg-success-light text-success" : "bg-danger-light text-danger"}`}>{product.status === 1 ? "Active" : "Inactive"}</span>
                           </td>
                           <td> <button className="btn btn-icon btn-delete">
                             <i className="bi bi-trash"></i>
@@ -237,6 +303,13 @@ const ManageProducts = () => {
               totalPages={pagination?.totalPages || 1}
               onPageChange={setCurrentPage}
             />
+              {showDeleteModal && (
+            <DeleteConfirmationModal
+              show={showDeleteModal}
+              handleClose={() => setShowDeleteModal(false)}
+              handleConfirm={handleBulkDelete}
+            />
+          )}
           </div>
         </div>
       </div>
