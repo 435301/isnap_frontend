@@ -86,9 +86,9 @@ export const fetchAdminProducts = (filters) => async (dispatch) => {
 export const addProduct = (payload) => async (dispatch) => {
     dispatch({ type: ADD_PRODUCT_REQUEST });
     try {
-        const res = await axios.post(`${BASE_URL}/product/addProduct`, payload, getAuthHeaders(true));
+        const res = await axios.post(`${BASE_URL}/product/addProduct`, payload, getAuthHeaders(false));
         dispatch({ type: ADD_PRODUCT_SUCCESS });
-        toast.success(res.data.message);
+        toast.success(res.data.message || "Product added successfully");
 
     } catch (error) {
         dispatch({
@@ -103,9 +103,9 @@ export const addProduct = (payload) => async (dispatch) => {
 export const editProduct = (id) => async (dispatch) => {
     dispatch({ type: EDIT_PRODUCT_REQUEST });
     try {
-        const res = await axios.post(`${BASE_URL}/product/updateProduct/${id}`, getAuthHeaders(true));
+        const res = await axios.post(`${BASE_URL}/product/updateProduct/${id}`, getAuthHeaders(false));
         dispatch({ type: EDIT_PRODUCT_SUCCESS });
-        toast.success(res.data.message);
+        toast.success(res.data.message || "Product edited successfully");
 
     } catch (error) {
         dispatch({
@@ -120,12 +120,12 @@ export const editProduct = (id) => async (dispatch) => {
 export const deleteProduct = (id) => async (dispatch) => {
     dispatch({ type: DELETE_PRODUCT_REQUEST });
     try {
-        const res = await axios.delete(`${BASE_URL}/product/deleteProduct/${id}`, getAuthHeaders(true));
+        const res = await axios.delete(`${BASE_URL}/product/deleteProduct/${id}`, getAuthHeaders(false));
         dispatch({
             type: DELETE_PRODUCT_SUCCESS,
             payload: id,
         });
-        toast.success(res.data.message);
+        toast.success(res.data.message || "Product deleted successfully");
     } catch (error) {
         dispatch({
             type: DELETE_PRODUCT_FAILURE,
@@ -151,7 +151,7 @@ export const bulkUploadProducts =
                     type: BULK_UPLOAD_SUCCESS,
                     payload: res.data.data,
                 });
-                toast.success(res.data.message);
+                toast.success(res.data.message || "Bulk upload completed");
             } catch (error) {
                 dispatch({
                     type: BULK_UPLOAD_FAILURE,
@@ -187,7 +187,7 @@ export const bulkStatusUpdate = (payload) => async (dispatch) => {
             type: BULK_STATUS_UPDATE_SUCCESS,
             payload: res.data.data,
         });
-        toast.success(res.data.message)
+        toast.success(res.data.message || "Product status updated successfully")
     } catch (error) {
         dispatch({
             type: BULK_STATUS_UPDATE_FAILURE,
@@ -212,6 +212,6 @@ export const bulkDelete = (ids) => async (dispatch) => {
             type: BULK_DELETE_FAILURE,
             payload: error.message
         });
-        //  toast.error(error.response.data.message);
+         toast.error(error.response.data.message);
     }
 }

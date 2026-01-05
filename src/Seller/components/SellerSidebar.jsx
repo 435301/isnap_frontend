@@ -86,16 +86,6 @@ const SellerSidebar = ({ isOpen }) => {
             {isOpen && <span>Business Details</span>}
           </Link>
 
-          {/* Products */}
-          <Link
-            to="/seller/add-products"
-            className={`nav-item nav-link ${isLinkActive(
-              "/seller/add-products"
-            )}`}
-          >
-            <i className="bi bi-box-seam me-2"></i>
-            {isOpen && <span>Products</span>}
-          </Link>
 
           {/*  MOU Dropdown */}
           <div className={`nav-item ${isLinkActive("/seller/mou-1")}`}>

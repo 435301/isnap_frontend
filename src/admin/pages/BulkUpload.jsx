@@ -54,6 +54,18 @@ const BulkUpload = () => {
     setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
+    const handleMarketplaceChange = (selected) => {
+  setFormData((prev) => ({
+    ...prev,
+    marketPlaceId: selected ? selected.map((s) => s.value) : [],
+  }));
+
+  setErrors((prev) => ({
+    ...prev,
+    marketPlaceId: "",
+  }));
+};
+
   const handleSubmit = (e) => {
     e.preventDefault();
     const err = {};
@@ -148,12 +160,7 @@ const BulkUpload = () => {
                     value={serviceTypeOptions.filter((option) =>
                       formData.marketPlaceId.includes(option.value)
                     )}
-                    onChange={(selected) =>
-                      setFormData({
-                        ...formData,
-                        marketPlaceId: selected.map((s) => s.value),
-                      })
-                    }
+                    onChange={handleMarketplaceChange}
                   />
                   {errors.marketPlaceId && (
                     <div className="text-danger mt-1">

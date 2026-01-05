@@ -43,6 +43,7 @@ import { subDepartmentReducer } from "./subDepartmentReducer";
 import { tasksReducer } from "./taskReducer";
 import { teamSellerReducer } from "./teamSellerReducer";
 import adminProductReducer from "./adminProductReducer";
+import sellerProductReducer from "./sellerProductsReducer";
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -99,6 +100,7 @@ const rootReducer = combineReducers({
   tasks:tasksReducer,
   teamSeller: teamSellerReducer,
   adminProducts: adminProductReducer,
+  sellerProducts: sellerProductReducer,
 });
 
 

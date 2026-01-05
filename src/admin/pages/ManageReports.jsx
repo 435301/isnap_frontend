@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchMarketPlaceSellers, fetchReports } from "../../redux/actions/adminProductsAction";
 import { fetchServiceTypes } from "../../redux/actions/serviceTypeActions";
 import "../assets/admin/css/style.css";
+import PaginationComponent from "../../common/pagination";
 
 const ManageProducts = () => {
   const dispatch = useDispatch();
@@ -181,6 +182,11 @@ const ManageProducts = () => {
                 </table>
               </div>
             </div>
+              <PaginationComponent
+              currentPage={currentPage}
+              totalPages={pagination?.totalPages || 1}
+              onPageChange={setCurrentPage}
+            />
           </div>
         </div>
       </div>

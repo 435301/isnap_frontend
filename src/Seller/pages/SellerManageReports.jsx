@@ -1,162 +1,174 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "../components/SellerSidebar";
 import Navbar from "../components/SellerNavbar";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchSellerReports } from "../../redux/actions/sellerProductsAction";
+import { fetchServiceTypes } from "../../redux/actions/serviceTypeActions";
+import PaginationComponent from "../../common/pagination";
 
-const ManageProducts = () => {
+const ManageSellerReports = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const handleToggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+  const {  sellerReports, loading, pagination } = useSelector((state) => state.sellerProducts);
+  const { serviceTypes } = useSelector(state => state.serviceType);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [marketPlaceId, setMarketPlaceId] = useState("");
 
-  const handleToggleSidebar = () => setIsSidebarOpen((prev) => !prev);
-
-  /* Handle resize */
   useEffect(() => {
-    const handleResize = () => {
-      setWindowWidth(window.innerWidth);
-      setIsSidebarOpen(window.innerWidth >= 992);
-    };
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+    dispatch(fetchSellerReports({
+      marketPlaceId: marketPlaceId,
+      page: currentPage
+    }));
+    dispatch(fetchServiceTypes());
+  }, [dispatch, marketPlaceId, currentPage]);
 
-  /* Static Data */
-  const skuData = [
-    {
-      id: 1,
-      seller: "John Doe",
-      marketplace: "Amazon",
-      activeSkus: 120,
-      inactiveSkus: 30,
-      totalSkus: 150,
-    },
-    {
-      id: 2,
-      seller: "Jane Smith",
-      marketplace: "Flipkart",
-      activeSkus: 80,
-      inactiveSkus: 20,
-      totalSkus: 100,
-    },
-    {
-      id: 3,
-      seller: "Mike Johnson",
-      marketplace: "Snapdeal",
-      activeSkus: 45,
-      inactiveSkus: 15,
-      totalSkus: 60,
-    },
-  ];
+
+  const handleRefresh = () => {
+    setCurrentPage(1);
+    setMarketPlaceId("");
+  }
 
   return (
-    <div className="container-fluid d-flex p-0 bg-light">
+    <div className="container-fluid d-flex p-0">
       <Sidebar isOpen={isSidebarOpen} />
-
       <div
         className="content flex-grow-1"
         style={{
-          marginLeft: windowWidth >= 992 ? (isSidebarOpen ? 250 : 95) : 0,
+          marginLeft:
+            windowWidth >= 992
+              ? isSidebarOpen
+                ? 259
+                : 95
+              : isSidebarOpen
+                ? 220
+                : 0,
           transition: "margin-left 0.3s ease",
         }}
       >
         <Navbar onToggleSidebar={handleToggleSidebar} />
 
         <div className="container-fluid px-4 pt-3">
-          {/* Header */}
-          <div className="bg-white p-3 rounded shadow-sm mb-3">
-            <h5 className="m-0">Manage Products</h5>
-          </div>
+          {/* Header Card */}
+          <div className="row mb-2">
+            <div className="bg-white p-3 rounded shadow-sm card-header">
+              {/* First Row: Title + Filters + Refresh */}
+              <div className="row g-2 align-items-center mb-2">
+                <div className="col-lg-12">
+                  <h5 className="form-title m-0">Manage Reports</h5>
+                </div>
 
-          {/* Filters */}
-          <div className="bg-white p-3 rounded shadow-sm mb-3">
-            <div className="row g-2 align-items-center">
-              <div className="col-lg-3">
-                <select className="form-select">
-                  <option value="">Select Seller</option>
-                  <option>Seller 1</option>
-                  <option>Seller 2</option>
-                </select>
-              </div>
+                <div className="col-lg-4 d-flex align-items-center">
+                  <select className="form-select me-2"
+                    onChange={(e) => {
+                      setMarketPlaceId(e.target.value);
+                      setCurrentPage(1);
+                    }}
+                    value={marketPlaceId}>
+                    <option value="">Select Marketplace</option>
+                    {serviceTypes?.map((service) => (
+                      <option key={service.id} value={service.id}>{service.serviceType}</option>
+                    ))}
+                  </select>
+                </div>
 
-              <div className="col-lg-3">
-                <select className="form-select">
-                  <option value="">Select Marketplace</option>
-                  <option>Amazon</option>
-                  <option>Flipkart</option>
-                </select>
-              </div>
-
-              <div className="col-lg-2 d-flex">
-                <button className="btn btn-success me-2">
-                  <i className="bi bi-search"></i>
-                </button>
-                <button className="btn btn-light border">
-                  <i className="bi bi-arrow-clockwise"></i>
-                </button>
+                <div className="col-md-2 d-flex">
+                  <button className="btn btn-success text-white me-3">
+                    <i className="bi bi-search"></i>
+                  </button>
+                  <button className="btn btn-light border" onClick={handleRefresh}>
+                    <i className="bi bi-arrow-clockwise"></i>
+                  </button>
+                </div>
+                <div className="col-lg-2"></div>
               </div>
             </div>
           </div>
 
-          {/* Table */}
-          <div className="bg-white  p-3 rounded shadow-sm">
-            <div className="table-responsive">
-              <table className="table table-hover  table-striped align-middle">
-                <thead className="table-light">
-                  <tr>
-                    <th>S.No</th>
-                    <th>Seller</th>
-                    <th>Marketplace</th>
-                    <th>Active SKUs</th>
-                    <th>Inactive SKUs</th>
-                    <th>Total SKUs</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {skuData.map((item, index) => (
-                    <tr key={item.id}>
-                      <td>{index + 1}</td>
-                      <td>{item.seller}</td>
-                      <td>{item.marketplace}</td>
+          {/* Products Table */}
+          <div className="row">
+            <div className="bg-white p-3 rounded shadow-sm card-header">
+              {/* Second Row: Action Buttons */}
 
-                      <td>
-                        <Link
-                          to={`/seller/manage-products`}
-                          className="text-decoration-none"
-                        >
-                          <span className="badge bg-success px-3 py-2">
-                            {item.activeSkus}
-                          </span>
-                        </Link>
-                      </td>
-
-                      <td>
-                        <Link
-                          to={`/seller/manage-products`}
-                          className="text-decoration-none"
-                        >
-                          <span className="badge bg-warning text-dark px-3 py-2">
-                            {item.inactiveSkus}
-                          </span>
-                        </Link>
-                      </td>
-
-                      <td>
-                        <Link
-                          to={`/seller/manage-products`}
-                          className="text-decoration-none"
-                        >
-                          <span className="badge bg-primary px-3 py-2">
-                            {item.totalSkus}
-                          </span>
-                        </Link>
-                      </td>
+              <div className="table-responsive">
+                <table className="table align-middle table-striped table-hover">
+                  <thead className="table-light">
+                    <tr>
+                      <th>S.No</th>
+                      <th>Seller</th>
+                      <th>Marketplace</th>
+                      <th>Active SKUs</th>
+                      <th>Inactive SKUs</th>
+                      <th>Total SKUs</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {loading ? (
+                      <tr>
+                        <td colSpan="10" className="text-center">Loading...</td>
+                      </tr>
+                    ) : sellerReports.length > 0 ? (
+                      sellerReports.map((item, index) => (
+                        <tr key={item.id}>
+                          <td>{index + 1}</td>
+                          <td>{item.businessName}</td>
+                          <td>{item.marketPlaceName}</td>
+                          <td>
+                            <span
+                              className="badge bg-success cursor-pointer"
+                              onClick={() =>
+                                navigate(
+                                  `/seller/manage-products?status=1&marketPlaceId=${item?.marketPlaceId}`
+                                )
+                              }
+                            >
+                              {item.activeSkus}
+                            </span>
+                          </td>
+
+                          <td>
+                              <span className="badge bg-warning text-dark cursor-pointer"
+                               onClick={() =>
+                                navigate(
+                                  `/seller/manage-products?status=0&marketPlaceId=${item?.marketPlaceId}`
+                                )
+                              }>
+                                {item.inactiveSkus}
+                              </span>
+                          </td>
+
+                          <td>
+                              <span className="badge bg-primary cursor-pointer"  onClick={() =>
+                                navigate(
+                                  `/seller/manage-products?marketPlaceId=${item?.marketPlaceId}`
+                                )
+                              }>
+                                {item.totalSkus}
+                              </span>
+                          </td>
+                        </tr>
+                      ))) : (
+                      <tr>
+                        <td colSpan="10" className="text-center">
+                          No reports found.
+                        </td>
+                      </tr>
+                    )
+                    }
+                  </tbody>
+                </table>
+              </div>
             </div>
+             <PaginationComponent
+              currentPage={currentPage}
+              totalPages={pagination?.totalPages || 1}
+              onPageChange={setCurrentPage}
+            />
           </div>
         </div>
       </div>
@@ -164,4 +176,4 @@ const ManageProducts = () => {
   );
 };
 
-export default ManageProducts;
+export default ManageSellerReports;

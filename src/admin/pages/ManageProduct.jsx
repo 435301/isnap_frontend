@@ -5,7 +5,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { Link, useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { bulkDelete, bulkStatusUpdate, fetchAdminProducts, fetchMarketPlaceSellers, fetchProducts } from "../../redux/actions/adminProductsAction";
+import { bulkDelete, bulkStatusUpdate, deleteProduct, fetchAdminProducts, fetchMarketPlaceSellers, fetchProducts } from "../../redux/actions/adminProductsAction";
 import { fetchServiceTypes } from "../../redux/actions/serviceTypeActions";
 import PaginationComponent from "../../common/pagination";
 import { toast } from "react-toastify";
@@ -91,6 +91,21 @@ const handleDeleteClick = (id) => {
     setShowDeleteModal(true);
   };
 
+    const handleDelete = ()=>{
+      dispatch(deleteProduct(deleteId));
+       dispatch(
+        fetchAdminProducts({
+          page: currentPage,
+          search: searchTerm,
+          marketPlaceId,
+          status: statusFilter,
+        })
+      );
+      setDeleteId(null);
+      setShowDeleteModal(false);
+      
+    }
+  
 const handleBulkDelete = () => {
   if (selectedProducts.length === 0) {
     alert("Please select at least one product");
@@ -219,7 +234,7 @@ const handleBulkDelete = () => {
                   <button className="mp-btn mp-btn-inactive me-2"  onClick={() => handleBulkStatusUpdate(0)}>
                     <i className="bi bi-x-circle me-1"></i> Inactive
                   </button>
-                  <button className="mp-btn mp-btn-delete me-2" onClick={handleDeleteClick}>
+                  <button className="mp-btn mp-btn-delete me-2" onClick={handleBulkDelete}>
                     <i className="bi bi-trash me-1"></i> Delete
                   </button>
                 </div>
@@ -282,7 +297,7 @@ const handleBulkDelete = () => {
                           <td >
                             <span className={`badge ${product.status ? "bg-success-light text-success" : "bg-danger-light text-danger"}`}>{product.status === 1 ? "Active" : "Inactive"}</span>
                           </td>
-                          <td> <button className="btn btn-icon btn-delete">
+                          <td> <button className="btn btn-icon btn-delete" onClick={()=> handleDeleteClick(product.id)}>
                             <i className="bi bi-trash"></i>
                           </button></td>
                         </tr>
@@ -307,7 +322,7 @@ const handleBulkDelete = () => {
             <DeleteConfirmationModal
               show={showDeleteModal}
               handleClose={() => setShowDeleteModal(false)}
-              handleConfirm={handleBulkDelete}
+              handleConfirm={handleDelete}
             />
           )}
           </div>

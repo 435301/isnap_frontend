@@ -1,5 +1,6 @@
 import axios from "axios";
 import BASE_URL from "../../config/config";
+import getAuthHeaders from "../../utils/auth";
 
 // Action Types
 export const FETCH_SERVICE_TYPES_REQUEST = "FETCH_SERVICE_TYPES_REQUEST";
@@ -11,13 +12,6 @@ export const DELETE_SERVICE_TYPE_SUCCESS = "DELETE_SERVICE_TYPE_SUCCESS";
 export const SERVICE_TYPE_ERROR = "SERVICE_TYPE_ERROR";
 export const CLEAR_SERVICE_TYPE_SUCCESS_MESSAGE = "CLEAR_SERVICE_TYPE_SUCCESS_MESSAGE";
 
-// Auth headers
-const getAuthHeaders = () => {
-  const token = localStorage.getItem("authToken");
-  return token
-    ? { headers: { Authorization: `Bearer ${token.trim()}`, "Content-Type": "application/json" } }
-    : {};
-};
 
 // ------------------------ FETCH SERVICE TYPES ------------------------
 export const fetchServiceTypes = (page = 1, limit = 10, search = "", status = "", marketPlaceId = "") => async (dispatch) => {
@@ -65,8 +59,8 @@ export const fetchServiceTypes = (page = 1, limit = 10, search = "", status = ""
 export const createServiceType = (serviceData) => async (dispatch) => {
   try {
     const payload = {
-      marketPlaceId: Number(serviceData.marketPlaceId), // ✅ ensure numeric
-      serviceType: serviceData.serviceTypeName,         // ✅ backend expects "serviceType"
+      marketPlaceId: Number(serviceData.marketPlaceId), 
+      serviceType: serviceData.serviceTypeName,        
       price: Number(serviceData.price),
       status: Number(serviceData.status),
     };

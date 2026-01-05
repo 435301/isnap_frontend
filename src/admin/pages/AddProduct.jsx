@@ -81,14 +81,14 @@ const AddProductListing = () => {
 
     if (Object.keys(validationErrors).length === 0) {
       const payload = {
-        "sellerId": 16,
-        "sku": "SKU123",
-        "productTitle": "iPhone 15",
-        "marketPlaceIds": [6, 2],
-        "mrp": 80000,
-        "sellingPrice": 75000,
-        "availableStock": 10,
-        "status": 1
+        sellerId:formData.sellerId,
+        sku:formData.sku,
+        productTitle: formData.productTitle,
+        marketPlaceIds: formData.marketPlaceIds,
+        mrp:formData.mrp,
+        sellingPrice: formData.sellingPrice,
+        availableStock: formData.availableStock,
+        status: formData.status
       }
 
       try {
