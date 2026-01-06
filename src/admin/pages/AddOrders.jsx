@@ -6,22 +6,42 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchServiceTypes } from "../../redux/actions/serviceTypeActions";
+import { fetchMarketPlaceSellers } from "../../redux/actions/adminProductsAction";
+import Select from "react-select";
+import { addOrder } from "../../redux/actions/orderActions";
+import DatePicker from "react-datepicker";
+import { safeFormat } from "../../common/formatDate";
+
 
 const AddOrder = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const { serviceTypes } = useSelector(state => state.serviceType);
+  const serviceTypeOptions = serviceTypes?.map((item) => ({
+    label: item.serviceType,
+    value: item.id,
+  }));
+  const { marketPlacesellers } = useSelector((state) => state.adminProducts);
+  useEffect(() => {
+    dispatch(fetchServiceTypes());
+    dispatch(fetchMarketPlaceSellers());
+  }, [dispatch]);
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
   const [formData, setFormData] = useState({
-    order_id: "",
-    seller: "",
-    marketplace: "",
-    order_date: "",
-    customer_name: "",
-    customer_mobile: "",
+    orderId: "",
+    sellerId: "",
+    marketPlaceId: "",
+    orderDate: null,
+    customerName: "",
+    customerMobile: "",
     qty: "",
-    total_amount: "",
+    totalAmount: "",
   });
 
   const [errors, setErrors] = useState({});
@@ -47,44 +67,58 @@ const AddOrder = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
   /* Validation */
   const validate = () => {
     let newErrors = {};
+    if (!formData.orderId.trim()) newErrors.orderId = "Order ID is required";
 
-    if (!formData.order_id.trim()) newErrors.order_id = "Order ID is required";
+    if (!formData.sellerId) newErrors.sellerId = "Seller is required";
 
-    if (!formData.seller) newErrors.seller = "Seller is required";
+    if (!formData.marketPlaceId || formData.marketPlaceId.length === 0)
+      newErrors.marketPlaceId = "Marketplace is required";
 
-    if (!formData.marketplace)
-      newErrors.marketplace = "Marketplace is required";
+    if (!formData.orderDate) newErrors.orderDate = "Order date is required";
 
-    if (!formData.order_date) newErrors.order_date = "Order date is required";
+    if (!formData.customerName.trim())
+      newErrors.customerName = "Customer name is required";
 
-    if (!formData.customer_name.trim())
-      newErrors.customer_name = "Customer name is required";
-
-    if (!/^[6-9]\d{9}$/.test(formData.customer_mobile))
-      newErrors.customer_mobile = "Enter valid mobile number";
+    if (!/^[6-9]\d{9}$/.test(formData.customerMobile))
+      newErrors.customerMobile = "Enter valid mobile number";
 
     if (!formData.qty || formData.qty <= 0)
       newErrors.qty = "Quantity must be greater than 0";
 
-    if (!formData.total_amount || formData.total_amount <= 0)
-      newErrors.total_amount = "Enter valid amount";
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    if (!formData.totalAmount || formData.totalAmount <= 0)
+      newErrors.totalAmount = "Enter valid amount";
+    return newErrors;
   };
 
   /* Submit */
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validate()) return;
-
-    toast.success("Order added successfully");
-    setTimeout(() => navigate("/manage-orders"), 1500);
+    const validationErrors = validate();
+    setErrors(validationErrors);
+    if (Object.keys(validationErrors).length === 0) {
+      const payload = {
+        orderId: formData.orderId,
+        sellerId: formData.sellerId,
+        customerName: formData.customerName,
+        marketPlaceId: formData.marketPlaceId,
+        customerMobile: formData.customerMobile,
+        qty: formData.qty,
+        totalAmount: formData.totalAmount,
+        orderDate: safeFormat(formData.orderDate)
+      }
+      try {
+        await dispatch(addOrder(payload));
+        navigate("/manage-orders");
+      } catch (err) {
+        setErrors({ errors });
+      }
+    }
   };
 
   return (
@@ -100,8 +134,8 @@ const AddOrder = () => {
                 ? 259
                 : 95
               : isSidebarOpen
-              ? 220
-              : 0,
+                ? 220
+                : 0,
           transition: "margin-left 0.3s ease",
         }}
       >
@@ -136,14 +170,13 @@ const AddOrder = () => {
                     <input
                       type="text"
                       placeholder="Enter order Id"
-                      name="order_id"
-                      className={`form-control ${
-                        errors.order_id ? "is-invalid" : ""
-                      }`}
-                      value={formData.order_id}
+                      name="orderId"
+                      className={`form-control ${errors.orderId ? "is-invalid" : ""
+                        }`}
+                      value={formData.orderId}
                       onChange={handleChange}
                     />
-                    <div className="invalid-feedback">{errors.order_id}</div>
+                    <div className="invalid-feedback">{errors.orderId}</div>
                   </div>
 
                   <div className="col-md-3">
@@ -151,53 +184,59 @@ const AddOrder = () => {
                       Seller <span className="text-danger">*</span>
                     </label>
                     <select
-                      name="seller"
-                      className={`form-select ${
-                        errors.seller ? "is-invalid" : ""
-                      }`}
-                      value={formData.seller}
+                      name="sellerId"
+                      value={formData.sellerId}
                       onChange={handleChange}
+                      className={`form-select ${errors.sellerId && "is-invalid"}`}
                     >
                       <option value="">Select Seller</option>
-                      <option value="Seller 1">Seller 1</option>
-                      <option value="Seller 2">Seller 2</option>
+                      {marketPlacesellers?.map((seller) => (
+                        <option key={seller?.id} value={seller?.id}>{seller?.businessName}</option>
+                      ))}
                     </select>
-                    <div className="invalid-feedback">{errors.seller}</div>
+                    <div className="invalid-feedback ">{errors.sellerId}</div>
                   </div>
 
                   <div className="col-md-3">
                     <label className="form-label">
                       Marketplace <span className="text-danger">*</span>
                     </label>
-                    <select
-                      name="marketplace"
-                      className={`form-select ${
-                        errors.marketplace ? "is-invalid" : ""
-                      }`}
-                      value={formData.marketplace}
-                      onChange={handleChange}
-                    >
-                      <option value="">Select Marketplace</option>
-                      <option value="Amazon">Amazon</option>
-                      <option value="Flipkart">Flipkart</option>
-                    </select>
-                    <div className="invalid-feedback">{errors.marketplace}</div>
+                    <Select
+                      isMulti
+                      options={serviceTypeOptions}
+                      value={serviceTypeOptions?.filter((opt) =>
+                        formData.marketPlaceId?.includes(opt.value)
+                      )}
+                      onChange={(selected) =>
+                        setFormData({
+                          ...formData,
+                          marketPlaceId: selected.map((s) => s.value),
+                        })
+                      }
+                       className={` ${errors.marketPlaceId && "is-invalid"}`}
+                    />
+                    {errors.marketPlaceId && (
+                      <div className="invalid-feedback"> {errors.marketPlaceId}  </div>
+                    )}
                   </div>
 
                   <div className="col-md-3">
                     <label className="form-label">
                       Order Date <span className="text-danger">*</span>
                     </label>
-                    <input
-                      type="date"
-                      name="order_date"
-                      className={`form-control ${
-                        errors.order_date ? "is-invalid" : ""
-                      }`}
-                      value={formData.order_date}
-                      onChange={handleChange}
+                    <DatePicker
+                      selected={formData.orderDate}
+                      onChange={(date) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          orderDate: date
+                        }))
+                      }
+                      placeholderText="Ordered Date"
+                      className={`form-control ${errors.orderDate ? "is-invalid" : ""}`}
+                      dateFormat="dd-MM-yyyy"
                     />
-                    <div className="invalid-feedback">{errors.order_date}</div>
+                    <div className="text-danger small">{errors.orderDate}</div>
                   </div>
 
                   <div className="col-md-3">
@@ -206,16 +245,15 @@ const AddOrder = () => {
                     </label>
                     <input
                       type="text"
-                      name="customer_name"
+                      name="customerName"
                       placeholder="Customer Name "
-                      className={`form-control ${
-                        errors.customer_name ? "is-invalid" : ""
-                      }`}
-                      value={formData.customer_name}
+                      className={`form-control ${errors.customerName ? "is-invalid" : ""
+                        }`}
+                      value={formData.customerName}
                       onChange={handleChange}
                     />
                     <div className="invalid-feedback">
-                      {errors.customer_name}
+                      {errors.customerName}
                     </div>
                   </div>
 
@@ -226,17 +264,16 @@ const AddOrder = () => {
                     </label>
                     <input
                       type="text"
-                      name="customer_mobile"
+                      name="customerMobile"
                       placeholder="Enter Custmor Mobile Number"
-                      className={`form-control ${
-                        errors.customer_mobile ? "is-invalid" : ""
-                      }`}
-                      value={formData.customer_mobile}
+                      className={`form-control ${errors.customerMobile ? "is-invalid" : ""
+                        }`}
+                      value={formData.customerMobile}
                       onChange={handleChange}
                       maxLength="10"
                     />
                     <div className="invalid-feedback">
-                      {errors.customer_mobile}
+                      {errors.customerMobile}
                     </div>
                   </div>
 
@@ -248,9 +285,8 @@ const AddOrder = () => {
                       type="number"
                       name="qty"
                       placeholder="Enter Qty"
-                      className={`form-control ${
-                        errors.qty ? "is-invalid" : ""
-                      }`}
+                      className={`form-control ${errors.qty ? "is-invalid" : ""
+                        }`}
                       value={formData.qty}
                       onChange={handleChange}
                     />
@@ -264,15 +300,14 @@ const AddOrder = () => {
                     <input
                       type="number"
                       placeholder="Enter Total Amount"
-                      name="total_amount"
-                      className={`form-control ${
-                        errors.total_amount ? "is-invalid" : ""
-                      }`}
-                      value={formData.total_amount}
+                      name="totalAmount"
+                      className={`form-control ${errors.totalAmount ? "is-invalid" : ""
+                        }`}
+                      value={formData.totalAmount}
                       onChange={handleChange}
                     />
                     <div className="invalid-feedback">
-                      {errors.total_amount}
+                      {errors.totalAmount}
                     </div>
                   </div>
 
@@ -294,8 +329,6 @@ const AddOrder = () => {
           </div>
         </div>
       </div>
-
-      <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
     </div>
   );
 };

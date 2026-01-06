@@ -1,51 +1,62 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchMarketPlaceSellers } from "../../redux/actions/adminProductsAction";
+import { fetchServiceTypes } from "../../redux/actions/serviceTypeActions";
+import { fetchOrders } from "../../redux/actions/orderActions";
+import PaginationComponent from "../../common/pagination";
 
 const ManageOrders = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [windowWidth] = useState(window.innerWidth);
-  const [fromDate, setFromDate] = useState(null);
-  const [toDate, setToDate] = useState(null);
-
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
+  const { marketPlacesellers } = useSelector((state) => state.adminProducts);
+  const { serviceTypes } = useSelector(state => state.serviceType);
+  const { orders, loading, pagination } = useSelector((state) => state.orders);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState("");
+  const [marketPlaceId, setMarketPlaceId] = useState("");
+  const [sellerId, setSellerId] = useState("");
+  const [isInitialized, setIsInitialized] = useState(false);
   const [selectedOrders, setSelectedOrders] = useState([]);
+  const [searchParams] = useSearchParams();
 
-  const handleCheckboxChange = (id) => {
-    setSelectedOrders((prev) =>
-      prev.includes(id) ? prev.filter((oid) => oid !== id) : [...prev, id]
-    );
-  };
+  useEffect(() => {
+    const sellerIdFromUrl = searchParams.get("sellerId");
+    const orderIdFromUrl = searchParams.get("orderId");
+    const marketPlaceIdFromUrl = searchParams.get("marketPlaceId");
+    if (sellerIdFromUrl) setSellerId(Number(sellerIdFromUrl));
+    if (orderIdFromUrl !== null) setSelectedOrders(orderIdFromUrl);
+    if (marketPlaceIdFromUrl) setMarketPlaceId(marketPlaceIdFromUrl);
+    setCurrentPage(1);
+    setIsInitialized(true);
+  }, [searchParams]);
 
-  // ✅ Static Orders Data (Replace with API later)
-  const orders = [
-    {
-      id: 1,
-      orderId: "ORD-1001",
-      seller: "John Traders",
-      marketplace: "Amazon",
-      orderDate: "2025-01-01",
-      customerName: "Ravi Kumar",
-      customerMobile: "9876543210",
-      qty: 3,
-      totalAmount: 2499,
-    },
-    {
-      id: 2,
-      orderId: "ORD-1002",
-      seller: "Smart Sellers",
-      marketplace: "Flipkart",
-      orderDate: "2025-01-02",
-      customerName: "Anita Sharma",
-      customerMobile: "9123456789",
-      qty: 1,
-      totalAmount: 1499,
-    },
-  ];
+  useEffect(() => {
+    if (!isInitialized) return;
+    dispatch(fetchMarketPlaceSellers());
+    dispatch(fetchServiceTypes());
+    dispatch(fetchOrders({ page: currentPage, search: searchTerm, marketPlaceId, sellerId, fromDate: fromDate, toDate: toDate }));
+  }, [dispatch, currentPage, searchTerm, marketPlaceId, sellerId, fromDate, toDate, isInitialized]);
+
+  const handleRefresh = () => {
+    setCurrentPage(1);
+    setMarketPlaceId("");
+    setSearchTerm("");
+    setSellerId("");
+    setSelectedOrders([]);
+    setFromDate("");
+    setToDate("");
+  }
 
   return (
     <div className="container-fluid d-flex p-0">
@@ -60,8 +71,8 @@ const ManageOrders = () => {
                 ? 259
                 : 95
               : isSidebarOpen
-              ? 220
-              : 0,
+                ? 220
+                : 0,
           transition: "margin-left 0.3s ease",
         }}
       >
@@ -96,24 +107,38 @@ const ManageOrders = () => {
                   <input
                     type="text"
                     className="form-control"
-                    placeholder="Search By"
+                    placeholder="Search by customer name , mobile no and orderId"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
                   />
                 </div>
                 {/* Marketplace */}
                 <div className="col-lg-2">
-                  <select className="form-select">
-                    <option value="">Marketplace</option>
-                    <option value="amazon">Amazon</option>
-                    <option value="flipkart">Flipkart</option>
+                  <select className="form-select me-2"
+                    value={marketPlaceId}
+                    onChange={(e) => {
+                      setMarketPlaceId(e.target.value);
+                      setCurrentPage(1);
+                    }}>
+                    <option value="">Select Marketplace</option>
+                    {serviceTypes?.map((marketplace) => (
+                      <option key={marketplace?.id} value={marketplace?.marketPlaceId}>{marketplace?.serviceType}</option>
+                    ))}
                   </select>
                 </div>
 
                 {/* Seller */}
                 <div className="col-lg-2">
-                  <select className="form-select">
-                    <option value="">Seller</option>
-                    <option value="seller1">Seller 1</option>
-                    <option value="seller2">Seller 2</option>
+                  <select className="form-select me-2"
+                    onChange={(e) => {
+                      setSellerId(e.target.value);
+                      setCurrentPage(1);
+                    }}
+                    value={sellerId}>
+                    <option value="" >Select Seller</option>
+                    {marketPlacesellers?.map((seller) => (
+                      <option key={seller?.id} value={seller?.id}>{seller?.businessName}</option>
+                    ))}
                   </select>
                 </div>
 
@@ -151,7 +176,7 @@ const ManageOrders = () => {
                   <button className="btn btn-success me-2">
                     <i className="bi bi-search"></i>
                   </button>
-                  <button className="btn btn-light border">
+                  <button className="btn btn-light border" onClick={handleRefresh}>
                     <i className="bi bi-arrow-clockwise"></i>
                   </button>
                 </div>
@@ -179,12 +204,16 @@ const ManageOrders = () => {
                   </thead>
 
                   <tbody>
-                    {orders.map((order, index) => (
+                    {loading ? (
+                      <tr>
+                        <td colSpan="10" className="text-center">Loading...</td>
+                      </tr>
+                    ) : orders?.length > 0 ? (orders.map((order, index) => (
                       <tr key={order.id}>
                         <td>{index + 1}</td>
                         <td>{order.orderId}</td>
-                        <td>{order.seller}</td>
-                        <td>{order.marketplace}</td>
+                        <td>{order.sellerName}</td>
+                        <td>{order.marketPlaceName}</td>
                         <td>{order.orderDate}</td>
                         <td>
                           <span className="">
@@ -197,12 +226,13 @@ const ManageOrders = () => {
                           </small>
                         </td>
                         <td>
-                          <Link
-                            to="/manage-sub-orders"
-                            className="text-primary fw-semibold text-decoration-none"
-                          >
-                            {order.qty}
-                          </Link>
+                          <span className="badge bg-primary cursor-pointer" onClick={() =>
+                            navigate(
+                              `/manage-sub-orders?sellerId=${order?.sellerId}&marketPlaceId=${order?.marketPlaceId}&orderId=${order.orderId}`
+                            )
+                          }>
+                            {order?.qty}
+                          </span>
                         </td>
 
                         <td>₹{order.totalAmount}</td>
@@ -215,11 +245,23 @@ const ManageOrders = () => {
                         </button>
                       </td> */}
                       </tr>
-                    ))}
+                    )))
+                      : (
+                        <tr>
+                          <td colSpan="10" className="text-center">
+                            No orders  found.
+                          </td>
+                        </tr>
+                      )}
                   </tbody>
                 </table>
               </div>
             </div>
+            <PaginationComponent
+              currentPage={currentPage}
+              totalPages={pagination?.totalPages || 1}
+              onPageChange={setCurrentPage}
+            />
           </div>
         </div>
       </div>
