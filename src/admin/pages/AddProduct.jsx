@@ -98,6 +98,7 @@ const AddProductListing = () => {
         setErrors({ errors });
       }
     }
+    setErrors({});
   };
 
   return (

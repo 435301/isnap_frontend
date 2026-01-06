@@ -6,25 +6,48 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useDispatch, useSelector } from "react-redux";
+import { addSubOrder, fetchOrders, fetchProductData } from "../../redux/actions/orderActions";
+import { fetchAdminProducts } from "../../redux/actions/adminProductsAction";
 
 const AddOrder = () => {
   const navigate = useNavigate();
-
+  const dispatch = useDispatch();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-
+  const [orderId, setOrderId] = useState(0);
+  const [productId, setProductId] = useState(0);
+  const { orders, productData } = useSelector((state) => state.orders);
+  const { products } = useSelector((state) => state.adminProducts);
+  console.log('productData', productData)
   const [formData, setFormData] = useState({
-    order_id: "",
-    seller: "",
-    marketplace: "",
-    order_date: "",
-    customer_name: "",
-    customer_mobile: "",
+    orderId: "",
+    suborderId: "",
+    productId: "",
     qty: "",
-    total_amount: "",
+    mrp: "",
+    sellingPrice: "",
+    status: "",
   });
-
   const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    dispatch(fetchOrders({
+      page: "", sellerId: "", marketPlaceId: "", fromDate: "", toDate: "", search: ""
+    }));
+    dispatch(fetchAdminProducts({ page: "", search: "", marketPlaceId: "", status: "" }));
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (productData && Object.keys(productData).length > 0) {
+      setFormData((prev) => ({
+        ...prev,
+        mrp: productData.mrp || "",
+        sellingPrice: productData.sellingPrice || "",
+      }));
+    }
+  }, [productData]);
+
 
   /* Sidebar responsive */
   useEffect(() => {
@@ -47,44 +70,62 @@ const AddOrder = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    setErrors((prev)=>({...prev, [name]:""}) );
   };
+
+  const handleProduct = (e) => {
+    const selectedProductId = Number(e.target.value);
+    setFormData((prev) => ({
+      ...prev,
+      productId: selectedProductId,
+    }));
+
+    if (selectedProductId) {
+      dispatch(fetchProductData(selectedProductId));
+    }
+  }
 
   /* Validation */
   const validate = () => {
     let newErrors = {};
-
-    if (!formData.order_id.trim()) newErrors.order_id = "Order ID is required";
-
-    if (!formData.seller) newErrors.seller = "Seller is required";
-
-    if (!formData.marketplace)
-      newErrors.marketplace = "Marketplace is required";
-
-    if (!formData.order_date) newErrors.order_date = "Order date is required";
-
-    if (!formData.customer_name.trim())
-      newErrors.customer_name = "Customer name is required";
-
-    if (!/^[6-9]\d{9}$/.test(formData.customer_mobile))
-      newErrors.customer_mobile = "Enter valid mobile number";
-
+    if (!formData.orderId.trim()) newErrors.orderId = "Order ID is required";
+    if (!formData.suborderId) newErrors.suborderId = "Sub order Id is required";
+    if (!formData.productId)
+      newErrors.productId = "Product Id is required";
+    if (!formData.mrp) newErrors.mrp = "MRP is required";
+    if (!formData.sellingPrice)
+      newErrors.sellingPrice = "Selling Price is required";
     if (!formData.qty || formData.qty <= 0)
       newErrors.qty = "Quantity must be greater than 0";
-
-    if (!formData.total_amount || formData.total_amount <= 0)
-      newErrors.total_amount = "Enter valid amount";
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    if (!formData.status)
+      newErrors.status = "Status is required";
+    return newErrors;
   };
 
   /* Submit */
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validate()) return;
+    const validationErrors = validate();
+    setErrors(validationErrors);
+    if (Object.keys(validationErrors).length === 0) {
+      const payload = {
+        orderId: formData.orderId,
+        suborderId: formData.suborderId,
+        productId: formData.productId,
+        qty: formData.qty,
+        mrp: formData.mrp,
+        sellingPrice: formData.sellingPrice,
+        status: formData.status
+      }
 
-    toast.success("Order added successfully");
-    setTimeout(() => navigate("/manage-orders"), 1500);
+      try {
+        await dispatch(addSubOrder(payload));
+        navigate("/manage-sub-orders");
+      } catch (err) {
+        setErrors({ errors });
+      }
+    }
+
   };
 
   return (
@@ -100,8 +141,8 @@ const AddOrder = () => {
                 ? 259
                 : 95
               : isSidebarOpen
-              ? 220
-              : 0,
+                ? 220
+                : 0,
           transition: "margin-left 0.3s ease",
         }}
       >
@@ -136,50 +177,49 @@ const AddOrder = () => {
                     <input
                       type="text"
                       placeholder="Enter Sub Order Id"
-                      name="order_id"
-                      className={`form-control ${
-                        errors.order_id ? "is-invalid" : ""
-                      }`}
-                      value={formData.order_id}
+                      name="suborderId"
+                      className={`form-control ${errors.suborderId ? "is-invalid" : ""
+                        }`}
+                      value={formData.suborderId}
                       onChange={handleChange}
                     />
-                    <div className="invalid-feedback">{errors.order_id}</div>
+                    <div className="invalid-feedback">{errors.suborderId}</div>
                   </div>
                   <div className="col-md-3">
                     <label className="form-label">
                       Order Id <span className="text-danger">*</span>
                     </label>
                     <select
-                      name="seller"
-                      className={`form-select ${
-                        errors.seller ? "is-invalid" : ""
-                      }`}
-                      value={formData.seller}
+                      name="orderId"
+                      className={`form-select ${errors.orderId ? "is-invalid" : ""
+                        }`}
+                      value={formData.orderId}
                       onChange={handleChange}
                     >
                       <option value="">Select Order Id</option>
-                      <option value="Seller 1">SUB 1</option>
-                      <option value="Seller 2">SUB 2</option>
+                      {orders.map((order) => (
+                        <option key={order.id} value={order.id}>{order.orderId}</option>
+                      ))}
                     </select>
-                    <div className="invalid-feedback">{errors.seller}</div>
+                    <div className="invalid-feedback">{errors.orderId}</div>
                   </div>
                   <div className="col-md-3">
                     <label className="form-label">
                       Product<span className="text-danger">*</span>
                     </label>
                     <select
-                      name="seller"
-                      className={`form-select ${
-                        errors.seller ? "is-invalid" : ""
-                      }`}
-                      value={formData.seller}
-                      onChange={handleChange}
+                      name="productId"
+                      className={`form-select ${errors.productId ? "is-invalid" : ""
+                        }`}
+                      value={formData.productId}
+                      onChange={handleProduct}
                     >
                       <option value="">Select Product</option>
-                      <option value="Seller 1">Product 1</option>
-                      <option value="Seller 2">Product 2</option>
+                      {products?.map((product) => (
+                        <option key={product.id} value={product.id}>{product.productTitle}</option>
+                      ))}
                     </select>
-                    <div className="invalid-feedback">{errors.seller}</div>
+                    <div className="invalid-feedback">{errors.productId}</div>
                   </div>
 
                   <div className="col-md-3">
@@ -190,13 +230,12 @@ const AddOrder = () => {
                       type="number"
                       name="mrp"
                       placeholder="Enter Mrp"
-                      className={`form-control ${
-                        errors.order_date ? "is-invalid" : ""
-                      }`}
-                      value={formData.order_date}
+                      className={`form-control ${errors.mrp ? "is-invalid" : ""
+                        }`}
+                      value={formData.mrp}
                       onChange={handleChange}
                     />
-                    <div className="invalid-feedback">{errors.order_date}</div>
+                    <div className="invalid-feedback">{errors.mrp}</div>
                   </div>
 
                   <div className="col-md-3">
@@ -205,16 +244,15 @@ const AddOrder = () => {
                     </label>
                     <input
                       type="text"
-                      name="customer_name"
+                      name="sellingPrice"
                       placeholder="Enter selling Price "
-                      className={`form-control ${
-                        errors.customer_name ? "is-invalid" : ""
-                      }`}
-                      value={formData.customer_name}
+                      className={`form-control ${errors.sellingPrice ? "is-invalid" : ""
+                        }`}
+                      value={formData.sellingPrice}
                       onChange={handleChange}
                     />
                     <div className="invalid-feedback">
-                      {errors.customer_name}
+                      {errors.sellingPrice}
                     </div>
                   </div>
 
@@ -226,9 +264,8 @@ const AddOrder = () => {
                       type="number"
                       name="qty"
                       placeholder="Enter Qty"
-                      className={`form-control ${
-                        errors.qty ? "is-invalid" : ""
-                      }`}
+                      className={`form-control ${errors.qty ? "is-invalid" : ""
+                        }`}
                       value={formData.qty}
                       onChange={handleChange}
                     />
@@ -239,15 +276,16 @@ const AddOrder = () => {
                       Status <span className="text-danger">*</span>
                     </label>
                     <select
-                      name="stateStatus"
-                      value={formData.stateStatus}
+                      name="status"
+                      value={formData.status}
                       onChange={handleChange}
-                      className="form-select"
-                      required
+                      className={`form-select ${errors.qty ? "is-invalid" : ""}`}
                     >
-                      <option value="Active">Active</option>
-                      <option value="In Active">In Active</option>
+                      <option value="">Select status</option>
+                      <option value={1}>Active</option>
+                      <option value={0}>In Active</option>
                     </select>
+                     <div className="invalid-feedback">{errors.status}</div>
                   </div>
                   <div className="col-12 d-flex justify-content-end mt-4">
                     <button type="submit" className="btn btn-success px-4 me-2">
@@ -256,7 +294,7 @@ const AddOrder = () => {
                     <button
                       type="button"
                       className="btn btn-outline-secondary px-4"
-                      onClick={() => navigate("/manage-orders")}
+                      onClick={() => navigate("/manage-sub-orders")}
                     >
                       Cancel
                     </button>
@@ -267,8 +305,6 @@ const AddOrder = () => {
           </div>
         </div>
       </div>
-
-      <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
     </div>
   );
 };
