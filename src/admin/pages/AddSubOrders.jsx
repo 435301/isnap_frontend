@@ -15,8 +15,6 @@ const AddOrder = () => {
   const dispatch = useDispatch();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  const [orderId, setOrderId] = useState(0);
-  const [productId, setProductId] = useState(0);
   const { orders, productData, subOrderById } = useSelector((state) => state.orders);
   const { products } = useSelector((state) => state.adminProducts);
   const [formData, setFormData] = useState({

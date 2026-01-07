@@ -41,7 +41,7 @@ const ManageProducts = () => {
 
   useEffect(() => {
      if (!isInitialized) return;
-    dispatch(fetchServiceTypes());
+    dispatch(fetchServiceTypes("", "", "", 1, ""));
     dispatch(fetchSellerProducts({ page: currentPage, search: searchTerm, marketPlaceId, status: statusFilter }));
   }, [dispatch, currentPage, statusFilter, searchTerm, marketPlaceId, isInitialized]);
 

@@ -14,7 +14,7 @@ export const CLEAR_SERVICE_TYPE_SUCCESS_MESSAGE = "CLEAR_SERVICE_TYPE_SUCCESS_ME
 
 
 // ------------------------ FETCH SERVICE TYPES ------------------------
-export const fetchServiceTypes = (page = 1, limit = 10, search = "", status = "", marketPlaceId = "") => async (dispatch) => {
+export const fetchServiceTypes = (page = "", limit = 15, search = "", status = "", marketPlaceId = "") => async (dispatch) => {
   dispatch({ type: FETCH_SERVICE_TYPES_REQUEST });
   try {
     const validShowStatus = status === 0 || status === 1 ? status : "";

@@ -44,7 +44,7 @@ const ManageOrders = () => {
   useEffect(() => {
     if (!isInitialized) return;
     dispatch(fetchMarketPlaceSellers());
-    dispatch(fetchServiceTypes());
+    dispatch(fetchServiceTypes("", "", "", 1, ""));
     dispatch(fetchOrders({ page: currentPage, search: searchTerm, marketPlaceId, sellerId, fromDate: fromDate, toDate: toDate }));
   }, [dispatch, currentPage, searchTerm, marketPlaceId, sellerId, fromDate, toDate, isInitialized]);
 

@@ -20,7 +20,7 @@ const BulkUpload = () => {
   }));
   const { marketPlacesellers } = useSelector((state) => state.adminProducts);
   useEffect(() => {
-    dispatch(fetchServiceTypes());
+    dispatch(fetchServiceTypes("", "", "", 1, ""));
     dispatch(fetchMarketPlaceSellers());
   }, [dispatch]);
 

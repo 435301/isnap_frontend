@@ -30,7 +30,7 @@ const ManageProducts = () => {
       page: currentPage
     }));
     dispatch(fetchMarketPlaceSellers());
-    dispatch(fetchServiceTypes());
+    dispatch(fetchServiceTypes("", "", "", 1, ""));
   }, [dispatch, sellerId, marketPlaceId, currentPage]);
 
 

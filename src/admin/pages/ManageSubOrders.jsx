@@ -37,7 +37,7 @@ const ManageOrders = () => {
 
   useEffect(() => {
     dispatch(fetchMarketPlaceSellers());
-    dispatch(fetchServiceTypes());
+    dispatch(fetchServiceTypes("", "", "", 1, ""));
     dispatch(fetchOrders({
       page: "", sellerId: "", marketPlaceId: "", fromDate: "", toDate: "", search: ""
     }));

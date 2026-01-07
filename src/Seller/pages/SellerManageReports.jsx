@@ -25,7 +25,7 @@ const ManageSellerReports = () => {
       marketPlaceId: marketPlaceId,
       page: currentPage
     }));
-    dispatch(fetchServiceTypes());
+    dispatch(fetchServiceTypes("", "", "", 1, ""));
   }, [dispatch, marketPlaceId, currentPage]);
 
 

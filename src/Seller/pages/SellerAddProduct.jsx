@@ -19,7 +19,7 @@ const AddSellerProduct = () => {
         value: item.id,
     }));
     useEffect(() => {
-        dispatch(fetchServiceTypes());
+        dispatch(fetchServiceTypes("", "", "", 1, ""));
     }, [dispatch]);
 
     const [formData, setFormData] = useState({
