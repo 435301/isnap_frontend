@@ -23,7 +23,8 @@ import {
     EDIT_SUB_ORDER_REQUEST, EDIT_SUB_ORDER_FAILURE, EDIT_SUB_ORDER_SUCCESS,
     DELETE_SUB_ORDER_FAILURE,
     DELETE_SUB_ORDER_REQUEST,
-    DELETE_SUB_ORDER_SUCCESS
+    DELETE_SUB_ORDER_SUCCESS,
+    FETCH_SUB_ORDERS_BY_ID_FAILURE, FETCH_SUB_ORDERS_BY_ID_REQUEST, FETCH_SUB_ORDERS_BY_ID_SUCCESS, RESET_PRODUCT_DATA
 } from "../actions/orderActions";
 
 const initialState = {
@@ -33,6 +34,7 @@ const initialState = {
     pagination: {},
     loading: false,
     error: null,
+    subOrderById: null,
 };
 
 const orderReducer = (state = initialState, action) => {
@@ -46,12 +48,12 @@ const orderReducer = (state = initialState, action) => {
         case ADD_SUB_ORDER_REQUEST:
         case EDIT_SUB_ORDER_REQUEST:
         case DELETE_SUB_ORDER_REQUEST:
+        case FETCH_SUB_ORDERS_BY_ID_REQUEST:
             return {
                 ...state,
                 loading: true,
                 error: null,
             };
-
         case FETCH_ORDERS_SUCCESS:
             return {
                 ...state,
@@ -116,6 +118,12 @@ const orderReducer = (state = initialState, action) => {
                     (suborder) => suborder.id !== action.payload
                 ),
             };
+        case FETCH_SUB_ORDERS_BY_ID_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                subOrderById: action.payload,
+            };
         case FETCH_ORDERS_FAILURE:
         case ADD_ORDER_FAILURE:
         case UPDATE_ORDER_FAILURE:
@@ -125,12 +133,19 @@ const orderReducer = (state = initialState, action) => {
         case ADD_SUB_ORDER_FAILURE:
         case EDIT_SUB_ORDER_FAILURE:
         case DELETE_SUB_ORDER_FAILURE:
+        case FETCH_SUB_ORDERS_BY_ID_FAILURE:
+
             return {
                 ...state,
                 loading: false,
                 error: action.payload,
             };
 
+        case RESET_PRODUCT_DATA:
+            return {
+                ...state,
+                productData: {},
+            };
         default:
             return state;
     }

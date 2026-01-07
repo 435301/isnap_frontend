@@ -303,6 +303,7 @@ function App() {
             </AdminRoute>
           }
         />
+        <Route path="/edit-sub-order/:id" element={<AddSubOrders />} />
         <Route
           path="/manage-business-type"
           element={

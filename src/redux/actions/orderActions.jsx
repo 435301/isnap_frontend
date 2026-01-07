@@ -41,6 +41,12 @@ export const DELETE_SUB_ORDER_REQUEST = "DELETE_SUB_ORDER_REQUEST";
 export const DELETE_SUB_ORDER_SUCCESS = "DELETE_SUB_ORDER_SUCCESS";
 export const DELETE_SUB_ORDER_FAILURE = "DELETE_SUB_ORDER_FAILURE";
 
+export const FETCH_SUB_ORDERS_BY_ID_REQUEST = "FETCH_SUB_ORDERS_BY_ID_REQUEST";
+export const FETCH_SUB_ORDERS_BY_ID_SUCCESS = "FETCH_SUB_ORDERS_BY_ID_SUCCESS";
+export const FETCH_SUB_ORDERS_BY_ID_FAILURE = "FETCH_SUB_ORDERS_BY_ID_FAILURE";
+
+export const RESET_PRODUCT_DATA="RESET_PRODUCT_DATA";
+
 /* ================= FETCH ORDERS ================= */
 export const fetchOrders = (filters) => async (dispatch) => {
   dispatch({ type: FETCH_ORDERS_REQUEST });
@@ -175,7 +181,7 @@ export const addSubOrder = (payload) => async (dispatch) => {
 };
 
 
-export const editSubOrder = (payload, id) => async (dispatch) => {
+export const editSubOrder = (id, payload) => async (dispatch) => {
   dispatch({ type: EDIT_SUB_ORDER_REQUEST });
 
   try {
@@ -211,3 +217,23 @@ export const deleteSubOrder = ( id) => async (dispatch) => {
     toast.error(error.response.data.message || "Failed to delete sub order")
   }
 };
+
+export const fetchSubOrdersById = (id) => async (dispatch) => {
+  dispatch({ type: FETCH_SUB_ORDERS_BY_ID_REQUEST });
+  try {
+    const res = await axios.get(`${BASE_URL}/suborder/getSubOrderById/${id}`, getAuthHeaders());
+    dispatch({
+      type: FETCH_SUB_ORDERS_BY_ID_SUCCESS,
+      payload: res.data.data,
+    });
+  } catch (error) {
+    dispatch({
+      type: FETCH_SUB_ORDERS_BY_ID_FAILURE,
+      payload: error.response?.data?.message || "Failed to fetch sub orders",
+    });
+  }
+};
+
+export const resetProductData = () => ({
+  type: RESET_PRODUCT_DATA,
+});

@@ -33,7 +33,7 @@ const ManageOrders = () => {
 
   const { marketPlacesellers } = useSelector((state) => state.adminProducts);
   const { serviceTypes } = useSelector(state => state.serviceType);
-  const { orders, suborders, loading, pagination } = useSelector((state) => state.orders);
+  const { orders, suborders, loading, pagination, subOrderById } = useSelector((state) => state.orders);
 
   useEffect(() => {
     dispatch(fetchMarketPlaceSellers());
@@ -67,6 +67,10 @@ const ManageOrders = () => {
     setDeleteId(null);
     setShowDeleteModal(false);
   }
+
+  const handleEdit = (id) => (
+    navigate(`/edit-sub-order/${id}`)
+  );
 
   return (
     <div className="container-fluid d-flex p-0">
@@ -221,6 +225,7 @@ const ManageOrders = () => {
                       <th>Qty</th>
                       <th>Seller</th>
                       <th>Marketplace</th>
+                      <th>Status</th>
                       <th>Action</th>
                     </tr>
                   </thead>
@@ -249,19 +254,13 @@ const ManageOrders = () => {
                         <td>{order.qty}</td>
                         <td>{order.businessName}</td>
                         <td>{order.marketplace}</td>
-
+                        <td><span className={`badge ${order.status ? "bg-success-light text-success" : "bg-danger-light text-danger"}`}>{order.status === 1 ? "Active " : "Inactive"} </span></td>
                         {/* Actions */}
                         <td>
-                          {/* <button
-                            className="btn btn-icon btn-view me-1"
-                            onClick={() => navigate("/order-details")}
-                          >
-                            <i className="bi bi-eye"></i>
-                          </button> */}
-                          <button className="btn btn-icon btn-edit me-1">
+                          <button className="btn btn-icon btn-edit me-1" onClick={() => handleEdit(order?.id)}>
                             <i className="bi bi-pencil-square"></i>
                           </button>
-                          <button className="btn btn-icon btn-delete" onClick={()=>handleDeleteClick(order?.id)}>
+                          <button className="btn btn-icon btn-delete" onClick={() => handleDeleteClick(order?.id)}>
                             <i className="bi bi-trash"></i>
                           </button>
                         </td>

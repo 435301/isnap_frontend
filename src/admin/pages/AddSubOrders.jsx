@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useDispatch, useSelector } from "react-redux";
-import { addSubOrder, fetchOrders, fetchProductData } from "../../redux/actions/orderActions";
+import { addSubOrder, editSubOrder, fetchOrders, fetchProductData, fetchSubOrdersById, resetProductData } from "../../redux/actions/orderActions";
 import { fetchAdminProducts } from "../../redux/actions/adminProductsAction";
 
 const AddOrder = () => {
@@ -17,9 +17,8 @@ const AddOrder = () => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [orderId, setOrderId] = useState(0);
   const [productId, setProductId] = useState(0);
-  const { orders, productData } = useSelector((state) => state.orders);
+  const { orders, productData, subOrderById } = useSelector((state) => state.orders);
   const { products } = useSelector((state) => state.adminProducts);
-  console.log('productData', productData)
   const [formData, setFormData] = useState({
     orderId: "",
     suborderId: "",
@@ -31,11 +30,16 @@ const AddOrder = () => {
   });
   const [errors, setErrors] = useState({});
 
+  //edit 
+  const { id } = useParams();
+  const isEditMode = Boolean(id);
+
+
   useEffect(() => {
     dispatch(fetchOrders({
       page: "", sellerId: "", marketPlaceId: "", fromDate: "", toDate: "", search: ""
     }));
-    dispatch(fetchAdminProducts({ page: "", search: "", marketPlaceId: "", status: "" }));
+    dispatch(fetchAdminProducts({ page: "", search: "", marketPlaceId: "", status: 1 }));
   }, [dispatch]);
 
   useEffect(() => {
@@ -47,6 +51,29 @@ const AddOrder = () => {
       }));
     }
   }, [productData]);
+
+  useEffect(() => {
+    if (isEditMode) {
+      dispatch(fetchSubOrdersById(id));
+    }
+  }, [id, isEditMode, dispatch]);
+
+  useEffect(() => {
+    if (isEditMode && subOrderById) {
+      setFormData({
+        orderId: subOrderById.orderId || "",
+        suborderId: subOrderById.subOrderId || "",
+        productId: subOrderById.productId || "",
+        qty: subOrderById.qty || "",
+        mrp: subOrderById.mrp || "",
+        sellingPrice: subOrderById.sellingPrice || "",
+        status: subOrderById.status ?? "",
+      });
+      if (subOrderById.productId) {
+        dispatch(fetchProductData(subOrderById.productId));
+      }
+    }
+  }, [isEditMode, subOrderById, dispatch]);
 
 
   /* Sidebar responsive */
@@ -70,7 +97,7 @@ const AddOrder = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    setErrors((prev)=>({...prev, [name]:""}) );
+    setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
   const handleProduct = (e) => {
@@ -88,7 +115,7 @@ const AddOrder = () => {
   /* Validation */
   const validate = () => {
     let newErrors = {};
-    if (!formData.orderId.trim()) newErrors.orderId = "Order ID is required";
+    if (!formData.orderId) newErrors.orderId = "Order ID is required";
     if (!formData.suborderId) newErrors.suborderId = "Sub order Id is required";
     if (!formData.productId)
       newErrors.productId = "Product Id is required";
@@ -117,16 +144,35 @@ const AddOrder = () => {
         sellingPrice: formData.sellingPrice,
         status: formData.status
       }
-
       try {
-        await dispatch(addSubOrder(payload));
+        if (isEditMode) {
+          await dispatch(editSubOrder(id, payload));
+        } else {
+          await dispatch(addSubOrder(payload));
+        }
         navigate("/manage-sub-orders");
       } catch (err) {
         setErrors({ errors });
       }
     }
-
+    handleCancel();
   };
+
+
+  const handleCancel = ()=>{
+   setFormData({
+      orderId: "",
+      suborderId: "",
+      productId: "",
+      qty: "",
+      mrp: "",
+      sellingPrice: "",
+      status: "",
+    });
+    setErrors({});
+    dispatch(resetProductData());
+    navigate("/manage-sub-orders")
+  }
 
   return (
     <div className="container-fluid position-relative bg-white d-flex p-0">
@@ -154,7 +200,7 @@ const AddOrder = () => {
             <div className="bg-white p-3 rounded shadow-sm card-header mb-2">
               <div className="row align-items-center">
                 <div className="col-lg-3">
-                  <h5 className="form-title m-0">Add Sub Orders</h5>
+                  <h5 className="form-title m-0">{isEditMode ? "Edit Sub Order" : "Add Sub Order"}</h5>
                 </div>
                 <div className="col-lg-9 text-end">
                   <Link to="/manage-sub-orders" className="btn btn-new-lead">
@@ -234,6 +280,7 @@ const AddOrder = () => {
                         }`}
                       value={formData.mrp}
                       onChange={handleChange}
+                      disabled
                     />
                     <div className="invalid-feedback">{errors.mrp}</div>
                   </div>
@@ -285,16 +332,16 @@ const AddOrder = () => {
                       <option value={1}>Active</option>
                       <option value={0}>In Active</option>
                     </select>
-                     <div className="invalid-feedback">{errors.status}</div>
+                    <div className="invalid-feedback">{errors.status}</div>
                   </div>
                   <div className="col-12 d-flex justify-content-end mt-4">
                     <button type="submit" className="btn btn-success px-4 me-2">
-                      Submit
+                      {isEditMode ? "Update" : "Submit"}
                     </button>
                     <button
                       type="button"
                       className="btn btn-outline-secondary px-4"
-                      onClick={() => navigate("/manage-sub-orders")}
+                      onClick={ handleCancel}
                     >
                       Cancel
                     </button>
