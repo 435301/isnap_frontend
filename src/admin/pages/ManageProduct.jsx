@@ -91,8 +91,8 @@ const handleDeleteClick = (id) => {
     setShowDeleteModal(true);
   };
 
-    const handleDelete = ()=>{
-      dispatch(deleteProduct(deleteId));
+    const handleDelete = async ()=>{
+     await  dispatch(deleteProduct(deleteId));
        dispatch(
         fetchAdminProducts({
           page: currentPage,
@@ -106,12 +106,12 @@ const handleDeleteClick = (id) => {
       
     }
   
-const handleBulkDelete = () => {
+const handleBulkDelete = async () => {
   if (selectedProducts.length === 0) {
     alert("Please select at least one product");
     return;
   }
-  dispatch(bulkDelete({ ids: selectedProducts })).then(() => {
+ await  dispatch(bulkDelete({ ids: selectedProducts })).then(() => {
     setSelectedProducts([]);
     setShowDeleteModal(false);
     dispatch(

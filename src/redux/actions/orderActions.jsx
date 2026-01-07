@@ -33,6 +33,14 @@ export const ADD_SUB_ORDER_REQUEST = "ADD_SUB_ORDER_REQUEST";
 export const ADD_SUB_ORDER_SUCCESS = "ADD_SUB_ORDER_SUCCESS";
 export const ADD_SUB_ORDER_FAILURE = "ADD_SUB_ORDER_FAILURE";
 
+export const EDIT_SUB_ORDER_REQUEST = "EDIT_SUB_ORDER_REQUEST";
+export const EDIT_SUB_ORDER_SUCCESS = "EDIT_SUB_ORDER_SUCCESS";
+export const EDIT_SUB_ORDER_FAILURE = "EDIT_SUB_ORDER_FAILURE";
+
+export const DELETE_SUB_ORDER_REQUEST = "DELETE_SUB_ORDER_REQUEST";
+export const DELETE_SUB_ORDER_SUCCESS = "DELETE_SUB_ORDER_SUCCESS";
+export const DELETE_SUB_ORDER_FAILURE = "DELETE_SUB_ORDER_FAILURE";
+
 /* ================= FETCH ORDERS ================= */
 export const fetchOrders = (filters) => async (dispatch) => {
   dispatch({ type: FETCH_ORDERS_REQUEST });
@@ -163,5 +171,43 @@ export const addSubOrder = (payload) => async (dispatch) => {
       payload: error.response?.data?.message || "Failed to add sub order",
     });
     toast.error(error.response.data.message || "Failed to add sub order")
+  }
+};
+
+
+export const editSubOrder = (payload, id) => async (dispatch) => {
+  dispatch({ type: EDIT_SUB_ORDER_REQUEST });
+
+  try {
+    const res = await axios.put(`${BASE_URL}/suborder/editSuborder/${id}`, payload, getAuthHeaders(false));
+    dispatch({
+      type: EDIT_SUB_ORDER_SUCCESS,
+      payload: res.data.message,
+    });
+    toast.success(res.data.message|| "Suborder edited successfully")
+  } catch (error) {
+    dispatch({
+      type: EDIT_SUB_ORDER_FAILURE,
+      payload: error.response?.data?.message || "Failed to edit sub order",
+    });
+    toast.error(error.response.data.message || "Failed to edit sub order")
+  }
+};
+
+export const deleteSubOrder = ( id) => async (dispatch) => {
+  dispatch({ type: DELETE_SUB_ORDER_REQUEST });
+  try {
+    const res = await axios.delete(`${BASE_URL}/suborder/deleteSuborder/${id}`, getAuthHeaders());
+    dispatch({
+      type: DELETE_SUB_ORDER_SUCCESS,
+      payload: res.data.message,
+    });
+    toast.success(res.data.message|| "Suborder deleted successfully")
+  } catch (error) {
+    dispatch({
+      type: DELETE_SUB_ORDER_FAILURE,
+      payload: error.response?.data?.message || "Failed to delete sub order",
+    });
+    toast.error(error.response.data.message || "Failed to delete sub order")
   }
 };

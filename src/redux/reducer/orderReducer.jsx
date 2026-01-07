@@ -19,7 +19,11 @@ import {
     PRODUCT_DATA_SUCCESS,
     ADD_SUB_ORDER_REQUEST,
     ADD_SUB_ORDER_SUCCESS,
-    ADD_SUB_ORDER_FAILURE
+    ADD_SUB_ORDER_FAILURE,
+    EDIT_SUB_ORDER_REQUEST, EDIT_SUB_ORDER_FAILURE, EDIT_SUB_ORDER_SUCCESS,
+    DELETE_SUB_ORDER_FAILURE,
+    DELETE_SUB_ORDER_REQUEST,
+    DELETE_SUB_ORDER_SUCCESS
 } from "../actions/orderActions";
 
 const initialState = {
@@ -40,6 +44,8 @@ const orderReducer = (state = initialState, action) => {
         case FETCH_SUB_ORDERS_REQUEST:
         case PRODUCT_DATA_REQUEST:
         case ADD_SUB_ORDER_REQUEST:
+        case EDIT_SUB_ORDER_REQUEST:
+        case DELETE_SUB_ORDER_REQUEST:
             return {
                 ...state,
                 loading: true,
@@ -79,7 +85,6 @@ const orderReducer = (state = initialState, action) => {
                 orders: state.orders.filter(
                     (order) => order.id !== action.payload
                 ),
-                successMessage: "Order deleted successfully",
             };
         case FETCH_SUB_ORDERS_SUCCESS:
             return {
@@ -99,9 +104,18 @@ const orderReducer = (state = initialState, action) => {
                 ...state, loading: false, productData: action.payload.data
             }
         case ADD_SUB_ORDER_SUCCESS:
+        case EDIT_SUB_ORDER_SUCCESS:
             return {
                 ...state, loading: false
             }
+        case DELETE_SUB_ORDER_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                suborders: state.suborders.filter(
+                    (suborder) => suborder.id !== action.payload
+                ),
+            };
         case FETCH_ORDERS_FAILURE:
         case ADD_ORDER_FAILURE:
         case UPDATE_ORDER_FAILURE:
@@ -109,6 +123,8 @@ const orderReducer = (state = initialState, action) => {
         case PRODUCT_DATA_FAILURE:
         case FETCH_SUB_ORDERS_FAILURE:
         case ADD_SUB_ORDER_FAILURE:
+        case EDIT_SUB_ORDER_FAILURE:
+        case DELETE_SUB_ORDER_FAILURE:
             return {
                 ...state,
                 loading: false,

@@ -7,12 +7,13 @@ import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { fetchOrders, fetchSubOrders } from "../../redux/actions/orderActions";
+import { deleteSubOrder, fetchOrders, fetchSubOrders } from "../../redux/actions/orderActions";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchMarketPlaceSellers } from "../../redux/actions/adminProductsAction";
 import { fetchServiceTypes } from "../../redux/actions/serviceTypeActions";
 import PaginationComponent from "../../common/pagination";
 import { formatDate, safeFormat } from "../../common/formatDate";
+import DeleteConfirmationModal from "../components/Modal/DeleteConfirmationModal";
 
 const ManageOrders = () => {
   const dispatch = useDispatch();
@@ -27,10 +28,12 @@ const ManageOrders = () => {
   const [marketPlaceId, setMarketPlaceId] = useState("");
   const [sellerId, setSellerId] = useState("");
   const [orderId, setOrderId] = useState(0);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
 
   const { marketPlacesellers } = useSelector((state) => state.adminProducts);
   const { serviceTypes } = useSelector(state => state.serviceType);
-  const {orders, suborders, loading, pagination} = useSelector((state)=> state.orders);
+  const { orders, suborders, loading, pagination } = useSelector((state) => state.orders);
 
   useEffect(() => {
     dispatch(fetchMarketPlaceSellers());
@@ -38,10 +41,10 @@ const ManageOrders = () => {
     dispatch(fetchOrders({
       page: "", sellerId: "", marketPlaceId: "", fromDate: "", toDate: "", search: ""
     }));
-    dispatch(fetchSubOrders({ page: currentPage, search: searchTerm, sellerId: sellerId, marketPlaceId: marketPlaceId, orderId:orderId, fromDate: formatDate(fromDate), toDate: formatDate(toDate)}))
-  }, [dispatch, currentPage,searchTerm, sellerId , marketPlaceId, orderId, fromDate,toDate ])
+    dispatch(fetchSubOrders({ page: currentPage, search: searchTerm, sellerId: sellerId, marketPlaceId: marketPlaceId, orderId: orderId, fromDate: formatDate(fromDate), toDate: formatDate(toDate) }))
+  }, [dispatch, currentPage, searchTerm, sellerId, marketPlaceId, orderId, fromDate, toDate])
 
-  const handleRefresh = ()=>{
+  const handleRefresh = () => {
     setCurrentPage(1);
     setSellerId(0);
     setMarketPlaceId(0);
@@ -50,6 +53,21 @@ const ManageOrders = () => {
     setFromDate("");
     setToDate("");
   }
+
+  const handleDeleteClick = (id) => {
+    setDeleteId(id);
+    setShowDeleteModal(true);
+  };
+
+  const handleDelete = async () => {
+    await dispatch(deleteSubOrder(deleteId));
+    dispatch(
+      fetchSubOrders({ page: currentPage, search: searchTerm, sellerId: sellerId, marketPlaceId: marketPlaceId, orderId: orderId, fromDate: formatDate(fromDate), toDate: formatDate(toDate) })
+    );
+    setDeleteId(null);
+    setShowDeleteModal(false);
+  }
+
   return (
     <div className="container-fluid d-flex p-0">
       <Sidebar isOpen={isSidebarOpen} />
@@ -96,14 +114,14 @@ const ManageOrders = () => {
                     className="form-control"
                     placeholder="Search by sub order ID"
                     value={searchTerm}
-                    onChange={(e)=> setSearchTerm(e.target.value)}
+                    onChange={(e) => setSearchTerm(e.target.value)}
                   />
                 </div>
 
                 {/* Order ID */}
                 <div className="col-lg-2 col-md-4 col-sm-6">
-                  <select className="form-select" 
-                   value={orderId}
+                  <select className="form-select"
+                    value={orderId}
                     onChange={(e) => {
                       setOrderId(e.target.value);
                       setCurrentPage(1);
@@ -208,7 +226,7 @@ const ManageOrders = () => {
                   </thead>
 
                   <tbody>
-                     {loading ? (
+                    {loading ? (
                       <tr>
                         <td colSpan="10" className="text-center">Loading...</td>
                       </tr>
@@ -243,27 +261,34 @@ const ManageOrders = () => {
                           <button className="btn btn-icon btn-edit me-1">
                             <i className="bi bi-pencil-square"></i>
                           </button>
-                          <button className="btn btn-icon btn-delete">
+                          <button className="btn btn-icon btn-delete" onClick={()=>handleDeleteClick(order?.id)}>
                             <i className="bi bi-trash"></i>
                           </button>
                         </td>
                       </tr>
-                    ))  : (
-                        <tr>
-                          <td colSpan="10" className="text-center">
-                            No sub orders found.
-                          </td>
-                        </tr>
-                      )}
+                    )) : (
+                      <tr>
+                        <td colSpan="10" className="text-center">
+                          No sub orders found.
+                        </td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>
             </div>
-              <PaginationComponent
+            <PaginationComponent
               currentPage={currentPage}
               totalPages={pagination?.totalPages || 1}
               onPageChange={setCurrentPage}
             />
+            {showDeleteModal && (
+              <DeleteConfirmationModal
+                show={showDeleteModal}
+                handleClose={() => setShowDeleteModal(false)}
+                handleConfirm={handleDelete}
+              />
+            )}
           </div>
         </div>
       </div>
