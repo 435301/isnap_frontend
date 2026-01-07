@@ -45,6 +45,7 @@ import { teamSellerReducer } from "./teamSellerReducer";
 import adminProductReducer from "./adminProductReducer";
 import sellerProductReducer from "./sellerProductsReducer";
 import orderReducer from "./orderReducer";
+import sellerOrderReducer from "./sellerOrderReducer";
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -103,6 +104,7 @@ const rootReducer = combineReducers({
   adminProducts: adminProductReducer,
   sellerProducts: sellerProductReducer,
    orders: orderReducer,
+   sellerOrders: sellerOrderReducer,
 });
 
 

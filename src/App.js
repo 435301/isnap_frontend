@@ -147,6 +147,10 @@ import ManageOrders from "./admin/pages/ManageOrders.jsx";
 import AddOrders from "./admin/pages/AddOrders.jsx";
 import ManageSubOrders from "./admin/pages/ManageSubOrders.jsx";
 import AddSubOrders from "./admin/pages/AddSubOrders.jsx";
+import SellerManageOrders from "./Seller/pages/SellerManageOrders.jsx";
+import SellerManageSubOrders from "./Seller/pages/SellerManageSubOrders.jsx";
+import SellerAddOrder from "./Seller/pages/SellerAddOrder.jsx";
+import SellerAddSubOrder from "./Seller/pages/SellerAddSubOrder.jsx";
 
 function App() {
   return (
@@ -942,6 +946,51 @@ function App() {
           element={
             <SellerRoute>
               <SellerServicesList />
+            </SellerRoute>
+          }
+        />
+
+          <Route
+          path="/seller/manage-orders"
+          element={
+            <SellerRoute>
+              <SellerManageOrders />
+            </SellerRoute>
+          }
+        />
+
+          <Route
+          path="/seller/manage-sub-orders"
+          element={
+            <SellerRoute>
+              <SellerManageSubOrders />
+            </SellerRoute>
+          }
+        />
+
+          <Route
+          path="/seller/add-order"
+          element={
+            <SellerRoute>
+              <SellerAddOrder />
+            </SellerRoute>
+          }
+        />
+
+         <Route
+          path="/seller/edit-sub-order/:id"
+          element={
+            <SellerRoute>
+              <SellerAddSubOrder />
+            </SellerRoute>
+          }
+        />
+
+          <Route
+          path="/seller/add-sub-order"
+          element={
+            <SellerRoute>
+              <SellerAddSubOrder />
             </SellerRoute>
           }
         />

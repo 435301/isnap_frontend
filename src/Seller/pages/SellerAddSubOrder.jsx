@@ -1,22 +1,24 @@
 import React, { useState, useEffect } from "react";
-import Sidebar from "../components/Sidebar";
-import Navbar from "../components/Navbar";
+import Sidebar from "../components/SellerSidebar";
+import Navbar from "../components/SellerNavbar";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useDispatch, useSelector } from "react-redux";
-import { addSubOrder, editSubOrder, fetchOrders, fetchProductData, fetchSubOrdersById, resetProductData } from "../../redux/actions/orderActions";
+import { addSubOrder, editSubOrder, fetchOrders, fetchProductData, fetchSubOrders, fetchSubOrdersById, resetProductData } from "../../redux/actions/orderActions";
 import { fetchAdminProducts } from "../../redux/actions/adminProductsAction";
+import { fetchSellerProducts } from "../../redux/actions/sellerProductsAction";
+import { addSellerSubOrder, editSellerSubOrder, fetchSellerOrders, fetchSellerProductData, fetchSellerSubOrderById, resetSellerProductData } from "../../redux/actions/sellerOrderAction";
 
-const AddOrder = () => {
+const SellerAddSubOrder = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  const { orders, productData, subOrderById } = useSelector((state) => state.orders);
-  const { products } = useSelector((state) => state.adminProducts);
+  const { orders, productData, subOrderById } = useSelector((state) => state.sellerOrders);
+  const { sellerProducts } = useSelector((state) => state.sellerProducts);
   const [formData, setFormData] = useState({
     orderId: "",
     suborderId: "",
@@ -27,17 +29,15 @@ const AddOrder = () => {
     status: "",
   });
   const [errors, setErrors] = useState({});
-
   //edit 
   const { id } = useParams();
   const isEditMode = Boolean(id);
 
-
   useEffect(() => {
-    dispatch(fetchOrders({
-      page: "", sellerId: "", marketPlaceId: "", fromDate: "", toDate: "", search: ""
+    dispatch(fetchSellerOrders({
+      page: "", marketPlaceId: "", fromDate: "", toDate: "", search: ""
     }));
-    dispatch(fetchAdminProducts({ page: "", search: "", marketPlaceId: "", status: 1 }));
+    dispatch(fetchSellerProducts({ page: "", search: "", marketPlaceId: "", status: 1 }));
   }, [dispatch]);
 
   useEffect(() => {
@@ -52,7 +52,7 @@ const AddOrder = () => {
 
   useEffect(() => {
     if (isEditMode) {
-      dispatch(fetchSubOrdersById(id));
+      dispatch(fetchSellerSubOrderById(id));
     }
   }, [id, isEditMode, dispatch]);
 
@@ -106,7 +106,7 @@ const AddOrder = () => {
     }));
     setErrors((prev) => ({ ...prev, productId: "", mrp:"", sellingPrice:"" }));
     if (selectedProductId) {
-      dispatch(fetchProductData(selectedProductId));
+      dispatch(fetchSellerProductData(selectedProductId));
     }
   }
 
@@ -144,21 +144,20 @@ const AddOrder = () => {
       }
       try {
         if (isEditMode) {
-          await dispatch(editSubOrder(id, payload));
+          await dispatch(editSellerSubOrder(id, payload));
         } else {
-          await dispatch(addSubOrder(payload));
+          await dispatch(addSellerSubOrder(payload));
         }
-        navigate("/manage-sub-orders");
+        navigate("/seller/manage-sub-orders");
       } catch (err) {
         setErrors({ errors });
       }
     }
-    handleCancel();
   };
 
 
-  const handleCancel = ()=>{
-   setFormData({
+  const handleCancel = () => {
+    setFormData({
       orderId: "",
       suborderId: "",
       productId: "",
@@ -168,8 +167,8 @@ const AddOrder = () => {
       status: "",
     });
     setErrors({});
-    dispatch(resetProductData());
-    navigate("/manage-sub-orders")
+    dispatch(resetSellerProductData());
+    navigate("/seller/manage-sub-orders")
   }
 
   return (
@@ -201,7 +200,7 @@ const AddOrder = () => {
                   <h5 className="form-title m-0">{isEditMode ? "Edit Sub Order" : "Add Sub Order"}</h5>
                 </div>
                 <div className="col-lg-9 text-end">
-                  <Link to="/manage-sub-orders" className="btn btn-new-lead">
+                  <Link to="/seller/manage-sub-orders" className="btn btn-new-lead">
                     Manage Sub Orders
                   </Link>
                 </div>
@@ -259,7 +258,7 @@ const AddOrder = () => {
                       onChange={handleProduct}
                     >
                       <option value="">Select Product</option>
-                      {products?.map((product) => (
+                      {sellerProducts?.map((product) => (
                         <option key={product.id} value={product.id}>{product.productTitle}</option>
                       ))}
                     </select>
@@ -339,7 +338,7 @@ const AddOrder = () => {
                     <button
                       type="button"
                       className="btn btn-outline-secondary px-4"
-                      onClick={ handleCancel}
+                      onClick={handleCancel}
                     >
                       Cancel
                     </button>
@@ -354,4 +353,4 @@ const AddOrder = () => {
   );
 };
 
-export default AddOrder;
+export default SellerAddSubOrder;

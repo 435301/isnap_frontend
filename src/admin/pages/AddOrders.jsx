@@ -207,13 +207,17 @@ const AddOrder = () => {
                       value={serviceTypeOptions?.filter((opt) =>
                         formData.marketPlaceId?.includes(opt.value)
                       )}
-                      onChange={(selected) =>
-                        setFormData({
-                          ...formData,
+                      onChange={(selected) => {
+                        setFormData((prev) => ({
+                          ...prev,
                           marketPlaceId: selected.map((s) => s.value),
-                        })
-                      }
-                       className={` ${errors.marketPlaceId && "is-invalid"}`}
+                        }));
+                        setErrors((prev) => ({
+                          ...prev,
+                          marketPlaceId: "",
+                        }));
+                      }}
+                      className={` ${errors.marketPlaceId && "is-invalid"}`}
                     />
                     {errors.marketPlaceId && (
                       <div className="invalid-feedback"> {errors.marketPlaceId}  </div>
@@ -226,12 +230,16 @@ const AddOrder = () => {
                     </label>
                     <DatePicker
                       selected={formData.orderDate}
-                      onChange={(date) =>
+                      onChange={(date) => {
                         setFormData((prev) => ({
                           ...prev,
-                          orderDate: date
-                        }))
-                      }
+                          orderDate: date,
+                        }));
+                        setErrors((prev) => ({
+                          ...prev,
+                          orderDate: "",
+                        }));
+                      }}
                       placeholderText="Ordered Date"
                       className={`form-control ${errors.orderDate ? "is-invalid" : ""}`}
                       dateFormat="dd-MM-yyyy"

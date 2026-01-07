@@ -113,24 +113,21 @@ const SellerSidebar = ({ isOpen }) => {
           </div>
           {/* Products */}
           <div
-            className={`nav-item dropdown ${
-              isDropdownActive("products") ? "show" : ""
-            }`}
+            className={`nav-item dropdown ${isDropdownActive("products") ? "show" : ""
+              }`}
           >
             <a
               href="#!"
-              className={`nav-link dropdown-toggle ${
-                isDropdownActive("products") ? "active" : ""
-              }`}
+              className={`nav-link dropdown-toggle ${isDropdownActive("products") ? "active" : ""
+                }`}
               onClick={() => handleDropdownToggle("products")}
             >
               <i className="bi bi-box-seam me-2"></i>
               {isOpen && <span>Products</span>}
             </a>
             <div
-              className={`dropdown-menu bg-transparent border-0 ${
-                isDropdownActive("products") ? "show" : ""
-              }`}
+              className={`dropdown-menu bg-transparent border-0 ${isDropdownActive("products") ? "show" : ""
+                }`}
             >
               <Link
                 to="/seller/add-product"
@@ -176,6 +173,40 @@ const SellerSidebar = ({ isOpen }) => {
               >
                 Marketplace services
               </Link>
+            </div>
+          </div>
+
+          {/* orders */}
+          <div
+            className={`nav-item dropdown ${isDropdownActive("orders") ? "show" : ""
+              }`}
+          >
+            <a
+              href="#!"
+              className={`nav-link dropdown-toggle ${isDropdownActive("orders") ? "active" : ""
+                }`}
+              onClick={() => handleDropdownToggle("orders")}
+            >
+              <i className="bi bi-receipt me-2"></i>
+              {isOpen && <span>Orders</span>}
+            </a>
+
+            <div
+              className={`dropdown-menu bg-transparent border-0 ${isDropdownActive("orders") ? "show" : ""
+                }`}
+            >
+              {[
+                { path: "/seller/manage-orders", label: "Orders" },
+                { path: "/seller/manage-sub-orders", label: "Sub Orders" },
+              ].map((item) => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={`dropdown-item ${isLinkActive(item.path)}`}
+                >
+                  {item.label}
+                </Link>
+              ))}
             </div>
           </div>
           {/* Change Password */}
