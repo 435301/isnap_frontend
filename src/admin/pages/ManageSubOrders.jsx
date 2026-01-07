@@ -251,7 +251,15 @@ const ManageOrders = () => {
                         <td>{order.productName}</td>
                         <td>₹{order.mrp}</td>
                         <td>₹{order.sellingPrice}</td>
-                        <td>{order.qty}</td>
+                        <td>
+                           <span className="badge bg-primary cursor-pointer"
+                          onClick={() =>
+                            navigate(
+                              `/manage-orders?sellerId=${order?.sellerId}&marketPlaceId=${order?.marketPlaceId}&orderId=${order.orderId}`
+                            )
+                          }
+                        >
+                          {order.qty}</span></td>
                         <td>{order.businessName}</td>
                         <td>{order.marketplace}</td>
                         <td><span className={`badge ${order.status ? "bg-success-light text-success" : "bg-danger-light text-danger"}`}>{order.status === 1 ? "Active " : "Inactive"} </span></td>

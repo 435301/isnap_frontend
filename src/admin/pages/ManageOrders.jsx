@@ -212,7 +212,7 @@ const ManageOrders = () => {
                       <tr key={order.id}>
                         <td>{index + 1}</td>
                         <td>{order.orderId}</td>
-                        <td>{order.sellerName}</td>
+                        <td>{order.businessName}</td>
                         <td>{order.marketPlaceName}</td>
                         <td>{order.orderDate}</td>
                         <td>
@@ -225,16 +225,7 @@ const ManageOrders = () => {
                             {order.customerMobile}
                           </small>
                         </td>
-                        <td>
-                          <span className="badge bg-primary cursor-pointer" onClick={() =>
-                            navigate(
-                              `/manage-sub-orders?sellerId=${order?.sellerId}&marketPlaceId=${order?.marketPlaceId}&orderId=${order.orderId}`
-                            )
-                          }>
-                            {order?.qty}
-                          </span>
-                        </td>
-
+                        <td>{order?.qty}</td>
                         <td>₹{order.totalAmount}</td>
                         {/* <td>
                         <button className="btn btn-sm btn-light me-1">
