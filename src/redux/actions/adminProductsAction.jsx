@@ -47,6 +47,11 @@ export const BULK_DELETE_REQUEST = "BULK_DELETE_REQUEST";
 export const BULK_DELETE_SUCCESS = "BULK_DELETE_SUCCESS";
 export const BULK_DELETE_FAILURE = "BULK_DELETE_FAILURE";
 
+//getServices
+export const GET_SELLER_SERVICES_REQUEST = "GET_SELLER_SERVICES_REQUEST";
+export const GET_SELLER_SERVICES_SUCCESS = "GET_SELLER_SERVICES_SUCCESS";
+export const GET_SELLER_SERVICES_FAILURE = "GET_SELLER_SERVICES_FAILURE";
+
 
 export const fetchMarketPlaceSellers = () => async (dispatch) => {
     dispatch({ type: FETCH_SELLERS_REQUEST });
@@ -212,6 +217,23 @@ export const bulkDelete = (ids) => async (dispatch) => {
             type: BULK_DELETE_FAILURE,
             payload: error.message
         });
-         toast.error(error.response.data.message);
+        toast.error(error.response.data.message);
     }
 }
+
+export const fetchSellerServices = () => async (dispatch) => {
+    dispatch({ type: GET_SELLER_SERVICES_REQUEST });
+    try {
+        const res = await axios.get(`${BASE_URL}/getServices`, getAuthHeaders(false)
+        );
+        dispatch({
+            type: GET_SELLER_SERVICES_SUCCESS,
+            payload: res.data.data.services,
+        });
+    } catch (error) {
+        dispatch({
+            type: GET_SELLER_SERVICES_FAILURE,
+            payload: error.message,
+        });
+    }
+};

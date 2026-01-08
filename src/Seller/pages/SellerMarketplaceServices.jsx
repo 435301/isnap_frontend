@@ -3,11 +3,15 @@ import Sidebar from "../components/SellerSidebar";
 import Navbar from "../components/SellerNavbar";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchSellerServices } from "../../redux/actions/adminProductsAction";
 
 const ManageProducts = () => {
+  const dispatch = useDispatch();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
+  const {sellerServices} = useSelector((state)=> state.adminProducts);
   const handleToggleSidebar = () => setIsSidebarOpen((prev) => !prev);
 
   /* Handle window resize */
@@ -21,6 +25,11 @@ const ManageProducts = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+
+  useEffect(()=>{
+    dispatch(fetchSellerServices());
+  },[dispatch]);
+  
   /* ✅ New Static Marketplace Report Data */
   const reportData = [
     {
@@ -64,11 +73,11 @@ const ManageProducts = () => {
         <div className="container-fluid px-4 pt-3">
           {/* Header */}
           <div className="bg-white p-3 rounded shadow-sm mb-3">
-            <h5 className="m-0">Marketplace Report</h5>
+            <h5 className="m-0"> Services Report</h5>
           </div>
 
           {/* Filters */}
-          <div className="bg-white p-3 rounded shadow-sm mb-3">
+          {/* <div className="bg-white p-3 rounded shadow-sm mb-3">
             <div className="row g-2 align-items-center">
               <div className="col-lg-3">
                 <select className="form-select">
@@ -96,7 +105,7 @@ const ManageProducts = () => {
                 </button>
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* Table */}
           <div className="bg-white p-3 rounded shadow-sm">
@@ -105,28 +114,26 @@ const ManageProducts = () => {
                 <thead className="table-light">
                   <tr>
                     <th>Sl No</th>
-                    <th>Seller Name</th>
                     <th>Services</th>
-                    <th>Marketplace</th>
-                    <th>Status</th>
+                    <th>Source</th>
+                    <th>Work Status</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {reportData.map((item, index) => (
+                  {sellerServices?.map((item, index) => (
                     <tr key={item.id}>
                       <td>{index + 1}</td>
-                      <td>{item.sellerName}</td>
-                      <td>{item.services}</td>
-                      <td>{item.marketplace}</td>
+                      <td>{item.serviceTypeName || item.activityName || "-"}</td>
+                      <td>{item?.source || "-"}</td>
                       <td>
                         <span
                           className={`badge ${
-                            item.status === "Active"
-                              ? "bg-success"
-                              : "bg-danger"
+                            item.status === 1
+                              ? "bg-primary" : item.status === 2 ? "bg-danger" : item.status === 3 ? "bg-success"
+                              : "bg-secondary"
                           }`}
                         >
-                          {item.status}
+                          {item.status === 1 ? "To Do" : item.status === 2 ? "In Progress" : item.status === 3 ? "Completed" : "To Do"}
                         </span>
                       </td>
                     </tr>

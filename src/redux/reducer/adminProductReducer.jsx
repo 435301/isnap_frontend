@@ -26,6 +26,7 @@ import {
   EDIT_PRODUCT_REQUEST,
   EDIT_PRODUCT_FAILURE,
   EDIT_PRODUCT_SUCCESS,
+  GET_SELLER_SERVICES_FAILURE, GET_SELLER_SERVICES_REQUEST, GET_SELLER_SERVICES_SUCCESS
 } from "../actions/adminProductsAction";
 
 const initialState = {
@@ -36,6 +37,7 @@ const initialState = {
   loading: false,
   error: null,
   reports: [],
+  sellerServices:[],
 };
 
 const adminProductReducer = (state = initialState, action) => {
@@ -50,7 +52,7 @@ const adminProductReducer = (state = initialState, action) => {
     case FETCH_SELLERS_SUCCESS:
       return { ...state, loading: false, marketPlacesellers: action.payload };
     case FETCH_SELLERS_FAILURE:
-
+case GET_SELLER_SERVICES_REQUEST:
       return { ...state, loading: false, error: action.payload };
 
     /* ===== PRODUCTS ===== */
@@ -140,11 +142,14 @@ const adminProductReducer = (state = initialState, action) => {
     }
     case EDIT_PRODUCT_SUCCESS:
       return { ...state, loading: false };
+      case GET_SELLER_SERVICES_SUCCESS:
+        return{ ...state, loading: false, sellerServices: action.payload }
     case BULK_UPLOAD_FAILURE:
     case FETCH_REPORTS_FAILURE:
     case BULK_STATUS_UPDATE_FAILURE:
     case BULK_DELETE_FAILURE:
     case EDIT_PRODUCT_FAILURE:
+      case GET_SELLER_SERVICES_FAILURE:
       return { ...state, loading: false, error: action.payload };
 
     default:
