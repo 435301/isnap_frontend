@@ -8,8 +8,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchServiceTypes } from "../../redux/actions/serviceTypeActions";
 import { addSellerProduct } from "../../redux/actions/sellerProductsAction";
 import Select from "react-select";
+import useResponsiveSidebar from "../../components/useResponsiveSidebar";
 
 const AddSellerProduct = () => {
+     const { windowWidth, isSidebarOpen, setIsSidebarOpen } = useResponsiveSidebar(992);
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -33,20 +35,6 @@ const AddSellerProduct = () => {
     });
 
     const [errors, setErrors] = useState({});
-    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-
-
-    useEffect(() => {
-        const handleResize = () => {
-            setWindowWidth(window.innerWidth);
-            setIsSidebarOpen(window.innerWidth >= 992);
-        };
-        handleResize();
-        window.addEventListener("resize", handleResize);
-        return () => window.removeEventListener("resize", handleResize);
-    }, []);
-
     const handleToggleSidebar = () => setIsSidebarOpen((prev) => !prev);
 
     const handleChange = (e) => {

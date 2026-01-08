@@ -11,9 +11,10 @@ import EditWingModal from "../components/Modal/EditWingModal";
 import ViewWingModal from "../components/Modal/ViewWingModal";
 import { deleteWing, fetchWings, updateWing } from "../../redux/actions/wingAction";
 import PaginationComponent from "../../common/pagination";
+import useResponsiveSidebar from "../../components/useResponsiveSidebar";
 
 const ManageWings = () => {
-    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+     const { windowWidth, isSidebarOpen, setIsSidebarOpen } = useResponsiveSidebar(992);
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("");
     const [showEditModal, setShowEditModal] = useState(false);
@@ -22,7 +23,6 @@ const ManageWings = () => {
     const [deleteId, setDeleteId] = useState(null);
     const [selectedWing, setSelectedWing] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
-    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
     const dispatch = useDispatch();
     const {
         wings = [],
@@ -32,15 +32,6 @@ const ManageWings = () => {
     } = useSelector((state) => state.wings || {});
     console.log('wings', wings)
 
-    useEffect(() => {
-        const handleResize = () => {
-            setWindowWidth(window.innerWidth);
-            setIsSidebarOpen(window.innerWidth >= 992);
-        };
-        handleResize();
-        window.addEventListener("resize", handleResize);
-        return () => window.removeEventListener("resize", handleResize);
-    }, []);
     useEffect(() => {
         dispatch(fetchWings({ page: currentPage, search: searchTerm, showStatus: statusFilter }));
     }, [dispatch, currentPage, searchTerm, statusFilter]);

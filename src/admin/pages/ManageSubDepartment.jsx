@@ -21,9 +21,10 @@ import ViewSubDepartmentModal from "../components/Modal/ViewSubDepartmentModal";
 import PaginationComponent from "../../common/pagination";
 import { fetchWings } from "../../redux/actions/wingAction";
 import { deleteSubDepartment, fetchSubDepartments, updateSubDepartment } from "../../redux/actions/subDepartmentAction";
+import useResponsiveSidebar from "../../components/useResponsiveSidebar";
 
 const ManageSubDepartments = () => {
-    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+     const { windowWidth, isSidebarOpen, setIsSidebarOpen } = useResponsiveSidebar(992);
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("");
     const [showEditModal, setShowEditModal] = useState(false);
@@ -32,7 +33,6 @@ const ManageSubDepartments = () => {
     const [deleteId, setDeleteId] = useState(null);
     const [selectedSubDepartment, setSelectedSubDepartment] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
-    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
     const dispatch = useDispatch();
     const {
         subDepartments = [],
@@ -44,16 +44,6 @@ const ManageSubDepartments = () => {
     const { departments = [] } = useSelector((state) => state.department);
     const { wings = [] } = useSelector((state) => state.wings || {});
 
-
-    useEffect(() => {
-        const handleResize = () => {
-            setWindowWidth(window.innerWidth);
-            setIsSidebarOpen(window.innerWidth >= 992);
-        };
-        handleResize();
-        window.addEventListener("resize", handleResize);
-        return () => window.removeEventListener("resize", handleResize);
-    }, []);
     useEffect(() => {
         dispatch(fetchSubDepartments({
             search: searchTerm,

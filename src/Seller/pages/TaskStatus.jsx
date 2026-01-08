@@ -4,12 +4,12 @@ import Navbar from "../components/SellerNavbar";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { Link } from 'react-router-dom';
+import useResponsiveSidebar from "../../components/useResponsiveSidebar";
 
 const TaskStatus = () => {
+     const { windowWidth, isSidebarOpen, setIsSidebarOpen } = useResponsiveSidebar(992);
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("");
-    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
     const [tasks] = useState([
         {
@@ -93,16 +93,6 @@ const getStatusBadge = (status) => {
             statusFilter === "" || task.status === statusFilter;
         return matchesSearch && matchesStatus;
     });
-
-    useEffect(() => {
-        const handleResize = () => {
-            setWindowWidth(window.innerWidth);
-            setIsSidebarOpen(window.innerWidth >= 992);
-        };
-        handleResize();
-        window.addEventListener("resize", handleResize);
-        return () => window.removeEventListener("resize", handleResize);
-    }, []);
 
     const handleToggleSidebar = () => {
         setIsSidebarOpen(!isSidebarOpen);

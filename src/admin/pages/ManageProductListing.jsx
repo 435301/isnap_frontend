@@ -19,9 +19,9 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import PaginationComponent from "../../common/pagination";
+import useResponsiveSidebar from "../../components/useResponsiveSidebar";
 
 const ManageProducts = () => {
-    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("");
     const [showEditModal, setShowEditModal] = useState(false);
@@ -31,7 +31,7 @@ const ManageProducts = () => {
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
-    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+     const { windowWidth, isSidebarOpen, setIsSidebarOpen } = useResponsiveSidebar(992);
 
     const dispatch = useDispatch();
     const {
@@ -41,17 +41,6 @@ const ManageProducts = () => {
         successMessage = null,
         totalPages = 1,
     } = useSelector((state) => state.product || {});
-
-    // Handle responsive sidebar
-    useEffect(() => {
-        const handleResize = () => {
-            setWindowWidth(window.innerWidth);
-            setIsSidebarOpen(window.innerWidth >= 992);
-        };
-        handleResize();
-        window.addEventListener("resize", handleResize);
-        return () => window.removeEventListener("resize", handleResize);
-    }, []);
 
     // Fetch products
     useEffect(() => {

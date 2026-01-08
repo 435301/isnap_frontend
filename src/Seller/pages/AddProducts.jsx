@@ -4,30 +4,14 @@ import Navbar from "../components/SellerNavbar";
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { Link } from "react-router-dom";
+import useResponsiveSidebar from "../../components/useResponsiveSidebar";
 
 const AddProducts = () => {
-    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-
+  const { windowWidth, isSidebarOpen, setIsSidebarOpen } = useResponsiveSidebar(992);
     const [category, setCategory] = useState("");
     const [file, setFile] = useState(null);
     const [successMessage, setSuccessMessage] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
-
-    // Sidebar responsive behavior
-    useEffect(() => {
-        const handleResize = () => {
-            setWindowWidth(window.innerWidth);
-            setIsSidebarOpen(window.innerWidth >= 992);
-        };
-        handleResize();
-        window.addEventListener("resize", handleResize);
-        return () => window.removeEventListener("resize", handleResize);
-    }, []);
-
-    const handleToggleSidebar = () => {
-        setIsSidebarOpen(!isSidebarOpen);
-    };
 
     // Handle file selection & validation
     const handleFileChange = (e) => {
