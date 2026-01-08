@@ -147,7 +147,7 @@ const ManageOrders = () => {
                     }}>
                     <option value="">Select Marketplace</option>
                     {serviceTypes?.map((marketplace) => (
-                      <option key={marketplace?.id} value={marketplace?.marketPlaceId}>{marketplace?.serviceType}</option>
+                      <option key={marketplace?.id} value={marketplace?.id}>{marketplace?.serviceType}</option>
                     ))}
                   </select>
                 </div>

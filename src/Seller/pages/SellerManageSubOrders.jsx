@@ -25,8 +25,8 @@ const SellerManageSubOrders = () => {
   const [toDate, setToDate] = useState(null);
   const [selectedOrders, setSelectedOrders] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [currentPage, setCurrentPage] = useState("");
-  const [marketPlaceId, setMarketPlaceId] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [marketPlaceId, setMarketPlaceId] = useState(0);
   const [sellerId, setSellerId] = useState("");
   const [orderId, setOrderId] = useState(0);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -145,7 +145,7 @@ const SellerManageSubOrders = () => {
                     }}>
                     <option value="">Select Marketplace</option>
                     {serviceTypes?.map((marketplace) => (
-                      <option key={marketplace?.id} value={marketplace?.marketPlaceId}>{marketplace?.serviceType}</option>
+                      <option key={marketplace?.id} value={marketplace?.id}>{marketplace?.serviceType}</option>
                     ))}
                   </select>
                 </div>
