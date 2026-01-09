@@ -39,6 +39,7 @@ const Sidebar = ({ isOpen }) => {
         "/manage-lead-source",
         "/manage-document-category",
         "/manage-document-type",
+        "/manage-issue-types",
       ],
       serviceTypes: [
         "/manage-service-types",
@@ -258,6 +259,14 @@ const Sidebar = ({ isOpen }) => {
               >
                 Document Type
               </Link>
+               <Link
+                to="/manage-issue-type"
+                className={`dropdown-item ${isLinkActive(
+                  "/manage-issue-type"
+                )}`}
+              >
+                Issue Type
+              </Link>
             </div>
           </div>
 
@@ -469,49 +478,7 @@ const Sidebar = ({ isOpen }) => {
             </div>
           </div>
 
-          {/* Tasks */}
-          {menusToShow.includes("tasks") && (
-            <div
-              className={`nav-item dropdown ${
-                isDropdownActive("tasks") ? "show" : ""
-              }`}
-            >
-              <a
-                href="#!"
-                className={`nav-link dropdown-toggle ${
-                  isDropdownActive("tasks") ? "active" : ""
-                }`}
-                onClick={() => handleDropdownToggle("tasks")}
-              >
-                <i className="bi bi-list-check me-2"></i>
-                {isOpen && <span>Tasks</span>}
-              </a>
-              <div
-                className={`dropdown-menu bg-transparent border-0 ${
-                  isDropdownActive("tasks") ? "show" : ""
-                }`}
-              >
-                <Link
-                  to="/manage-task"
-                  className={`dropdown-item ${isLinkActive("/manage-task")}`}
-                >
-                  Manage Task
-                </Link>
-                <Link
-                  to="/create-task"
-                  className={`dropdown-item ${isLinkActive("/create-task")}`}
-                >
-                  Create Task
-                </Link>
-                <Link
-                  to="/rejected-tasks"
-                  className={`dropdown-item ${isLinkActive("/rejected-tasks")}`}
-                >
-                  Rejected Task
-                </Link>
-              </div>
-            </div>
-          )}
+    
           {/* Products */}
           <div
             className={`nav-item dropdown ${
