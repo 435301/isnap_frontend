@@ -66,13 +66,13 @@ const SellerSidebar = ({ isOpen }) => {
           </Link>
 
           {/* Tasks */}
-          <Link
+          {/* <Link
             to="/seller/task"
             className={`nav-item nav-link ${isLinkActive("/seller/task")}`}
           >
             <i className="bi bi-list-task me-2"></i>
             {isOpen && <span>Tasks</span>}
-          </Link>
+          </Link> */}
 
           {/* Business Info */}
           <Link

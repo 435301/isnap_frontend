@@ -1,5 +1,5 @@
 const getAuthHeaders = (isFormData = false) => {
-  const token = localStorage.getItem("authToken") || localStorage.getItem("sellerToken") ;
+  const token = localStorage.getItem("authToken") ;
   if (!token) return {};
   return {
     headers: {

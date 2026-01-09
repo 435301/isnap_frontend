@@ -37,7 +37,7 @@ export const SellerRoute = ({ children }) => {
   console.log("SellerRoute - Token:", token, "seller:", seller); // Debug
   if (!token || !isTokenValid(token)) {
     //  Clear invalid token
-    localStorage.removeItem("sellerToken");
+    localStorage.removeItem("authToken");
     localStorage.removeItem("seller");
     return <Navigate to="/seller/login" replace />;
   };

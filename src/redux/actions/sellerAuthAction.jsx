@@ -30,7 +30,7 @@ export const businessLogin = (credentials,navigate) => async (dispatch) => {
     const { token, seller } = response.data;
 
     // Save token in localStorage for persistence
-    localStorage.setItem("sellerToken", token);
+    localStorage.setItem("authToken", token);
     localStorage.setItem("seller", JSON.stringify(seller));
     dispatch({
       type: BUSINESS_LOGIN_SUCCESS,
@@ -114,7 +114,7 @@ export const businessResetPassword = (identifier, newPassword) => async (dispatc
 
 // LOGOUT
 export const businessLogout = () => (dispatch) => {
-  localStorage.removeItem("sellerToken");
+  localStorage.removeItem("authToken");
   localStorage.removeItem("seller");
   dispatch({ type: BUSINESS_LOGOUT });
 };

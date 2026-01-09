@@ -17,7 +17,7 @@ import {
 const initialState = {
   loading: false,
   seller: JSON.parse(localStorage.getItem("seller")) || null,
-  token: localStorage.getItem("sellerToken") || null,
+  token: localStorage.getItem("authToken") || null,
   otp: null,
   message: "",
   error: null,

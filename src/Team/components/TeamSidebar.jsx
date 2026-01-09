@@ -106,47 +106,47 @@ const TeamSidebar = ({ isOpen }) => {
           </Link>
 
           {/* Reports Dropdown */}
-          <div
-            className={`nav-item dropdown ${
-              isDropdownActive("reports") ? "show" : ""
-            }`}
-          >
-            <a
-              href="#"
-              className={`nav-link dropdown-toggle ${
-                isDropdownActive("reports") ? "active" : ""
-              }`}
-              onClick={(e) => {
-                e.preventDefault();
-                handleDropdownToggle("reports");
-              }}
-            >
-              <i className="bi bi-bar-chart me-2"></i>
-              {isOpen && <span>Reports</span>}
-            </a>
-            <div
-              className={`dropdown-menu bg-transparent border-0 ${
+            {/* <div
+              className={`nav-item dropdown ${
                 isDropdownActive("reports") ? "show" : ""
               }`}
             >
-              <Link
-                to="/team/create-report"
-                className={`dropdown-item ${isLinkActive(
-                  "/team/create-report"
-                )}`}
+              <a
+                href="#"
+                className={`nav-link dropdown-toggle ${
+                  isDropdownActive("reports") ? "active" : ""
+                }`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleDropdownToggle("reports");
+                }}
               >
-                Create Report
-              </Link>
-              <Link
-                to="/team/manage-reports"
-                className={`dropdown-item ${isLinkActive(
-                  "/team/manage-reports"
-                )}`}
+                <i className="bi bi-bar-chart me-2"></i>
+                {isOpen && <span>Reports</span>}
+              </a>
+              <div
+                className={`dropdown-menu bg-transparent border-0 ${
+                  isDropdownActive("reports") ? "show" : ""
+                }`}
               >
-                Manage Reports
-              </Link>
-            </div>
-          </div>
+                <Link
+                  to="/team/create-report"
+                  className={`dropdown-item ${isLinkActive(
+                    "/team/create-report"
+                  )}`}
+                >
+                  Create Report
+                </Link>
+                <Link
+                  to="/team/manage-reports"
+                  className={`dropdown-item ${isLinkActive(
+                    "/team/manage-reports"
+                  )}`}
+                >
+                  Manage Reports
+                </Link>
+              </div>
+            </div> */}
 
           <Link
             to="/team/team-notification"
