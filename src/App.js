@@ -152,13 +152,10 @@ import SellerManageOrders from "./Seller/pages/SellerManageOrders.jsx";
 import SellerManageSubOrders from "./Seller/pages/SellerManageSubOrders.jsx";
 import SellerAddOrder from "./Seller/pages/SellerAddOrder.jsx";
 import SellerAddSubOrder from "./Seller/pages/SellerAddSubOrder.jsx";
-<<<<<<< HEAD
 import SellerManageSupport from "./Seller/pages/SellerManageSupport.jsx";
 import SellerAddSupport from "./Seller/pages/SellerAddSupport.jsx";
-=======
 import ManageIssueType from "./admin/pages/ManageIssueType.jsx";
 import AddIssueType from "./admin/pages/AddIssueType.jsx";
->>>>>>> 263b00eedde8798386608f2c4d64e81e1a02b3b0
 
 function App() {
   return (

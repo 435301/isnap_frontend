@@ -38,7 +38,7 @@ const AddIssueType = () => {
     e.preventDefault();
     const validationErrors = {};
     if (!formData.title.trim())
-      validationErrors.issueType = " Issue Type is required.";
+      validationErrors.title = " Issue Type is required.";
     if (formData.status === "")
       validationErrors.status = "Status is required.";
 

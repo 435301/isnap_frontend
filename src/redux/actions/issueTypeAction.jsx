@@ -36,7 +36,6 @@ export const createIssueType = (payload) => async (dispatch) => {
       payload: data.message,
     });
     toast.success(data.message);
-    dispatch(fetchIssueType());
     return data;
   } catch (error) {
     dispatch({
@@ -51,10 +50,10 @@ export const createIssueType = (payload) => async (dispatch) => {
 export const fetchIssueType = (filters) => async (dispatch) => {
   dispatch({ type: FETCH_ISSUE_TYPES_REQUEST });
   try {
-    const { data } = await axios.post(`${BASE_URL}/issueType/list`, filters, getAuthHeaders() );
+    const  data  = await axios.post(`${BASE_URL}/issueType/list`, filters, getAuthHeaders() );
     dispatch({
       type: FETCH_ISSUE_TYPES_SUCCESS,
-      payload: data.data,
+      payload: data.data.data,
     });
   } catch (error) {
     dispatch({
@@ -91,7 +90,6 @@ export const updateIssueType = (id, payload) => async (dispatch) => {
       payload: data.message,
     });
     toast.success(data.message);
-    dispatch(fetchIssueType());
     return data;
   } catch (error) {
     dispatch({

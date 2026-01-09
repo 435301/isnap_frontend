@@ -13,7 +13,7 @@ const EditIssueTypeOffcanvas = ({ show, handleClose, issueType, onSave }) => {
         if (issueType) {
             setFormData({
                 title: issueType.issueTypeTitle || "",
-                status: issueType.status ? "Active" : "Inactive",
+                status: issueType.status ,
             });
         }
     }, [issueType]);
@@ -22,7 +22,7 @@ const EditIssueTypeOffcanvas = ({ show, handleClose, issueType, onSave }) => {
         const updated = {
             id: issueType.id,
             title: formData.title,
-            status: formData.status === "Active" ? 1 : 0,
+            status: formData.status,
         };
         onSave(updated);
         handleClose();
@@ -62,8 +62,8 @@ const EditIssueTypeOffcanvas = ({ show, handleClose, issueType, onSave }) => {
                                 setFormData({ ...formData, status: e.target.value })
                             }
                         >
-                            <option value="Active">Active</option>
-                            <option value="Inactive">Inactive</option>
+                            <option value={1}>Active</option>
+                            <option value={0}>Inactive</option>
                         </Form.Select>
                     </Form.Group>
 

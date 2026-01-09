@@ -5,21 +5,20 @@ import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import DeleteConfirmationModal from "../components/Modal/DeleteConfirmationModal";
 import PaginationComponent from "../../common/pagination";
-import { deleteIssueType, fetchIssueType } from "../../redux/actions/issueTypeAction";
+import { deleteIssueType, fetchIssueType, updateIssueType } from "../../redux/actions/issueTypeAction";
 import ViewIssueTypeModal from "../components/Modal/ViewIssueTypeModal";
 import EditIssueTypeOffcanvas from "../components/Modal/EditIssueTypeModal";
 
 const ManageIssueType = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 992);
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState(null);
+  const [statusFilter, setStatusFilter] = useState("");
   const [showViewModal, setShowViewModal] = useState(false);
   const [showEditOffcanvas, setShowEditOffcanvas] = useState(false);
   const [selectedIssueType, setSelectedIssueType] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [doccatid, setDoccatid] = useState("");
 
   const dispatch = useDispatch();
   const { issueTypes, loading, error, totalPages, limit } = useSelector((state) => state.issueTypes);
@@ -28,8 +27,7 @@ const ManageIssueType = () => {
     dispatch(fetchIssueType({
       search: searchTerm,
       page: currentPage,
-      showStatus: statusFilter === null ? "" : statusFilter,
-      limit: limit,
+      showStatus: statusFilter,
     }));
   }, [dispatch, currentPage, searchTerm, statusFilter]);
 
@@ -37,20 +35,20 @@ const ManageIssueType = () => {
 
   const handleRefresh = () => {
     setSearchTerm("");
-    setStatusFilter(null);
-    setCurrentPage(1);
-  };
-  const handleStatusChange = (e) => {
-    const value = e.target.value;
-    setStatusFilter(value === "" ? null : Number(value));
+    setStatusFilter("");
     setCurrentPage(1);
   };
 
-  const handleSaveChanges = async (updatedIssueType) => {
+  const handleSaveChanges = async (data) => {
     try {
-      await dispatch(updatedIssueType(updatedIssueType.id, updatedIssueType));
+      await dispatch(updateIssueType(data.id, data));
       setShowEditOffcanvas(false);
       setSelectedIssueType(null);
+      dispatch(fetchIssueType({
+      search: searchTerm,
+      page: currentPage,
+      showStatus: statusFilter,
+    }));
     } catch (err) {
       console.log(err);
     }
@@ -65,6 +63,11 @@ const ManageIssueType = () => {
     await dispatch(deleteIssueType(deleteId));
     setShowDeleteModal(false);
     setDeleteId(null);
+     dispatch(fetchIssueType({
+      search: searchTerm,
+      page: currentPage,
+      showStatus: statusFilter,
+    }));
   };
 
 
@@ -94,18 +97,19 @@ const ManageIssueType = () => {
                     className="form-control border-0"
                     placeholder="Search by issue Type"
                     value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onChange={(e) =>{ setSearchTerm(e.target.value); setCurrentPage(1)}}
                   />
                 </div>
                 <div className="col-md-3">
-                  <select
-                    className="form-select"
-                    value={statusFilter === null ? "" : statusFilter}
-                    onChange={handleStatusChange}
-                  >
-                    <option value="">All</option>
-                    <option value="1">Active</option>
-                    <option value="0">Inactive</option>
+                 <select className="form-select me-2"
+                    value={statusFilter}
+                    onChange={(e) => {
+                      setStatusFilter(Number(e.target.value));
+                      setCurrentPage(1);
+                    }}>
+                    <option value="">Select Status</option>
+                    <option value={1}>Active</option>
+                    <option value={0}>Inactive</option>
                   </select>
                 </div>
               
