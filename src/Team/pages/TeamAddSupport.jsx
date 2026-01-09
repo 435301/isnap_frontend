@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import Sidebar from "../components/Sidebar";
-import Navbar from "../components/Navbar";
+import Sidebar from "../components/TeamSidebar";
+import Navbar from "../components/TeamNavbar";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { ToastContainer } from "react-toastify";
@@ -101,7 +101,7 @@ const AddProductListing = () => {
           {/* Header */}
           <div className="bg-white p-3 rounded shadow-sm mb-3 d-flex justify-content-between align-items-center">
             <h5 className="m-0">Create Support Ticket</h5>
-            <Link to="/support" className="btn btn-outline-primary">
+            <Link to="/team/manage-support" className="btn btn-outline-primary">
               <i className="bi bi-arrow-left me-1"></i> Manage Support
             </Link>
           </div>

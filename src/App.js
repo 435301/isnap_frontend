@@ -72,7 +72,8 @@ import TeamLastestUpdates from "./Team/pages/TeamLastestUpdates";
 import TaskSummary from "./Team/pages/TaskSummary";
 import TeamNotifications from "./Team/pages/TeamNotifications";
 import ChangePasswordTeam from "./Team/pages/ChangePasswordTeam";
-
+import TeamManageSupport from "./Team/pages/TeamManageSupport";
+import TeamAddSupport from "./Team/pages/TeamAddSupport";
 // Seller Pages
 import SellerDashboard from "./Seller/pages/Dashboard";
 import AddProducts from "./Seller/pages/AddProducts";
@@ -151,6 +152,8 @@ import SellerManageOrders from "./Seller/pages/SellerManageOrders.jsx";
 import SellerManageSubOrders from "./Seller/pages/SellerManageSubOrders.jsx";
 import SellerAddOrder from "./Seller/pages/SellerAddOrder.jsx";
 import SellerAddSubOrder from "./Seller/pages/SellerAddSubOrder.jsx";
+import SellerManageSupport from "./Seller/pages/SellerManageSupport.jsx";
+import SellerAddSupport from "./Seller/pages/SellerAddSupport.jsx";
 
 function App() {
   return (
@@ -794,6 +797,22 @@ function App() {
           }
         />
         <Route
+          path="/team/add-support"
+          element={
+            <TeamRoute>
+              <TeamAddSupport />
+            </TeamRoute>
+          }
+        />
+        <Route
+          path="/team/manage-support"
+          element={
+            <TeamRoute>
+              <TeamManageSupport />
+            </TeamRoute>
+          }
+        />
+        <Route
           path="/team/change-password"
           element={
             <TeamRoute>
@@ -817,6 +836,22 @@ function App() {
           element={
             <SellerRoute>
               <AddProducts />
+            </SellerRoute>
+          }
+        />
+        <Route
+          path="/seller/add-support"
+          element={
+            <SellerRoute>
+              <SellerAddSupport />
+            </SellerRoute>
+          }
+        />
+        <Route
+          path="/seller/manage-support"
+          element={
+            <SellerRoute>
+              <SellerManageSupport />
             </SellerRoute>
           }
         />
@@ -950,7 +985,7 @@ function App() {
           }
         />
 
-          <Route
+        <Route
           path="/seller/manage-orders"
           element={
             <SellerRoute>
@@ -959,7 +994,7 @@ function App() {
           }
         />
 
-          <Route
+        <Route
           path="/seller/manage-sub-orders"
           element={
             <SellerRoute>
@@ -968,7 +1003,7 @@ function App() {
           }
         />
 
-          <Route
+        <Route
           path="/seller/add-order"
           element={
             <SellerRoute>
@@ -977,7 +1012,7 @@ function App() {
           }
         />
 
-         <Route
+        <Route
           path="/seller/edit-sub-order/:id"
           element={
             <SellerRoute>
@@ -986,7 +1021,7 @@ function App() {
           }
         />
 
-          <Route
+        <Route
           path="/seller/add-sub-order"
           element={
             <SellerRoute>

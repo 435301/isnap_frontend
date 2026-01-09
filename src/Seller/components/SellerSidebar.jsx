@@ -86,7 +86,6 @@ const SellerSidebar = ({ isOpen }) => {
             {isOpen && <span>Business Details</span>}
           </Link>
 
-
           {/*  MOU Dropdown */}
           <div className={`nav-item ${isLinkActive("/seller/mou-1")}`}>
             <Link to="/seller/mou-1" className="nav-link">
@@ -113,21 +112,24 @@ const SellerSidebar = ({ isOpen }) => {
           </div>
           {/* Products */}
           <div
-            className={`nav-item dropdown ${isDropdownActive("products") ? "show" : ""
-              }`}
+            className={`nav-item dropdown ${
+              isDropdownActive("products") ? "show" : ""
+            }`}
           >
             <a
               href="#!"
-              className={`nav-link dropdown-toggle ${isDropdownActive("products") ? "active" : ""
-                }`}
+              className={`nav-link dropdown-toggle ${
+                isDropdownActive("products") ? "active" : ""
+              }`}
               onClick={() => handleDropdownToggle("products")}
             >
               <i className="bi bi-box-seam me-2"></i>
               {isOpen && <span>Products</span>}
             </a>
             <div
-              className={`dropdown-menu bg-transparent border-0 ${isDropdownActive("products") ? "show" : ""
-                }`}
+              className={`dropdown-menu bg-transparent border-0 ${
+                isDropdownActive("products") ? "show" : ""
+              }`}
             >
               <Link
                 to="/seller/add-product"
@@ -178,13 +180,15 @@ const SellerSidebar = ({ isOpen }) => {
 
           {/* orders */}
           <div
-            className={`nav-item dropdown ${isDropdownActive("orders") ? "show" : ""
-              }`}
+            className={`nav-item dropdown ${
+              isDropdownActive("orders") ? "show" : ""
+            }`}
           >
             <a
               href="#!"
-              className={`nav-link dropdown-toggle ${isDropdownActive("orders") ? "active" : ""
-                }`}
+              className={`nav-link dropdown-toggle ${
+                isDropdownActive("orders") ? "active" : ""
+              }`}
               onClick={() => handleDropdownToggle("orders")}
             >
               <i className="bi bi-receipt me-2"></i>
@@ -192,8 +196,9 @@ const SellerSidebar = ({ isOpen }) => {
             </a>
 
             <div
-              className={`dropdown-menu bg-transparent border-0 ${isDropdownActive("orders") ? "show" : ""
-                }`}
+              className={`dropdown-menu bg-transparent border-0 ${
+                isDropdownActive("orders") ? "show" : ""
+              }`}
             >
               {[
                 { path: "/seller/manage-orders", label: "Orders" },
@@ -209,6 +214,15 @@ const SellerSidebar = ({ isOpen }) => {
               ))}
             </div>
           </div>
+          <Link
+            to="/seller/manage-support"
+            className={`nav-item nav-link ${isLinkActive(
+              "/seller/manage-support"
+            )}`}
+          >
+            <i className="bi bi-key me-2"></i>
+            {isOpen && <span>Support</span>}
+          </Link>
           {/* Change Password */}
           <Link
             to="/seller/change-password"

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import Sidebar from "../components/Sidebar";
-import Navbar from "../components/Navbar";
+import Sidebar from "../components/TeamSidebar";
+import Navbar from "../components/TeamNavbar";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { Link } from "react-router-dom";
@@ -88,7 +88,7 @@ const ManageProducts = () => {
 
                 {/* Right: Add Support Button */}
                 <div className="col-md-6 text-md-end mt-2 mt-md-0">
-                  <Link to="/add-support" className="btn btn-new-lead">
+                  <Link to="/team/add-support" className="btn btn-new-lead">
                     <i className="bi bi-plus-circle me-1"></i> Add Support
                   </Link>
                 </div>

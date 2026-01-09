@@ -8,7 +8,7 @@ import { useDispatch } from "react-redux";
 const TeamSidebar = ({ isOpen }) => {
   const location = useLocation();
   const [activeDropdown, setActiveDropdown] = useState(null);
-    const navigate = useNavigate();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const dropdownRoutes = {
@@ -42,11 +42,10 @@ const TeamSidebar = ({ isOpen }) => {
     );
   };
 
-    const handleLogout = () => {
-      dispatch(logoutUser());
-      navigate("/login");
-    };
-  
+  const handleLogout = () => {
+    dispatch(logoutUser());
+    navigate("/login");
+  };
 
   return (
     <div
@@ -96,7 +95,7 @@ const TeamSidebar = ({ isOpen }) => {
             {isOpen && <span>Latest Updates</span>}
           </Link>
 
-            <Link
+          <Link
             to="/team/manage-sellers"
             className={`nav-item nav-link ${isLinkActive(
               "/team/manage-sellers"
@@ -159,7 +158,14 @@ const TeamSidebar = ({ isOpen }) => {
             {isOpen && <span>Notification</span>}
           </Link>
 
-
+          {/* Support */}
+          <Link
+            to="/team/manage-support"
+            className={`nav-item nav-link ${isLinkActive("/team/manage-support")}`}
+          >
+            <i className="bi bi-headset me-2"></i>
+            {isOpen && <span>Support</span>}
+          </Link>
           <Link
             to="/team/team-documents"
             className={`nav-item nav-link ${isLinkActive(
@@ -186,15 +192,20 @@ const TeamSidebar = ({ isOpen }) => {
               "/logout"
             )}`}
           > */}
-            <button
-              onClick={handleLogout}
-              className="nav-item nav-link text-danger"
-              style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}
-            >
-              <i className="bi bi-box-arrow-right me-2"></i>
-              {isOpen && <span>Logout</span>}
-            </button>
-         
+          <button
+            onClick={handleLogout}
+            className="nav-item nav-link text-danger"
+            style={{
+              background: "none",
+              border: "none",
+              padding: 0,
+              cursor: "pointer",
+            }}
+          >
+            <i className="bi bi-box-arrow-right me-2"></i>
+            {isOpen && <span>Logout</span>}
+          </button>
+
           {/* </Link> */}
         </div>
       </nav>
