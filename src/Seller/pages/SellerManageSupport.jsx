@@ -229,7 +229,7 @@ const ManageSellerSupport = () => {
             </div>
             <PaginationComponent
               currentPage={currentPage}
-              totalPages={pagination.total}
+              totalPages={pagination.totalPages}
               onPageChange={setCurrentPage}
             />
             {showDeleteModal && (
