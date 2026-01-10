@@ -178,12 +178,7 @@ const ManageServicesCategory = () => {
                   </select>
                 </div>
                 <div className="col-md-2 d-flex">
-                  <button
-                    className="btn btn-success text-white me-3"
-                    onClick={() => setCurrentPage(1)}
-                  >
-                    <i className="bi bi-search"></i>
-                  </button>
+ 
                   <button
                     className="btn btn-light border-1"
                     onClick={handleRefresh}

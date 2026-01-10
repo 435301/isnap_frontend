@@ -92,9 +92,7 @@ const ManageProducts = () => {
               </div>
 
               <div className="col-lg-2 d-flex">
-                <button className="btn btn-success me-2">
-                  <i className="bi bi-search"></i>
-                </button>
+
                 <button className="btn btn-light border">
                   <i className="bi bi-arrow-clockwise"></i>
                 </button>

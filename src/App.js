@@ -156,6 +156,8 @@ import SellerManageSupport from "./Seller/pages/SellerManageSupport.jsx";
 import SellerAddSupport from "./Seller/pages/SellerAddSupport.jsx";
 import ManageIssueType from "./admin/pages/ManageIssueType.jsx";
 import AddIssueType from "./admin/pages/AddIssueType.jsx";
+import ManageSupportStatus from "./admin/pages/ManageSupportStatus.jsx";
+import AddSupportStatus from "./admin/pages/AddSupportStatus.jsx";
 
 function App() {
   return (
@@ -738,6 +740,24 @@ function App() {
           element={
             <AdminRoute>
               <AddIssueType />
+            </AdminRoute>
+          }
+        />
+
+         <Route
+          path="/manage-support-status"
+          element={
+            <AdminRoute>
+              <ManageSupportStatus />
+            </AdminRoute>
+          }
+        />
+
+           <Route
+          path="/add-support-status"
+          element={
+            <AdminRoute>
+              <AddSupportStatus />
             </AdminRoute>
           }
         />

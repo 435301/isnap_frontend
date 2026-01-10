@@ -40,6 +40,7 @@ const Sidebar = ({ isOpen }) => {
         "/manage-document-category",
         "/manage-document-type",
         "/manage-issue-types",
+        "/manage-support-status"
       ],
       serviceTypes: [
         "/manage-service-types",
@@ -266,6 +267,14 @@ const Sidebar = ({ isOpen }) => {
                 )}`}
               >
                 Issue Type
+              </Link>
+                <Link
+                to="/manage-support-status"
+                className={`dropdown-item ${isLinkActive(
+                  "/manage-support-status"
+                )}`}
+              >
+                Support Status
               </Link>
             </div>
           </div>

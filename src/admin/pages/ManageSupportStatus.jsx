@@ -3,53 +3,56 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
-import EditMarketTypeOffcanvas from "../components/Modal/EditMarketTypeOffcanvas";
-import ViewMarketTypeModal from "../components/Modal/ViewMarketTypeModal";
 import DeleteConfirmationModal from "../components/Modal/DeleteConfirmationModal";
-import { fetchBusinessTypes, deleteBusinessType, updateBusinessType, } from "../../redux/actions/businessTypeAction";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import EditBusinessTypeOffcanvas from "../components/Modal/EditBusinessTypeOffcanvas";
-import ViewBusinessTypeModal from "../components/Modal/ViewBusinessTypeModal";
-import Pagination from "../../common/pagination";
 import PaginationComponent from "../../common/pagination";
+import { deleteIssueType, fetchIssueType, updateIssueType } from "../../redux/actions/issueTypeAction";
+import ViewIssueTypeModal from "../components/Modal/ViewIssueTypeModal";
+import EditIssueTypeOffcanvas from "../components/Modal/EditIssueTypeModal";
+import { deleteSupportStatus, fetchSupportStatus, updateSupportStatus } from "../../redux/actions/supportStatusAction";
 
-const ManageBusinessType = () => {
+const ManageSupportStatus = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 992);
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState(null);
+  const [statusFilter, setStatusFilter] = useState("");
   const [showViewModal, setShowViewModal] = useState(false);
   const [showEditOffcanvas, setShowEditOffcanvas] = useState(false);
-  const [selectedBusinessType, setSelectedBusinessType] = useState(null);
+  const [selectedSupportStatus, setSelectedSupportStatus] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 15;
 
   const dispatch = useDispatch();
-  const { businessTypes, loading, error, totalPages } = useSelector((state) => state.businessTypes);
-  console.log('businessTypes', businessTypes)
+  const { supportStatusList, loading, error, pagination, limit } = useSelector((state) => state.supportStatus);
 
   useEffect(() => {
-    dispatch(fetchBusinessTypes({
+    dispatch(fetchSupportStatus({
       search: searchTerm,
       page: currentPage,
-      limit:itemsPerPage,
-      showStatus: statusFilter === null ? "" : statusFilter
+      showStatus: statusFilter,
     }));
   }, [dispatch, currentPage, searchTerm, statusFilter]);
-
 
   const handleToggleSidebar = () => setIsSidebarOpen((prev) => !prev);
 
   const handleRefresh = () => {
-    setSearchTerm(""); setStatusFilter(null); setCurrentPage(1);
-    dispatch(fetchBusinessTypes({ search: "", page: 1, showStatus: "" }));
-  };
-  const handleStatusChange = (e) => {
-    const value = e.target.value;
-    setStatusFilter(value === "" ? null : Number(value));
+    setSearchTerm("");
+    setStatusFilter("");
     setCurrentPage(1);
+  };
+
+  const handleSaveChanges = async (data) => {
+    try {
+      await dispatch(updateSupportStatus(data.id, data));
+      setShowEditOffcanvas(false);
+      setSelectedSupportStatus(null);
+      dispatch(fetchSupportStatus({
+      search: searchTerm,
+      page: currentPage,
+      showStatus: statusFilter,
+    }));
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const handleDeleteClick = (id) => {
@@ -58,21 +61,16 @@ const ManageBusinessType = () => {
   };
 
   const handleDelete = async () => {
-    await dispatch(deleteBusinessType(deleteId));
+    await dispatch(deleteSupportStatus(deleteId));
     setShowDeleteModal(false);
     setDeleteId(null);
+    dispatch(fetchIssueType({
+      search: searchTerm,
+      page: currentPage,
+      showStatus: statusFilter,
+    }));
   };
 
-  const handleSaveChanges = async (updatedBusinessType) => {
-    try {
-      await dispatch(updateBusinessType(updatedBusinessType.id, updatedBusinessType));
-      setShowEditOffcanvas(false);
-      setSelectedBusinessType(null);
-      dispatch(fetchBusinessTypes());
-    } catch (err) {
-      console.log('error')
-    }
-  };
 
   return (
     <div className="container-fluid position-relative bg-white d-flex p-0">
@@ -83,9 +81,9 @@ const ManageBusinessType = () => {
         <div className="container-fluid px-4 pt-3">
           <div className="row mb-2">
             <div className="bg-white p-3 rounded shadow-sm card-header d-flex justify-content-between align-items-center">
-              <h5 className="form-title m-0">Manage Business Type</h5>
-              <Link to="/add-business-type" className="btn btn-new-lead">
-                <i className="bi bi-plus-circle me-1"></i> Add Business Type
+              <h5 className="form-title m-0">Manage Support Status</h5>
+              <Link to="/add-support-status" className="btn btn-new-lead">
+                <i className="bi bi-plus-circle me-1"></i> Add Support Status
               </Link>
             </div>
           </div>
@@ -98,22 +96,24 @@ const ManageBusinessType = () => {
                   <input
                     type="text"
                     className="form-control border-0"
-                    placeholder="Search by Business Type"
+                    placeholder="Search by support status"
                     value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onChange={(e) =>{ setSearchTerm(e.target.value); setCurrentPage(1)}}
                   />
                 </div>
                 <div className="col-md-3">
-                  <select
-                    className="form-select"
-                    value={statusFilter === null ? "" : statusFilter}
-                    onChange={handleStatusChange}
-                  >
-                    <option value="">All</option>
-                    <option value="1">Active</option>
-                    <option value="0">Inactive</option>
+                 <select className="form-select me-2"
+                    value={statusFilter}
+                    onChange={(e) => {
+                      setStatusFilter(Number(e.target.value));
+                      setCurrentPage(1);
+                    }}>
+                    <option value="">Select Status</option>
+                    <option value={1}>Active</option>
+                    <option value={0}>Inactive</option>
                   </select>
                 </div>
+              
                 <div className="col-md-2  d-flex">
                   <button className="btn btn-light" onClick={handleRefresh}>
                     <i className="bi bi-arrow-clockwise"></i>
@@ -129,40 +129,39 @@ const ManageBusinessType = () => {
             <div className="bg-white p-3 rounded shadow-sm card-header">
               <div className="table-responsive">
                 {loading ? (
-                  <p>Loading business types...</p>
+                  <p>Loading support atatus...</p>
                 ) : (
                   <table className="table align-middle table-striped table-hover">
                     <thead className="table-light">
                       <tr>
                         <th>#</th>
-                        <th>Business Type </th>
+                        <th>Support Status</th>
                         <th>Status</th>
                         <th>Actions</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {businessTypes.length === 0 ? (
+                      {supportStatusList.length === 0 ? (
                         <tr>
-                          <td colSpan="4" className="text-center">No Business Type found.</td>
+                          <td colSpan="6" className="text-center">No Support Status found.</td>
                         </tr>
                       ) : (
-                        businessTypes.map((m, index) => (
+                        supportStatusList.map((m, index) => (
                           <tr key={m.id}>
-                            <td>{index + 1 + (currentPage - 1) * itemsPerPage}</td>
-                            <td>{m.businessType || "-"}</td>
-                            <td><span className={`badge ${m.status ? "bg-success-light text-success" : "bg-danger-light text-danger"}`}>{m.status ? "Active" : "Inactive"}</span></td>
+                            <td>{index + 1}</td>
+                            <td>{m.supportStatusTitle}</td>
+
+                            <td>
+                              <span className={`badge ${m.status ? "bg-success-light text-success" : "bg-danger-light text-danger"}`}>
+                                {m.status === 1 ? "Active" : "Inactive"}
+                              </span>
+                            </td>
                             <td>
                               <div className="d-flex gap-2">
-                                <button className="btn btn-icon btn-view" onClick={() => {
-                                  setSelectedBusinessType(m);
-                                  setShowViewModal(true);
-                                }}>
+                                <button className="btn btn-icon btn-view" onClick={() => { setSelectedSupportStatus(m); setShowViewModal(true); }}>
                                   <i className="bi bi-eye"></i>
                                 </button>
-                                <button className="btn btn-icon btn-edit" onClick={() => {
-                                  setSelectedBusinessType(m);
-                                  setShowEditOffcanvas(true);
-                                }}>
+                                <button className="btn btn-icon btn-edit" onClick={() => { setSelectedSupportStatus(m); setShowEditOffcanvas(true); }}>
                                   <i className="bi bi-pencil-square"></i>
                                 </button>
                                 <button className="btn btn-icon btn-delete" onClick={() => handleDeleteClick(m.id)}>
@@ -177,15 +176,18 @@ const ManageBusinessType = () => {
                   </table>
                 )}
               </div>
+
             </div>
           </div>
+
+          {/* Modals */}
           <PaginationComponent
             currentPage={currentPage}
-            totalPages={totalPages || 1}
+            totalPages={pagination.total}
             onPageChange={setCurrentPage}
           />
-          {showViewModal && <ViewBusinessTypeModal show={showViewModal} handleClose={() => setShowViewModal(false)} businessType={selectedBusinessType} />}
-          {showEditOffcanvas && <EditBusinessTypeOffcanvas show={showEditOffcanvas} handleClose={() => setShowEditOffcanvas(false)} businessType={selectedBusinessType} onSave={handleSaveChanges} />}
+          {showViewModal && <ViewIssueTypeModal show={showViewModal} handleClose={() => setShowViewModal(false) }  supportStatus= {selectedSupportStatus} />}
+          {showEditOffcanvas && <EditIssueTypeOffcanvas show={showEditOffcanvas} handleClose={() => setShowEditOffcanvas(false)} onSave={handleSaveChanges} supportStatus= {selectedSupportStatus}  />}
           {showDeleteModal && (
             <DeleteConfirmationModal
               show={showDeleteModal}
@@ -199,4 +201,4 @@ const ManageBusinessType = () => {
   );
 };
 
-export default ManageBusinessType;
+export default ManageSupportStatus;

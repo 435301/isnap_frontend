@@ -196,9 +196,7 @@ const ManageOrders = () => {
 
                 {/* Actions */}
                 <div className="col-lg-2 col-md-6 col-sm-12 d-flex">
-                  <button className="btn btn-success me-2 ">
-                    <i className="bi bi-search"></i>
-                  </button>
+     
                   <button className="btn btn-light border " onClick={handleRefresh}>
                     <i className="bi bi-arrow-clockwise"></i>
                   </button>

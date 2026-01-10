@@ -133,12 +133,7 @@ const TeamManageLeads = () => {
                   </select>
                 </div>
                 <div className="col-md-2 d-flex">
-                  <button className="btn btn-success text-white me-3" onClick={() => {
-                      setCurrentPage(1);
-                      fetchLeadHistoryData();
-                    }} >
-                    <i className="bi bi-search"></i>
-                  </button>
+
                   <button className="btn btn-light border-1"  onClick={handleReset}>
                     <i className="bi bi-arrow-clockwise"></i>
                   </button>

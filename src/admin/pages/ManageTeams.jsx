@@ -142,7 +142,7 @@ const ManageTeams = () => {
                   </select>
                 </div>
                 <div className="col-md-2 d-flex">
-                  <button className="btn btn-success me-2" onClick={() => dispatch(fetchTeams())}><i className="bi bi-search"></i></button>
+                 
                   <button className="btn btn-light" onClick={handleRefresh}><i className="bi bi-arrow-clockwise"></i></button>
                 </div>
               </div>
