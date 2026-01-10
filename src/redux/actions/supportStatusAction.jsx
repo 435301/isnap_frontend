@@ -35,7 +35,7 @@ export const createSupportStatus = (payload) => async (dispatch) => {
       type: CREATE_SUPPORT_STATUS_SUCCESS,
       payload: res.data.message,
     });
-    toast.success(res.data.message);
+    toast.success(res.data.message|| "Support status created successfully");
     return res;
   } catch (error) {
     dispatch({
@@ -89,7 +89,7 @@ export const updateSupportStatus = (id, payload) => async (dispatch) => {
       type: UPDATE_SUPPORT_STATUS_SUCCESS,
       payload: res.data.message,
     });
-    toast.success(res.data.message);
+    toast.success(res.data.message || "Support status updated successfully");
     return res;
   } catch (error) {
     dispatch({

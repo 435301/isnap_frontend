@@ -5,10 +5,9 @@ import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import DeleteConfirmationModal from "../components/Modal/DeleteConfirmationModal";
 import PaginationComponent from "../../common/pagination";
-import { deleteIssueType, fetchIssueType, updateIssueType } from "../../redux/actions/issueTypeAction";
-import ViewIssueTypeModal from "../components/Modal/ViewIssueTypeModal";
-import EditIssueTypeOffcanvas from "../components/Modal/EditIssueTypeModal";
 import { deleteSupportStatus, fetchSupportStatus, updateSupportStatus } from "../../redux/actions/supportStatusAction";
+import EditSupportStatusOffcanvas from "../components/Modal/EditSupportStatusModal";
+import ViewSupportStatus from "../components/Modal/ViewSupportStatusModal";
 
 const ManageSupportStatus = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 992);
@@ -64,7 +63,7 @@ const ManageSupportStatus = () => {
     await dispatch(deleteSupportStatus(deleteId));
     setShowDeleteModal(false);
     setDeleteId(null);
-    dispatch(fetchIssueType({
+    dispatch(fetchSupportStatus({
       search: searchTerm,
       page: currentPage,
       showStatus: statusFilter,
@@ -186,8 +185,8 @@ const ManageSupportStatus = () => {
             totalPages={pagination.total}
             onPageChange={setCurrentPage}
           />
-          {showViewModal && <ViewIssueTypeModal show={showViewModal} handleClose={() => setShowViewModal(false) }  supportStatus= {selectedSupportStatus} />}
-          {showEditOffcanvas && <EditIssueTypeOffcanvas show={showEditOffcanvas} handleClose={() => setShowEditOffcanvas(false)} onSave={handleSaveChanges} supportStatus= {selectedSupportStatus}  />}
+          {showViewModal && <ViewSupportStatus show={showViewModal} handleClose={() => setShowViewModal(false) }  supportStatus= {selectedSupportStatus} />}
+          {showEditOffcanvas && <EditSupportStatusOffcanvas show={showEditOffcanvas} handleClose={() => setShowEditOffcanvas(false)} onSave={handleSaveChanges} supportStatus= {selectedSupportStatus}  />}
           {showDeleteModal && (
             <DeleteConfirmationModal
               show={showDeleteModal}
