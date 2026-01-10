@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 
 // Fetch teams
 export const fetchTeams =
-  ({ page = 1, search = "" } = {}) =>
+  ({ page = "", search = "" } = {}) =>
   async (dispatch) => {
     try {
       dispatch({ type: "FETCH_TEAMS_REQUEST" });

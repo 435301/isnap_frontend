@@ -1,61 +1,65 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Sidebar from "../components/SellerSidebar";
 import Navbar from "../components/SellerNavbar";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import useResponsiveSidebar from "../../components/useResponsiveSidebar";
+import { useDispatch, useSelector } from "react-redux";
+import { deleteSellerSupport, fetchSellerSupport, fetchSellerSupportById, fetchSellerSupportList } from "../../redux/actions/sellerSupportAction";
+import { fetchIssueType } from "../../redux/actions/issueTypeAction";
+import { fetchSupportStatus } from "../../redux/actions/supportStatusAction";
+import BASE_URL from "../../config/config";
+import PaginationComponent from "../../common/pagination";
+import DeleteConfirmationModal from "../../admin/components/Modal/DeleteConfirmationModal";
 
-const ManageProducts = () => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [windowWidth] = useState(window.innerWidth);
-
+const ManageSellerSupport = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { windowWidth, isSidebarOpen, setIsSidebarOpen } = useResponsiveSidebar(992);
+  const { supports, loading, pagination } = useSelector((state) => state.sellerSupport);
+  const { supportStatusList } = useSelector((state) => state.supportStatus);
+  const { issueTypes } = useSelector((state) => state.issueTypes);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [issueTypeId, setIssueTypeId] = useState("");
+  const [supportStatusId, setSupportStatusId] = useState("");
   const handleToggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
-
-  // ---------------------------
-  // Support / Issue Data
-  // ---------------------------
-  const issues = [
-    {
-      id: 1,
-      issueType: "Technical",
-      subject: "Login not working",
-      description: "Unable to login with valid credentials",
-      attachment: "screenshot.png",
-      seller: "screenshot",
-      team: "Technical",
-
-      Issuestatus: "Pending",
-    },
-    {
-      id: 2,
-      issueType: "Billing",
-      subject: "Invoice mismatch",
-      description: "Incorrect amount shown in invoice",
-      attachment: "",
-      seller: "screenshot",
-      team: "Billing",
-      Issuestatus: "In Progress",
-    },
-    {
-      id: 3,
-      issueType: "General",
-      subject: "Feature request",
-      description: "Need bulk upload option",
-      attachment: "request.pdf",
-      seller: "screenshot",
-      team: "Support",
-      Issuestatus: "Closed",
-    },
-  ];
-
   const [selectedIssues, setSelectedIssues] = useState([]);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
 
-  const handleCheckboxChange = (id) => {
-    setSelectedIssues((prev) =>
-      prev.includes(id) ? prev.filter((pid) => pid !== id) : [...prev, id]
-    );
+  useEffect(() => {
+    dispatch(fetchSellerSupport({ page: currentPage, search: searchTerm, issueTypeId: issueTypeId, supportStatusId: supportStatusId }));
+    dispatch(fetchIssueType({ page: "", search: "", showStatus: "" }));
+    dispatch(fetchSupportStatus({ page: "", search: "", showStatus: "" }));
+  }, [dispatch, currentPage, searchTerm, issueTypeId, supportStatusId]);
+
+
+  const handleRefresh = () => {
+    setSearchTerm("");
+    setIssueTypeId("");
+    setSupportStatusId("");
+    setCurrentPage(1);
+  }
+
+  const handleEdit = (id) => (
+    navigate(`/seller/edit-support/${id}`)
+  );
+
+
+  const handleDeleteClick = (id) => {
+    setDeleteId(id);
+    setShowDeleteModal(true);
   };
 
+  const handleDelete = async () => {
+    await dispatch(deleteSellerSupport(deleteId));
+    dispatch(fetchSellerSupport({ page: currentPage, search: searchTerm, issueTypeId: issueTypeId, supportStatusId: supportStatusId })
+    );
+    setDeleteId(null);
+    setShowDeleteModal(false);
+  }
   return (
     <div className="container-fluid d-flex p-0">
       <Sidebar isOpen={isSidebarOpen} />
@@ -69,8 +73,8 @@ const ManageProducts = () => {
                 ? 250
                 : 95
               : isSidebarOpen
-              ? 220
-              : 0,
+                ? 220
+                : 0,
           transition: "margin-left 0.3s ease",
         }}
       >
@@ -103,57 +107,42 @@ const ManageProducts = () => {
                   <input
                     type="text"
                     className="form-control"
-                    placeholder="Search..."
+                    placeholder="Search by subject..."
+                    value={searchTerm}
+                    onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1) }}
                   />
-                </div>
-
-                {/* Seller */}
-                <div className="col-lg-2 col-md-4 col-sm-6">
-                  <select className="form-select">
-                    <option value="">Select Seller</option>
-                    <option>Seller A</option>
-                    <option>Seller B</option>
-                    <option>Seller C</option>
-                  </select>
-                </div>
-
-                {/* Team */}
-                <div className="col-lg-2 col-md-4 col-sm-6">
-                  <select className="form-select">
-                    <option value="">Select Team</option>
-                    <option>Technical</option>
-                    <option>Billing</option>
-                    <option>Support</option>
-                  </select>
                 </div>
 
                 {/* Issue Type */}
                 <div className="col-lg-2 col-md-4 col-sm-6">
-                  <select className="form-select">
+                  <select className="form-select" value={issueTypeId} onChange={(e) => {
+                    setIssueTypeId(e.target.value); setCurrentPage(1)
+                  }}>
                     <option value="">Issue Type</option>
-                    <option>Technical</option>
-                    <option>Billing</option>
-                    <option>General</option>
-                    <option>Feature Request</option>
+                    {issueTypes.map((issue) => (
+                      <option key={issue.id} value={issue.id}>{issue.issueTypeTitle}</option>
+                    ))}
                   </select>
                 </div>
 
                 {/* Issue Status */}
                 <div className="col-lg-2 col-md-4 col-sm-6">
-                  <select className="form-select">
-                    <option value="">Issue Status</option>
-                    <option>Open</option>
-                    <option>In Progress</option>
-                    <option>Pending</option>
-                    <option>Closed</option>
+                  <select className="form-select" value={supportStatusId} onChange={(e) => {
+                    setSupportStatusId(e.target.value);
+                    setCurrentPage(1);
+                  }} >
+                    <option value="">Support Status</option>
+                    {supportStatusList.map((status) => (
+                      <option key={status.id} value={status.id}>{status.supportStatusTitle}</option>
+                    ))}
                   </select>
                 </div>
 
                 {/* Buttons */}
                 <div className="col-lg-2 col-md-6 col-sm-12 d-flex">
 
-                  <button className="btn btn-light border">
-                    <i className="bi bi-arrow-clockwise"></i>
+                  <button className="btn btn-light border" onClick={handleRefresh}>
+                    <i className="bi bi-arrow-clockwise" ></i>
                   </button>
                 </div>
               </div>
@@ -172,52 +161,84 @@ const ManageProducts = () => {
                       <th>Subject</th>
                       <th>Description</th>
                       <th>Attachments</th>
-                      <th>Seller</th>
-                      <th>Team</th>
-                      <th>Issue Status</th>
+                      <th>Support Status</th>
+                      <th>Actions</th>
                     </tr>
                   </thead>
 
                   <tbody>
-                    {issues.map((issue, index) => (
-                      <tr key={issue.id}>
-                        <td>{index + 1}</td>
-                        <td>{issue.issueType}</td>
-                        <td>{issue.subject}</td>
-                        <td>{issue.description}</td>
-
-                        <td>
-                          {issue.attachment ? (
-                            <a href="#" className="text-primary">
-                              <i className="bi bi-paperclip me-1"></i> View
-                            </a>
-                          ) : (
-                            "-"
-                          )}
-                        </td>
-
-                        <td>{issue.seller}</td>
-                        <td>{issue.team}</td>
-
-                        <td>
-                          <span
-                            className={`badge ${
-                              issue.Issuestatus === "Pending"
-                                ? "bg-danger"
-                                : issue.Issuestatus === "In Progress"
-                                ? "bg-warning text-dark"
-                                : "bg-success"
-                            }`}
-                          >
-                            {issue.Issuestatus}
-                          </span>
+                    {loading ? (
+                      <td colSpan="6" className="text-center text-muted">
+                        loading...
+                      </td>
+                    ) : supports.length === 0 ? (
+                      <tr>
+                        <td colSpan="6" className="text-center text-muted">
+                          No support tickets found
                         </td>
                       </tr>
-                    ))}
+                    ) : (
+                      supports.map((issue, index) => (
+                        <tr key={issue.id}>
+                          <td>{index + 1}</td>
+                          <td>{issue.issueTypeTitle || "-"}</td>
+                          <td>{issue.subject || "-"}</td>
+                          <td>{issue.description || "-"}</td>
+
+                          <td>
+                            {issue.file ? (
+                              <a
+                                href={`${BASE_URL}/${issue.file}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-primary"
+                              >
+                                <i className="bi bi-paperclip me-1"></i> View
+                              </a>
+                            ) : (
+                              "-"
+                            )}
+                          </td>
+                          <td>
+                            <span className={`badge ${issue.supportStatusTitle === "New"
+                                ? "bg-primary"
+                                : issue.supportStatusTitle === "Pending"
+                                  ? "bg-danger"
+                                  : issue.supportStatusTitle === "Closed"
+                                    ? "bg-success"
+                                    : "bg-warning"
+                              }`}> {issue.supportStatusTitle || "-"} </span>
+                          </td>
+                          <td>
+                            <button className="btn btn-icon btn-edit me-1"
+                              onClick={() => handleEdit(issue?.id)}
+                            >
+                              <i className="bi bi-pencil-square"></i>
+                            </button>
+                            <button className="btn btn-icon btn-delete"
+                              onClick={() => handleDeleteClick(issue?.id)}
+                            >
+                              <i className="bi bi-trash"></i>
+                            </button>
+                          </td>
+                        </tr>
+                      )))}
                   </tbody>
                 </table>
               </div>
             </div>
+            <PaginationComponent
+              currentPage={currentPage}
+              totalPages={pagination.total}
+              onPageChange={setCurrentPage}
+            />
+            {showDeleteModal && (
+              <DeleteConfirmationModal
+                show={showDeleteModal}
+                handleClose={() => setShowDeleteModal(false)}
+                handleConfirm={handleDelete}
+              />
+            )}
           </div>
         </div>
       </div>
@@ -225,4 +246,4 @@ const ManageProducts = () => {
   );
 };
 
-export default ManageProducts;
+export default ManageSellerSupport;

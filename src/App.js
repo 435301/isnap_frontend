@@ -886,6 +886,14 @@ function App() {
           }
         />
         <Route
+          path="/seller/edit-support/:id"
+          element={
+            <SellerRoute>
+              <SellerAddSupport />
+            </SellerRoute>
+          }
+        />
+        <Route
           path="/seller/manage-support"
           element={
             <SellerRoute>

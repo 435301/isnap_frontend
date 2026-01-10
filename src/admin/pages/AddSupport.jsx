@@ -101,7 +101,7 @@ const AddProductListing = () => {
           {/* Header */}
           <div className="bg-white p-3 rounded shadow-sm mb-3 d-flex justify-content-between align-items-center">
             <h5 className="m-0">Create Support Ticket</h5>
-            <Link to="/support" className="btn btn-outline-primary">
+            <Link to="/support" className="btn btn-success">
               <i className="bi bi-arrow-left me-1"></i> Manage Support
             </Link>
           </div>
