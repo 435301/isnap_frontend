@@ -186,7 +186,7 @@ const AddProductListing = () => {
 
                 {/* Attachment */}
                 <div className="col-md-4">
-                  <label className="form-label">Attachment size should less than or equal to 5MB</label>
+                  <label className="form-label">Attachment (file size must be less than or equal to 100MB)</label>
                   <input
                     type="file"
                     name="attachment"
@@ -244,7 +244,7 @@ const AddProductListing = () => {
                 {/* Seller */}
                 <div className="col-md-4">
                   <label className="form-label">
-                    Seller <span className="text-danger">*</span>
+                    Seller
                   </label>
                   <select
                     name="sellerId"
@@ -263,7 +263,7 @@ const AddProductListing = () => {
                 {/* Team */}
                 <div className="col-md-4">
                   <label className="form-label">
-                    Team <span className="text-danger">*</span>
+                    Team 
                   </label>
                   <select
                     name="teamId"

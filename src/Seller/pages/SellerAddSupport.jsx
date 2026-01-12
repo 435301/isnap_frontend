@@ -174,7 +174,7 @@ const AddProductListing = () => {
 
                 {/* Attachment */}
                 <div className="col-md-4">
-                  <label className="form-label">Attachment</label>
+                  <label className="form-label">Attachment(file size must be less than or equal to 100MB)</label>
                   <input
                     type="file"
                     name="attachment"
