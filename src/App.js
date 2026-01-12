@@ -282,6 +282,14 @@ function App() {
             </AdminRoute>
           }
         />
+         <Route
+          path="/edit-support/:id"
+          element={
+            <AdminRoute>
+              <AddSupport />
+            </AdminRoute>
+          }
+        />
         <Route
           path="/add-orders"
           element={
