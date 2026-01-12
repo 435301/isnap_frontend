@@ -30,14 +30,6 @@ const SellerNavbar = ({ onToggleSidebar }) => {
           </ul>
         </div>
 
-        <div className="nav-item">
-          <a href="#" className="nav-link"><i className="bi bi-moon fs-5"></i></a>
-        </div>
-
-        <div className="nav-item">
-          <a href="#" className="nav-link"><i className="bi bi-gear fs-5"></i></a>
-        </div>
-
         <div className="nav-item dropdown">
           <a href="#" className="nav-link d-flex align-items-center" data-bs-toggle="dropdown">
             <img className="rounded-circle me-2" src={userImg} alt="user" style={{ width: "40px", height: "40px" }} />
@@ -46,7 +38,6 @@ const SellerNavbar = ({ onToggleSidebar }) => {
             <li className="mb-2 px-2">Welcome!</li>
             <li><a href="#" className="dropdown-item d-flex align-items-center"><i className="bi bi-person me-2"></i> My Account</a></li>
             <li><a href="#" className="dropdown-item d-flex align-items-center"><i className="bi bi-wallet2 me-2"></i> Wallet: <strong className="ms-1">$89.25k</strong></a></li>
-            <li><a href="#" className="dropdown-item d-flex align-items-center"><i className="bi bi-gear me-2"></i> Settings</a></li>
             <li><a href="#" className="dropdown-item d-flex align-items-center"><i className="bi bi-question-circle me-2"></i> Support</a></li>
             <li><hr className="dropdown-divider" /></li>
             <li><a href="#" className="dropdown-item d-flex align-items-center"><i className="bi bi-lock me-2"></i> Lock Screen</a></li>

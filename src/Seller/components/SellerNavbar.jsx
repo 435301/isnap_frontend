@@ -37,14 +37,6 @@ const SellerNavbar = ({ onToggleSidebar }) => {
           </ul>
         </div>
 
-        <div className="nav-item">
-          <a href="#" className="nav-link"><i className="bi bi-moon fs-5"></i></a>
-        </div>
-
-        <div className="nav-item">
-          <a href="#" className="nav-link"><i className="bi bi-gear fs-5"></i></a>
-        </div>
-
         <div className="nav-item dropdown">
           <a href="#" className="nav-link d-flex align-items-center" data-bs-toggle="dropdown">
             <img className="rounded-circle me-2" src={userImg} alt="user" style={{ width: "40px", height: "40px" }} />

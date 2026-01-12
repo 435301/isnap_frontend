@@ -1,7 +1,9 @@
 import React from "react";
 import userImg from '../assets/admin/images/user.png';
+import { useNavigate } from "react-router-dom";
 
 const Navbar = ({ onToggleSidebar }) => {
+  const navigate = useNavigate();
   return (
     <nav className="navbar navbar-expand bg-white navbar-light sticky-top px-4 py-3">
       {/* Sidebar Toggle */}
@@ -28,14 +30,14 @@ const Navbar = ({ onToggleSidebar }) => {
 
         {/* Add Buttons */}
         <div className="d-flex gap-2 d-none d-md-block">
-          <button className="btn btn-task btn-sm me-1">
-            <i className="bi bi-plus-circle me-1"></i> Add Task
+          <button className="btn btn-task btn-sm me-1" onClick={()=> navigate("/add-team")}>
+            <i className="bi bi-plus-circle me-1"></i> Add Team
           </button>
-          <button className="btn btn-lead btn-sm me-1">
+          <button className="btn btn-lead btn-sm me-1" onClick={()=> navigate("/create-lead")}>
             <i className="bi bi-plus-circle me-1"></i> Add Lead
           </button>
-          <button className="btn btn-invoice btn-sm">
-            <i className="bi bi-plus-circle me-1"></i> Add Invoice
+          <button className="btn btn-invoice btn-sm" onClick={()=> navigate("/create-seller")}>
+            <i className="bi bi-plus-circle me-1"></i> Add Seller
           </button>
         </div>
 

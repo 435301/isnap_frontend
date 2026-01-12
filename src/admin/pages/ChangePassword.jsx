@@ -3,8 +3,10 @@ import Sidebar from '../components/Sidebar';
 import Navbar from '../components/Navbar';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import { useNavigate } from 'react-router-dom';
 
 const ChangePassword = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     oldPassword: '',
     newPassword: '',
@@ -36,6 +38,42 @@ const ChangePassword = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+    const validateChangePassword = (data) => {
+    const validationErrors = {};
+    const { oldPassword, newPassword, confirmPassword } = data;
+
+    // Old Password
+    if (!oldPassword.trim()) {
+      validationErrors.oldPassword = 'Old password is required.';
+    } else if (oldPassword.length < 6) {
+      validationErrors.oldPassword = 'Old password must be at least 6 characters.';
+    }
+
+    // New Password
+    if (!newPassword.trim()) {
+      validationErrors.newPassword = 'New password is required.';
+    } else if (newPassword.length < 8) {
+      validationErrors.newPassword = 'New password must be at least 8 characters.';
+    } else if (!/[A-Z]/.test(newPassword)) {
+      validationErrors.newPassword = 'Must contain at least one uppercase letter.';
+    } else if (!/[a-z]/.test(newPassword)) {
+      validationErrors.newPassword = 'Must contain at least one lowercase letter.';
+    } else if (!/[0-9]/.test(newPassword)) {
+      validationErrors.newPassword = 'Must contain at least one number.';
+    } else if (!/[@$!%*?&]/.test(newPassword)) {
+      validationErrors.newPassword = 'Must contain at least one special character.';
+    }
+
+    // Confirm Password
+    if (!confirmPassword.trim()) {
+      validationErrors.confirmPassword = 'Please confirm your new password.';
+    } else if (confirmPassword !== newPassword) {
+      validationErrors.confirmPassword = 'Passwords do not match.';
+    }
+
+    return validationErrors;
+  };
+  
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -95,7 +133,6 @@ const ChangePassword = () => {
                       onChange={handleChange}
                       className="form-control"
                       placeholder="Enter old password"
-                      required
                     />
                   </div>
 
@@ -110,7 +147,6 @@ const ChangePassword = () => {
                       onChange={handleChange}
                       className="form-control"
                       placeholder="Enter new password"
-                      required
                     />
                   </div>
 
@@ -125,7 +161,6 @@ const ChangePassword = () => {
                       onChange={handleChange}
                       className="form-control"
                       placeholder="Confirm new password"
-                      required
                     />
                   </div>
 
@@ -139,7 +174,7 @@ const ChangePassword = () => {
                     <button type="submit" className="btn btn-success px-4 me-2">
                       Submit
                     </button>
-                    <button type="reset" className="btn btn-outline-secondary px-4">
+                    <button type="reset" className="btn btn-outline-secondary px-4" onClick={()=> navigate("/dashboard")}> 
                       Cancel
                     </button>
                   </div>
