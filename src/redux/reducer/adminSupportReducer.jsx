@@ -1,15 +1,18 @@
 
 import {
     ADMIN_SUPPORT_REQUEST, ADMIN_SUPPORT_FAILURE,
-    ADMIN_SUPPORT_LIST_SUCCESS, ADMIN_SUPPORT_VIEW_SUCCESS, ADMIN_SUPPORT_CREATE_SUCCESS, ADMIN_SUPPORT_UPDATE_SUCCESS, ADMIN_SUPPORT_DELETE_SUCCESS} from
- "../actions/adminSupportAction";
+    ADMIN_SUPPORT_LIST_SUCCESS, TEAM_SUPPORT_LIST_SUCCESS, ADMIN_SUPPORT_CREATE_SUCCESS, ADMIN_SUPPORT_UPDATE_SUCCESS, ADMIN_SUPPORT_DELETE_SUCCESS
+} from
+    "../actions/adminSupportAction";
 
 const initialState = {
     loading: false,
     supports: [],
+    teamSupports: [],
     selectedSupport: null,
-    pagination: { },
+    pagination: {},
     error: null,
+
 };
 
 const AdminSupportReducer = (state = initialState, action) => {
@@ -22,6 +25,18 @@ const AdminSupportReducer = (state = initialState, action) => {
                 ...state,
                 loading: false,
                 supports: action.payload.supports || [],
+                pagination: {
+                    total: action.payload.total,
+                    currentPage: action.payload.currentPage,
+                    totalPages: action.payload.totalPages,
+                    limit: action.payload.limit,
+                },
+            };
+        case TEAM_SUPPORT_LIST_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                teamSupports: action.payload.supports || [],
                 pagination: {
                     total: action.payload.total,
                     currentPage: action.payload.currentPage,

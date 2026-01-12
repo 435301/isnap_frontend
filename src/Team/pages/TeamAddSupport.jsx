@@ -1,54 +1,78 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useParams } from "react-router-dom";
 import Sidebar from "../components/TeamSidebar";
 import Navbar from "../components/TeamNavbar";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import useResponsiveSidebar from "../../components/useResponsiveSidebar";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchTeams } from "../../redux/actions/teamActions";
+import { fetchBusinessDetails } from "../../redux/actions/businessActions";
+import { fetchSupportStatus } from "../../redux/actions/supportStatusAction";
+import { fetchIssueType } from "../../redux/actions/issueTypeAction";
+import { fetchSellerSupportById } from "../../redux/actions/sellerSupportAction";
+import { createAdminSupport, updateAdminSupport } from "../../redux/actions/adminSupportAction";
+import BASE_URL from "../../config/config";
 
 const AddProductListing = () => {
+  const { windowWidth, isSidebarOpen, setIsSidebarOpen } = useResponsiveSidebar(992);
   const navigate = useNavigate();
-
+  const dispatch = useDispatch();
+  const { id } = useParams();
+  const isEdit = Boolean(id);
+  const { teams } = useSelector((state) => state.teams);
+  const { businessDetails } = useSelector((state) => state.business);
+  const { supportStatusList } = useSelector((state) => state.supportStatus);
+  const { issueTypes } = useSelector((state) => state.issueTypes);
+  const { selectedSupport } = useSelector((state) => state.sellerSupport);
+  console.log('teams', teams, businessDetails, issueTypes)
   const [formData, setFormData] = useState({
     issueType: "",
     subject: "",
     description: "",
     attachment: null,
-    seller: "",
-    team: "",
-    status: "", // ✅ ADD THIS
+    status: "",
+    sellerId: "",
+    teamId: "",
   });
-  const statusOptions = ["Open", "In Progress", "Pending", "Closed"];
 
   const [errors, setErrors] = useState({});
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-
-  const issueTypeOptions = [
-    "Technical",
-    "Billing",
-    "General",
-    "Feature Request",
-  ];
-  const sellerOptions = ["Seller A", "Seller B", "Seller C"];
-  const teamOptions = ["Technical", "Billing", "Support"];
+  const [existingFile, setExistingFile] = useState(null);
 
   useEffect(() => {
-    const handleResize = () => {
-      setWindowWidth(window.innerWidth);
-      setIsSidebarOpen(window.innerWidth >= 992);
-    };
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+    dispatch(fetchTeams());
+    dispatch(fetchBusinessDetails());
+    dispatch(fetchSupportStatus({ page: "", search: "", showStatus: 1 }));
+    dispatch(fetchIssueType({ page: "", search: "", showStatus: 1 }));
+  }, [dispatch])
+
+  useEffect(() => {
+    if (isEdit) {
+      dispatch(fetchSellerSupportById(id));
+    }
+  }, [id, isEdit, dispatch]);
+
+  useEffect(() => {
+    if (isEdit && selectedSupport) {
+      setFormData({
+        issueType: selectedSupport.issueTypeId || "",
+        subject: selectedSupport.subject || "",
+        description: selectedSupport.description || "",
+        attachment: null,
+        status: selectedSupport.supportStatusId || "",
+        sellerId: selectedSupport.sellerId || "",
+        teamId: selectedSupport.teamId || "",
+      });
+      setExistingFile(selectedSupport.file || null);
+    }
+  }, [isEdit, selectedSupport, dispatch]);
 
   const handleToggleSidebar = () => setIsSidebarOpen((prev) => !prev);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
-
     setFormData((prev) => ({
       ...prev,
       [name]: name === "attachment" ? files[0] : value,
@@ -62,25 +86,35 @@ const AddProductListing = () => {
     if (!formData.issueType) err.issueType = "Issue type is required";
     if (!formData.subject) err.subject = "Subject is required";
     if (!formData.description) err.description = "Description is required";
-    if (!formData.seller) err.seller = "Seller is required";
-    if (!formData.team) err.team = "Team is required";
-    if (!formData.status) err.status = "Status is required"; // ✅
+    if (!formData.status) err.status = "Status is required";
     return err;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const validationErrors = validate();
     setErrors(validationErrors);
 
-    if (Object.keys(validationErrors).length === 0) {
-      const payload = new FormData();
-      Object.entries(formData).forEach(([key, value]) => {
-        if (value) payload.append(key, value);
-      });
+    if (Object.keys(validationErrors).length > 0) return;
+    const payload = new FormData();
+    payload.append("issueTypeId", formData.issueType);
+    payload.append("supportStatusId", formData.status);
+    payload.append("subject", formData.subject);
+    payload.append("description", formData.description);
+    if (formData.attachment) {
+      payload.append("file", formData.attachment);
+    }
+    try {
+      if (isEdit) {
+        await dispatch(updateAdminSupport(id, payload))
+        navigate("/team/support");
+      } else {
+        await dispatch(createAdminSupport(payload));
+        navigate("/team/support");
+      }
 
-      console.log("Submitted Payload:", Object.fromEntries(payload));
-      navigate("/support");
+    } catch (err) {
+      console.log(err)
     }
   };
 
@@ -100,8 +134,8 @@ const AddProductListing = () => {
         <div className="container-fluid px-4 pt-3">
           {/* Header */}
           <div className="bg-white p-3 rounded shadow-sm mb-3 d-flex justify-content-between align-items-center">
-            <h5 className="m-0">Create Support Ticket</h5>
-            <Link to="/team/manage-support" className="btn btn-success">
+            <h5 className="m-0">{isEdit ? "Edit Support Ticket" : "Create Support Ticket"}</h5>
+            <Link to="/team/support" className="btn btn-success">
               <i className="bi bi-arrow-left me-1"></i> Manage Support
             </Link>
           </div>
@@ -117,15 +151,14 @@ const AddProductListing = () => {
                   </label>
                   <select
                     name="issueType"
-                    className={`form-select ${
-                      errors.issueType && "is-invalid"
-                    }`}
+                    className={`form-select ${errors.issueType && "is-invalid"
+                      }`}
                     value={formData.issueType}
                     onChange={handleChange}
                   >
                     <option value="">Select Issue Type</option>
-                    {issueTypeOptions.map((opt) => (
-                      <option key={opt}>{opt}</option>
+                    {issueTypes.map((opt) => (
+                      <option key={opt.id} value={opt.id}>{opt.issueTypeTitle}</option>
                     ))}
                   </select>
                   <div className="invalid-feedback">{errors.issueType}</div>
@@ -148,13 +181,24 @@ const AddProductListing = () => {
 
                 {/* Attachment */}
                 <div className="col-md-4">
-                  <label className="form-label">Attachment</label>
+                  <label className="form-label">Attachment (file size must be less than or equal to 100MB)</label>
                   <input
                     type="file"
                     name="attachment"
                     className="form-control"
                     onChange={handleChange}
                   />
+                  {existingFile && (
+                    <small className="d-block mt-1">
+                      <a
+                        href={`${BASE_URL}${existingFile}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {existingFile.split("/").pop()}
+                      </a>
+                    </small>
+                  )}
                 </div>
 
                 {/* Description */}
@@ -165,55 +209,54 @@ const AddProductListing = () => {
                   <textarea
                     rows="4"
                     name="description"
-                    className={`form-control ${
-                      errors.description && "is-invalid"
-                    }`}
+                    className={`form-control ${errors.description && "is-invalid"
+                      }`}
                     value={formData.description}
                     onChange={handleChange}
                   />
                   <div className="invalid-feedback">{errors.description}</div>
                 </div>
+           
 
                 {/* Seller */}
                 <div className="col-md-4">
                   <label className="form-label">
-                    Seller <span className="text-danger">*</span>
+                    Seller
                   </label>
                   <select
-                    name="seller"
-                    className={`form-select ${errors.seller && "is-invalid"}`}
-                    value={formData.seller}
+                    name="sellerId"
+                    className={`form-select `}
+                    value={formData.sellerId}
                     onChange={handleChange}
                   >
                     <option value="">Select Seller</option>
-                    {sellerOptions.map((s) => (
-                      <option key={s}>{s}</option>
+                    {businessDetails.map((s) => (
+                      <option key={s} value={s.id}>{s.businessName}</option>
                     ))}
                   </select>
-                  <div className="invalid-feedback">{errors.seller}</div>
                 </div>
 
                 {/* Team */}
                 <div className="col-md-4">
                   <label className="form-label">
-                    Team <span className="text-danger">*</span>
+                    Team 
                   </label>
                   <select
-                    name="team"
-                    className={`form-select ${errors.team && "is-invalid"}`}
-                    value={formData.team}
+                    name="teamId"
+                    className={`form-select `}
+                    value={formData.teamId}
                     onChange={handleChange}
                   >
                     <option value="">Select Team</option>
-                    {teamOptions.map((t) => (
-                      <option key={t}>{t}</option>
+                    {teams.map((t) => (
+                      <option key={t} value={t.id}>{t.name}</option>
                     ))}
                   </select>
-                  <div className="invalid-feedback">{errors.team}</div>
                 </div>
-                <div className="col-md-4">
+
+                     <div className="col-md-4">
                   <label className="form-label">
-                    Issue Status <span className="text-danger">*</span>
+                    Support Status <span className="text-danger">*</span>
                   </label>
                   <select
                     name="status"
@@ -222,9 +265,9 @@ const AddProductListing = () => {
                     className={`form-select ${errors.status && "is-invalid"}`}
                   >
                     <option value="">Select Status</option>
-                    {statusOptions.map((status) => (
-                      <option key={status} value={status}>
-                        {status}
+                    {supportStatusList.map((status) => (
+                      <option key={status.id} value={status.id}>
+                        {status.supportStatusTitle}
                       </option>
                     ))}
                   </select>
@@ -233,11 +276,11 @@ const AddProductListing = () => {
 
                 {/* Buttons */}
                 <div className="col-12 text-end mt-4">
-                  <button className="btn btn-success me-2 px-4">Submit</button>
+                  <button className="btn btn-success me-2 px-4">{isEdit ? "Update" : "Submit"}</button>
                   <button
                     type="button"
                     className="btn btn-outline-secondary px-4"
-                    onClick={() => navigate("/support")}
+                    onClick={() => navigate("/team/support")}
                   >
                     Cancel
                   </button>
@@ -246,8 +289,6 @@ const AddProductListing = () => {
             </form>
           </div>
         </div>
-
-        <ToastContainer autoClose={1500} />
       </div>
     </div>
   );

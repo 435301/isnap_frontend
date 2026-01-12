@@ -850,8 +850,16 @@ function App() {
             </TeamRoute>
           }
         />
+         <Route
+          path="/team/edit-support/:id"
+          element={
+            <TeamRoute>
+              <TeamAddSupport />
+            </TeamRoute>
+          }
+        />
         <Route
-          path="/team/manage-support"
+          path="/team/support"
           element={
             <TeamRoute>
               <TeamManageSupport />

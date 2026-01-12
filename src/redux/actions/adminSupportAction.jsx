@@ -10,6 +10,8 @@ export const ADMIN_SUPPORT_LIST_SUCCESS = "ADMIN_SUPPORT_LIST_SUCCESS";
 export const ADMIN_SUPPORT_CREATE_SUCCESS = "ADMIN_SUPPORT_CREATE_SUCCESS";
 export const ADMIN_SUPPORT_UPDATE_SUCCESS = "ADMIN_SUPPORT_UPDATE_SUCCESS";
 
+export const TEAM_SUPPORT_LIST_SUCCESS = "TEAM_SUPPORT_LIST_SUCCESS";
+
 /* COMMON */
 const request = () => ({ type: ADMIN_SUPPORT_REQUEST });
 const failure = (error) => ({
@@ -68,4 +70,19 @@ export const updateAdminSupport = (id, formData) => async (dispatch) => {
     }
 };
 
+
+export const fetchTeamSupport = (filters) => async (dispatch) => {
+    try {
+        dispatch(request());
+        const res = await axios.post(`${BASE_URL}/support/listForTeam`, filters, getAuthHeaders());
+        dispatch({
+            type: TEAM_SUPPORT_LIST_SUCCESS,
+            payload: res.data.data,
+        });
+    } catch (err) {
+        dispatch(failure(err.message));
+        toast.error(err.message);
+    }
+
+};
 //getbyId , delete api from seller support action

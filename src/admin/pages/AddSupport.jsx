@@ -87,8 +87,6 @@ const AddProductListing = () => {
     if (!formData.subject) err.subject = "Subject is required";
     if (!formData.description) err.description = "Description is required";
     if (!formData.status) err.status = "Status is required";
-    if (!formData.sellerId) err.sellerId = "Seller is required";
-    if (!formData.teamId) err.team = "Team is required";
     return err;
   };
 
@@ -218,10 +216,48 @@ const AddProductListing = () => {
                       }`}
                     value={formData.description}
                     onChange={handleChange}
-                  />
+                  />  
                   <div className="invalid-feedback">{errors.description}</div>
                 </div>
+           
+
+                {/* Seller */}
                 <div className="col-md-4">
+                  <label className="form-label">
+                    Seller
+                  </label>
+                  <select
+                    name="sellerId"
+                    className={`form-select`}
+                    value={formData.sellerId}
+                    onChange={handleChange}
+                  >
+                    <option value="">Select Seller</option>
+                    {businessDetails.map((s) => (
+                      <option key={s} value={s.id}>{s.businessName}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Team */}
+                <div className="col-md-4">
+                  <label className="form-label">
+                    Team 
+                  </label>
+                  <select
+                    name="teamId"
+                    className={`form-select`}
+                    value={formData.teamId}
+                    onChange={handleChange}
+                  >
+                    <option value="">Select Team</option>
+                    {teams.map((t) => (
+                      <option key={t} value={t.id}>{t.name}</option>
+                    ))}
+                  </select>
+                </div>
+
+                     <div className="col-md-4">
                   <label className="form-label">
                     Support Status <span className="text-danger">*</span>
                   </label>
@@ -239,44 +275,6 @@ const AddProductListing = () => {
                     ))}
                   </select>
                   <div className="invalid-feedback">{errors.status}</div>
-                </div>
-
-                {/* Seller */}
-                <div className="col-md-4">
-                  <label className="form-label">
-                    Seller
-                  </label>
-                  <select
-                    name="sellerId"
-                    className={`form-select ${errors.sellerId && "is-invalid"}`}
-                    value={formData.sellerId}
-                    onChange={handleChange}
-                  >
-                    <option value="">Select Seller</option>
-                    {businessDetails.map((s) => (
-                      <option key={s} value={s.id}>{s.businessName}</option>
-                    ))}
-                  </select>
-                  <div className="invalid-feedback">{errors.sellerId}</div>
-                </div>
-
-                {/* Team */}
-                <div className="col-md-4">
-                  <label className="form-label">
-                    Team 
-                  </label>
-                  <select
-                    name="teamId"
-                    className={`form-select ${errors.teamId && "is-invalid"}`}
-                    value={formData.teamId}
-                    onChange={handleChange}
-                  >
-                    <option value="">Select Team</option>
-                    {teams.map((t) => (
-                      <option key={t} value={t.id}>{t.name}</option>
-                    ))}
-                  </select>
-                  <div className="invalid-feedback">{errors.teamId}</div>
                 </div>
 
                 {/* Buttons */}
