@@ -160,8 +160,8 @@ const TeamSidebar = ({ isOpen }) => {
 
           {/* Support */}
           <Link
-            to="/team/manage-support"
-            className={`nav-item nav-link ${isLinkActive("/team/manage-support")}`}
+            to="/team/support"
+            className={`nav-item nav-link ${isLinkActive("/team/support")}`}
           >
             <i className="bi bi-headset me-2"></i>
             {isOpen && <span>Support</span>}
