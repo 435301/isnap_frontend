@@ -235,7 +235,7 @@ const AddProductListing = () => {
                   <button
                     type="button"
                     className="btn btn-outline-secondary px-4"
-                    onClick={() => navigate("/support")}
+                    onClick={() => navigate("/seller/manage-support")}
                   >
                     Cancel
                   </button>
